@@ -1,0 +1,17 @@
+//Theme colors
+$themes:(
+    light: (
+        color-background: rgb(252, 252, 251),
+        color-primary: #0e0e0e,
+        color-secondary: #b10090,
+        color-card: #849cee,
+        landing-back-image: url("../../public/img/landing-back-light.jpg")
+    ),
+    dark: (
+        color-background: rgb(13, 1, 23),
+        color-primary: #f6f6f6,
+        color-secondary: #db0083,
+        color-card: #570A57,
+        landing-back-image: url("../../public/img/landing-back-dark.jpg")
+    )
+);

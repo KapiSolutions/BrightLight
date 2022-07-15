@@ -1,0 +1,12 @@
+@use '../../base/fonts' as *;
+
+.brand {
+  font-family: $decoration-font;
+  font-size:xx-large;
+  // text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.item {
+  text-shadow: 0px 0px 4px rgba(29, 29, 29, 1);
+}
+

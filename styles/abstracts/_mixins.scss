@@ -1,0 +1,25 @@
+@use "./variables" as *;
+@use "sass:map";
+
+// Menage Themes
+@mixin themeSwitcher($theme) {
+  .background {
+    background-color: map-get(map-get($themes, '#{$theme}'), 'color-background');
+  }
+  .backgroundGradient {
+    $color: map-get(map-get($themes, '#{$theme}'), 'color-background');
+    background-image: linear-gradient(180deg, rgba($color, 0.5),rgba($color, 0.3), rgba($color, 0));
+  }
+  .landingBack {
+    background-image: map-get(map-get($themes, '#{$theme}'), 'landing-back-image');
+    // background-position: 0% 20%;
+    background-repeat: no-repeat;
+    background-size:cover;
+  }
+  .color-primary {
+    color: map-get(map-get($themes, '#{$theme}'), 'color-primary');
+  }
+  .color-secondary {
+    color: map-get(map-get($themes, '#{$theme}'), 'color-secondary');
+  }
+}
