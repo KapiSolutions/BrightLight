@@ -2,10 +2,13 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding-top: 5vh;
 }
-.links {
-    text-align: left;
+.content {
+    text-align: center;
+}
+.links li{
+    display:inline;
+    padding-right: 10px;
 }
 .signature{
     text-align: center;
@@ -13,3 +16,22 @@
         font-size: small;
     }
 }
+
+.shapeDivider {
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+}
+.shapeDivider svg {
+    position: relative;
+    display: block;
+    width: calc(192% + 1.3px);
+    height: 41px;
+}
+// /** For mobile devices **/
+// @media (max-width: 767px) {
+//     .shapeDivider svg {
+//         width: calc(170% + 1.3px);
+//         height: 35px;
+//     }
+// }

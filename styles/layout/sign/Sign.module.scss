@@ -1,0 +1,19 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content:center;
+    height: 100vh;
+    width: 100vw;
+}
+
+.backButton {
+    position:fixed;
+    top: 1.75rem;
+    left: 1.75rem;
+    opacity: 0.75;
+}
+.backButton:hover {
+    opacity: 1;
+}
+

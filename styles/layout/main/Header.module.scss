@@ -1,13 +1,33 @@
+@use "../../abstracts/variables" as *;
+
 .container {
-    display: flex;
-    flex-direction: column;
-    align-content: center;
-   
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+
+  text-align: center;
 }
 
 .proposal {
-    padding-top:20vh;
-    margin: auto;
-    text-align: center;
+  padding-top: 20vh;
+  margin: auto;
+  text-align: center;
+}
+
+.animatedBorderLight {
+  animation: version-highlighter-animation 2s infinite
+    cubic-bezier(0.25, 0.5, 0.9, 2);
+  box-shadow: 0 0 0 0 rgba($color-secondary, 0.3);
+}
+
+.animatedBorderDark {
+  animation: version-highlighter-animation 2s infinite
+    cubic-bezier(0.25, 0.5, 0.9, 2);
+  box-shadow: 0 0 0 0 rgba($color-secondary, 0.9);
+}
+
+@keyframes version-highlighter-animation {
+  to {
+    box-shadow: 0 0 0 15px rgba(93, 236, 170, 0);
+  }
 }

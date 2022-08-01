@@ -16,7 +16,7 @@ $theme-colors: (
 $MainNavbarDarkColor: white;
 $MainNavbarLightColor: black;
 
-
+// Navbar costumization
 $navbar-light-color:                rgba($MainNavbarLightColor, .75);
 $navbar-light-hover-color:          rgba($MainNavbarLightColor, .9);
 $navbar-light-active-color:         rgba($MainNavbarLightColor, 1);
@@ -30,6 +30,17 @@ $navbar-dark-active-color:          rgba($MainNavbarDarkColor, 1);
 $navbar-dark-disabled-color:        rgba($MainNavbarDarkColor, .3);
 $navbar-dark-toggler-icon-bg:       url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'><path stroke='#{$navbar-dark-color}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/></svg>");
 $navbar-dark-toggler-border-color:  rgba($MainNavbarDarkColor, .1);
+
+//Floating label for input fields costumization
+// $form-floating-height:            add(3.5rem, $input-height-border);
+$form-floating-line-height:       1.25;
+// $form-floating-padding-x:         $input-padding-x;
+$form-floating-padding-y:         1rem;
+$form-floating-input-padding-t:   1.625rem;
+$form-floating-input-padding-b:   .625rem;
+$form-floating-label-opacity:     .65;
+$form-floating-label-transform:   scale(.85) translateY(-.5rem) translateX(.15rem);
+$form-floating-transition:        opacity .1s ease-in-out, transform .1s ease-in-out;
 
 
 @import '~bootstrap/scss/bootstrap';

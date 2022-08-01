@@ -1,12 +1,13 @@
+import React from 'react'
 import Head from 'next/head'
-import Image from 'next/image'
-import { Container, Card, Button, Row, Col } from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap'
+import CardTarot from '../components/CardTarot'
 
 export default function Home() {
   return (
     <>
       <Head>
-        <title>Home</title>
+        <title>BrightLight | Home</title>
       </Head>
 
 
@@ -19,23 +20,12 @@ export default function Home() {
         <Row xs={1} md={2} lg={3} className="g-4">
           {Array.from({ length: 4 }).map((_, idx) => (
             <Col key={idx} className='d-flex justify-content-center'>
-              <Card style={{ width: '18rem' }}>
-                <Card.Img variant="top" src="/img/cards-light.png" />
-                <Card.Body>
-                  <Card.Title>Card Title</Card.Title>
-                  <Card.Text>
-                    Some quick example text to build on the card title and make up the
-                    bulk of the cards content.
-                  </Card.Text>
-                  <Button variant="primary">Go somewhere</Button>
-                </Card.Body>
-              </Card>
+              <CardTarot />
             </Col>
           ))}
         </Row>
-
-
       </Container>
+
     </>
   )
 }

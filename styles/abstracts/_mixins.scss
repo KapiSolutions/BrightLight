@@ -3,23 +3,35 @@
 
 // Menage Themes
 @mixin themeSwitcher($theme) {
+$backgroundColor: map-get(map-get($themes, '#{$theme}'), 'color-background');
+$primaryColor: map-get(map-get($themes, '#{$theme}'), 'color-primary');
+$secondaryColor: $color-secondary;
+
   .background {
-    background-color: map-get(map-get($themes, '#{$theme}'), 'color-background');
+    background-color: $backgroundColor;
   }
-  .backgroundGradient {
-    $color: map-get(map-get($themes, '#{$theme}'), 'color-background');
-    background-image: linear-gradient(180deg, rgba($color, 0.5),rgba($color, 0.3), rgba($color, 0));
-  }
-  .landingBack {
+  .backgroundFooter{
+    // background:linear-gradient(60deg, $backgroundColor 0%, $secondaryColor 100%);
     background-image: map-get(map-get($themes, '#{$theme}'), 'landing-back-image');
-    // background-position: 0% 20%;
+    background-position: 0% 80%;
     background-repeat: no-repeat;
     background-size:cover;
   }
+  .landingBack {
+    background-image: map-get(map-get($themes, '#{$theme}'), 'landing-back-image');
+    background-repeat: no-repeat;
+    background-size:cover;
+  }
+  .svgDividerColorFill {
+    fill: $backgroundColor;
+  }
   .color-primary {
-    color: map-get(map-get($themes, '#{$theme}'), 'color-primary');
+    color: $primaryColor;
   }
   .color-secondary {
-    color: map-get(map-get($themes, '#{$theme}'), 'color-secondary');
+    color: $secondaryColor;
+  }
+  .color-background {
+    color: $backgroundColor;
   }
 }

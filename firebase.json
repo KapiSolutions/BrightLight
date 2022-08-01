@@ -1,0 +1,11 @@
+{
+  "hosting": {
+    "site": "brightlight",
+    "public": "out",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

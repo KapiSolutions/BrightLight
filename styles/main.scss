@@ -1,7 +1,9 @@
 @use './vendors/bootstrap' as *;
 @use './base/reset' as *;
+@use './base/effects' as *;
 @use './themes' as *;
 @use './base/fonts' as *;
+@use './components/hrDivider' as *;
 
 
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import Navbar from './Navbar'
+import Navigation from './Navigation'
 import styles from '../../../../styles/layout/main/Header.module.scss'
 import { Button } from 'react-bootstrap'
 
@@ -10,17 +10,18 @@ function Header(props) {
     const cardsDark = '/img/cards-dark.png';
 
     return (
-        <div className={`${styles.container} landingBack`}>
-            <Navbar theme={props.theme} />
+        <div className={`${styles.container} landingBack `}>
+            <Navigation theme={props.theme} />
             <div className={styles.proposal}>
                 <div>
-                    <h1 className='color-primary'>Wanna know Your future?</h1>
+                    <h1 className='color-primary m-0 fw-bold'>WANNA KNOW YOUR FUTURE?</h1>
+                    <p className='color-primary'>DON&apos;T WAIT</p>
                     <br />
                     <Link href="/#main" passHref>
-                        <Button variant='secondary' size='lg'>Find it out!</Button>
+                        <Button className={props.theme === 'light' ? styles.animatedBorderLight : styles.animatedBorderDark} variant='secondary' size='lg'>FIND IT OUT!</Button>
                     </Link>
-                    <br />
-                    <Image src={props.theme === 'light' ? cardsLight : cardsDark} width="200" height="200" alt='tarot cards' />
+                    <br /><br />
+                    <Image src={props.theme === 'light' ? cardsLight : cardsLight} width="100" height="100" alt='tarot cards' />
                 </div>
             </div>
         </div>

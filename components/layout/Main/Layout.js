@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Head from 'next/head'
 import Header from './Header/Header'
 import Footer from './Footer'
@@ -6,9 +6,7 @@ import styles from '../../../styles/layout/main/grid.module.scss'
 import { SSRProvider } from 'react-bootstrap';
 import useLocalStorageState from 'use-local-storage-state'
 
-
 function Layout({ children }) {
-    // const theme = useThemeStore((state) => state.theme);
     const [theme, setTheme] = useLocalStorageState('theme', {
         ssr: true,
         defaultValue: 'light'
@@ -26,7 +24,7 @@ function Layout({ children }) {
                         <main id='main' className={`${styles.main} `}>
                             {children}
                         </main>
-                        <Footer className={`${styles.footer} `} />
+                        <Footer className={`${styles.footer}`} theme={theme} />
                     </div>
                 </div>
             </SSRProvider>

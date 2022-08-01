@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import useLocalStorageState from 'use-local-storage-state'
 import { GiEvilMoon, GiUbisoftSun } from 'react-icons/gi';
 import styles from '../styles/components/ChangeThemeButton.module.scss'
@@ -11,7 +11,7 @@ function ChangeThemeButton(props) {
     const switchTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
-    }
+    }  
     return (
         <div style={{ cursor: 'pointer' }}>
             {theme == 'light' ?
