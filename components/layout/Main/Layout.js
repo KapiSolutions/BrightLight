@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import Head from 'next/head'
 import Header from './Header/Header'
 import Footer from './Footer'
@@ -19,7 +19,7 @@ function Layout({ children }) {
 
             <SSRProvider>
                 <div className={theme}>
-                    <div className={`${styles.container} background`}>
+                    <div className={styles.container}>
                         <Header className={styles.header} theme={theme} />
                         <main id='main' className={`${styles.main} `}>
                             {children}

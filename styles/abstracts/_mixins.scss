@@ -7,6 +7,8 @@ $backgroundColor: map-get(map-get($themes, '#{$theme}'), 'color-background');
 $primaryColor: map-get(map-get($themes, '#{$theme}'), 'color-primary');
 $secondaryColor: $color-secondary;
 
+background-color: $backgroundColor;
+
   .background {
     background-color: $backgroundColor;
   }

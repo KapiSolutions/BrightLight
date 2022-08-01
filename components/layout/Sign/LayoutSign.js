@@ -18,9 +18,9 @@ function LayoutSign({ children }) {
       </Head>
       <SSRProvider>
         <div className={theme}>
-          <div className={`${styles.container} background`}>
+          <div className={styles.container}>
 
-          {/* <div className={`${styles.backButton} text-center`}>
+            {/* <div className={`${styles.backButton} text-center`}>
               <Link href='/' passHref>
                 <Button className='btn-sm' variant={theme === 'light' ? 'outline-dark' : 'outline-light'}>
                   <VscArrowLeft style={{ width: '20px', height: '20px', marginBottom: '3px' }} />
@@ -29,9 +29,7 @@ function LayoutSign({ children }) {
               </Link>
             </div> */}
 
-            <Container>
-              {children}
-            </Container>
+            {children}
 
           </div>
         </div>
