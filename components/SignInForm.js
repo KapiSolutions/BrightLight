@@ -19,9 +19,9 @@ function SignInForm(props) {
       <Row xs={1} md={2}>
         <Col className='d-flex justify-content-center'>
           {isMobile ?
-            <Image src={`/img/signUp${props.theme}.svg`} width='150' height='150' alt="SignIn Image" />
+            <Image src={`/svg/signUp${props.theme}.svg`} width='150' height='150' alt="SignIn Image" />
             :
-            <Image src={`/img/signUp${props.theme}.svg`} width='500' height='500' alt="SignIn Image" className='pe-5' />
+            <Image src={`/svg/signUp${props.theme}.svg`} width='500' height='500' alt="SignIn Image" className='pe-5' />
           }
         </Col>
 
