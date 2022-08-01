@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fontsource/k2d": "^4.5.9",
+    "@fontsource/ms-madi": "^4.5.2",
     "bootstrap": "^5.1.3",
     "firebase": "^9.9.1",
     "next": "12.1.6",
