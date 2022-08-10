@@ -8,6 +8,10 @@ export default function middleware(req){
     const verify = req.cookies
     const url = req.url
     const path = url.replace(origin, '')
+    
+    console.log('origin: ', origin)
+    console.log('url: ', url)
+    
 
     if(!verify?.userLoggedIn && !publicRoutes.includes(path) && !path.includes('.')){
         return NextResponse.redirect(`${origin}/sign-in`)
