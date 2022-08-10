@@ -12,9 +12,12 @@ export default function middleware(req){
     
     console.log('origin: ', origin)
     console.log('url: ', url)
+    console.log('path: ', path)
+    console.log('verify: ', verify)
+    console.log('verify.userLoggedIn: ', verify.userLoggedIn)
     
 
-    if(!verify?.userLoggedIn && !publicRoutes.includes(path) && !path.includes('.')){
+    if(!verify.userLoggedIn && !publicRoutes.includes(path) && !path.includes('.')){
         return NextResponse.redirect(`${origin}/sign-in`)
     }
 
