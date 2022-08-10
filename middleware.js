@@ -4,7 +4,8 @@ import absoluteUrl from 'next-absolute-url'
 
 export default function middleware(req){
     const publicRoutes = ['/','/about','/sign-in','/register','/404']
-    const { origin } = absoluteUrl(req)
+    // const { origin } = absoluteUrl(req)
+    const origin = 'https://bright-light.vercel.app'
     const verify = req.cookies
     const url = req.url
     const path = url.replace(origin, '')
