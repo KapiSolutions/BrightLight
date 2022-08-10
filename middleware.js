@@ -1,23 +1,16 @@
 // eslint-disable-next-line @next/next/no-server-import-in-page
 import { NextResponse } from 'next/server'
-import absoluteUrl from 'next-absolute-url'
+// import absoluteUrl from 'next-absolute-url'
 
 export default function middleware(req){
     const publicRoutes = ['/','/about','/sign-in','/register','/404']
     // const { origin } = absoluteUrl(req)
     const origin = 'https://bright-light.vercel.app'
-    const verify = req.cookies
+    const verify = req.cookies.get('userLoggedIn')
     const url = req.url
-    const path = url.replace(origin, '')
-    
-    console.log('origin: ', origin)
-    console.log('url: ', url)
-    console.log('path: ', path)
-    console.log('verify: ', verify)
-    console.log('verify.userLoggedIn: ', verify.userLoggedIn)
-    
+    const path = url.replace(origin, '') 
 
-    if(!verify.userLoggedIn && !publicRoutes.includes(path) && !path.includes('.')){
+    if(!verify && !publicRoutes.includes(path) && !path.includes('.')){
         return NextResponse.redirect(`${origin}/sign-in`)
     }
 
