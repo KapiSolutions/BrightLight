@@ -9,8 +9,10 @@ export default function middleware(req){
     const verify = req.cookies.get('userLoggedIn')
     const url = req.url
     const path = url.replace(origin, '') 
+    console.log('verify: ', verify)
 
     if(!verify && !publicRoutes.includes(path) && !path.includes('.')){
+        console.log('restricted')
         return NextResponse.redirect(`${origin}/sign-in`)
     }
 
