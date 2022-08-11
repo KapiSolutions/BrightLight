@@ -5,11 +5,13 @@ import { NextResponse } from 'next/server'
 export default function middleware(req){
     const publicRoutes = ['/','/about','/sign-in','/register','/404']
     // const { origin } = absoluteUrl(req)
+    // const origin = 'http://localhost:3000'
     const origin = 'https://bright-light.vercel.app'
     const verify = req.cookies.get('userLoggedIn')
     const url = req.url
     const path = url.replace(origin, '') 
     console.log('verify: ', verify)
+    // console.log('origin: ', origin)
 
     if(!verify && !publicRoutes.includes(path) && !path.includes('.')){
         console.log('restricted')
