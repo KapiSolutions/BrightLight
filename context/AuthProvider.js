@@ -74,7 +74,7 @@ function AuthProvider({ children }) {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user)
             setLoading(false)
-            user ? Cookies.set('userLoggedIn', true, { SameSite: "None", Secure: "true" }) : Cookies.remove('userLoggedIn')
+            user ? Cookies.set('userLoggedIn', true, { SameSite: "strict", Secure: false }) : Cookies.remove('userLoggedIn')
         })
         return unsubscribe
     }, [])
