@@ -3,13 +3,13 @@ import { NextResponse } from 'next/server'
 
 export default function middleware(req){
     // const publicRoutes = ['/','/about','/sign-in','/register','/404']
-    const origin = process.env.NEXT_PUBLIC_VERCEL_URL
+    const origin = process.env.VERCEL_URL
     // const origin = 'https://bright-light.vercel.app'
-
+    console.log('origin: ', origin)
     const verify = !!req.cookies.get('userLoggedIn')
     const url = req.url
     const path = url.replace(origin, '') 
-    console.log('origin: ', origin)
+    
 
     if(!verify  && !path.includes('.')){
         console.log('restricted')
