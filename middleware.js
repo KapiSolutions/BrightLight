@@ -6,15 +6,15 @@ export default function middleware(req){
     const origin = process.env.VERCEL_URL
     // const origin = 'https://bright-light.vercel.app'
     console.log('origin: ', origin)
-    const verify = !!req.cookies.get('userLoggedIn')
-    const url = req.url
-    const path = url.replace(origin, '') 
+    // const verify = !!req.cookies.get('userLoggedIn')
+    // const url = req.url
+    // const path = url.replace(origin, '') 
     
 
-    if(!verify  && !path.includes('.')){
-        console.log('restricted')
-        return NextResponse.redirect(`${origin}/sign-in`)
-    }
+    // if(!verify  && !path.includes('.')){
+    //     console.log('restricted')
+    //     return NextResponse.redirect(`${origin}/sign-in`)
+    // }
 
     return NextResponse.next()
 }
