@@ -2,7 +2,7 @@ import React from 'react'
 import Head from 'next/head'
 import { Container, Row, Col } from 'react-bootstrap'
 
-function index() {
+function AboutPage() {
   return (
     <>
     <Head>
@@ -15,4 +15,4 @@ function index() {
   )
 }
 
-export default index
+export default AboutPage

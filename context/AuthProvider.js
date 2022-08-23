@@ -11,8 +11,6 @@ import {
     GoogleAuthProvider,
     signInWithPopup
 } from 'firebase/auth'
-import Cookies from 'js-cookie'
-
 
 const AuthContext = React.createContext();
 export function useAuth() {
@@ -24,15 +22,13 @@ function AuthProvider({ children }) {
     const [currentUser, setCurrentUser] = useState()
     const [loading, setLoading] = useState(true)
     const GoogleProvider = new GoogleAuthProvider();
-    //Register new users to firebase account manager
+
     function registerUser(email, password) {
         return createUserWithEmailAndPassword(auth, email, password)
     }
-    //Log in existing users
     function loginUser(email, password) {
         return signInWithEmailAndPassword(auth, email, password)
     }
-    //Log out users
     function logoutUser() {
         return auth.signOut()
     }
@@ -44,6 +40,9 @@ function AuthProvider({ children }) {
     }
     function changePassword(password) {
         return updatePassword(auth.currentUser, password)
+    }
+    function isAuthenticated() {
+        return !!currentUser ? true : false
     }
 
     function loginWithGoogle() {
@@ -74,7 +73,6 @@ function AuthProvider({ children }) {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setCurrentUser(user)
             setLoading(false)
-            user ? Cookies.set('userLoggedIn', true, { SameSite: "strict", Secure: false }) : Cookies.remove('userLoggedIn')
         })
         return unsubscribe
     }, [])
@@ -87,7 +85,8 @@ function AuthProvider({ children }) {
         logoutUser,
         resetPassword,
         changeEmail,
-        changePassword
+        changePassword,
+        isAuthenticated
     }
 
     return (
