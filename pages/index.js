@@ -2,8 +2,11 @@ import React from 'react'
 import Head from 'next/head'
 import { Container, Row, Col } from 'react-bootstrap'
 import CardTarot from '../components/CardTarot'
+import { db } from '../config/firebase'
+import { collection, getDocs } from "firebase/firestore"
 
-export default function Home() {
+
+export default function Home(props) {
   return (
     <>
       <Head>
@@ -18,9 +21,9 @@ export default function Home() {
         </Row>
 
         <Row xs={1} md={2} lg={3} className="g-4">
-          {Array.from({ length: 4 }).map((_, idx) => (
-            <Col key={idx} className='d-flex justify-content-center'>
-              <CardTarot />
+          {props.tarot.map((tarot) => (
+            <Col key={tarot.id} className='d-flex justify-content-center'>
+              <CardTarot id={tarot.id} title={tarot.title} desc={tarot.description} img={tarot.image}/>
             </Col>
           ))}
         </Row>
@@ -30,3 +33,20 @@ export default function Home() {
   )
 }
 
+export async function getStaticProps() {
+  const tarot = []
+  const querySnapshot = await getDocs(collection(db, "tarot"))
+  querySnapshot.forEach((doc) => {
+    const card = {
+      id: doc.id,
+      ...doc.data()
+    }
+    tarot.push(card)
+  });
+
+  return {
+    props: { 
+      tarot: tarot },
+    revalidate: 20
+  };
+}

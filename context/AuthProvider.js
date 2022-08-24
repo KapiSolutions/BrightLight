@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { auth } from '../config/firebase'
+import { auth, db } from '../config/firebase'
+import { doc, setDoc } from 'firebase/firestore';
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -13,6 +14,7 @@ import {
 } from 'firebase/auth'
 
 const AuthContext = React.createContext();
+
 export function useAuth() {
     return useContext(AuthContext)
 }
@@ -24,7 +26,13 @@ function AuthProvider({ children }) {
     const GoogleProvider = new GoogleAuthProvider();
 
     function registerUser(email, password) {
-        return createUserWithEmailAndPassword(auth, email, password)
+        return createUserWithEmailAndPassword(auth, email, password).then(res => {
+            setDoc(doc(db, 'users',res.user.uid), {
+                email: email,
+                name: '',
+                lastName: ''
+            })
+        })
     }
     function loginUser(email, password) {
         return signInWithEmailAndPassword(auth, email, password)
@@ -47,23 +55,28 @@ function AuthProvider({ children }) {
 
     function loginWithGoogle() {
         signInWithPopup(auth, GoogleProvider)
-            .then((result) => {
+            .then((res) => {
+                setDoc(doc(db, 'users',res.user.uid), {
+                    email: res.user.email,
+                    name: '',
+                    lastName: ''
+                })
+                router.push('/')
                 // This gives you a Google Access Token. You can use it to access the Google API.
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-                const token = credential?.accessToken;
+               //const credential = GoogleAuthProvider.credentialFromResult(res)
+                //const token = credential?.accessToken
                 // The signed-in user info.
-                const user = result.user;
+                //const user = res.user
                 // console.log({ credential, token, user });
-                router.push('/');
             })
             .catch((error) => {
                 // Handle Errors here.
-                const errorCode = error.code;
-                const errorMessage = error.message;
+                const errorCode = error.code
+                const errorMessage = error.message
                 // The email of the user's account used.
-                const email = error.email;
+                const email = error.email
                 // The AuthCredential type that was used.
-                const credential = GoogleAuthProvider.credentialFromError(error);
+                const credential = GoogleAuthProvider.credentialFromError(error)
                 // console.log({ errorCode, errorMessage, email, credential });
             });
     };
