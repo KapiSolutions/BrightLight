@@ -31,11 +31,11 @@ function CardTarot(props) {
             }
         });
 
-    function DescHandler() {
+    function DescHandler(id) {
         if (!fullDesc) {
-            document.getElementById(`text-${props.id}`).style.maskImage = 'linear-gradient(180deg, #000 100%, transparent)'
+            document.getElementById(`text-${id}`).style.maskImage = 'none'
         } else {
-            document.getElementById(`text-${props.id}`).style.maskImage = 'linear-gradient(180deg, #000 75%, transparent)'
+            document.getElementById(`text-${id}`).style.maskImage = 'linear-gradient(180deg, #000 75%, transparent)'
         }
         setfullDesc(!fullDesc)
     }
@@ -50,7 +50,7 @@ function CardTarot(props) {
                 <Card.Text id={`text-${props.id}`} className={`${styles.cardText} color-primary`}>
                     {fullDesc ? props.desc : `${props.desc.substring(0, truncLength)}...`}
                 </Card.Text>
-                <Button variant="outline-accent3 float-start" onClick={DescHandler}>
+                <Button variant="outline-accent3 float-start" onClick={ () => DescHandler(props.id) }>
                     {fullDesc ? 'Read Less' : 'Read more'}
                 </Button>
                 <Button variant="primary float-end">Get it</Button>
