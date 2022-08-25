@@ -4,13 +4,15 @@ $themes:(
         color-background: #fcfcfb,
         color-primary: #0e0e0e,
         color-card: #849cee,
-        landing-back-image: url("../../public/img/landing-back-light.jpg")
+        landing-back-image: url("../../public/img/landing-back-light.jpg"),
+        opacity-image: 1
     ),
     dark: (
         color-background: #11061a,
         color-primary: #f6f6f6,
         color-card: #570A57,
-        landing-back-image: url("../../public/img/landing-back-dark.jpg")
+        landing-back-image: url("../../public/img/landing-back-dark.jpg"),
+        opacity-image: 0.9
     )
 );
 

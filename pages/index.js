@@ -47,6 +47,6 @@ export async function getStaticProps() {
   return {
     props: { 
       tarot: tarot },
-    revalidate: 20
+    revalidate: 60
   };
 }

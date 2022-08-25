@@ -13,7 +13,6 @@ background-color: $backgroundColor;
     background-color: $backgroundColor;
   }
   .backgroundFooter{
-    // background:linear-gradient(60deg, $backgroundColor 0%, $secondaryColor 100%);
     background-image: map-get(map-get($themes, '#{$theme}'), 'landing-back-image');
     background-position: 0% 80%;
     background-repeat: no-repeat;
@@ -35,5 +34,8 @@ background-color: $backgroundColor;
   }
   .color-background {
     color: $backgroundColor;
+  }
+  .imgOpacity {
+    opacity: map-get(map-get($themes, '#{$theme}'), 'opacity-image');
   }
 }
