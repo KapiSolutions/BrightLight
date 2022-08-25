@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
-import { Container, Form, Button, Alert, FloatingLabel, Row, Col } from 'react-bootstrap'
+import { Container, Form, Button, Alert, FloatingLabel } from 'react-bootstrap'
 import { FaFacebookF, FaGoogle, FaTwitter } from 'react-icons/fa';
 import { RiAlertFill } from 'react-icons/ri'
 import { useAuth } from '../context/AuthProvider'
