@@ -33,7 +33,7 @@ function CardTarot(props) {
 
     function DescHandler() {
         if (!fullDesc) {
-            document.getElementById(`text-${props.id}`).style.maskImage = 'none'
+            document.getElementById(`text-${props.id}`).style.maskImage = 'linear-gradient(180deg, #000 100%, transparent)'
         } else {
             document.getElementById(`text-${props.id}`).style.maskImage = 'linear-gradient(180deg, #000 75%, transparent)'
         }
