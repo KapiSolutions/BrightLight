@@ -1,6 +1,6 @@
 import React from 'react'
 import Head from 'next/head'
-import { Container, Row, Col } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
 
 function AboutPage() {
   return (

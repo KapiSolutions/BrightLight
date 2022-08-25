@@ -2,13 +2,15 @@ import React, { useState } from 'react'
 import { Card, Button } from 'react-bootstrap'
 import { storage } from '../config/firebase'
 import { ref, getDownloadURL } from "firebase/storage";
+import { useRouter } from 'next/router'
 import styles from '../styles/components/CardTarot.module.scss'
 
 function CardTarot(props) {
-    const imageRef = ref(storage, `images/cards/${props.img}`)
+    const router = useRouter()
     const [fullDesc, setfullDesc] = useState(false)
     const truncLength = 60
-
+    const imageRef = ref(storage, `images/cards/${props.img}`)
+    
     getDownloadURL(imageRef)
         .then((url) => {
             const img = document.getElementById(props.title);
@@ -35,7 +37,7 @@ function CardTarot(props) {
         if (!fullDesc) {
             document.getElementById(`text-${id}`).style.maskImage = 'none'
         } else {
-            document.getElementById(`text-${id}`).style.maskImage = 'linear-gradient(180deg, #000 75%, transparent)'
+            document.getElementById(`text-${id}`).style.maskImage = 'linear-gradient(180deg, #000 85%, transparent)'
         }
         setfullDesc(!fullDesc)
     }
@@ -50,10 +52,15 @@ function CardTarot(props) {
                 <Card.Text id={`text-${props.id}`} className={`${styles.cardText} color-primary`}>
                     {fullDesc ? props.desc : `${props.desc.substring(0, truncLength)}...`}
                 </Card.Text>
-                <Button variant="outline-accent3 float-start" onClick={ () => DescHandler(props.id) }>
+                <Button variant="outline-accent3 float-start" onClick={() => DescHandler(props.id)}>
                     {fullDesc ? 'Read Less' : 'Read more'}
                 </Button>
-                <Button variant="primary float-end">Get it</Button>
+                <Button variant="primary float-end" onClick={() => {
+                    router.push({
+                        pathname: '/card/[pid]',
+                        query: { pid: props.id },
+                    })
+                }}>Get it</Button>
             </Card.Body>
         </Card>
     )
