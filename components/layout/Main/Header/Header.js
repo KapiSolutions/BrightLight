@@ -6,8 +6,7 @@ import styles from '../../../../styles/layout/main/Header.module.scss'
 import { Button } from 'react-bootstrap'
 
 function Header(props) {
-    const cardsLight = '/img/cards-light.png';
-    const cardsDark = '/img/cards-dark.png';
+    const cardsIcon = '/img/cards-light.png';
 
     return (
         <div className={`${styles.container} landingBack `}>
@@ -21,7 +20,7 @@ function Header(props) {
                         <Button className={props.theme === 'light' ? styles.animatedBorderLight : styles.animatedBorderDark} variant='secondary' size='lg'>FIND IT OUT!</Button>
                     </Link>
                     <br /><br />
-                    <Image src={props.theme === 'light' ? cardsLight : cardsLight} width="100" height="100" alt='tarot cards' />
+                    <Image src={cardsIcon} width="100" height="100" alt='tarot cards' />
                 </div>
             </div>
         </div>

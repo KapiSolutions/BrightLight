@@ -44,9 +44,7 @@ function CardTarot(props) {
 
     return (
         <Card style={{ width: '18rem' }} className='background border shadow-sm' >
-            <Card.Img id={props.title} variant="top" className='imgOpacity' alt={props.title}
-            // style={{maskImage: 'linear-gradient(180deg, #000 60%, transparent)'}} 
-            />
+            <Card.Img id={props.title} variant="top" className='imgOpacity' alt={props.title} />
             <Card.Body >
                 <Card.Title className='color-primary'><strong>{props.title}</strong></Card.Title>
                 <Card.Text id={`text-${props.id}`} className={`${styles.cardText} color-primary`}>
