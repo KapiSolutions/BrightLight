@@ -5,7 +5,7 @@ import { Container, Alert, Row, Col } from 'react-bootstrap'
 import { RiAlertFill } from 'react-icons/ri'
 import { db } from '../../config/firebase'
 import { doc, getDoc, getDocs, collection } from "firebase/firestore"
-import TarotLotteryDesktop from '../../components/TarotLottery/TarotLotteryDesktop'
+import TarotLottery from '../../components/TarotLottery/TarotLottery'
 
 
 function CardPage(props) {
@@ -23,9 +23,8 @@ function CardPage(props) {
             <strong>Ups! </strong>
             {props.error}
           </Alert>
-
           :
-          <TarotLotteryDesktop id={router.query.pid} title={props.tarot.title} />
+          <TarotLottery id={router.query.pid} title={props.tarot.title} cardSet={props.tarot.cardSet} />
         }
       </Container>
     </>
@@ -37,20 +36,20 @@ export default CardPage
 
 export async function getStaticProps(context) {
   const pid = context.params.pid
-  let tarotCard = null
+  let tarotCards = null
   let error = ''
 
   const ref = doc(db, "tarot", pid)
   const docSnap = await getDoc(ref)
   if (docSnap.exists()) {
-    tarotCard = docSnap.data()
+    tarotCards = docSnap.data()
   } else {
     error = 'Error: card doesnt exist'
   }
 
   return {
     props: {
-      tarot: tarotCard,
+      tarot: tarotCards,
       error: error
     },
     revalidate: 60

@@ -50,10 +50,10 @@ function CardTarot(props) {
                 <Card.Text id={`text-${props.id}`} className={`${styles.cardText} color-primary`}>
                     {fullDesc ? props.desc : `${props.desc.substring(0, truncLength)}...`}
                 </Card.Text>
-                <Button variant="outline-accent3 float-start" onClick={() => DescHandler(props.id)}>
+                <Button variant="outline-accent3" className='float-start' onClick={() => DescHandler(props.id)}>
                     {fullDesc ? 'Read Less' : 'Read more'}
                 </Button>
-                <Button variant="primary float-end" onClick={() => {
+                <Button variant="primary" className='float-end' onClick={() => {
                     router.push({
                         pathname: '/card/[pid]',
                         query: { pid: props.id },

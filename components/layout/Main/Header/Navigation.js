@@ -7,7 +7,6 @@ import ChangeThemeButton from '../../../ChangeThemeButton'
 import { useAuth } from '../../../../context/AuthProvider'
 
 function Navigation(props) {
-  const router = useRouter();
   const { currentUser, logoutUser } = useAuth();
   const [error, setError] = useState('');
 
@@ -16,8 +15,6 @@ function Navigation(props) {
     menuClicked();
     try {
       await logoutUser();
-      // router.push('/');
-
     } catch (error) {
       setError('Failed to log out');
     }
@@ -27,8 +24,8 @@ function Navigation(props) {
     { id: 1, to: "/#main", text: "Home" },
     { id: 2, to: "/about#main", text: "About" },
     { id: 3, to: "/blog#main", text: "Blog" },
-    { id: 4, to: "#footer", text: "Contact" },
-    { id: 5, to: "/pricing", text: "Pricing" }
+    { id: 4, to: "#footer", text: "Contact" }
+    // { id: 5, to: "/pricing", text: "Pricing" }
     // { id: 6, to: "/sign-in", text: "Sign In" }
   ];
 
@@ -92,7 +89,6 @@ function Navigation(props) {
                   <Nav.Link onClick={menuClicked}>Sign In</Nav.Link>
                 </Link>
               }
-              {/* <Nav.Link>|</Nav.Link> */}
               <Nav.Link href="#" onClick={menuClicked}>
                 <ChangeThemeButton text={false} />
               </Nav.Link>

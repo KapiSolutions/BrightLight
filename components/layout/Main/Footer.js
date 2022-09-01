@@ -27,11 +27,13 @@ function Footer(props) {
                 </a>
               </Link>
 
-              
-                <p href="mailto:email@email.com" className='color-primary pointer' style={{ 'textDecoration': 'underline' }}>
+
+              <p>
+                <a href="mailto:brightlightgypsy@gmail.com" className='color-primary pointer' style={{ 'textDecoration': 'underline' }}>
                   brightlightgypsy@gmail.com
-                </p>
-             
+                </a>
+              </p>
+
 
               <Navbar variant={props.theme} className="justify-content-center">
                 <Nav>
