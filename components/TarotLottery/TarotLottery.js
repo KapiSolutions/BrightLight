@@ -8,6 +8,7 @@ import TarrotLotteryPayment from './TarrotLotteryPayment'
 function TarotLotteryDesktop(props) {
   const [flipCards, setFlipCards] = useState([])
   const [userCards, setUserCards] = useState([])
+  const [cardsSet, setcardsSet] = useState([])
 
   const cardBackUrl = '/img/cards/back.png'
   const cardsUrl = '/img/cards/'
@@ -43,41 +44,32 @@ function TarotLotteryDesktop(props) {
     }
     if (flipCards.length === props.cardSet && window.innerWidth >= 768) {
       document.getElementById('cardSetContainer').style.display = 'none'
+    } else if (flipCards.length === props.cardSet && window.innerWidth < 768) {
+      document.getElementById('cardMobile').style.display = 'none'
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flipCards])
 
-  //card lottery on Mobile and iPads
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (flipCards.length < props.cardSet) {
-        const img = document.getElementById('cardMobile')
-        const random = Math.floor(Math.random() * cardNames.length)
-        const cardName = cardNames[random]
-        img.setAttribute('src', `${cardsUrl}/${cardName}.png`)
-      }else{
-        document.getElementById('cardMobile').style.display = 'none'
-        clearInterval(interval)
-      }
-    }, 50);
-
-    return () => clearInterval(interval)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [flipCards]);
-
-  const cardsArr = []
-  for (let i = 0; i < 78; i++) {
-    cardsArr[i] = i
-  }
-
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+    const cardsArr = []
+    for (let i = 0; i < 78; i++) {
+      cardsArr[i] = i
     }
-    return array
-  }
-  const cardsSet = shuffle(cardsArr);
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array
+    }
+    const cards = shuffle(cardsArr)
+    setcardsSet(cards)
+
+  }, [])
+
+
 
   return (
     <>
@@ -102,19 +94,19 @@ function TarotLotteryDesktop(props) {
       </Row>
 
       <Row className="d-flex ms-5 me-5 justify-content-center ">
-        {(flipCards.length === 0) && <p className='color-primary'>Focus deeply on your question and <strong>choose {props.cardSet} cards</strong></p>}
+        {(flipCards.length === 0) && <p className='color-primary'>Focus deeply on your question and {(window.innerWidth < 768) && 'TAP below to'} <strong>choose {props.cardSet} cards</strong></p>}
         {(flipCards.length > 0 && flipCards.length < props.cardSet - 1) && <p className='color-primary'><strong>Okay, {props.cardSet - flipCards.length} more left..</strong></p>}
         {(flipCards.length == props.cardSet - 1) && <p className='color-primary'><strong>And the last one.</strong></p>}
 
         {(window.innerWidth < 768) ?
-          <div>
-            <Card.Img id='cardMobile' src={cardBackUrl} variant="top" alt={`tarot-card`} 
-            onClick={() => {
-              const random = Math.floor(Math.random() * cardsSet.length)
-              const card = cardsSet[random]
-              cardsSet.splice(random, 1) //remove card from array
-              setFlipCards([...flipCards, card])
-            }} />
+          <div id='cardMobile'>
+            <Image src='/img/cardsMobileLottery.gif' alt={`tarot-card`} width='176' height='300'
+              onClick={() => {
+                const random = Math.floor(Math.random() * cardsSet.length)
+                const card = cardsSet[random]
+                cardsSet.splice(random, 1) //remove card from array
+                setFlipCards(prev => [...prev, card])
+              }} />
           </div>
           :
           <div id='cardSetContainer' className={`${styles.cardsContainer}  justify-content-center`}>
