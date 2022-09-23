@@ -1,112 +1,154 @@
-import React, { useContext, useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
-import { auth, db } from '../config/firebase'
-import { doc, setDoc } from 'firebase/firestore';
+import React, { useContext, useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import { auth } from "../config/firebase";
+import { createUserFirestore } from "../firebase/Firestore";
+
 import {
-    createUserWithEmailAndPassword,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    sendPasswordResetEmail,
-    updateEmail,
-    updatePassword,
-    GoogleAuthProvider,
-    signInWithPopup
-} from 'firebase/auth'
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  updateEmail,
+  updatePassword,
+  FacebookAuthProvider,
+  GoogleAuthProvider,
+  TwitterAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 
 const AuthContext = React.createContext();
 
 export function useAuth() {
-    return useContext(AuthContext)
+  return useContext(AuthContext);
 }
 
 function AuthProvider({ children }) {
-    const router = useRouter();
-    const [currentUser, setCurrentUser] = useState()
-    const [loading, setLoading] = useState(true)
-    const GoogleProvider = new GoogleAuthProvider();
+  const router = useRouter();
+  const [currentUser, setCurrentUser] = useState();
+  const [loading, setLoading] = useState(true);
+  const GoogleProvider = new GoogleAuthProvider();
+  const FacebookProvider = new FacebookAuthProvider();
+  const TwitterProvider = new TwitterAuthProvider();
+  //   GoogleProvider.addScope('https://www.googleapis.com/auth/user.birthday.read');
+  //   FacebookProvider.addScope("user_birthday");
 
-    function registerUser(email, password) {
-        return createUserWithEmailAndPassword(auth, email, password).then(res => {
-            setDoc(doc(db, 'users',res.user.uid), {
-                email: email,
-                name: '',
-                lastName: ''
-            })
-        })
-    }
-    function loginUser(email, password) {
-        return signInWithEmailAndPassword(auth, email, password)
-    }
-    function logoutUser() {
-        return auth.signOut()
-    }
-    function resetPassword(email) {
-        return sendPasswordResetEmail(auth, email)
-    }
-    function changeEmail(email) {
-        return updateEmail(auth.currentUser, email)
-    }
-    function changePassword(password) {
-        return updatePassword(auth.currentUser, password)
-    }
-    function isAuthenticated() {
-        return !!currentUser ? true : false
-    }
+  function registerUser(email, password, name, age) {
+    return createUserWithEmailAndPassword(auth, email, password).then((res) => {
+      createUserFirestore(res.user.uid, name, "", email, age);
+    });
+  }
+  function loginUser(email, password) {
+    return signInWithEmailAndPassword(auth, email, password);
+  }
+  function logoutUser() {
+    return auth.signOut();
+  }
+  function resetPassword(email) {
+    return sendPasswordResetEmail(auth, email);
+  }
+  function changeEmail(email) {
+    return updateEmail(auth.currentUser, email);
+  }
+  function changePassword(password) {
+    return updatePassword(auth.currentUser, password);
+  }
+  function isAuthenticated() {
+    return !!currentUser ? true : false;
+  }
 
-    function loginWithGoogle() {
-        signInWithPopup(auth, GoogleProvider)
-            .then((res) => {
-                setDoc(doc(db, 'users',res.user.uid), {
-                    email: res.user.email,
-                    name: '',
-                    lastName: ''
-                })
-                router.push('/')
-                // This gives you a Google Access Token. You can use it to access the Google API.
-               //const credential = GoogleAuthProvider.credentialFromResult(res)
-                //const token = credential?.accessToken
-                // The signed-in user info.
-                //const user = res.user
-                // console.log({ credential, token, user });
-            })
-            .catch((error) => {
-                // Handle Errors here.
-                const errorCode = error.code
-                const errorMessage = error.message
-                // The email of the user's account used.
-                const email = error.email
-                // The AuthCredential type that was used.
-                const credential = GoogleAuthProvider.credentialFromError(error)
-                // console.log({ errorCode, errorMessage, email, credential });
-            });
-    };
+  function loginWithGoogle() {
+    signInWithPopup(auth, GoogleProvider)
+      .then((res) => {
+        const uid = res.user.uid;
+        const userName = res.user.displayName.split(" ")[0];
+        const lastName = res.user.displayName.split(" ")[1];
+        const email = res.user.email;
+        createUserFirestore(uid, userName, lastName, email, "");
+        router.push("/");
+        // const credential = GoogleAuthProvider.credentialFromResult(res);
+        // const token = credential?.accessToken;
+        // const user = res.user;
+        // console.log({ credential, token, user });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        const email = error.email;
+        const credential = GoogleAuthProvider.credentialFromError(error);
+        // console.log({ errorCode, errorMessage, email, credential });
+      });
+  }
 
-    //Menage users login/out states
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setCurrentUser(user)
-            setLoading(false)
-        })
-        return unsubscribe
-    }, [])
+  function loginWithFacebook() {
+    signInWithPopup(auth, FacebookProvider)
+      .then((res) => {
+        const uid = res.user.uid;
+        const userName = res.user.displayName.split(" ")[0];
+        const lastName = res.user.displayName.split(" ")[1];
+        const email = res.user.email;
+        createUserFirestore(uid, userName, lastName, email, "");
+        router.push("/");
+        // const user = res.user;
+        // const credential = FacebookAuthProvider.credentialFromResult(rressult);
+        // const accessToken = credential.accessToken;
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        const email = error.customData.email;
+        const credential = FacebookAuthProvider.credentialFromError(error);
+      });
+  }
 
-    const value = {
-        currentUser,
-        registerUser,
-        loginUser,
-        loginWithGoogle,
-        logoutUser,
-        resetPassword,
-        changeEmail,
-        changePassword,
-        isAuthenticated
-    }
+  function loginWithTwitter() {
+    signInWithPopup(auth, TwitterProvider)
+      .then((res) => {
+        const uid = res.user.uid;
+        const userName = res.user.displayName.split(" ")[0];
+        const lastName = res.user.displayName.split(" ")[1];
+        const email = res.user.email;
+        createUserFirestore(uid, userName, lastName, email, "");
+        router.push("/");
 
-    return (
-        <AuthContext.Provider value={value}>
-            {!loading && children}
-        </AuthContext.Provider>
-    )
+        // const credential = TwitterAuthProvider.credentialFromResult(res);
+        // const token = credential.accessToken;
+        // const secret = credential.secret;
+        const user = res.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        const email = error.customData.email;
+        const credential = TwitterAuthProvider.credentialFromError(error);
+        console.log(error)
+      });
+  }
+
+  //Menage users login/out states
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  const value = {
+    currentUser,
+    registerUser,
+    loginUser,
+    loginWithFacebook,
+    loginWithGoogle,
+    loginWithTwitter,
+    logoutUser,
+    resetPassword,
+    changeEmail,
+    changePassword,
+    isAuthenticated,
+  };
+
+  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 }
 
-export default AuthProvider
+export default AuthProvider;

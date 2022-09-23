@@ -37,13 +37,13 @@ function Footer(props) {
 
               <Navbar variant={props.theme} className="justify-content-center">
                 <Nav>
-                  <Link href='/' passHref>
+                  <Link href='/cookies-policy#main' passHref>
                     <Nav.Link>Cookies Policy</Nav.Link>
                   </Link>
-                  <Link href='/' passHref>
-                    <Nav.Link>Legal Terms</Nav.Link>
+                  <Link href='/terms-of-service#main' passHref>
+                    <Nav.Link>Terms of service</Nav.Link>
                   </Link>
-                  <Link href='/' passHref>
+                  <Link href='/privacy-policy#main' passHref>
                     <Nav.Link>Privacy Policy</Nav.Link>
                   </Link>
                 </Nav>

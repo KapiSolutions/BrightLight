@@ -45,7 +45,7 @@ function CardTarot(props) {
     return (
         <Card style={{ width: '18rem' }} className='background border shadow-sm' >
             <Card.Img id={props.title} variant="top" className='imgOpacity' alt={props.title} />
-            <Card.Body >
+            <Card.Body>
                 <Card.Title className='color-primary'><strong>{props.title}</strong></Card.Title>
                 <Card.Text id={`text-${props.id}`} className={`${styles.cardText} color-primary`}>
                     {fullDesc ? props.desc : `${props.desc.substring(0, truncLength)}...`}
@@ -57,6 +57,7 @@ function CardTarot(props) {
                     router.push({
                         pathname: '/card/[pid]',
                         query: { pid: props.id },
+                        hash: 'main'
                     })
                 }}>Get it</Button>
             </Card.Body>
