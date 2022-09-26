@@ -1,16 +1,20 @@
-import React from 'react'
-import Link from 'next/link'
-import Head from 'next/head'
-import { VscArrowLeft } from 'react-icons/vsc';
-import { SSRProvider, Container, Button } from 'react-bootstrap';
-import styles from '../../../styles/layout/sign/Sign.module.scss'
-import useLocalStorageState from 'use-local-storage-state'
+import React from "react";
+import { useRouter } from "next/router";
+import Head from "next/head";
+import { IoReturnDownBack } from "react-icons/io5";
+import { SSRProvider } from "react-bootstrap";
+import styles from "../../../styles/layout/sign/Sign.module.scss";
+import useLocalStorageState from "use-local-storage-state";
+import { useDeviceStore } from "../../../stores/deviceStore";
 
 function LayoutSign({ children }) {
-  const [theme, setTheme] = useLocalStorageState('theme', {
+  const router = useRouter();
+  const isMobile = useDeviceStore((state) => state.isMobile);
+  const [theme, setTheme] = useLocalStorageState("theme", {
     ssr: true,
-    defaultValue: 'light'
-  })
+    defaultValue: "light",
+  });
+
   return (
     <>
       <Head>
@@ -19,23 +23,18 @@ function LayoutSign({ children }) {
       <SSRProvider>
         <div className={theme}>
           <div className={styles.container}>
-
-            {/* <div className={`${styles.backButton} text-center`}>
-              <Link href='/' passHref>
-                <Button className='btn-sm' variant={theme === 'light' ? 'outline-dark' : 'outline-light'}>
-                  <VscArrowLeft style={{ width: '20px', height: '20px', marginBottom: '3px' }} />
-                  Back
-                </Button>
-              </Link>
-            </div> */}
+            {isMobile && (
+              <div className={`${styles.backButton} pointer background`} onClick={() => router.back()}>
+                <IoReturnDownBack style={{ width: "40px", height: "40px" }} className="color-primary" />
+              </div>
+            )}
 
             {children}
-
           </div>
         </div>
       </SSRProvider>
     </>
-  )
+  );
 }
 
-export default LayoutSign
+export default LayoutSign;

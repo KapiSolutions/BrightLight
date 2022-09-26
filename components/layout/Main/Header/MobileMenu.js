@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "../../../../styles/layout/main/Navbar.module.scss";
-import { Navbar, Nav, Container, Alert, Offcanvas } from "react-bootstrap";
+import { Navbar, Nav, Container, Alert, Offcanvas, Badge } from "react-bootstrap";
 import ChangeThemeButton from "../../../ChangeThemeButton";
 import { useAuth } from "../../../../context/AuthProvider";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { RiAlertFill } from "react-icons/ri";
+import { BsCart4 } from "react-icons/bs";
+import { IoBagCheckOutline } from "react-icons/io5";
 
 function MobileMenu(props) {
   const { currentUser, logoutUser } = useAuth();
@@ -19,13 +21,13 @@ function MobileMenu(props) {
 
   async function handleLogout() {
     setError("");
-    // menuClicked();
     try {
       await logoutUser();
     } catch (error) {
       setError("Failed to log out");
     }
   }
+  async function handleCheckout() {}
 
   //show/hide background of the menu on mobile devices
   const menuClicked = () => {
@@ -56,7 +58,7 @@ function MobileMenu(props) {
           collapseOnSelect
           expand="md"
           variant={props.theme}
-          className={`display-1 ${back ? "fs-5 shadow-sm background" : "fs-5"}`}
+          className={`display-1 pt-1 pb-1 ${back ? "fs-5 shadow-sm background" : "fs-5"}`}
           fixed="top"
         >
           <Container className="d-flex">
@@ -68,21 +70,18 @@ function MobileMenu(props) {
 
             {currentUser && (
               <>
-                <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 ms-auto me-2">
-                  <Navbar.Toggle aria-controls="top-navbar2">
+                <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 ms-auto me-2 ">
+                  <Navbar.Toggle aria-controls="profile-nav">
                     <FaRegUserCircle className={`${styles.mobileIcons} color-primary`} />
                   </Navbar.Toggle>
                   <Navbar.Offcanvas
-                    id="top-navbar2"
-                    aria-labelledby="top-navbar2"
+                    id="profile-nav"
+                    aria-labelledby="profile-nav"
                     placement="top"
                     style={{ background: offCanvBackColor }}
                   >
-                    <Offcanvas.Header
-                      closeButton
-                      closeVariant={props.theme === "light" ? undefined : "white"}
-                    >
-                      <Offcanvas.Title id="top-navbar2-title">
+                    <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
+                      <Offcanvas.Title id="profile-nav-offcanvas">
                         <a className={`text-${revTheme}`}>Hi {currentUser.displayName}!</a>
                       </Offcanvas.Title>
                     </Offcanvas.Header>
@@ -91,9 +90,9 @@ function MobileMenu(props) {
                         <Link href="/#" passHref>
                           <Nav.Link className={`text-${revTheme}`}>Profile</Nav.Link>
                         </Link>
-                        <Link href="/#" passHref>
-                          <Nav.Link className={`text-${revTheme}`}>Shopping cart</Nav.Link>
-                        </Link>
+                        {/* <Link href="/#" passHref>
+                          <Nav.Link className={`text-${revTheme}`}>Messages</Nav.Link>
+                        </Link> */}
                         <Link href="/#" passHref>
                           <Nav.Link className={`text-${revTheme}`}>My orders</Nav.Link>
                         </Link>
@@ -104,6 +103,42 @@ function MobileMenu(props) {
                         >
                           <FiLogOut className={`${styles.icons} color-primary me-1`} title="Log Out" />
                           Log Out
+                        </Nav.Link>
+                      </Nav>
+                    </Offcanvas.Body>
+                  </Navbar.Offcanvas>
+                </Navbar>
+
+                <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 me-2">
+                  <Navbar.Toggle aria-controls="cart-nav">
+                    <BsCart4 className={`${styles.mobileIcons} color-primary`} />
+                    <div style={{ position: "absolute", top: "25px", left: "36px" }}>
+                      <small>
+                        <Badge bg="danger">2</Badge>
+                      </small>
+                    </div>
+                  </Navbar.Toggle>
+                  <Navbar.Offcanvas
+                    id="cart-nav"
+                    aria-labelledby="cart-nav"
+                    placement="top"
+                    style={{ background: offCanvBackColor }}
+                  >
+                    <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
+                      <Offcanvas.Title id="cart-nav-offcanvas">
+                        <a className={`text-${revTheme}`}>Cart</a>
+                      </Offcanvas.Title>
+                    </Offcanvas.Header>
+                    <Offcanvas.Body>
+                      <Nav className="ms-auto">
+                        <p className={`text-${revTheme}`}>Items..</p>
+                        <hr/>
+                        <Nav.Link
+                          onClick={handleCheckout}
+                          className={`text-${props.theme === "light" ? "dark" : "light"}`}
+                        >
+                          <IoBagCheckOutline className={`${styles.icons} color-primary me-1`} title="Checkout" />
+                          Checkout
                         </Nav.Link>
                       </Nav>
                     </Offcanvas.Body>

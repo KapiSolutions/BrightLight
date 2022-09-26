@@ -12,11 +12,10 @@ function ForgotPassword() {
   return (
     <>
     <Head>
-      <title>BrightLight | Sign In</title>
+      <title>BrightLight | Forgot password?</title>
     </Head>
     
     <ForgotPasswordForm theme={theme} />
-    
   </>
   )
 }

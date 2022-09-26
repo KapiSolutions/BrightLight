@@ -4,8 +4,10 @@ import ReactCardFlip from 'react-card-flip'
 import { Row, Col, Card } from 'react-bootstrap'
 import styles from '../../styles/components/TarotLotteryDesktop.module.scss'
 import TarrotLotteryPayment from './TarrotLotteryPayment'
+import { useDeviceStore } from "../../stores/deviceStore"
 
 function TarotLotteryDesktop(props) {
+  const isMobile = useDeviceStore((state) => state.isMobile)
   const [flipCards, setFlipCards] = useState([])
   const [userCards, setUserCards] = useState([])
   const [cardsSet, setcardsSet] = useState([])
@@ -38,13 +40,13 @@ function TarotLotteryDesktop(props) {
       img.setAttribute('src', `${cardsUrl}/${cardName}.png`)
       setUserCards(prev => [...prev, cardName])
 
-      if (window.innerWidth >= 768) {
+      if (!isMobile) {
         document.getElementById(cardNo).style.display = 'none'
       }
     }
-    if (flipCards.length === props.cardSet && window.innerWidth >= 768) {
+    if (flipCards.length === props.cardSet && !isMobile) {
       document.getElementById('cardSetContainer').style.display = 'none'
-    } else if (flipCards.length === props.cardSet && window.innerWidth < 768) {
+    } else if (flipCards.length === props.cardSet && isMobile) {
       document.getElementById('cardMobile').style.display = 'none'
     }
 

@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { Container, Form, Button, Alert, FloatingLabel, Spinner, InputGroup } from "react-bootstrap";
 import { FaFacebookF, FaGoogle, FaTwitter, FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 import { RiAlertFill } from "react-icons/ri";
 import { useAuth } from "../context/AuthProvider";
 
-function RegisterForm(props) {
-  const [isMobile, setMobile] = useState(false);
+function RegisterForm() {
   const router = useRouter();
   const nameRef = useRef();
   const bdateRef = useRef();
@@ -26,7 +26,12 @@ function RegisterForm(props) {
     try {
       setLoading(true);
       setError("");
-      await registerUser(emailRef.current.value, passwordRef.current.value, nameRef.current.value, bdateRef.current.value);
+      await registerUser(
+        emailRef.current.value,
+        passwordRef.current.value,
+        nameRef.current.value,
+        bdateRef.current.value
+      );
       router.push("/");
     } catch (error) {
       setLoading(false);
@@ -38,14 +43,6 @@ function RegisterForm(props) {
       return setError("Failed to register user: " + error.message);
     }
   }
-
-  useEffect(() => {
-    if (window.innerWidth < 768) {
-      setMobile(true);
-    } else {
-      setMobile(false);
-    }
-  }, []);
 
   const showHidePass = (e) => {
     e.preventDefault();
@@ -59,9 +56,9 @@ function RegisterForm(props) {
         <h1 className="text-center mt-2 mb-3">Let&apos;s Start!</h1>
         <p className="text-center mb-3">Sign up with</p>
         <div className="d-flex justify-content-evenly align-content-center mb-4 ">
-          <FaFacebookF className="pointer zoom" onClick={loginWithFacebook}/>
-          <FaGoogle className="pointer zoom" onClick={loginWithGoogle}/>
-          <FaTwitter className="pointer zoom" onClick={loginWithTwitter}/>
+          <FaFacebookF className="pointer zoom" onClick={loginWithFacebook} />
+          <FaGoogle className="pointer zoom" onClick={loginWithGoogle} />
+          <FaTwitter className="pointer zoom" onClick={loginWithTwitter} />
         </div>
 
         <div className="hrDivider text-center">
@@ -85,7 +82,7 @@ function RegisterForm(props) {
               type="date"
               placeholder="Birth date"
               ref={bdateRef}
-              min='1920-01-01'
+              min="1920-01-01"
               max={new Date().toLocaleDateString("en-ca")}
               required
             />
@@ -119,6 +116,10 @@ function RegisterForm(props) {
             )}
           </Button>
         </Form>
+        <div className="w-100 text-center mt-1">
+          Already have an account?
+          <Link href="/sign-in"> Sign In!</Link>
+        </div>
       </section>
     </Container>
   );

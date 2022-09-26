@@ -8,11 +8,10 @@
 
 .backButton {
     position:fixed;
-    top: 1.75rem;
-    left: 1.75rem;
-    opacity: 0.75;
-}
-.backButton:hover {
-    opacity: 1;
+    top: 12px;
+    left: 20px;
+    padding: 2px;
+    border-radius: 50%;
+    // opacity: 0.6;
 }
 

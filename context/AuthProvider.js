@@ -32,7 +32,7 @@ function AuthProvider({ children }) {
   //   GoogleProvider.addScope('https://www.googleapis.com/auth/user.birthday.read');
   //   FacebookProvider.addScope("user_birthday");
 
-  function registerUser(email, password, name, age) {
+  async function registerUser(email, password, name, age) {
     return createUserWithEmailAndPassword(auth, email, password).then((res) => {
       createUserFirestore(res.user.uid, name, "", email, age);
     });
@@ -109,12 +109,11 @@ function AuthProvider({ children }) {
         const email = res.user.email;
         createUserFirestore(uid, userName, lastName, email, "");
         router.push("/");
-
         // const credential = TwitterAuthProvider.credentialFromResult(res);
         // const token = credential.accessToken;
         // const secret = credential.secret;
-        const user = res.user;
-        console.log(user);
+        // const user = res.user;
+        // console.log(user);
       })
       .catch((error) => {
         const errorCode = error.code;

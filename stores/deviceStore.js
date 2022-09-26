@@ -1,9 +1,8 @@
 import create from 'zustand'
 
-export const useThemeStore = create((set) => ({
-  theme: 'light',
-  updateTheme: (theme) => set({ theme: theme }),
-  log: (theme) => console.log(theme),
+export const useDeviceStore = create((set) => ({
+  isMobile: false,
+  setMobile: (state) => set({ isMobile: state }),
 }))
 
 //     import { useThemeStore} from '../stores/themeStore'

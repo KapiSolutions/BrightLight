@@ -1,30 +1,34 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "../../../../styles/layout/main/Navbar.module.scss";
-import { Navbar, Nav, Container, Dropdown, Alert } from "react-bootstrap";
+import { Navbar, Nav, Container, Dropdown, Alert, Badge, Offcanvas } from "react-bootstrap";
 import ChangeThemeButton from "../../../ChangeThemeButton";
 import { useAuth } from "../../../../context/AuthProvider";
 import { FaRegUserCircle } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { RiAlertFill } from "react-icons/ri";
 import { BsCart4 } from "react-icons/bs";
+import { IoBagCheckOutline } from "react-icons/io5";
 
 function DesktopMenu(props) {
   const { currentUser, logoutUser } = useAuth();
   const [error, setError] = useState("");
   const [back, setBack] = useState(false);
   const [onTop, setOnTop] = useState(true);
-  const [expandedMenu, setExpand] = useState(false);
+  const [showCart, setShowCart] = useState(false);
+  const revTheme = props.theme === "light" ? "dark" : "light";
+  const offCanvBackColor = props.theme === "light" ? "#fcfcfb" : "#11061a";
 
   async function handleLogout() {
     setError("");
-    // menuClicked();
     try {
       await logoutUser();
     } catch (error) {
       setError("Failed to log out");
     }
   }
+
+  async function handleCheckout() {}
 
   //show/hide background of the menu on scroll
   window.onscroll = () => {
@@ -81,9 +85,6 @@ function DesktopMenu(props) {
                           <Dropdown.Item>Profile</Dropdown.Item>
                         </Link>
                         <Link href="/#" passHref>
-                          <Dropdown.Item>Shopping cart</Dropdown.Item>
-                        </Link>
-                        <Link href="/#" passHref>
                           <Dropdown.Item>My orders</Dropdown.Item>
                         </Link>
                         <Dropdown.Divider />
@@ -93,11 +94,13 @@ function DesktopMenu(props) {
                         </Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown>
-                    <Link href="#" passHref>
-                      <Nav.Link className={back && "mt-1"}>
-                        <BsCart4 className={`${styles.mobileIcons} color-primary ${styles.hover}`} />
-                      </Nav.Link>
-                    </Link>
+
+                    <Nav.Link className={back && "mt-1"} onClick={() => setShowCart(true)}>
+                      <BsCart4 className={`${styles.cartIconDesktop} color-primary ${styles.hover}`} />
+                      <small>
+                        <Badge bg="danger">2</Badge>
+                      </small>
+                    </Nav.Link>
                   </Container>
                 ) : (
                   <Link href="/sign-in" passHref>
@@ -112,6 +115,25 @@ function DesktopMenu(props) {
           </Container>
         </Navbar>
       </nav>
+
+      <Offcanvas
+        show={showCart}
+        placement="end"
+        onHide={() => setShowCart(false)}
+        style={{ background: offCanvBackColor }}
+      >
+        <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
+          <Offcanvas.Title className={`text-${revTheme}`}>Cart</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body className={`text-${revTheme}`}>
+          Items..
+          <hr/>
+          <div onClick={handleCheckout} className={`text-${props.theme === "light" ? "dark" : "light"} mt-2`}>
+            <IoBagCheckOutline className={`${styles.icons} color-primary me-1`} title="Checkout" />
+            Checkout
+          </div>
+        </Offcanvas.Body>
+      </Offcanvas>
 
       {error && (
         <div className={styles.darkBack}>

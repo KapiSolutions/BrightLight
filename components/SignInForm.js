@@ -6,17 +6,17 @@ import { Container, Form, Button, Alert, FloatingLabel, Row, Col, Spinner, Input
 import { FaFacebookF, FaGoogle, FaTwitter, FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 import { RiAlertFill } from "react-icons/ri";
 import { useAuth } from "../context/AuthProvider";
+import { useDeviceStore } from "../stores/deviceStore"
 
 function SignInForm(props) {
   const router = useRouter();
   const emailRef = useRef();
   const passwordRef = useRef();
-  const [isMobile, setMobile] = useState(false);
   const { loginUser, loginWithGoogle, loginWithFacebook, loginWithTwitter } = useAuth();
-  
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); //to disable the submit button after clicked and wait for submit response
   const [inputType, setInputType] = useState("password");
+  const isMobile = useDeviceStore((state) => state.isMobile)
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -39,14 +39,6 @@ function SignInForm(props) {
       return setError("Failed to log in: " + error.message);
     }
   }
-
-  useEffect(() => {
-    if (window.innerWidth < 768) {
-      setMobile(true);
-    } else {
-      setMobile(false);
-    }
-  }, []);
 
   const showHidePass = (e) => {
     e.preventDefault();
