@@ -32,12 +32,11 @@ function RegisterForm() {
         nameRef.current.value,
         bdateRef.current.value
       );
-      router.push("/");
     } catch (error) {
       setLoading(false);
 
       if (error.message.includes("email-already-in-use")) {
-        return setError("Failed to log in: email already in use.");
+        return setError("Failed to register user: email already in use.");
       }
 
       return setError("Failed to register user: " + error.message);

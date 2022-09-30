@@ -11,7 +11,7 @@ import { BsCart4 } from "react-icons/bs";
 import { IoBagCheckOutline } from "react-icons/io5";
 
 function MobileMenu(props) {
-  const { currentUser, logoutUser } = useAuth();
+  const { authUserFirestore, logoutUser } = useAuth();
   const [error, setError] = useState("");
   const [back, setBack] = useState(false);
   const [onTop, setOnTop] = useState(true);
@@ -68,9 +68,9 @@ function MobileMenu(props) {
               </Navbar.Brand>
             </Link>
 
-            {currentUser && (
+            {authUserFirestore && (
               <>
-                <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 ms-auto me-2 ">
+                <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 ms-auto me-3 ">
                   <Navbar.Toggle aria-controls="profile-nav">
                     <FaRegUserCircle className={`${styles.mobileIcons} color-primary`} />
                   </Navbar.Toggle>
@@ -82,12 +82,12 @@ function MobileMenu(props) {
                   >
                     <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
                       <Offcanvas.Title id="profile-nav-offcanvas">
-                        <a className={`text-${revTheme}`}>Hi {currentUser.displayName}!</a>
+                        <a className={`text-${revTheme}`}>Hi {authUserFirestore.name}!</a>
                       </Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
                       <Nav className="ms-auto">
-                        <Link href="/#" passHref>
+                        <Link href="/user-profile#main" passHref>
                           <Nav.Link className={`text-${revTheme}`}>Profile</Nav.Link>
                         </Link>
                         {/* <Link href="/#" passHref>
@@ -109,7 +109,7 @@ function MobileMenu(props) {
                   </Navbar.Offcanvas>
                 </Navbar>
 
-                <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 me-2">
+                <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 me-3">
                   <Navbar.Toggle aria-controls="cart-nav">
                     <BsCart4 className={`${styles.mobileIcons} color-primary`} />
                     <div style={{ position: "absolute", top: "25px", left: "36px" }}>
@@ -132,12 +132,12 @@ function MobileMenu(props) {
                     <Offcanvas.Body>
                       <Nav className="ms-auto">
                         <p className={`text-${revTheme}`}>Items..</p>
-                        <hr/>
+                        <hr className={`text-${revTheme}`}/>
                         <Nav.Link
                           onClick={handleCheckout}
                           className={`text-${props.theme === "light" ? "dark" : "light"}`}
                         >
-                          <IoBagCheckOutline className={`${styles.icons} color-primary me-1`} title="Checkout" />
+                          <IoBagCheckOutline className={`${styles.icons} color-primary me-1 mb-1`} title="Checkout" />
                           Checkout
                         </Nav.Link>
                       </Nav>
@@ -155,7 +155,7 @@ function MobileMenu(props) {
                     <Nav.Link onClick={menuClicked}>{item.text}</Nav.Link>
                   </Link>
                 ))}
-                {currentUser ? (
+                {authUserFirestore ? (
                   ""
                 ) : (
                   <Link href="/sign-in" passHref>

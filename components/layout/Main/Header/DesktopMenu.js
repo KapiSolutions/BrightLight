@@ -11,7 +11,7 @@ import { BsCart4 } from "react-icons/bs";
 import { IoBagCheckOutline } from "react-icons/io5";
 
 function DesktopMenu(props) {
-  const { currentUser, logoutUser } = useAuth();
+  const { authUserFirestore, logoutUser } = useAuth();
   const [error, setError] = useState("");
   const [back, setBack] = useState(false);
   const [onTop, setOnTop] = useState(true);
@@ -66,7 +66,7 @@ function DesktopMenu(props) {
                   </Link>
                 ))}
 
-                {currentUser ? (
+                {authUserFirestore ? (
                   <Container className="d-flex ">
                     <div className="vr m-2 color-primary"></div>
                     <Dropdown title="My account">
@@ -76,12 +76,12 @@ function DesktopMenu(props) {
                         className={`color-primary mt-1 fs-6 ${styles.hover}`}
                         id="dropdown-user"
                       >
-                        <a>Hi Dear! </a>
+                        <a>Hi {authUserFirestore?.name}! </a>
                         <FaRegUserCircle className={`${styles.icons} color-primary `} />
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu variant={props.theme} className="background mt-2">
-                        <Link href="/#" passHref>
+                        <Link href="/user-profile#main" passHref>
                           <Dropdown.Item>Profile</Dropdown.Item>
                         </Link>
                         <Link href="/#" passHref>
@@ -127,9 +127,9 @@ function DesktopMenu(props) {
         </Offcanvas.Header>
         <Offcanvas.Body className={`text-${revTheme}`}>
           Items..
-          <hr/>
+          <hr className={`text-${revTheme}`}/>
           <div onClick={handleCheckout} className={`text-${props.theme === "light" ? "dark" : "light"} mt-2`}>
-            <IoBagCheckOutline className={`${styles.icons} color-primary me-1`} title="Checkout" />
+            <IoBagCheckOutline className={`${styles.icons} color-primary me-1 mb-1`} title="Checkout" />
             Checkout
           </div>
         </Offcanvas.Body>

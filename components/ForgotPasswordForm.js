@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Container, Form, Button, Alert, FloatingLabel, Row, Col, Spinner, InputGroup } from "react-bootstrap";
+import { Container, Form, Button, Alert, FloatingLabel, Row, Col, Spinner } from "react-bootstrap";
 import { RiAlertFill } from "react-icons/ri";
 import { GiAce } from "react-icons/gi";
 import { useAuth } from "../context/AuthProvider";

@@ -8,7 +8,7 @@ function TermsOfService() {
       <Head>
         <title>BrightLight | Terms of Service</title>
       </Head>
-      <Container className="justify-content-center text-center">
+      <Container className="justify-content-center text-center mt-5">
         <h1 className="color-primary">Terms of Service</h1>
         <p className="color-primary">Coming soon. Site still in the developer version.</p>
       </Container>
