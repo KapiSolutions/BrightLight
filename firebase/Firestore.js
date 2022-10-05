@@ -12,7 +12,7 @@ const getUserDataFirestore = async (uid) => {
   }
 };
 
-const createUserFirestore = async (uid, name, lastName, email, age, provider) => {
+const createUserFirestore = async (uid, name, lastName, email, age, provider, cart) => {
   const userData = {
     name: name,
     lastName: lastName,
@@ -20,13 +20,13 @@ const createUserFirestore = async (uid, name, lastName, email, age, provider) =>
     email: email,
     role: "user",
     signProvider: provider,
-    cart: [],
+    cart: cart,
   };
   try {
     await setDoc(doc(db, "users", uid), userData);
     return userData;
   } catch (err) {
-    console.error(err);
+    console.error('createUserFirestore Err: ',err);
     throw err;
   }
 };

@@ -1,18 +1,37 @@
+@use "../abstracts/variables" as *;
+
 .cardsContainer {
     display: flex;
     flex-wrap: wrap;
-    margin-right:30px;
-}
-.smallCard {
-display:block;
-// border: 1px solid black;
-width:60px;
-margin-right:-40px;
-padding: 15px 10px 10px 0;
-opacity: 0.9;
-&:hover{
-    padding: 0 10px 0 0;
-    opacity: 1;
-}
+    margin-right: 30px;
 }
 
+.smallCard {
+    display: block;
+    // border: 1px solid black;
+    width: 60px;
+    margin-right: -40px;
+    padding: 15px 10px 10px 0;
+    opacity: 0.9;
+
+    &:hover {
+        padding: 0 10px 0 0;
+        opacity: 1;
+    }
+}
+
+.animatedBorderLight {
+    animation: version-highlighter-animation 2s infinite cubic-bezier(0.25, 0.5, 0.9, 2);
+    box-shadow: 0 0 0 0 rgba($color-secondary, 0.3);
+}
+
+.animatedBorderDark {
+    animation: version-highlighter-animation 2s infinite cubic-bezier(0.25, 0.5, 0.9, 2);
+    box-shadow: 0 0 0 0 rgba($color-secondary, 0.9);
+}
+
+@keyframes version-highlighter-animation {
+    to {
+        box-shadow: 0 0 0 15px rgba(93, 236, 170, 0);
+    }
+}

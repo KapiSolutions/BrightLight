@@ -17,31 +17,8 @@ function CardTarot(props) {
       img.setAttribute("src", url);
     })
     .catch((error) => {
-      switch (error.code) {
-        case "storage/object-not-found":
-          console.log("File doesnt exist");
-          break;
-        case "storage/unauthorized":
-          console.log("User doesnt have permission to access the object");
-          break;
-        case "storage/canceled":
-          console.log("User canceled the upload");
-          break;
-        case "storage/unknown":
-          console.log("Unknown error occurred, inspect the server response");
-          break;
-      }
+
     });
-
-  function DescHandler(id) {
-    if (!fullDesc) {
-      document.getElementById(`text-${id}`).style.maskImage = "none";
-    } else {
-      document.getElementById(`text-${id}`).style.maskImage = "linear-gradient(180deg, #000 85%, transparent)";
-    }
-    setfullDesc(!fullDesc);
-  }
-
   return (
     <Card style={{ width: "18rem" }} className="background border shadow-sm">
       <Card.Img id={props.title} variant="top" className="imgOpacity" alt={props.title} />
@@ -52,7 +29,7 @@ function CardTarot(props) {
         <Card.Text id={`text-${props.id}`} className={`${styles.cardText} color-primary`}>
           {fullDesc ? props.desc : `${props.desc.substring(0, truncLength)}...`}
         </Card.Text>
-        <Button variant="outline-accent3" className="float-start" onClick={() => DescHandler(props.id)}>
+        <Button variant="outline-accent3" className="float-start" onClick={() => setfullDesc(!fullDesc)}>
           {fullDesc ? "Read Less" : "Read more"}
         </Button>
         <Button

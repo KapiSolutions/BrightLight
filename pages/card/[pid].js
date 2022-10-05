@@ -5,7 +5,7 @@ import { Container, Alert } from "react-bootstrap";
 import { RiAlertFill } from "react-icons/ri";
 import { db } from "../../config/firebase";
 import { doc, getDoc, getDocs, collection } from "firebase/firestore";
-import TarotLottery from "../../components/TarotLottery/TarotLottery";
+import TarotLottery from "../../components/TarotLottery";
 
 function CardPage(props) {
   const router = useRouter();
@@ -22,7 +22,7 @@ function CardPage(props) {
             {props.error}
           </Alert>
         ) : (
-          <TarotLottery id={router.query.pid} title={props.tarot.title} cardSet={props.tarot.cardSet} />
+          <TarotLottery id={router.query.pid} title={props.tarot.title} price={props.tarot.price} cardSet={props.tarot.cardSet} />
         )}
       </Container>
     </>

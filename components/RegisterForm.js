@@ -9,7 +9,7 @@ import { useAuth } from "../context/AuthProvider";
 function RegisterForm() {
   const router = useRouter();
   const nameRef = useRef();
-  const bdateRef = useRef();
+  // const bdateRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
   const { registerUser, loginWithGoogle, loginWithFacebook, loginWithTwitter } = useAuth();
@@ -29,8 +29,8 @@ function RegisterForm() {
       await registerUser(
         emailRef.current.value,
         passwordRef.current.value,
-        nameRef.current.value,
-        bdateRef.current.value
+        nameRef.current.value
+        // bdateRef.current.value
       );
     } catch (error) {
       setLoading(false);
@@ -76,7 +76,7 @@ function RegisterForm() {
             <Form.Control type="text" placeholder="Name" ref={nameRef} required />
           </FloatingLabel>
 
-          <FloatingLabel controlId="registerBirthDate" label="Birth date" className="mb-3 text-dark">
+          {/* <FloatingLabel controlId="registerBirthDate" label="Birth date" className="mb-3 text-dark">
             <Form.Control
               type="date"
               placeholder="Birth date"
@@ -85,7 +85,7 @@ function RegisterForm() {
               max={new Date().toLocaleDateString("en-ca")}
               required
             />
-          </FloatingLabel>
+          </FloatingLabel> */}
 
           <FloatingLabel controlId="registerEmail" label="Email address" className="mb-3 text-dark">
             <Form.Control type="email" placeholder="Email address" ref={emailRef} required />
@@ -104,7 +104,7 @@ function RegisterForm() {
             </InputGroup.Text>
           </div>
 
-          <Button className="w-100 mt-4 mb-4 btn-lg" type="submit" disabled={loading}>
+          <Button className="w-100 mt-4 mb-2 btn-lg" type="submit" disabled={loading}>
             {loading ? (
               <>
                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -115,7 +115,14 @@ function RegisterForm() {
             )}
           </Button>
         </Form>
+
         <div className="w-100 text-center mt-1">
+          <p>
+            <small>
+              By creating an account, you accept our <Link href="/terms-of-service#main" passHref><a className="color-secondary"><u>Terms of service </u></a></Link> 
+              and our <Link href="/privacy-policy#main" passHref><a className="color-secondary underline"><u>Privacy Policy</u></a></Link>.
+            </small>
+          </p>
           Already have an account?
           <Link href="/sign-in"> Sign In!</Link>
         </div>

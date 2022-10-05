@@ -4,7 +4,6 @@ import { Container, Row, Col } from "react-bootstrap";
 import CardTarot from "../components/CardTarot";
 import { db } from "../config/firebase";
 import { collection, getDocs } from "firebase/firestore";
-import OperationMsgModal from "../components/Modals/OperationMsgModal";
 
 export default function Home(props) {
   return (
@@ -12,8 +11,6 @@ export default function Home(props) {
       <Head>
         <title>BrightLight | Home</title>
       </Head>
-
-      <OperationMsgModal />
 
       <Container className="d-flex mt-5 flex-column align-items-center justify-content-center">
         <Row className="d-flex mb-2 text-center">

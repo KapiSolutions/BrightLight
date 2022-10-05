@@ -10,3 +10,10 @@
 .iconSizeAlert {
   transform: scale(1.2);
 }
+
+.Hover{
+  opacity: 0.6;
+  &:hover{
+    opacity:1;
+  }
+}

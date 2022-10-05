@@ -17,7 +17,7 @@ function Footer(props) {
           </svg>
         </div>
 
-        <Container id='footer' className='mt-3'>
+        <Container name='footer' className='mt-3'>
           <div className={`${styles.container} color-primary`}>
             <div className={styles.content}>
               <Link href='https://www.instagram.com' passHref>

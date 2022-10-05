@@ -8,7 +8,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { RiAlertFill } from "react-icons/ri";
 import { BsCart4 } from "react-icons/bs";
-import { IoBagCheckOutline } from "react-icons/io5";
+import Cart from "../../../Cart";
 
 function MobileMenu(props) {
   const { authUserFirestore, logoutUser } = useAuth();
@@ -27,7 +27,6 @@ function MobileMenu(props) {
       setError("Failed to log out");
     }
   }
-  async function handleCheckout() {}
 
   //show/hide background of the menu on mobile devices
   const menuClicked = () => {
@@ -112,11 +111,13 @@ function MobileMenu(props) {
                 <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 me-3">
                   <Navbar.Toggle aria-controls="cart-nav">
                     <BsCart4 className={`${styles.mobileIcons} color-primary`} />
-                    <div style={{ position: "absolute", top: "25px", left: "36px" }}>
-                      <small>
-                        <Badge bg="danger">2</Badge>
-                      </small>
-                    </div>
+                    {authUserFirestore.cart.length > 0 && (
+                      <div style={{ position: "absolute", top: "25px", left: "36px" }}>
+                        <small>
+                          <Badge bg="danger">{authUserFirestore.cart.length}</Badge>
+                        </small>
+                      </div>
+                    )}
                   </Navbar.Toggle>
                   <Navbar.Offcanvas
                     id="cart-nav"
@@ -126,21 +127,12 @@ function MobileMenu(props) {
                   >
                     <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
                       <Offcanvas.Title id="cart-nav-offcanvas">
-                        <a className={`text-${revTheme}`}>Cart</a>
+                        <BsCart4 className={`${styles.mobileIcons} text-${revTheme} mb-2`} />
+                        <a className={`text-${revTheme}`}> Shopping cart</a>
                       </Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
-                      <Nav className="ms-auto">
-                        <p className={`text-${revTheme}`}>Items..</p>
-                        <hr className={`text-${revTheme}`}/>
-                        <Nav.Link
-                          onClick={handleCheckout}
-                          className={`text-${props.theme === "light" ? "dark" : "light"}`}
-                        >
-                          <IoBagCheckOutline className={`${styles.icons} color-primary me-1 mb-1`} title="Checkout" />
-                          Checkout
-                        </Nav.Link>
-                      </Nav>
+                      <Cart theme={props.theme}/>
                     </Offcanvas.Body>
                   </Navbar.Offcanvas>
                 </Navbar>
