@@ -7,7 +7,7 @@ import { SSRProvider } from "react-bootstrap";
 import useLocalStorageState from "use-local-storage-state";
 import { useAuth } from "../../../context/AuthProvider";
 import NewUserModal from "../../Modals/NewUserModal";
-import DeleteUserModal from "../../Modals/deleteUserModal";
+import DeleteUserModal from "../../Modals/DeleteUserModal";
 import ErrorModal from "../../Modals/ErrorModal";
 
 function Layout({ children }) {
