@@ -133,7 +133,7 @@ function DesktopMenu(props) {
           </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body className={`text-${revTheme}`}>
-          <Cart theme={props.theme} />
+        <Cart theme={props.theme}/>
         </Offcanvas.Body>
       </Offcanvas>
 

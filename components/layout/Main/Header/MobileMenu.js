@@ -50,6 +50,7 @@ function MobileMenu(props) {
       setOnTop(true);
     }
   };
+
   return (
     <>
       <nav>
