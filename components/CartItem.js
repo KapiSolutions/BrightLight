@@ -28,15 +28,19 @@ function CartItem(props) {
     }
   }
   async function handleEdit() {
-    setLoadingEdit(true)
     try {
+      setLoadingEdit(true);
+      const question = document.getElementById("questionFieldEdit").value;
+      let cart = [...authUserFirestore.cart];
+      cart[props.idx].question = question;
 
-    }catch (e) {
-        console.log(e)
+      await updateProfile({ cart: cart });
+    } catch (e) {
+      console.log(e);
     }
     setEdit(false);
     setfullDesc(false);
-    setLoadingEdit(false)
+    setLoadingEdit(false);
   }
   return (
     <Card
@@ -69,14 +73,13 @@ function CartItem(props) {
           </p>
           {edit && (
             <>
-              <FloatingLabel label="Your Question:">
+              <FloatingLabel label="Your Question:" className="text-dark">
                 <Form.Control
                   as="textarea"
                   id="questionFieldEdit"
                   defaultValue={authUserFirestore.cart[props.idx].question}
                   style={{ minHeight: "150px" }}
                   className="mt-2"
-                  required
                 />
               </FloatingLabel>
             </>
@@ -112,7 +115,7 @@ function CartItem(props) {
               setfullDesc(true);
             }}
           >
-            <AiOutlineEdit style={{ width: "23px", height: "23px" }} />
+            <AiOutlineEdit className={styles.icons}/>
           </Button>
         )}
         {edit && (
@@ -126,7 +129,7 @@ function CartItem(props) {
                 setfullDesc(false);
               }}
             >
-              <TbArrowBackUp style={{ width: "23px", height: "23px" }} />
+              <TbArrowBackUp className={styles.icons} />
             </Button>
             <Button
               variant={`outline-${props.theme == "light" ? "dark" : "accent4"}`}
@@ -136,7 +139,11 @@ function CartItem(props) {
                 handleEdit();
               }}
             >
-              <AiOutlineSave style={{ width: "23px", height: "23px" }} />
+              {loadingEdit ? (
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+              ) : (
+                <AiOutlineSave className={styles.icons} />
+              )}
             </Button>
           </>
         )}
@@ -152,7 +159,7 @@ function CartItem(props) {
           {loading ? (
             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
           ) : (
-            <TbTrashX style={{ width: "23px", height: "23px" }} />
+            <TbTrashX className={styles.icons} />
           )}
         </Button>
       </Card.Footer>

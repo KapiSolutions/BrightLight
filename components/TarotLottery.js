@@ -160,9 +160,10 @@ function TarotLotteryDesktop(props) {
     const question = document.getElementById("questionField").value;
     if (question) {
       const cartItem = { name: props.title, cards: userCards, question: question, price: props.price};
-      authUserFirestore.cart.push(cartItem);
+      let cart = [...authUserFirestore.cart];
+      cart.push(cartItem);
       try {
-        await updateProfile({ cart: authUserFirestore.cart });
+        await updateProfile({ cart: cart });
         setMessage(`The ${props.title} tarot successfully added to the cart!`);
       } catch (error) {
         setErrorMsg(error);
