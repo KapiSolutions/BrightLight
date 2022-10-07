@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import "../styles/main.scss";
 import "@fontsource/k2d";
 import "@fontsource/ms-madi";
+import "@fontsource/nothing-you-could-do";
 import Layout from "../components/layout/Main/Layout";
 import AuthProvider from "../context/AuthProvider";
 import { useDeviceStore } from "../stores/deviceStore";

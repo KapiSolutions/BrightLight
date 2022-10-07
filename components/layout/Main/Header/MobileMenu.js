@@ -63,8 +63,30 @@ function MobileMenu(props) {
         >
           <Container className="d-flex">
             <Link href="/" passHref>
-              <Navbar.Brand className={`${styles.brand} ${back ? (onTop ? "fs-1" : "fs-4") : "fs-1"}`}>
-                BrightLight
+              <Navbar.Brand style=
+                {
+                  back
+                    ? onTop
+                      ? { height: "40px" }
+                      : { height: "45px" }
+                    : { height: "40px" }
+                }
+                >
+                <span className={`${styles.brand} ${back ? (onTop ? "fs-2" : "fs-4") : "fs-2"}`}>BrightLight</span>
+                <span
+                  className={`${styles.brandGypsyFont} ${
+                    back ? (onTop ? "display-7" : "fs-6") : "display-7"
+                  } d-block color-secondary`}
+                  style={
+                    back
+                      ? onTop
+                        ? { position: "relative", top: "-9px", left: "59px" }
+                        : { position: "relative", top: "-8px", left: "50px" }
+                      : { position: "relative", top: "-9px", left: "59px" }
+                  }
+                >
+                  GYPSY
+                </span>
               </Navbar.Brand>
             </Link>
 
@@ -133,7 +155,7 @@ function MobileMenu(props) {
                       </Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
-                      <Cart theme={props.theme}/>
+                      <Cart theme={props.theme} />
                     </Offcanvas.Body>
                   </Navbar.Offcanvas>
                 </Navbar>

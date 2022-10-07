@@ -2,8 +2,16 @@
 
 .brand {
   font-family: $decoration-font;
-  font-size:xx-large;
-  // text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.brandGypsy {
+  position: absolute;
+  top:-300px;
+  left:-50px;
+}
+
+.brandGypsyFont {
+  font-family: $decoration-font2;
 }
 
 .item {
