@@ -5,11 +5,11 @@ import "@fontsource/ms-madi";
 import Layout from "../components/layout/Main/Layout";
 import AuthProvider from "../context/AuthProvider";
 import { useDeviceStore } from "../stores/deviceStore";
-import { loadStripe } from '@stripe/stripe-js';
+// import { loadStripe } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-);
+// const stripePromise = loadStripe(
+//   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+// );
 
 function MyApp({ Component, pageProps }) {
   const getLayout = Component.getLayout || ((page) => <Layout>{page}</Layout>);
