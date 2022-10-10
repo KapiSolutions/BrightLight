@@ -16,12 +16,22 @@ function CardTarot(props) {
       const img = document.getElementById(props.title);
       img.setAttribute("src", url);
     })
-    .catch((error) => {
-
-    });
+    .catch((error) => {});
   return (
     <Card style={{ width: "18rem" }} className="background border shadow-sm">
-      <Card.Img id={props.title} variant="top" className="imgOpacity" alt={props.title} />
+      <Card.Img
+        id={props.title}
+        variant="top"
+        className="imgOpacity pointer"
+        alt={props.title}
+        onClick={() => {
+          router.push({
+            pathname: "/card/[pid]",
+            query: { pid: props.id },
+            hash: "main",
+          });
+        }}
+      />
       <Card.Body>
         <Card.Title className="color-primary">
           <strong>{props.title}</strong>

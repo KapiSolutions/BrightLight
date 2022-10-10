@@ -43,7 +43,7 @@ function Cart(props) {
           </div>
         </>
       ) : (
-        <>No items in the cart..</>
+        <p className="color-primary">No items in the cart..</p>
       )}
     </>
   );

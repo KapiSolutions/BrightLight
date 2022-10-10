@@ -18,7 +18,7 @@ export default function Home(props) {
           <p className="color-primary small">Choose one or a pair to get what you need.</p>
         </Row>
 
-        <Row xs={1} md={2} lg={3} className="g-4">
+        <Row sm={2} md={2} lg={3} className="g-4 justify-content-center">
           {props.tarot.map((tarot) => (
             <Col key={tarot.id} className="d-flex justify-content-center">
               <CardTarot id={tarot.id} title={tarot.title} desc={tarot.description} img={tarot.image} />

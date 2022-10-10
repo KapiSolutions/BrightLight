@@ -62,7 +62,7 @@ function DesktopMenu(props) {
                 >
                 <span className={`${styles.brand} ${back ? (onTop ? "fs-2" : "fs-4") : "fs-2"}`}>BrightLight</span>
                 <span
-                  className={`${styles.brandGypsyFont} ${
+                  className={`${styles.brandGypsy} ${
                     back ? (onTop ? "display-7" : "fs-6") : "display-7"
                   } d-block color-secondary`}
                   style={
@@ -101,11 +101,19 @@ function DesktopMenu(props) {
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu variant={props.theme} className="background mt-2">
-                        <Link href="/user-profile#main" passHref>
+                        <Link href="/user/profile#main" passHref>
                           <Dropdown.Item>Profile</Dropdown.Item>
                         </Link>
                         <Link href="/#" passHref>
                           <Dropdown.Item>My orders</Dropdown.Item>
+                        </Link>
+                        <Link href="/user/horoscope#main" passHref>
+                          <Dropdown.Item>
+                            Daily Horoscope
+                            <small className="ms-1">
+                              <Badge bg="danger">NEW!</Badge>
+                            </small>
+                            </Dropdown.Item>
                         </Link>
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={handleLogout}>

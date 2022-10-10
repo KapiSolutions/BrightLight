@@ -39,7 +39,7 @@ function CartItem(props) {
       console.log(e);
     }
     setEdit(false);
-    setfullDesc(false);
+    // setfullDesc(false);
     setLoadingEdit(false);
   }
   return (
@@ -53,7 +53,7 @@ function CartItem(props) {
     >
       <Card.Body className="pt-1 pb-2">
         <Card.Text className="color-primary mb-0">
-          <p className="fs-4 mb-0">{authUserFirestore.cart[props.idx].name}</p>
+          <span className="fs-4 mb-0">{authUserFirestore.cart[props.idx].name}</span>
         </Card.Text>
         <section className="pointer" onClick={() => !edit && setfullDesc(!fullDesc)}>
           <p className="mt-0 mb-0">
@@ -80,6 +80,7 @@ function CartItem(props) {
                   defaultValue={authUserFirestore.cart[props.idx].question}
                   style={{ minHeight: "150px" }}
                   className="mt-2"
+                  autoFocus
                 />
               </FloatingLabel>
             </>
@@ -126,7 +127,7 @@ function CartItem(props) {
               className="me-3 w-25"
               onClick={() => {
                 setEdit(false);
-                setfullDesc(false);
+                // setfullDesc(false);
               }}
             >
               <TbArrowBackUp className={styles.icons} />

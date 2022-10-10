@@ -10,7 +10,11 @@
   left:-50px;
 }
 
-.brandGypsyFont {
+.brandGypsy {
+  display: block;
+  position: relative;
+  top: -8px;
+  left: 50px;
   font-family: $decoration-font2;
 }
 

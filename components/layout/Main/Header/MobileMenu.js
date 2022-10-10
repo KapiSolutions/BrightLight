@@ -63,30 +63,9 @@ function MobileMenu(props) {
         >
           <Container className="d-flex">
             <Link href="/" passHref>
-              <Navbar.Brand style=
-                {
-                  back
-                    ? onTop
-                      ? { height: "40px" }
-                      : { height: "45px" }
-                    : { height: "40px" }
-                }
-                >
-                <span className={`${styles.brand} ${back ? (onTop ? "fs-2" : "fs-4") : "fs-2"}`}>BrightLight</span>
-                <span
-                  className={`${styles.brandGypsyFont} ${
-                    back ? (onTop ? "display-7" : "fs-6") : "display-7"
-                  } d-block color-secondary`}
-                  style={
-                    back
-                      ? onTop
-                        ? { position: "relative", top: "-9px", left: "59px" }
-                        : { position: "relative", top: "-8px", left: "50px" }
-                      : { position: "relative", top: "-9px", left: "59px" }
-                  }
-                >
-                  GYPSY
-                </span>
+              <Navbar.Brand style={{ height: "45px" }}>
+                <span className={`${styles.brand} fs-4`}>BrightLight</span>
+                <span className={`${styles.brandGypsy} fs-6 color-secondary`}>GYPSY</span>
               </Navbar.Brand>
             </Link>
 
@@ -109,16 +88,22 @@ function MobileMenu(props) {
                     </Offcanvas.Header>
                     <Offcanvas.Body>
                       <Nav className="ms-auto">
-                        <Link href="/user-profile#main" passHref>
+                        <Link href="/user/profile#main" passHref>
                           <Nav.Link className={`text-${revTheme}`}>Profile</Nav.Link>
                         </Link>
-                        {/* <Link href="/#" passHref>
-                          <Nav.Link className={`text-${revTheme}`}>Messages</Nav.Link>
-                        </Link> */}
+
                         <Link href="/#" passHref>
                           <Nav.Link className={`text-${revTheme}`}>My orders</Nav.Link>
                         </Link>
-
+                        <Link href="/user/horoscope#main" passHref>
+                          <Nav.Link className={`text-${revTheme}`}>
+                            Daily Horoscope
+                            <small className="ms-1">
+                              <Badge bg="danger">NEW!</Badge>
+                            </small>
+                          </Nav.Link>
+                        </Link>
+                        <hr className={`text-${revTheme}`} />
                         <Nav.Link
                           onClick={handleLogout}
                           className={`text-${props.theme === "light" ? "dark" : "light"}`}
