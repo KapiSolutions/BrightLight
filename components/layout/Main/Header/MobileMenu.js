@@ -9,13 +9,16 @@ import { FiLogOut } from "react-icons/fi";
 import { RiAlertFill } from "react-icons/ri";
 import { BsCart4 } from "react-icons/bs";
 import Cart from "../../../Cart";
+import { useRouter } from "next/router";
 
 function MobileMenu(props) {
+  const router = useRouter();
   const { authUserFirestore, logoutUser } = useAuth();
   const [error, setError] = useState("");
   const [back, setBack] = useState(false);
   const [onTop, setOnTop] = useState(true);
   const [expandedMenu, setExpand] = useState(false);
+  const [show, setShow] = useState(false);
   const revTheme = props.theme === "light" ? "dark" : "light";
   const offCanvBackColor = props.theme === "light" ? "#fcfcfb" : "#11061a";
 
@@ -50,7 +53,14 @@ function MobileMenu(props) {
       setOnTop(true);
     }
   };
-
+  const sleep = (milliseconds) => {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  };
+  async function route(path) {
+    setShow(false);
+    await sleep(300);
+    router.push(path);
+  }
   return (
     <>
       <nav>
@@ -72,7 +82,7 @@ function MobileMenu(props) {
             {authUserFirestore && (
               <>
                 <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 ms-auto me-3 ">
-                  <Navbar.Toggle aria-controls="profile-nav">
+                  <Navbar.Toggle aria-controls="profile-nav" onClick={() => setShow(true)}>
                     <FaRegUserCircle className={`${styles.mobileIcons} color-primary`} />
                   </Navbar.Toggle>
                   <Navbar.Offcanvas
@@ -80,6 +90,8 @@ function MobileMenu(props) {
                     aria-labelledby="profile-nav"
                     placement="top"
                     style={{ background: offCanvBackColor }}
+                    show={show}
+                    onHide={() => setShow(false)}
                   >
                     <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
                       <Offcanvas.Title id="profile-nav-offcanvas">
@@ -88,9 +100,10 @@ function MobileMenu(props) {
                     </Offcanvas.Header>
                     <Offcanvas.Body>
                       <Nav className="ms-auto">
-                        <Link href="/user/profile#main" passHref>
-                          <Nav.Link className={`text-${revTheme}`}>Profile</Nav.Link>
-                        </Link>
+                        <Nav.Link className={`text-${revTheme}`} onClick={() => route("/user/profile#main")}>
+                          Profile
+                        </Nav.Link>
+
                         <Link href="/#" passHref>
                           <Nav.Link className={`text-${revTheme}`}>My orders</Nav.Link>
                         </Link>

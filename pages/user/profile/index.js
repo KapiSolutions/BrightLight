@@ -20,7 +20,7 @@ function UserProfilePage() {
 
   useEffect(() => {
     if (isAuthenticated()) {
-      isMobile && scroll();
+ 
     } else {
       router.replace("/sign-in");
     }
