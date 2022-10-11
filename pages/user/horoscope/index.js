@@ -1,23 +1,23 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import Head from "next/head";
 import { Container } from "react-bootstrap";
 import Horoscope from "../../../components/Horoscope";
+import { useDeviceStore } from "../../../stores/deviceStore";
 
 function HoroscopePage() {
-const sleep = (milliseconds) => {
-    return new Promise(resolve => setTimeout(resolve, milliseconds))
-}
-async function scroll () {
-  await sleep(300)
-  document.getElementById("uh-ctx").scrollIntoView();
+  const isMobile = useDeviceStore((state) => state.isMobile);
+  const sleep = (milliseconds) => {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  };
+  async function scroll() {
+    await sleep(300);
+    document.getElementById("uh-ctx").scrollIntoView();
   }
 
   useEffect(() => {
-    scroll();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  
-
+    isMobile && scroll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       <Head>
