@@ -90,6 +90,7 @@ function MobileMenu(props) {
                     aria-labelledby="profile-nav"
                     placement="top"
                     style={{ background: offCanvBackColor }}
+                    scroll={true}
                     show={show}
                     onHide={() => setShow(false)}
                   >
@@ -104,17 +105,17 @@ function MobileMenu(props) {
                           Profile
                         </Nav.Link>
 
-                        <Link href="/#" passHref>
-                          <Nav.Link className={`text-${revTheme}`}>My orders</Nav.Link>
-                        </Link>
-                        <Link href="/user/horoscope#main" passHref>
-                          <Nav.Link className={`text-${revTheme}`}>
-                            Daily Horoscope
-                            <small className="ms-1">
-                              <Badge bg="danger">NEW!</Badge>
-                            </small>
-                          </Nav.Link>
-                        </Link>
+                        <Nav.Link className={`text-${revTheme}`} onClick={() => route("/#")}>
+                          My orders
+                        </Nav.Link>
+
+                        <Nav.Link className={`text-${revTheme}`} onClick={() => route("/user/horoscope#main")}>
+                          Daily Horoscope
+                          <small className="ms-1">
+                            <Badge bg="danger">NEW!</Badge>
+                          </small>
+                        </Nav.Link>
+
                         <hr className={`text-${revTheme}`} />
                         <Nav.Link
                           onClick={handleLogout}
