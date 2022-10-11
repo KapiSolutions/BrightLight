@@ -79,7 +79,6 @@ function MobileMenu(props) {
                     id="profile-nav"
                     aria-labelledby="profile-nav"
                     placement="top"
-                    scroll={true}
                     style={{ background: offCanvBackColor }}
                   >
                     <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
