@@ -284,7 +284,7 @@ function TarotLotteryDesktop(props) {
                   </ButtonGroup>
                   <br />
                   <Button
-                    variant="outline-accent4"
+                    variant="outline-primary"
                     type="submit"
                     className="mt-4"
                     onClick={handleAddToCart}

@@ -17,8 +17,8 @@ function UserProfilePage() {
       <Head>
         <title>BrightLight | Profile</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5">
-        <h1 className="color-primary">User Profile</h1>
+      <Container className="justify-content-center text-center mt-5" name="up-ctx">
+        <h1 className="color-primary" >User Profile</h1>
         <UserProfile />
       </Container>
     </>

@@ -94,7 +94,7 @@ function UserProfile() {
 
   return (
     <>
-      <Container style={{ maxWidth: "450px" }} autoFocus>
+      <Container style={{ maxWidth: "450px" }}>
         {error && (
           <Alert variant="danger">
             <RiAlertFill className="me-2 mb-1 iconSizeAlert" />
