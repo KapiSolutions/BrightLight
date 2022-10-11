@@ -8,8 +8,13 @@ import UserProfile from "../../../components/UserProfile";
 function UserProfilePage() {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
+  
   useEffect(() => {
-    !isAuthenticated() && router.replace("/sign-in");
+    if(isAuthenticated()){
+      document.getElementById("up-ctx").scrollIntoView();
+    }else{
+      router.replace("/sign-in")
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
@@ -17,7 +22,7 @@ function UserProfilePage() {
       <Head>
         <title>BrightLight | Profile</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5" name="up-ctx">
+      <Container className="justify-content-center text-center mt-5" id="up-ctx">
         <h1 className="color-primary" >User Profile</h1>
         <UserProfile />
       </Container>

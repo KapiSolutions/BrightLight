@@ -88,14 +88,14 @@ function MobileMenu(props) {
                     </Offcanvas.Header>
                     <Offcanvas.Body>
                       <Nav className="ms-auto">
-                        <Link href="/user/profile#up-ctx" passHref>
+                        <Link href="/user/profile" passHref>
                           <Nav.Link className={`text-${revTheme}`}>Profile</Nav.Link>
                         </Link>
 
                         <Link href="/#" passHref>
                           <Nav.Link className={`text-${revTheme}`}>My orders</Nav.Link>
                         </Link>
-                        <Link href="/user/horoscope#uh-ctx" passHref>
+                        <Link href="/user/horoscope" passHref>
                           <Nav.Link className={`text-${revTheme}`}>
                             Daily Horoscope
                             <small className="ms-1">
