@@ -101,13 +101,13 @@ function DesktopMenu(props) {
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu variant={props.theme} className="background mt-2">
-                        <Link href="/user/profile" passHref>
+                        <Link href="/user/profile#up-ctx" passHref>
                           <Dropdown.Item>Profile</Dropdown.Item>
                         </Link>
                         <Link href="/#" passHref>
                           <Dropdown.Item>My orders</Dropdown.Item>
                         </Link>
-                        <Link href="/user/horoscope" passHref>
+                        <Link href="/user/horoscope#uh-ctx" passHref>
                           <Dropdown.Item>
                             Daily Horoscope
                             <small className="ms-1">
