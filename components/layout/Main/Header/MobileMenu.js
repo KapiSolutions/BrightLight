@@ -79,6 +79,7 @@ function MobileMenu(props) {
                     id="profile-nav"
                     aria-labelledby="profile-nav"
                     placement="top"
+                    scroll={true}
                     style={{ background: offCanvBackColor }}
                   >
                     <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
@@ -88,13 +89,13 @@ function MobileMenu(props) {
                     </Offcanvas.Header>
                     <Offcanvas.Body>
                       <Nav className="ms-auto">
-                        <Link href="/user/profile#up-ctx" scroll={true} passHref>
+                        <Link href="/user/profile#main" passHref>
                           <Nav.Link className={`text-${revTheme}`}>Profile</Nav.Link>
                         </Link>
-                        <Link href="/#" scroll={true} passHref>
+                        <Link href="/#" passHref>
                           <Nav.Link className={`text-${revTheme}`}>My orders</Nav.Link>
                         </Link>
-                        <Link href="/user/horoscope#uh-ctx" scroll={true} passHref>
+                        <Link href="/user/horoscope#main" passHref>
                           <Nav.Link className={`text-${revTheme}`}>
                             Daily Horoscope
                             <small className="ms-1">
