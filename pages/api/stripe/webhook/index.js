@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { buffer } from "micro";
 import { updateDocFields } from "../../../../firebase/Firestore";
-import { serverTimestamp  } from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -29,7 +29,15 @@ export default async function handler(req, res) {
     // Payment successful
     if (event.type === "checkout.session.completed") {
       console.log(`💰  Payment received!`);
-      updateDocFields("orders", event.data.object.client_reference_id, { paid: true, status: "In realization", timePayment: serverTimestamp() });
+      try {
+        await updateDocFields("orders", event.data.object.client_reference_id, {
+          paid: true,
+          status: "In realization",
+          timePayment: serverTimestamp(),
+        });
+      } catch (e) {
+        console.error(e);
+      }
     } else {
       console.warn(`🤷‍♀️ Unhandled event type: ${event.type}`);
     }
