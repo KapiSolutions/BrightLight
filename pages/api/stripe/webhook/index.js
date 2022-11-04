@@ -24,11 +24,11 @@ export default async function handler(req, res) {
       res.status(400).send(`Webhook Error: ${err.message}`);
       return;
     }
-    console.log("✅ Success:", event.id);
+    // console.log("✅ Success:", event.id);
 
     // Payment successful
     if (event.type === "checkout.session.completed") {
-      console.log(`💰  Payment received!`);
+      // console.log(`💰  Payment received!`);
       try {
         await updateDocFields("orders", event.data.object.client_reference_id, {
           paid: true,
@@ -36,10 +36,10 @@ export default async function handler(req, res) {
           timePayment: serverTimestamp(),
         });
       } catch (e) {
-        console.error(e);
+        // console.error(e);
       }
     } else {
-      console.warn(`🤷‍♀️ Unhandled event type: ${event.type}`);
+      // console.warn(`🤷‍♀️ Unhandled event type: ${event.type}`);
     }
     //Return a response to acknowledge receipt of the event.
     res.json({ received: true });
