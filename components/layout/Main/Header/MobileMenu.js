@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import styles from "../../../../styles/layout/main/Navbar.module.scss";
 import { Navbar, Nav, Container, Alert, Offcanvas, Badge } from "react-bootstrap";
 import ChangeThemeButton from "../../../ChangeThemeButton";
@@ -11,11 +12,13 @@ import { BsCart4 } from "react-icons/bs";
 import Cart from "../../../Cart";
 
 function MobileMenu(props) {
+  const router = useRouter();
   const { authUserFirestore, logoutUser } = useAuth();
   const [error, setError] = useState("");
   const [back, setBack] = useState(false);
   const [onTop, setOnTop] = useState(true);
   const [expandedMenu, setExpand] = useState(false);
+  const [showCart, setShowCart] = useState(undefined);
   const revTheme = props.theme === "light" ? "dark" : "light";
   const offCanvBackColor = props.theme === "light" ? "#fcfcfb" : "#11061a";
 
@@ -23,6 +26,7 @@ function MobileMenu(props) {
     setError("");
     try {
       await logoutUser();
+      router.push("/");
     } catch (error) {
       setError("Failed to log out");
     }
@@ -91,7 +95,7 @@ function MobileMenu(props) {
                         <Link href="/user/profile" scroll={false} passHref>
                           <Nav.Link className={`text-${revTheme}`}>Profile</Nav.Link>
                         </Link>
-                        <Link href="/#" scroll={false} passHref>
+                        <Link href="/user/orders" scroll={false} passHref>
                           <Nav.Link className={`text-${revTheme}`}>My orders</Nav.Link>
                         </Link>
                         <Link href="/user/horoscope" scroll={false} passHref>
@@ -116,7 +120,7 @@ function MobileMenu(props) {
                 </Navbar>
 
                 <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 me-3">
-                  <Navbar.Toggle aria-controls="cart-nav">
+                  <Navbar.Toggle aria-controls="cart-nav" onClick={() => setShowCart(true)}>
                     <BsCart4 className={`${styles.mobileIcons} color-primary`} />
                     {authUserFirestore.cart.length > 0 && (
                       <div style={{ position: "absolute", top: "25px", left: "36px" }}>
@@ -128,6 +132,8 @@ function MobileMenu(props) {
                   </Navbar.Toggle>
                   <Navbar.Offcanvas
                     id="cart-nav"
+                    show={showCart}
+                    onHide={() => setShowCart(undefined)}
                     aria-labelledby="cart-nav"
                     placement="top"
                     style={{ background: offCanvBackColor }}
@@ -139,7 +145,7 @@ function MobileMenu(props) {
                       </Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
-                      <Cart theme={props.theme} />
+                      <Cart theme={props.theme} setShowCart={setShowCart}/>
                     </Offcanvas.Body>
                   </Navbar.Offcanvas>
                 </Navbar>

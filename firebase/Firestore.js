@@ -1,12 +1,13 @@
 import { db } from "../config/firebase";
-import { doc, getDoc, getDocs, setDoc, deleteDoc, updateDoc, collection, query, where } from "firebase/firestore";
+import { doc, getDoc, getDocs, setDoc, deleteDoc, updateDoc, collection, query, where, serverTimestamp  } from "firebase/firestore";
+import { v4 as uuidv4 } from 'uuid';
 
 const getUserDataFirestore = async (uid) => {
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
 
   if (docSnap.exists()) {
-    return { id: uid, ...docSnap.data() };
+    return docSnap.data();
   } else {
     return null;
   }
@@ -14,6 +15,7 @@ const getUserDataFirestore = async (uid) => {
 
 const createUserFirestore = async (uid, name, lastName, email, age, provider, cart) => {
   const userData = {
+    id: uid,
     name: name,
     lastName: lastName,
     age: age,
@@ -27,6 +29,32 @@ const createUserFirestore = async (uid, name, lastName, email, age, provider, ca
     return userData;
   } catch (err) {
     console.error('createUserFirestore Err: ',err);
+    throw err;
+  }
+};
+
+const createOrderFirestore = async (uid, name, age, email, cart, totalPrice) => {
+  const orderID = uuidv4().slice(0, 13);
+  const orderData = {
+    id:orderID,
+    userID: uid,
+    userName: name,
+    userAge: age,
+    userEmail: email,
+    items: cart,
+    status: 'Waiting for payment',
+    paid: false,
+    answers: [],
+    totalPrice: totalPrice,
+    timeCreate: serverTimestamp()
+    //timePayment:
+    //timeFinished:
+  };
+  try {
+    await setDoc(doc(db, "orders", orderID), orderData);
+    return orderData;
+  } catch (err) {
+    console.error('createOrderFirestore Err: ',err);
     throw err;
   }
 };
@@ -54,13 +82,11 @@ const queryByFirestore = async (collName, state, condition, value) => {
   const querySnapshot = await getDocs(q);
   const docs = [];
   querySnapshot.forEach((doc) => {
-    const sample = {
-      id: doc.id,
-      ...doc.data(),
-    };
-    docs.push(sample);
+    docs.push(doc.data());
   });
   return docs.length > 0 ? docs : false;
 };
 
-export { getUserDataFirestore, createUserFirestore, queryByFirestore, deleteDocInCollection, updateDocFields };
+
+
+export { getUserDataFirestore, createUserFirestore, queryByFirestore, deleteDocInCollection, updateDocFields, createOrderFirestore };

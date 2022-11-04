@@ -18,9 +18,6 @@ function Cart(props) {
     setTotalPrice(total);
   }, [authUserFirestore.cart]);
 
-  async function handleCheckout() {
-    router.push("https://buy.stripe.com/test_dR629I0Ks1nag8gcMM");
-  }
   return (
     <>
       {authUserFirestore.cart.length > 0 ? (
@@ -31,19 +28,22 @@ function Cart(props) {
           <p className={`text-${props.theme === "light" ? "dark" : "light"} text-end`}>Total Price: {totalPrice} PLN</p>
           <hr className={`text-${revTheme}`} />
           <div
-            onClick={handleCheckout}
+            onClick={() => {
+              router.push("/cart-summary#main");
+              props.setShowCart(undefined);
+            }}
             className={`text-${props.theme === "light" ? "dark" : "light"} pointer text-center fs-5`}
           >
             <IoBagCheckOutline
               className="color-primary me-1 mb-1"
-              title="Checkout"
+              title="Summary"
               style={{ width: "23px", height: "23px" }}
             />
-            Checkout
+            Summary
           </div>
         </>
       ) : (
-        <p className="color-primary">No items in the cart..</p>
+        <p className="color-primary">The cart is empty..</p>
       )}
     </>
   );

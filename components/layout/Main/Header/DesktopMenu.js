@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import styles from "../../../../styles/layout/main/Navbar.module.scss";
 import { Navbar, Nav, Container, Dropdown, Alert, Badge, Offcanvas } from "react-bootstrap";
 import ChangeThemeButton from "../../../ChangeThemeButton";
@@ -11,11 +12,12 @@ import { BsCart4 } from "react-icons/bs";
 import Cart from "../../../Cart";
 
 function DesktopMenu(props) {
+  const router = useRouter();
   const { authUserFirestore, logoutUser } = useAuth();
   const [error, setError] = useState("");
   const [back, setBack] = useState(false);
   const [onTop, setOnTop] = useState(true);
-  const [showCart, setShowCart] = useState(false);
+  const [showCart, setShowCart] = useState(undefined);
   const revTheme = props.theme === "light" ? "dark" : "light";
   const offCanvBackColor = props.theme === "light" ? "#fcfcfb" : "#11061a";
 
@@ -23,6 +25,7 @@ function DesktopMenu(props) {
     setError("");
     try {
       await logoutUser();
+      router.push("/");
     } catch (error) {
       setError("Failed to log out");
     }
@@ -104,7 +107,7 @@ function DesktopMenu(props) {
                         <Link href="/user/profile#main" passHref>
                           <Dropdown.Item>Profile</Dropdown.Item>
                         </Link>
-                        <Link href="/#" passHref>
+                        <Link href="/user/orders#main" passHref>
                           <Dropdown.Item>My orders</Dropdown.Item>
                         </Link>
                         <Link href="/user/horoscope#main" passHref>
@@ -153,7 +156,7 @@ function DesktopMenu(props) {
       <Offcanvas
         show={showCart}
         placement="end"
-        onHide={() => setShowCart(false)}
+        onHide={() => setShowCart(undefined)}
         style={{ background: offCanvBackColor }}
       >
         <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
@@ -163,7 +166,7 @@ function DesktopMenu(props) {
           </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body className={`text-${revTheme}`}>
-        <Cart theme={props.theme}/>
+        <Cart theme={props.theme} setShowCart={setShowCart}/>
         </Offcanvas.Body>
       </Offcanvas>
 

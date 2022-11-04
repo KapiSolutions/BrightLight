@@ -4,10 +4,10 @@ import { useRouter } from "next/router";
 import { Container } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import UserProfile from "../../../components/UserProfile";
-import { useDeviceStore } from "../../../stores/deviceStore"
+import { useDeviceStore } from "../../../stores/deviceStore";
 
 function UserProfilePage() {
-  const isMobile = useDeviceStore((state) => state.isMobile)
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   const sleep = (milliseconds) => {
@@ -23,6 +23,7 @@ function UserProfilePage() {
       isMobile && scroll();
     } else {
       router.replace("/sign-in");
+      return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

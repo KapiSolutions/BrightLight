@@ -17,6 +17,7 @@ function TarotLotteryDesktop(props) {
   const [cardsSet, setcardsSet] = useState([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingBuy, setLoadingBuy] = useState(false);
 
   const cardBackUrl = "/img/cards/back.png";
   const cardsUrl = "/img/cards/";
@@ -101,7 +102,7 @@ function TarotLotteryDesktop(props) {
     "king-of-pentacles",
   ];
 
-//Menage the display of the choosen cards
+  //Menage the display of the choosen cards
   useEffect(() => {
     if (flipCards.length > 0) {
       const img = document.getElementById(`tarot-card-${flipCards.length - 1}`);
@@ -123,7 +124,7 @@ function TarotLotteryDesktop(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flipCards]);
 
-//Create and shuffle tarot cards array
+  //Create and shuffle tarot cards array
   useEffect(() => {
     const cardsArr = [];
     for (let i = 0; i < 78; i++) {
@@ -143,15 +144,40 @@ function TarotLotteryDesktop(props) {
   function handleSaveAndSignIn() {
     const question = document.getElementById("questionField").value;
     if (question) {
-      const cartItem = { name: props.title, cards: userCards, question: question, price: props.price };
+      const cartItem = {
+        name: props.title,
+        cards: userCards,
+        question: question,
+        price: props.price,
+        s_id: props.s_id,
+        image: props.image,
+      };
       setTempCart(cartItem);
       router.push("/sign-in");
     }
   }
-  function handleBuy() {
+  async function handleBuy() {
     const question = document.getElementById("questionField").value;
-    console.log("BUY");
     if (question) {
+      setErrorMsg("");
+      setLoadingBuy(true);
+      const cartItem = {
+        name: props.title,
+        cards: userCards,
+        question: question,
+        price: props.price,
+        s_id: props.s_id,
+        image: props.image,
+      };
+      let cart = [...authUserFirestore.cart];
+      cart.push(cartItem);
+      try {
+        await updateProfile({ cart: cart });
+        router.push("/cart-summary#main");
+      } catch (error) {
+        setErrorMsg(error);
+      }
+      setLoadingBuy(false);
     }
   }
   async function handleAddToCart() {
@@ -159,7 +185,14 @@ function TarotLotteryDesktop(props) {
     setLoading(true);
     const question = document.getElementById("questionField").value;
     if (question) {
-      const cartItem = { name: props.title, cards: userCards, question: question, price: props.price};
+      const cartItem = {
+        name: props.title,
+        cards: userCards,
+        question: question,
+        price: props.price,
+        s_id: props.s_id,
+        image: props.image,
+      };
       let cart = [...authUserFirestore.cart];
       cart.push(cartItem);
       try {
@@ -269,7 +302,14 @@ function TarotLotteryDesktop(props) {
                 <>
                   <ButtonGroup className={`pointer mt-4 ${styles.animatedBorderLight} rounded`}>
                     <Button className="btn-lg" variant="primary" onClick={handleBuy}>
-                      Buy now
+                    {loadingBuy ? (
+                      <>
+                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                        <span>Loading...</span>
+                      </>
+                    ) : (
+                      <span> Buy now </span>
+                    )}
                     </Button>
                     <Button
                       variant="outline-primary"

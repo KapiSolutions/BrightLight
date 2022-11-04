@@ -3,9 +3,11 @@ import Head from "next/head";
 import { Container } from "react-bootstrap";
 import Horoscope from "../../../components/Horoscope";
 import { useDeviceStore } from "../../../stores/deviceStore";
+import { useAuth } from "../../../context/AuthProvider";
 
 function HoroscopePage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const { isAuthenticated } = useAuth();
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   };
@@ -15,7 +17,12 @@ function HoroscopePage() {
   }
 
   useEffect(() => {
-    isMobile && scroll();
+    if (isAuthenticated()) {
+        isMobile && scroll();
+    } else {
+      router.replace("/sign-in");
+      return;
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

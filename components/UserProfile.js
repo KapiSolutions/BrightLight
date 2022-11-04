@@ -72,7 +72,6 @@ function UserProfile() {
     }
   }
   function handleModalCallback(call) {
-    console.log(call);
     if (call == "done" && emailChanged) {
       setMessage("The changes have been made successfully.");
       setDataChanged(false);

@@ -6,6 +6,7 @@ import {
   createUserFirestore,
   deleteDocInCollection,
   updateDocFields,
+  queryByFirestore,
 } from "../firebase/Firestore";
 import {
   deleteUser,
@@ -37,11 +38,10 @@ function AuthProvider({ children }) {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [tempCart, setTempCart] = useState(null);
+  const [userOrders, setUserOrders] = useState([]);
   const GoogleProvider = new GoogleAuthProvider();
   const FacebookProvider = new FacebookAuthProvider();
   const TwitterProvider = new TwitterAuthProvider();
-  //   GoogleProvider.addScope('https://www.googleapis.com/auth/user.birthday.read');
-  //   FacebookProvider.addScope("user_birthday");
 
   async function registerUser(email, password, name) {
     return createUserWithEmailAndPassword(auth, email, password).then(async (res) => {
@@ -57,16 +57,15 @@ function AuthProvider({ children }) {
     return signInWithEmailAndPassword(auth, email, password).then(async (res) => {
       if (tempCart) {
         //when user add something to the cart before logging in
-        const user = await getUserDataFirestore(res.user.uid);
-        user.cart.push(tempCart);
+        const userData = await getUserDataFirestore(res.user.uid);
+        userData.cart.push(tempCart);
         await updateDocFields("users", res.user.uid, { cart: user.cart });
         setTempCart(null);
       }
-      setAuthUserFirestore(await getUserDataFirestore(res.user.uid));
+      updateUserData(res.user.uid, null)
     });
   }
   function logoutUser() {
-    router.push("/");
     return auth.signOut();
   }
   async function deleteAccount() {
@@ -131,18 +130,16 @@ function AuthProvider({ children }) {
       const lastName = res.user.displayName.split(" ")[1];
       const email = res.user.email;
       const userData = await getUserDataFirestore(uid);
-      //user exists and there was nothing in the cart before logging in
-      if (userData && !tempCart) {
-        setAuthUserFirestore(userData);
-      }
-      //when user exists and add something to the cart before logging in
-      if (userData && tempCart) {
-        userData.cart.push(tempCart);
-        await updateDocFields("users", uid, { cart: userData.cart });
-        setAuthUserFirestore(userData);
-      }
-      //user doesn't exist -> create new account
-      if (!userData) {
+
+      if (userData) {
+        if (tempCart) {
+          //when user exists and he added something to the cart before logging in
+          userData.cart.push(tempCart);
+          await updateDocFields("users", uid, { cart: userData.cart });
+        }
+        updateUserData(uid, userData, false);
+      } else {
+        //user doesn't exist -> create new account
         setAuthUserFirestore(
           await createUserFirestore(uid, userName, lastName, email, "", "Google", tempCart ? [tempCart] : [])
         );
@@ -152,14 +149,11 @@ function AuthProvider({ children }) {
       router.push("/");
       // const credential = GoogleAuthProvider.credentialFromResult(res);
       // const token = credential?.accessToken;
-      // const user = res.user;
-      // console.log({ credential, token, user });
     } catch (err) {
       // const errorCode = err.code;
       const errorMessage = err.message;
       // const email = err.email;
       // const credential = GoogleAuthProvider.credentialFromError(err);
-      // console.log({ errorCode, errorMessage, email, credential });
       router.push("/");
       setErrorMsg(errorMessage);
     }
@@ -173,18 +167,14 @@ function AuthProvider({ children }) {
       const lastName = res.user.displayName.split(" ")[1];
       const email = res.user.email;
       const userData = await getUserDataFirestore(uid);
-      //user exists and there was nothing in the cart before logging in
-      if (userData && !tempCart) {
-        setAuthUserFirestore(userData);
-      }
-      //when user exists and add something to the cart before logging in
-      if (userData && tempCart) {
-        userData.cart.push(tempCart);
-        await updateDocFields("users", uid, { cart: userData.cart });
-        setAuthUserFirestore(userData);
-      }
-      //user doesn't exist -> create new account
-      if (!userData) {
+
+      if (userData) {
+        if (tempCart) {
+          userData.cart.push(tempCart);
+          await updateDocFields("users", uid, { cart: userData.cart });
+        }
+        updateUserData(uid, userData, false);
+      } else {
         setAuthUserFirestore(
           await createUserFirestore(uid, userName, lastName, email, "", "Facebook", tempCart ? [tempCart] : [])
         );
@@ -192,7 +182,6 @@ function AuthProvider({ children }) {
       }
       tempCart && setTempCart(null);
       router.push("/");
-      // const user = res.user;
       // const credential = FacebookAuthProvider.credentialFromResult(res);
       // const accessToken = credential.accessToken;
     } catch (err) {
@@ -213,18 +202,14 @@ function AuthProvider({ children }) {
       const lastName = res.user.displayName.split(" ")[1];
       const email = res.user.email;
       const userData = await getUserDataFirestore(uid);
-      //user exists and there was nothing in the cart before logging in
-      if (userData && !tempCart) {
-        setAuthUserFirestore(userData);
-      }
-      //when user exists and add something to the cart before logging in
-      if (userData && tempCart) {
-        userData.cart.push(tempCart);
-        await updateDocFields("users", uid, { cart: userData.cart });
-        setAuthUserFirestore(userData);
-      }
-      //user doesn't exist -> create new account
-      if (!userData) {
+
+      if (userData) {
+        if (tempCart) {
+          userData.cart.push(tempCart);
+          await updateDocFields("users", uid, { cart: userData.cart });
+        }
+        updateUserData(uid, userData, false);
+      } else {
         setAuthUserFirestore(
           await createUserFirestore(uid, userName, lastName, email, "", "Twitter", tempCart ? [tempCart] : [])
         );
@@ -235,8 +220,6 @@ function AuthProvider({ children }) {
       // const credential = TwitterAuthProvider.credentialFromResult(res);
       // const token = credential.accessToken;
       // const secret = credential.secret;
-      // const user = res.user;
-      // console.log(user);
     } catch (err) {
       // const errorCode = err.code;
       const errorMessage = err.message;
@@ -247,15 +230,24 @@ function AuthProvider({ children }) {
     }
   }
 
-  async function updateUserData(user) {
-    setAuthUserFirestore(await getUserDataFirestore(user.uid));
+  async function updateUserData(uid, userData, onlyOrders) {
+    if (!onlyOrders) {
+      !userData && setAuthUserFirestore(await getUserDataFirestore(uid));
+      userData && setAuthUserFirestore(userData);
+    }
+    const orders = await queryByFirestore("orders", "userID", "==", uid);
+    orders.length > 0 && setUserOrders(orders);
+  }
+  function clearUserData() {
+    setAuthUserFirestore(null);
+    setUserOrders([]);
   }
   //Menage users login/out states
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthUserCredential(user);
-      !user && setAuthUserFirestore(null);
-      user && !authUserFirestore && updateUserData(user);
+      !user && clearUserData(); //after logging out clear all the user data
+      user && !authUserFirestore && updateUserData(user.uid, null, false); //after logging in load all the user data
       setLoading(false);
     });
     return unsubscribe;
@@ -277,11 +269,14 @@ function AuthProvider({ children }) {
     reauthenticateUser,
     updateProfile,
     deleteAccount,
+    updateUserData,
     errorMsg,
     setErrorMsg,
     successMsg,
     setSuccessMsg,
     setTempCart,
+    userOrders,
+    setUserOrders,
   };
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

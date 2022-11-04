@@ -15,7 +15,7 @@ export default function Home(props) {
       <Container className="d-flex mt-5 flex-column align-items-center justify-content-center">
         <Row className="d-flex mb-2 text-center">
           <h1 className="color-primary">Your Cards</h1>
-          <p className="color-primary small">Choose one or a pair to get what you need.</p>
+          <p className="color-primary small">Choose one or more to get what you need.</p>
         </Row>
 
         <Row sm={2} md={2} lg={3} className="g-4 justify-content-center">
@@ -34,17 +34,13 @@ export async function getStaticProps() {
   const tarot = [];
   const querySnapshot = await getDocs(collection(db, "tarot"));
   querySnapshot.forEach((doc) => {
-    const card = {
-      id: doc.id,
-      ...doc.data(),
-    };
-    tarot.push(card);
+    tarot.push(doc.data());
   });
 
   return {
     props: {
       tarot: tarot,
     },
-    revalidate: 60,
+    revalidate: 60, //1minute
   };
 }

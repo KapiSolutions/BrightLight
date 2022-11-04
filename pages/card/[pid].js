@@ -22,7 +22,7 @@ function CardPage(props) {
             {props.error}
           </Alert>
         ) : (
-          <TarotLottery id={router.query.pid} title={props.tarot.title} price={props.tarot.price} cardSet={props.tarot.cardSet} />
+          <TarotLottery id={router.query.pid} title={props.tarot.title} price={props.tarot.price} cardSet={props.tarot.cardSet} s_id={props.tarot.s_id} image={props.tarot.image} />
         )}
       </Container>
     </>
@@ -58,7 +58,7 @@ export async function getStaticPaths() {
   const querySnapshot = await getDocs(collection(db, "tarot"));
   querySnapshot.forEach((doc) => {
     const cardId = {
-      pid: doc.id,
+      pid: doc.data().id,
     };
     cardIds.push(cardId);
   });

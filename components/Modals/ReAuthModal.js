@@ -150,7 +150,7 @@ function ReAuthModal(props) {
                   </InputGroup.Text>
                 </div>
 
-                <Button className="w-100 btn-lg mt-2 mb-2" type="submit" disabled={loading ? 'true' : undefined}>
+                <Button className="w-100 btn-lg mt-2 mb-2" type="submit" disabled={loading ? true : undefined}>
                   {loading ? (
                     <>
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -273,7 +273,7 @@ function ReAuthModal(props) {
             <Button
               variant="primary"
               onClick={show == "delete" ? handleDeleteAccount : handleDataChanges}
-              disable={loading ? true : undefined}
+              disabled={loading ? true : undefined}
             >
               {loading ? (
                 <>

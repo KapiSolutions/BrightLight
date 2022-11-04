@@ -79,7 +79,7 @@ function AboutPage() {
         <hr className="color-primary w-50 m-auto mt-4 mb-5"/>
         <section className="mt-5">
           <div className={`${styles.japanBackLight} rounded pt-4 pb-1 mb-3`}>
-            <Image src={japanPath} width="170" height="170" alt="Diamond flower" />
+            <Image src={japanPath} width="170" height="170" alt="Japan sticker" />
             <h2 className="mt-0 text-dark">Japan Dream</h2>
           </div>
           <p>One of my biggest dreams is to travel to Japan. Discovering beautiful nature and local culture.</p>

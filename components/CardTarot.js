@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Button } from "react-bootstrap";
 import { storage } from "../config/firebase";
 import { ref, getDownloadURL } from "firebase/storage";
@@ -11,12 +11,16 @@ function CardTarot(props) {
   const truncLength = 60;
   const imageRef = ref(storage, `images/cards/${props.img}`);
 
-  getDownloadURL(imageRef)
-    .then((url) => {
-      const img = document.getElementById(props.title);
-      img.setAttribute("src", url);
-    })
-    .catch((error) => {});
+  useEffect(() => {
+    getDownloadURL(imageRef)
+      .then((url) => {
+        const img = document.getElementById(props.title);
+        img.setAttribute("src", url);
+      })
+      .catch((error) => console.log(error));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <Card style={{ width: "18rem" }} className="background border shadow-sm">
       <Card.Img
