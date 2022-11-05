@@ -1,11 +1,13 @@
 import React, { useEffect } from "react";
 import Head from "next/head";
 import { Container } from "react-bootstrap";
+import { useRouter } from "next/router";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { useAuth } from "../../../context/AuthProvider";
 import UserOrderItem from "../../../components/UserOrderItem";
 
 function UserOrdersPage() {
+  const router = useRouter();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, authUserFirestore, userOrders, updateUserData } = useAuth();
   const sleep = (milliseconds) => {
