@@ -56,7 +56,7 @@ export default async function handler(req, res) {
     from: process.env.GOOGLE_EMAIL,
     to: "kuba.kapek@gmail.com",
     subject: "Test",
-    html: "<h1>Header</h1><p>some text</p>"
+    html: "<h1>Header2</h1><p>some text</p>"
   });
 };
 
