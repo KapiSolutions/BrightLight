@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button } from "react-bootstrap";
-import { storage } from "../config/firebase";
-import { ref, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/router";
 import styles from "../styles/components/CardTarot.module.scss";
+import { getFileUrlStorage } from "../firebase/Storage";
 
 function CardTarot(props) {
   const router = useRouter();
   const [fullDesc, setfullDesc] = useState(false);
   const truncLength = 60;
-  const imageRef = ref(storage, `images/cards/${props.img}`);
 
   useEffect(() => {
-    getDownloadURL(imageRef)
+    getFileUrlStorage("images/cards", props.img)
       .then((url) => {
         const img = document.getElementById(props.title);
         img.setAttribute("src", url);

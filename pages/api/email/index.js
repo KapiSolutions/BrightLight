@@ -1,63 +1,38 @@
-import nodemailer from "nodemailer";
-import { google } from "googleapis";
+import sendEmail from "../../../utils/emails/sendEmail.js";
 
+//Email testing
 export default async function handler(req, res) {
-  const OAuth2 = google.auth.OAuth2;
-
-  const createTransporter = async () => {
-    const oauth2Client = new OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      "https://developers.google.com/oauthplayground"
-    );
-
-    oauth2Client.setCredentials({
-      refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-    });
-
-    const accessToken = await new Promise((resolve, reject) => {
-      oauth2Client.getAccessToken((err, token) => {
-        if (err) {
-          reject("Failed to create access token :(");
-        }
-        resolve(token);
-      });
-    });
-    try {
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          type: "OAuth2",
-          user: process.env.GOOGLE_EMAIL,
-          accessToken,
-          clientId: process.env.GOOGLE_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+  try {
+    const data = {
+      orderID: "1f44af2c-9cac4",
+      orderDate: "11.12.2022 8:23:02",
+      userName: "Jacob",
+      userEmail: "kuba.kapek@gmail.com",
+      cartItems: [
+        {
+          name: "item 1",
+          price: 19,
+          image:
+            "https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Fcards%2Flovers.png?alt=media&token=d911cee3-3c3f-439a-a80f-07dc14defbc6",
         },
-        tls : { rejectUnauthorized: false }
-      });
-      return transporter;
-    } catch (err) {
-      console.error(err);
-    }
-  };
+        {
+          name: "item 2",
+          price: 23,
+          image:
+            "https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Fcards%2Flovers.png?alt=media&token=d911cee3-3c3f-439a-a80f-07dc14defbc6",
+        },
+      ],
+      totalPrice: 40,
+      amountPaid: 23,
+      datePaid: "11.12.2022 8:23:02",
+      paymentMethod: "VISA",
+      paymentID: "2312wdawe12d",
+    };
 
-  const sendEmail = async (emailOptions) => {
-    try {
-      let emailTransporter = await createTransporter();
-      await emailTransporter.sendMail(emailOptions);
-      res.status(200).end("OK")
-    } catch (err) {
-        res.status(err.statusCode || 500).json(err.message);
-    }
-  };
+    // await sendEmail("paymentConfirmation", data, "en");
 
-  sendEmail({
-    from: process.env.GOOGLE_EMAIL,
-    to: "kuba.kapek@gmail.com",
-    subject: "Test",
-    html: "<h1>Header2</h1><p>some text</p>"
-  });
-};
-
-
+    res.status(200).end("OK");
+  } catch (err) {
+    res.status(err.statusCode || 500).json(err.message);
+  }
+}

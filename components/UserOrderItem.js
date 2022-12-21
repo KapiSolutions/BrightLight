@@ -29,6 +29,7 @@ function UserOrderItem(props) {
       }));
 
       const orderData = {
+        sendOrderConfirmEmail: false,
         orderID: props.orders[props.idx].id,
         stripeCart: stripeCart,
       };

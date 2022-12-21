@@ -11,6 +11,7 @@ import { OverlayTrigger, Popover, FloatingLabel, Form, Button, Container, Spinne
 import { BsInfoCircle } from "react-icons/bs";
 import { useDeviceStore } from "../../stores/deviceStore";
 import { createOrderFirestore } from "../../firebase/Firestore";
+import { getFileUrlStorage } from "../../firebase/Storage";
 
 function CartSummaryPage() {
   const router = useRouter();
@@ -49,7 +50,7 @@ function CartSummaryPage() {
   async function handleCheckout(e) {
     e.preventDefault();
     setError("");
-    setLoading(true)
+    setLoading(true);
     setPaymentStart(true);
     let order = null;
     //create order
@@ -64,7 +65,7 @@ function CartSummaryPage() {
       );
     } catch (error) {
       setErrorMsg("Something went wrong, please try again later.");
-      setLoading(undefined)
+      setLoading(undefined);
       return;
     }
 
@@ -74,15 +75,29 @@ function CartSummaryPage() {
         price: authUserFirestore?.cart[idx].s_id,
         quantity: 1,
       }));
+      //prepare cart items data for email notification
+      const cartItems = await Promise.all(
+        authUserFirestore?.cart.map(async (_, idx) => ({
+          name: authUserFirestore?.cart[idx].name,
+          price: authUserFirestore?.cart[idx].price,
+          image: await getFileUrlStorage("images/cards", authUserFirestore?.cart[idx].image),
+        }))
+      );
 
       const orderData = {
+        sendOrderConfirmEmail: true,
         orderID: order.id,
+        userName: order.userName,
+        userEmail: order.userEmail,
+        totalPrice: order.totalPrice,
+        cartItems: cartItems,
         stripeCart: stripeCart,
+        timeCreate: order.timeCreate.toDate().toLocaleString(),
       };
 
       //clean cart
       await updateProfile({ cart: [] });
-      
+
       //start checkoutSession
       const checkoutSession = await axios.post("/api/stripe/checkout_session", orderData);
       if (checkoutSession.statusCode === 500) {
@@ -95,9 +110,9 @@ function CartSummaryPage() {
       const { error } = await stripe.redirectToCheckout({ sessionId: checkoutSession.data.id });
       console.warn(error.message);
 
-      setLoading(undefined)
+      setLoading(undefined);
       if (error) {
-        setLoading(undefined)
+        setLoading(undefined);
         setErrorMsg(
           "Order placed but something went wrong with redirecting to the payment. Try again within 48 hours, after that time the order will be canceled."
         );
@@ -105,7 +120,7 @@ function CartSummaryPage() {
       }
     } catch (error) {
       console.log(error);
-      setLoading(undefined)
+      setLoading(undefined);
       setErrorMsg(
         "Order placed but something went wrong with redirecting to the payment. Try again within 48 hours, after that time the order will be canceled."
       );
@@ -229,7 +244,7 @@ function CartSummaryPage() {
               </div>
               <h5 className="color-primary mt-4">Total Price: {totalPrice} PLN</h5>
               <Button type="submit" className="mt-2" disabled={loading}>
-              {loading ? (
+                {loading ? (
                   <>
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                     <span>Loading...</span>
@@ -239,11 +254,11 @@ function CartSummaryPage() {
                 )}
               </Button>
               <section className="d-flex justify-content-center gap-1 mt-3 ">
-                <Image src="/img/pay_methods/visa.png" width="30" height="21" alt="Visa" />
-                <Image src="/img/pay_methods/mcard.png" width="30" height="21" alt="Master card" />
-                <Image src="/img/pay_methods/emex.png" width="30" height="21" alt="Amrerican express" />
-                <Image src="/img/pay_methods/p24.png" width="30" height="21" alt="Przelewy24" />
-                <Image src="/img/pay_methods/blik.png" width="30" height="21" alt="blik" />
+                <Image src="/img/pay_methods/visa.svg" width="32" height="32" alt="Visa" />
+                <Image src="/img/pay_methods/mcard.svg" width="32" height="32" alt="Master card" />
+                <Image src="/img/pay_methods/amex.svg" width="30" height="32" alt="American express" />
+                <Image src="/img/pay_methods/p24.svg" width="32" height="32" alt="Przelewy24" />
+                <Image src="/img/pay_methods/blik.svg" width="36" height="32" alt="blik" />
               </section>
             </Form>
           </section>

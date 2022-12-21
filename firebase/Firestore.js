@@ -1,6 +1,6 @@
 import { db } from "../config/firebase";
-import { doc, getDoc, getDocs, setDoc, deleteDoc, updateDoc, collection, query, where, serverTimestamp  } from "firebase/firestore";
-import { v4 as uuidv4 } from 'uuid';
+import { doc, getDoc, getDocs, setDoc, deleteDoc, updateDoc, collection, query, where, serverTimestamp } from "firebase/firestore";
+import { v4 as uuidv4 } from "uuid";
 
 const getUserDataFirestore = async (uid) => {
   const docRef = doc(db, "users", uid);
@@ -28,33 +28,35 @@ const createUserFirestore = async (uid, name, lastName, email, age, provider, ca
     await setDoc(doc(db, "users", uid), userData);
     return userData;
   } catch (err) {
-    console.error('createUserFirestore Err: ',err);
+    console.error("createUserFirestore Err: ", err);
     throw err;
   }
 };
 
 const createOrderFirestore = async (uid, name, age, email, cart, totalPrice) => {
   const orderID = uuidv4().slice(0, 13);
+  const docRef = doc(db, "orders", orderID);
   const orderData = {
-    id:orderID,
+    id: orderID,
     userID: uid,
     userName: name,
     userAge: age,
     userEmail: email,
     items: cart,
-    status: 'Waiting for payment',
+    status: "Waiting for payment",
     paid: false,
     answers: [],
     totalPrice: totalPrice,
-    timeCreate: serverTimestamp()
+    timeCreate: serverTimestamp(),
     //timePayment:
     //timeFinished:
   };
   try {
-    await setDoc(doc(db, "orders", orderID), orderData);
-    return orderData;
+    await setDoc(docRef, orderData);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
   } catch (err) {
-    console.error('createOrderFirestore Err: ',err);
+    console.error("createOrderFirestore Err: ", err);
     throw err;
   }
 };
@@ -70,7 +72,9 @@ const deleteDocInCollection = async (collection, uid) => {
 const updateDocFields = async (collection, uid, update) => {
   try {
     const docRef = doc(db, collection, uid);
-    return await updateDoc(docRef, update);
+    await updateDoc(docRef, update);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
   } catch (err) {
     throw err;
   }
@@ -87,6 +91,11 @@ const queryByFirestore = async (collName, state, condition, value) => {
   return docs.length > 0 ? docs : false;
 };
 
-
-
-export { getUserDataFirestore, createUserFirestore, queryByFirestore, deleteDocInCollection, updateDocFields, createOrderFirestore };
+export {
+  getUserDataFirestore,
+  createUserFirestore,
+  queryByFirestore,
+  deleteDocInCollection,
+  updateDocFields,
+  createOrderFirestore,
+};

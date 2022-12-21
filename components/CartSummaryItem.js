@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthProvider";
 import { Card, Button, Spinner } from "react-bootstrap";
 import { TbTrashX } from "react-icons/tb";
-import { storage } from "../config/firebase";
-import { ref, getDownloadURL } from "firebase/storage";
+import { getFileUrlStorage } from "../firebase/Storage";
+
 
 function CartSummaryItem(props) {
   const { authUserFirestore, updateProfile } = useAuth();
@@ -11,10 +11,8 @@ function CartSummaryItem(props) {
   const [fullDesc, setfullDesc] = useState(false);
   const truncLength = 40;
 
-  const imageRef = ref(storage, `images/cards/${authUserFirestore?.cart[props.idx].image}`);
-
   useEffect(() => {
-    getDownloadURL(imageRef)
+    getFileUrlStorage("images/cards", authUserFirestore?.cart[props.idx].image)
       .then((url) => {
         const img = document.getElementById(`cart-img-${props.idx}`);
         img.setAttribute("src", url);
