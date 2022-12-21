@@ -4,8 +4,8 @@ import { google } from "googleapis";
 import path from "path";
 import { promises as fs } from "fs";
 //email templates:
-import orderConfirmation from "../../public/emails/en/order-confirmation";
-import paymentConfirmation from "../../public/emails/en/payment-confirmation";
+import orderConfirmation from "./en/order-confirmation";
+import paymentConfirmation from "./en/payment-confirmation";
 
 export default async function sendEmail(emailType, data, language) {
   const OAuth2 = google.auth.OAuth2;
@@ -29,7 +29,7 @@ export default async function sendEmail(emailType, data, language) {
   }
 
   //Read html file and replace variables with the values
-  const filePath = path.join(process.cwd(), `/public/emails/${language}/${emailData.emailFilePath}/index.html`);
+  const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
   // const filePath = `/emails/${language}/${emailData.emailFilePath}/index.html`;
   const fileContents = await fs.readFile(filePath, "utf8");
   const template = handlebars.compile(fileContents.toString());
