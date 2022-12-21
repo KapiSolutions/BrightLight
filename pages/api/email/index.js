@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       paymentID: "2312wdawe12d",
     };
 
-    // await sendEmail("paymentConfirmation", data, "en");
+    await sendEmail("paymentConfirmation", data, "en");
 
     res.status(200).end("OK");
   } catch (err) {
