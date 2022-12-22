@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  outputFileTracing: true
+  nftTracing: true,
 }
 
 module.exports = nextConfig
