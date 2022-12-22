@@ -16,7 +16,7 @@ function Header(props) {
                     <h1 className='color-primary m-0 fw-bold'>WANNA KNOW YOUR FUTURE?</h1>
                     <p className='color-primary'>DON&apos;T WAIT</p>
                     <br />
-                    <Link href="/#main" passHref>
+                    <Link href="/#main" passHref legacyBehavior>
                         <Button className={props.theme === 'light' ? styles.animatedBorderLight : styles.animatedBorderDark} variant='secondary' size='lg'>FIND IT OUT!</Button>
                     </Link>
                     <br /><br />
@@ -24,7 +24,7 @@ function Header(props) {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default Header

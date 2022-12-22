@@ -42,147 +42,145 @@ function DesktopMenu(props) {
     }
   };
 
-  return (
-    <>
-      <nav>
-        <Navbar
-          collapseOnSelect
-          expand="md"
-          variant={props.theme}
-          className={`display-1 ${back ? (onTop ? "fs-5 shadow-sm background" : "fs-6 shadow-sm background") : "fs-5"}`}
-          fixed="top"
-        >
-          <Container>
-            <Link href="/" passHref>
-            <Navbar.Brand style=
-                {
+  return <>
+    <nav>
+      <Navbar
+        collapseOnSelect
+        expand="md"
+        variant={props.theme}
+        className={`display-1 ${back ? (onTop ? "fs-5 shadow-sm background" : "fs-6 shadow-sm background") : "fs-5"}`}
+        fixed="top"
+      >
+        <Container>
+          <Link href="/" passHref legacyBehavior>
+          <Navbar.Brand style=
+              {
+                back
+                  ? onTop
+                    ? { height: "40px" }
+                    : { height: "45px" }
+                  : { height: "40px" }
+              }
+              >
+              <span className={`${styles.brand} ${back ? (onTop ? "fs-2" : "fs-4") : "fs-2"}`}>BrightLight</span>
+              <span
+                className={`${styles.brandGypsy} ${
+                  back ? (onTop ? "display-7" : "fs-6") : "display-7"
+                } d-block color-secondary`}
+                style={
                   back
                     ? onTop
-                      ? { height: "40px" }
-                      : { height: "45px" }
-                    : { height: "40px" }
+                      ? { position: "relative", top: "-9px", left: "65px" }
+                      : { position: "relative", top: "-8px", left: "50px" }
+                    : { position: "relative", top: "-9px", left: "65px" }
                 }
-                >
-                <span className={`${styles.brand} ${back ? (onTop ? "fs-2" : "fs-4") : "fs-2"}`}>BrightLight</span>
-                <span
-                  className={`${styles.brandGypsy} ${
-                    back ? (onTop ? "display-7" : "fs-6") : "display-7"
-                  } d-block color-secondary`}
-                  style={
-                    back
-                      ? onTop
-                        ? { position: "relative", top: "-9px", left: "65px" }
-                        : { position: "relative", top: "-8px", left: "50px" }
-                      : { position: "relative", top: "-9px", left: "65px" }
-                  }
-                >
-                  GYPSY
-                </span>
-              </Navbar.Brand>
-            </Link>
-            <Navbar.Toggle aria-controls="top-navbar" />
-            <Navbar.Collapse id="top-navbar">
-              <Nav className="ms-auto">
-                {props.navItems.map((item) => (
-                  <Link key={item.id} href={item.to} passHref>
-                    <Nav.Link className={back && "mt-1"}>{item.text}</Nav.Link>
-                  </Link>
-                ))}
+              >
+                GYPSY
+              </span>
+            </Navbar.Brand>
+          </Link>
+          <Navbar.Toggle aria-controls="top-navbar" />
+          <Navbar.Collapse id="top-navbar">
+            <Nav className="ms-auto">
+              {props.navItems.map((item) => (
+                <Link key={item.id} href={item.to} passHref legacyBehavior>
+                  <Nav.Link className={back && "mt-1"}>{item.text}</Nav.Link>
+                </Link>
+              ))}
 
-                {authUserFirestore ? (
-                  <Container className="d-flex ">
-                    <div className="vr m-2 color-primary"></div>
-                    <Dropdown title="My account">
-                      <Dropdown.Toggle
-                        variant={props.theme}
-                        style={{ background: "none", border: "none" }}
-                        className={`color-primary mt-1 fs-6 ${styles.hover}`}
-                        id="dropdown-user"
-                      >
-                        <a>Hi {authUserFirestore?.name}! </a>
-                        <FaRegUserCircle className={`${styles.icons} color-primary `} />
-                      </Dropdown.Toggle>
+              {authUserFirestore ? (
+                <Container className="d-flex ">
+                  <div className="vr m-2 color-primary"></div>
+                  <Dropdown title="My account">
+                    <Dropdown.Toggle
+                      variant={props.theme}
+                      style={{ background: "none", border: "none" }}
+                      className={`color-primary mt-1 fs-6 ${styles.hover}`}
+                      id="dropdown-user"
+                    >
+                      <a>Hi {authUserFirestore?.name}! </a>
+                      <FaRegUserCircle className={`${styles.icons} color-primary `} />
+                    </Dropdown.Toggle>
 
-                      <Dropdown.Menu variant={props.theme} className="background mt-2">
-                        <Link href="/user/profile#main" passHref>
-                          <Dropdown.Item>Profile</Dropdown.Item>
-                        </Link>
-                        <Link href="/user/orders#main" passHref>
-                          <Dropdown.Item>My orders</Dropdown.Item>
-                        </Link>
-                        <Link href="/user/horoscope#main" passHref>
-                          <Dropdown.Item>
-                            Daily Horoscope
-                            <small className="ms-1">
-                              <Badge bg="danger">NEW!</Badge>
-                            </small>
-                            </Dropdown.Item>
-                        </Link>
-                        <Dropdown.Divider />
-                        <Dropdown.Item onClick={handleLogout}>
-                          <FiLogOut className={`${styles.icons} color-primary me-1`} title="Log Out" />
-                          Log Out
-                        </Dropdown.Item>
-                      </Dropdown.Menu>
-                    </Dropdown>
+                    <Dropdown.Menu variant={props.theme} className="background mt-2">
+                      <Link href="/user/profile#main" passHref legacyBehavior>
+                        <Dropdown.Item>Profile</Dropdown.Item>
+                      </Link>
+                      <Link href="/user/orders#main" passHref legacyBehavior>
+                        <Dropdown.Item>My orders</Dropdown.Item>
+                      </Link>
+                      <Link href="/user/horoscope#main" passHref legacyBehavior>
+                        <Dropdown.Item>
+                          Daily Horoscope
+                          <small className="ms-1">
+                            <Badge bg="danger">NEW!</Badge>
+                          </small>
+                          </Dropdown.Item>
+                      </Link>
+                      <Dropdown.Divider />
+                      <Dropdown.Item onClick={handleLogout}>
+                        <FiLogOut className={`${styles.icons} color-primary me-1`} title="Log Out" />
+                        Log Out
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
 
-                    <Nav.Link className={back && "mt-1"} onClick={() => setShowCart(true)}>
-                      <div className="d-block" style={{ maxHeight: "25px" }}>
-                        <BsCart4 className={`${styles.cartIconDesktop} color-primary ${styles.hover}`} />
-                        {authUserFirestore.cart.length > 0 && (
-                          <div style={{ position: "relative", top: "-14px", left: "19px" }}>
-                            <small>
-                              <Badge bg="danger">{authUserFirestore.cart.length}</Badge>
-                            </small>
-                          </div>
-                        )}
-                      </div>
-                    </Nav.Link>
-                  </Container>
-                ) : (
-                  <Link href="/sign-in" passHref>
-                    <Nav.Link className={back && "mt-1"}>Sign In</Nav.Link>
-                  </Link>
-                )}
-                <Nav.Link href="#" className={back && "mt-1"}>
-                  <ChangeThemeButton text={false} />
-                </Nav.Link>
-              </Nav>
-            </Navbar.Collapse>
-          </Container>
-        </Navbar>
-      </nav>
+                  <Nav.Link className={back && "mt-1"} onClick={() => setShowCart(true)}>
+                    <div className="d-block" style={{ maxHeight: "25px" }}>
+                      <BsCart4 className={`${styles.cartIconDesktop} color-primary ${styles.hover}`} />
+                      {authUserFirestore.cart.length > 0 && (
+                        <div style={{ position: "relative", top: "-14px", left: "19px" }}>
+                          <small>
+                            <Badge bg="danger">{authUserFirestore.cart.length}</Badge>
+                          </small>
+                        </div>
+                      )}
+                    </div>
+                  </Nav.Link>
+                </Container>
+              ) : (
+                <Link href="/sign-in" passHref legacyBehavior>
+                  <Nav.Link className={back && "mt-1"}>Sign In</Nav.Link>
+                </Link>
+              )}
+              <Nav.Link href="#" className={back && "mt-1"}>
+                <ChangeThemeButton text={false} />
+              </Nav.Link>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+    </nav>
 
-      <Offcanvas
-        show={showCart}
-        placement="end"
-        onHide={() => setShowCart(undefined)}
-        style={{ background: offCanvBackColor }}
-      >
-        <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
-          <Offcanvas.Title className={`text-${revTheme}`}>
-            <BsCart4 className={`${styles.mobileIcons} color-primary mb-2`} />
-            <a className={`text-${revTheme}`}> Shopping cart</a>
-          </Offcanvas.Title>
-        </Offcanvas.Header>
-        <Offcanvas.Body className={`text-${revTheme}`}>
-        <Cart theme={props.theme} setShowCart={setShowCart}/>
-        </Offcanvas.Body>
-      </Offcanvas>
+    <Offcanvas
+      show={showCart}
+      placement="end"
+      onHide={() => setShowCart(undefined)}
+      style={{ background: offCanvBackColor }}
+    >
+      <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
+        <Offcanvas.Title className={`text-${revTheme}`}>
+          <BsCart4 className={`${styles.mobileIcons} color-primary mb-2`} />
+          <a className={`text-${revTheme}`}> Shopping cart</a>
+        </Offcanvas.Title>
+      </Offcanvas.Header>
+      <Offcanvas.Body className={`text-${revTheme}`}>
+      <Cart theme={props.theme} setShowCart={setShowCart}/>
+      </Offcanvas.Body>
+    </Offcanvas>
 
-      {error && (
-        <div className={styles.darkBack}>
-          <Container className={styles.centerElement}>
-            <Alert variant="danger" onClose={() => setError("")} className="shadow" dismissible>
-              <RiAlertFill className="me-2 mb-1 iconSizeAlert" data-size="2" />
-              <strong>Ups! </strong>
-              {error}
-            </Alert>
-          </Container>
-        </div>
-      )}
-    </>
-  );
+    {error && (
+      <div className={styles.darkBack}>
+        <Container className={styles.centerElement}>
+          <Alert variant="danger" onClose={() => setError("")} className="shadow" dismissible>
+            <RiAlertFill className="me-2 mb-1 iconSizeAlert" data-size="2" />
+            <strong>Ups! </strong>
+            {error}
+          </Alert>
+        </Container>
+      </div>
+    )}
+  </>;
 }
 
 export default DesktopMenu;

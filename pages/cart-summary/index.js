@@ -234,8 +234,11 @@ function CartSummaryPage() {
                   <Form.Check.Label>
                     <sup>
                       I accept the{" "}
-                      <Link href="/terms-of-service#main" passHref>
-                        <a className="text-decoration-underline text-primary pointer">Terms of service</a>
+                      <Link
+                        href="/terms-of-service#main"
+                        passHref
+                        className="text-decoration-underline text-primary pointer">
+                        Terms of service
                       </Link>{" "}
                       and I declare that I am over 18 years old.
                     </sup>

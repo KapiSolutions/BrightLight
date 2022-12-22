@@ -21,7 +21,7 @@ function ErrorPage() {
         <Image src="/svg/404.svg" alt="404 page not found" width="350" height="350" />
         <br />
         <br />
-        <Link href="/" passHref>
+        <Link href="/" passHref legacyBehavior>
           <Button variant="primary" size="lg">
             Back to Home
           </Button>

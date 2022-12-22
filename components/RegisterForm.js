@@ -119,8 +119,11 @@ function RegisterForm() {
         <div className="w-100 text-center mt-1">
           <p>
             <small>
-              By creating an account, you accept our <Link href="/terms-of-service#main" passHref><a className="color-secondary"><u>Terms of service </u></a></Link> 
-              and our <Link href="/privacy-policy#main" passHref><a className="color-secondary underline"><u>Privacy Policy</u></a></Link>.
+              By creating an account, you accept our <Link href="/terms-of-service#main" passHref className="color-secondary"><u>Terms of service </u></Link> 
+              and our <Link
+              href="/privacy-policy#main"
+              passHref
+              className="color-secondary underline"><u>Privacy Policy</u></Link>.
             </small>
           </p>
           Already have an account?

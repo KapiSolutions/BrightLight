@@ -20,11 +20,12 @@ function Footer(props) {
         <Container name='footer' className='mt-3'>
           <div className={`${styles.container} color-primary`}>
             <div className={styles.content}>
-              <Link href='https://www.instagram.com' passHref>
-                <a className='pointer color-primary'>
-                  <RiInstagramFill style={{ width: '20px', height: '20px' }} />
-                  Instagram
-                </a>
+              <Link
+                href='https://www.instagram.com'
+                passHref
+                className='pointer color-primary'>
+
+                <RiInstagramFill style={{ width: '20px', height: '20px' }} />Instagram
               </Link>
 
 
@@ -37,13 +38,13 @@ function Footer(props) {
 
               <Navbar variant={props.theme} className="justify-content-center">
                 <Nav>
-                  <Link href='/cookies-policy#main' passHref>
+                  <Link href='/cookies-policy#main' passHref legacyBehavior>
                     <Nav.Link>Cookies Policy</Nav.Link>
                   </Link>
-                  <Link href='/terms-of-service#main' passHref>
+                  <Link href='/terms-of-service#main' passHref legacyBehavior>
                     <Nav.Link>Terms of service</Nav.Link>
                   </Link>
-                  <Link href='/privacy-policy#main' passHref>
+                  <Link href='/privacy-policy#main' passHref legacyBehavior>
                     <Nav.Link>Privacy Policy</Nav.Link>
                   </Link>
                 </Nav>
@@ -57,7 +58,7 @@ function Footer(props) {
         </Container>
       </div>
     </footer>
-  )
+  );
 }
 
 export default Footer
