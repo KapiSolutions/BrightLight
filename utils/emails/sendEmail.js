@@ -29,7 +29,10 @@ export default async function sendEmail(emailType, data, language) {
   }
 
   //Read html file and replace variables with the values
-  const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
+  // const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
+  const filePath = path.join(__dirname,'..', '..', `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
+  console.log("cwd: ", process.cwd())
+  console.log("dir ", __dirname)
   const fileContents = await fs.readFile(filePath, "utf8");
   const template = handlebars.compile(fileContents.toString());
   const htmlToSend = template(replacements);
