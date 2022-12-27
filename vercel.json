@@ -1,7 +1,7 @@
 {
     "functions": {
       "pages/api/email/index.js": {
-        "includeFiles": "utils/emails/**"
+        "includeFiles": "utils/emails/**/**/**"
       }
     }
   }
