@@ -3,8 +3,6 @@ import handlebars from "handlebars";
 import { google } from "googleapis";
 import path from "path";
 import { promises as fs } from "fs";
-import getConfig from 'next/config'
-
 //email templates:
 import orderConfirmation from "./en/order-confirmation";
 import paymentConfirmation from "./en/payment-confirmation";
@@ -13,7 +11,6 @@ export default async function sendEmail(emailType, data, language) {
   const OAuth2 = google.auth.OAuth2;
   let emailData = null;
   let replacements = null;
-  const { serverRuntimeConfig } = getConfig()
 
   switch (emailType) {
     case "orderConfirmation":
@@ -32,8 +29,7 @@ export default async function sendEmail(emailType, data, language) {
   }
 
   //Read html file and replace variables with the values
-  // const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
-  const filePath = path.join(serverRuntimeConfig.PROJECT_ROOT, `./utils/emails/${language}/${emailData.emailFilePath}/index.html`);
+  const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
   console.log("cwd: ", process.cwd())
   console.log("dir ", __dirname)
   const fileContents = await fs.readFile(filePath, "utf8");
