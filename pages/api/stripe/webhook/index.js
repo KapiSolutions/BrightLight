@@ -29,13 +29,6 @@ export default async function handler(req, res) {
     }
     // console.log("✅ Success:", event.id);
 
-    // if (event.type === "payment_intent.succeeded") {
-    //   console.log("charge.succeeded: ", event.data.object);
-    //   console.log("payment_method_details: ", event.data.object.payment_method_types);
-    //   // console.log("payment_method_details value: ", event.data.object.payment_method_details.type);
-    //   paymentMethod = event.data.object.payment_method_types;
-    // }
-
     // Payment successful
     if (event.type === "checkout.session.completed") {
       // console.log("💰  Payment received!: ", event.data.object);
@@ -49,6 +42,7 @@ export default async function handler(req, res) {
           status: "In realization",
           timePayment: serverTimestamp(),
           paymentMethod: paymentMethod,
+          paymentID: event.data.object.payment_intent,
         });
 
         const cartItems = await Promise.all(
