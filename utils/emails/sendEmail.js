@@ -31,7 +31,7 @@ export default async function sendEmail(emailType, data, language) {
   //Read html file and replace variables with the values
   // const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
   const filePath = path.join(process.cwd(), `utils/emails/en/payment-confirmation/index.html`);
-  console.log("filePath: ", filePath);
+  // console.log("filePath: ", filePath);
   const fileContents = await fs.readFile(filePath, "utf8");
   const template = handlebars.compile(fileContents.toString());
   const htmlToSend = template(replacements);
@@ -50,6 +50,7 @@ export default async function sendEmail(emailType, data, language) {
     const accessToken = await new Promise((resolve, reject) => {
       oauth2Client.getAccessToken((err, token) => {
         if (err) {
+          console.error("Failed to create access token : ",err);
           reject("Failed to create access token :(");
         }
         resolve(token);
@@ -77,10 +78,12 @@ export default async function sendEmail(emailType, data, language) {
   const sendEmail = async (emailOptions) => {
     try {
       let emailTransporter = await createTransporter();
+      console.log("Email sending...");
       await emailTransporter.sendMail(emailOptions);
       console.log("Email sended successfully");
       
     } catch (err) {
+      console.error("Sending email failed: ", err);
       throw err;
     }
   };
