@@ -2,7 +2,6 @@ import nodemailer from "nodemailer";
 import handlebars from "handlebars";
 import { google } from "googleapis";
 import path from "path";
-import { join, resolve} from "path"
 import { promises as fs } from "fs";
 //email templates:
 import orderConfirmation from "./en/order-confirmation";
@@ -30,13 +29,10 @@ export default async function sendEmail(emailType, data, language) {
   }
 
   //Read html file and replace variables with the values
-  // const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
-
-  const templateDirectory = resolve(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}`);
-  // const emailTemplate = readFileSync(join(templateDirectory, "template.mjml"), "utf8");
-  const fileContents = await fs.readFile(join(templateDirectory, "index.html"), "utf8");
-
-  // const fileContents = await fs.readFile(filePath, "utf8");
+  const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
+  console.log("SendEmail cwd: ", process.cwd())
+  console.log("SendEmail dir ", __dirname)
+  const fileContents = await fs.readFile(filePath, "utf8");
   const template = handlebars.compile(fileContents.toString());
   const htmlToSend = template(replacements);
 

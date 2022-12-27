@@ -1,7 +1,0 @@
-{
-    "functions": {
-       "pages/api/email/index.js": {
-          "includeFiles": "utils/emails/en/payment-confirmation/index.html"
-       }
-    }
- }

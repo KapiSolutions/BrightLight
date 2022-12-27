@@ -28,7 +28,8 @@ export default async function handler(req, res) {
       paymentMethod: "VISA",
       paymentID: "2312wdawe12d",
     };
-
+    console.log("api cwd: ", process.cwd())
+    console.log("api dir ", __dirname)
     await sendEmail("paymentConfirmation", data, "en");
 
     res.status(200).end("OK");
