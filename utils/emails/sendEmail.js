@@ -9,7 +9,6 @@ import paymentConfirmation from "./en/payment-confirmation";
 
 export default async function sendEmail(emailType, data, language) {
   await new Promise(async (resolve, reject) => {
-    console.time("task time");
     const OAuth2 = google.auth.OAuth2;
     let emailData = null;
     let replacements = null;
@@ -32,13 +31,11 @@ export default async function sendEmail(emailType, data, language) {
 
     //Read html file and replace variables with the values
     // const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
-    const filePath = path.join(process.cwd(), `utils/emails/en/payment-confirmation/index.html`);
+    const filePath = path.join(process.cwd(), `utils/emails/${language}/payment-confirmation/index.html`);
     // console.log("filePath: ", filePath);
     const fileContents = await fs.readFile(filePath, "utf8");
     const template = handlebars.compile(fileContents.toString());
     const htmlToSend = template(replacements);
-
-    console.log("htmlToSend");
 
     const createTransporter = async () => {
       const oauth2Client = new OAuth2(
@@ -54,7 +51,6 @@ export default async function sendEmail(emailType, data, language) {
       const accessToken = await new Promise((resolve, reject) => {
         oauth2Client.getAccessToken((err, token) => {
           if (err) {
-            console.error("Failed to create access token : ", err);
             reject("Failed to create access token :(");
           }
           resolve(token);
@@ -81,13 +77,10 @@ export default async function sendEmail(emailType, data, language) {
 
     const sendEmail = async (emailOptions) => {
       try {
-        console.log("Email sending...");
         let emailTransporter = await createTransporter();
         await emailTransporter.sendMail(emailOptions);
-        console.timeEnd("task time");
         resolve(true);
       } catch (err) {
-        console.error("Sending email failed: ", err);
         reject(err);
       }
     };
