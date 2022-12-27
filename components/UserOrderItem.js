@@ -22,6 +22,9 @@ function UserOrderItem(props) {
 
   async function handlePayment() {
     try {
+      const localeLanguage = window.navigator.userLanguage || window.navigator.language; //to display the date in the email in the client's language format
+      const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
+  
       //prepare stripe product data
       const stripeCart = props.orders[props.idx].items.map((_, idx) => ({
         price: props.orders[props.idx].items[idx].s_id,
@@ -32,6 +35,8 @@ function UserOrderItem(props) {
         sendOrderConfirmEmail: false,
         orderID: props.orders[props.idx].id,
         stripeCart: stripeCart,
+        localeLanguage: localeLanguage,
+        localeTimeZone: localeTimeZone,
       };
 
       //start checkoutSession

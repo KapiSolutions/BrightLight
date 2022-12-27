@@ -20,7 +20,11 @@ export default async function handler(req, res) {
         cancel_url: `${req.headers.origin}/payment/cancel`,
         automatic_tax: { enabled: false },
         // client_reference_id: orderID,
-        metadata: { 'orderID': orderID },
+        metadata: { 
+          'orderID': orderID,
+          'localeLanguage' : data.localeLanguage,
+          'localeTimeZone' : data.localeTimeZone
+        },
       });
       res.json({ url: session.url, id: session.id }); //redirect to checkout from the client side
     } catch (err) {

@@ -53,6 +53,9 @@ function CartSummaryPage() {
     setLoading(true);
     setPaymentStart(true);
     let order = null;
+    const localeLanguage = window.navigator.userLanguage || window.navigator.language; //to display the date in the email in the client's language format
+    const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
+
     //create order
     try {
       order = await createOrderFirestore(
@@ -92,7 +95,9 @@ function CartSummaryPage() {
         totalPrice: order.totalPrice,
         cartItems: cartItems,
         stripeCart: stripeCart,
-        timeCreate: order.timeCreate.toDate().toLocaleString(),
+        localeLanguage: localeLanguage,
+        localeTimeZone: localeTimeZone,
+        timeCreate: order.timeCreate.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
       };
 
       //clean cart
@@ -237,7 +242,8 @@ function CartSummaryPage() {
                       <Link
                         href="/terms-of-service#main"
                         passHref
-                        className="text-decoration-underline text-primary pointer">
+                        className="text-decoration-underline text-primary pointer"
+                      >
                         Terms of service
                       </Link>{" "}
                       and I declare that I am over 18 years old.

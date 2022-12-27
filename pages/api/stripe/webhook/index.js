@@ -33,6 +33,9 @@ export default async function handler(req, res) {
     if (event.type === "checkout.session.completed") {
       // console.log("💰  Payment received!: ", event.data.object);
       try {
+        //Get the client's locale information for the proper date conversion in the email notification
+        const localeLanguage = event.data.object.metadata.localeLanguage; //Client's locale language
+        const localeTimeZone = event.data.object.metadata.localeTimeZone; //Client's locale time zone
         //Get the payment method from the payment intent
         const paymentIntent = await stripe.paymentIntents.retrieve(event.data.object.payment_intent);
         const paymentMethod = paymentIntent.payment_method_types[0];
@@ -55,7 +58,7 @@ export default async function handler(req, res) {
 
         const dataEmail = {
           orderID: data.id,
-          timeCreate: data.timeCreate.toDate().toLocaleString(),
+          timeCreate: data.timeCreate.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
           userName: data.userName,
           userEmail: data.userEmail,
           totalPrice: data.totalPrice,
@@ -63,7 +66,7 @@ export default async function handler(req, res) {
           paymentID: event.data.object.payment_intent,
           paymentMethod: data.paymentMethod,
           amountPaid: data.totalPrice,
-          timePayment: data.timePayment.toDate().toLocaleString(),
+          timePayment: data.timePayment.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
         };
         //Send confirmation email about the succeeded payment
         await sendEmail("paymentConfirmation", dataEmail, "en");

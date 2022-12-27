@@ -28,7 +28,7 @@ function CancelPaymentPage() {
       <Container className="justify-content-center text-center mt-5 color-primary" id="pc-ctx">
         <h1>Payment failure</h1>
         <VscBracketError style={{width: "40px", height: "40px"}} className="mb-3"/>
-        <p>
+        <p className="color-primary">
           Order placed but something went wrong with during the payment. Please try to pay again within 48 hours, otherwise the order will be canceled.
         </p>
         <Button variant="primary" className="mt-2" onClick={() => {router.push("/user/orders#main")}}>Go to My orders</Button>

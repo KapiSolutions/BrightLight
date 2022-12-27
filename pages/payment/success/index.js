@@ -28,8 +28,8 @@ function SuccessPaymentPage() {
       <Container className="justify-content-center text-center mt-5" id="ps-ctx">
         <h2 className="color-primary">Payment complete!</h2>
         <IoCheckmarkDoneCircleOutline style={{width: "40px", height: "40px"}} className="mb-3"/>
-        <p>Check your email for the order confirmation.</p> 
-        <p>You can check the status of your order and all other details in <i>My orders</i> tab.</p>      
+        <p className="color-primary">Check your email for the order confirmation.</p> 
+        <p className="color-primary">You can check also the status of your order and all other details below:</p>      
         <Button variant="primary" className="mt-2" onClick={() => {router.push("/user/orders#main")}}>Go to My orders</Button>
         
       </Container>
