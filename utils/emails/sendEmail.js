@@ -4,7 +4,7 @@ import { google } from "googleapis";
 import path from "path";
 import { promises as fs } from "fs";
 //email templates:
-import orderConfirmation from "./en/order-confirmation";
+import orderConfirmation from "./en/orderConfirmation";
 import paymentConfirmation from "./en/paymentConfirmation";
 
 export default async function sendEmail(emailType, data, language) {

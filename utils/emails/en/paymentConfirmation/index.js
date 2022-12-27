@@ -15,7 +15,6 @@ export default function orderConfirmation(data) {
     const emailData_pc = {
       emailTo: data.userEmail,
       emailSubject: `Successful payment! (order: ${data.orderID})`,
-      emailFilePath: "payment-confirmation",
       userName: data.userName,
     };
     const replacements_pc = {

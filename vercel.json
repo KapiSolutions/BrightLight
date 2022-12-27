@@ -1,8 +1,0 @@
-{
-    "functions": {
-      "pages/api/stripe/checkout_session/index.js": {
-        "includeFiles": "utils/emails/**/**/**"
-      }
-    }
-  }
-  

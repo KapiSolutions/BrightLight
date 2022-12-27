@@ -15,7 +15,6 @@ export default function orderConfirmation(data) {
   const emailData_oc = {
     emailTo: data.userEmail,
     emailSubject: `Order confirmation (${data.orderID})`,
-    emailFilePath: "order-confirmation",
     userName: data.userName,
   };
   const replacements_oc = {
