@@ -31,9 +31,9 @@ export default async function handler(req, res) {
     
     // const filePath = path.join(process.cwd(), `utils/emails/en/payment-confirmation/index.html`);
     // const fileContents = await fs.readFile(filePath, "utf8");
-    console.time("task time");
+    
     await sendEmail("paymentConfirmation", data, "en");
-    console.timeEnd("task time");
+    console.log("Email sended")
 
     res.status(200).end("OK");
   } catch (err) {

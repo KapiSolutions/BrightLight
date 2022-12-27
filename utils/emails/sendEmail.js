@@ -8,93 +8,98 @@ import orderConfirmation from "./en/order-confirmation";
 import paymentConfirmation from "./en/payment-confirmation";
 
 export default async function sendEmail(emailType, data, language) {
-  const OAuth2 = google.auth.OAuth2;
-  let emailData = null;
-  let replacements = null;
+  await new Promise(async (resolve, reject) => {
+    console.time("task time");
+    const OAuth2 = google.auth.OAuth2;
+    let emailData = null;
+    let replacements = null;
 
-  switch (emailType) {
-    case "orderConfirmation":
-      const { emailData_oc, replacements_oc } = orderConfirmation(data);
-      emailData = emailData_oc;
-      replacements = replacements_oc;
-      break;
-    case "paymentConfirmation":
-      const { emailData_pc, replacements_pc } = paymentConfirmation(data);
-      emailData = emailData_pc;
-      replacements = replacements_pc;
-      break;
+    switch (emailType) {
+      case "orderConfirmation":
+        const { emailData_oc, replacements_oc } = orderConfirmation(data);
+        emailData = emailData_oc;
+        replacements = replacements_oc;
+        break;
+      case "paymentConfirmation":
+        const { emailData_pc, replacements_pc } = paymentConfirmation(data);
+        emailData = emailData_pc;
+        replacements = replacements_pc;
+        break;
 
-    default:
-      throw "invalid email type.";
-  }
-
-  //Read html file and replace variables with the values
-  // const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
-  const filePath = path.join(process.cwd(), `utils/emails/en/payment-confirmation/index.html`);
-  // console.log("filePath: ", filePath);
-  const fileContents = await fs.readFile(filePath, "utf8");
-  const template = handlebars.compile(fileContents.toString());
-  const htmlToSend = template(replacements);
-
-  const createTransporter = async () => {
-    const oauth2Client = new OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      "https://developers.google.com/oauthplayground"
-    );
-
-    oauth2Client.setCredentials({
-      refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-    });
-
-    const accessToken = await new Promise((resolve, reject) => {
-      oauth2Client.getAccessToken((err, token) => {
-        if (err) {
-          console.error("Failed to create access token : ",err);
-          reject("Failed to create access token :(");
-        }
-        resolve(token);
-      });
-    });
-    try {
-      const transporter = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-          type: "OAuth2",
-          user: process.env.GOOGLE_EMAIL,
-          accessToken,
-          clientId: process.env.GOOGLE_CLIENT_ID,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-          refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-        },
-        tls: { rejectUnauthorized: false },
-      });
-      return transporter;
-    } catch (err) {
-      console.error(err);
+      default:
+        throw "invalid email type.";
     }
-  };
 
-  const sendEmail = async (emailOptions) => {
-    try {
-      let emailTransporter = await createTransporter();
-      console.log("Email sending...");
-      await emailTransporter.sendMail(emailOptions);
-      console.log("Email sended successfully");
-      
-    } catch (err) {
-      console.error("Sending email failed: ", err);
-      throw err;
-    }
-  };
+    //Read html file and replace variables with the values
+    // const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
+    const filePath = path.join(process.cwd(), `utils/emails/en/payment-confirmation/index.html`);
+    // console.log("filePath: ", filePath);
+    const fileContents = await fs.readFile(filePath, "utf8");
+    const template = handlebars.compile(fileContents.toString());
+    const htmlToSend = template(replacements);
 
-  sendEmail({
-    from: {
-      name: "Bright Light Gypsy",
-      address: process.env.GOOGLE_EMAIL,
-    },
-    to: emailData.emailTo,
-    subject: emailData.emailSubject,
-    html: htmlToSend,
+    console.log("htmlToSend");
+
+    const createTransporter = async () => {
+      const oauth2Client = new OAuth2(
+        process.env.GOOGLE_CLIENT_ID,
+        process.env.GOOGLE_CLIENT_SECRET,
+        "https://developers.google.com/oauthplayground"
+      );
+
+      oauth2Client.setCredentials({
+        refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+      });
+
+      const accessToken = await new Promise((resolve, reject) => {
+        oauth2Client.getAccessToken((err, token) => {
+          if (err) {
+            console.error("Failed to create access token : ", err);
+            reject("Failed to create access token :(");
+          }
+          resolve(token);
+        });
+      });
+      try {
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            type: "OAuth2",
+            user: process.env.GOOGLE_EMAIL,
+            accessToken,
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
+          },
+          tls: { rejectUnauthorized: false },
+        });
+        return transporter;
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const sendEmail = async (emailOptions) => {
+      try {
+        console.log("Email sending...");
+        let emailTransporter = await createTransporter();
+        await emailTransporter.sendMail(emailOptions);
+        console.timeEnd("task time");
+        resolve(true);
+      } catch (err) {
+        console.error("Sending email failed: ", err);
+        reject(err);
+      }
+    };
+
+    sendEmail({
+      from: {
+        name: "Bright Light Gypsy",
+        address: process.env.GOOGLE_EMAIL,
+      },
+      to: emailData.emailTo,
+      subject: emailData.emailSubject,
+      html: htmlToSend,
+    });
   });
 }
