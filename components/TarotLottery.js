@@ -223,11 +223,11 @@ function TarotLotteryDesktop(props) {
           `}
           >
             <ReactCardFlip isFlipped={flipCards.length > idx} flipDirection="horizontal">
-              <div style={{ opacity: "0.5" }}>
-                <Image src={cardBackUrl} width="118" height="200" alt={`back-of-card-${idx}`} />
+              <div style={{ opacity: "0.5" ,  width: "118px", height: "200px" }}>
+                <Image src={cardBackUrl} fill  alt={`back-of-card-${idx}`} />
               </div>
-              <div>
-                <Card.Img id={`tarot-card-${idx}`} width="118" height="200" variant="top" alt={`tarot-card-${idx}`} />
+              <div style={{ width: "118px", height: "200px" }}>
+                <Card.Img id={`tarot-card-${idx}`} variant="top" alt={`tarot-card-${idx}`} />
               </div>
             </ReactCardFlip>
           </Col>
