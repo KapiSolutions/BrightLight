@@ -31,10 +31,10 @@ export default async function handler(req, res) {
       paymentID: "2312wdawe12d",
     };
     
-    const filePath = path.join(process.cwd(), `utils/emails/en/payment-confirmation/index.html`);
-    const fileContents = await fs.readFile(filePath, "utf8");
+    // const filePath = path.join(process.cwd(), `utils/emails/en/payment-confirmation/index.html`);
+    // const fileContents = await fs.readFile(filePath, "utf8");
     
-    // await sendEmail("paymentConfirmation", data, "en");
+    await sendEmail("paymentConfirmation", data, "en");
 
     res.status(200).end("OK");
   } catch (err) {
