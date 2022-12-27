@@ -223,10 +223,10 @@ function TarotLotteryDesktop(props) {
           `}
           >
             <ReactCardFlip isFlipped={flipCards.length > idx} flipDirection="horizontal">
-              <div style={{ opacity: "0.5" ,  width: "118px", height: "200px" }}>
+              <div style={{ opacity: "0.5" ,  width: `${isMobile ? "93px" : "120px"}`, height: `${isMobile ? "157px" : "200px"}` }}>
                 <Image src={cardBackUrl} fill  alt={`back-of-card-${idx}`} />
               </div>
-              <div style={{ width: "118px", height: "200px" }}>
+              <div style={{ width: `${isMobile ? "93px" : "120px"}`, height: `${isMobile ? "157px" : "200px"}` }}>
                 <Card.Img id={`tarot-card-${idx}`} variant="top" alt={`tarot-card-${idx}`} />
               </div>
             </ReactCardFlip>
@@ -257,8 +257,8 @@ function TarotLotteryDesktop(props) {
             <Image
               src="/img/cardsMobileLottery.gif"
               alt={`tarot-card`}
-              width="176"
-              height="300"
+              width="120"
+              height="205"
               onClick={() => {
                 const random = Math.floor(Math.random() * cardsSet.length);
                 const card = cardsSet[random];
