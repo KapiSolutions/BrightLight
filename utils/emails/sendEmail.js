@@ -79,6 +79,7 @@ export default async function sendEmail(emailType, data, language) {
       let emailTransporter = await createTransporter();
       await emailTransporter.sendMail(emailOptions);
       console.log("Email sended successfully");
+      
     } catch (err) {
       throw err;
     }
