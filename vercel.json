@@ -1,0 +1,8 @@
+{
+    "functions": {
+      "api/email/index.js": {
+        "includeFiles": "utils/emails/**"
+      }
+    }
+  }
+  

@@ -31,6 +31,7 @@ export default async function sendEmail(emailType, data, language) {
   //Read html file and replace variables with the values
   // const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailData.emailFilePath}/index.html`);
   const filePath = path.join(process.cwd(), `utils/emails/en/payment-confirmation/index.html`);
+  console.log("filePath: ", filePath);
   const fileContents = await fs.readFile(filePath, "utf8");
   const template = handlebars.compile(fileContents.toString());
   const htmlToSend = template(replacements);
@@ -77,6 +78,7 @@ export default async function sendEmail(emailType, data, language) {
     try {
       let emailTransporter = await createTransporter();
       await emailTransporter.sendMail(emailOptions);
+      console.log("Email sended successfully");
     } catch (err) {
       throw err;
     }
