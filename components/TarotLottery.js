@@ -102,6 +102,32 @@ function TarotLotteryDesktop(props) {
     "king-of-pentacles",
   ];
 
+  let cardStyleBack = {}
+  let cardStyleFront = {}
+
+    if (props.cardSet < 10){
+      cardStyleBack = {
+        opacity: 0.5,
+        width: `${isMobile ? "93px" : "118px"}`, 
+        height: `${isMobile ? "158px" : "200px"}`
+      }
+      cardStyleFront = {
+        width: `${isMobile ? "93px" : "118px"}`, 
+        height: `${isMobile ? "158px" : "200px"}`
+      }
+    }else { //cards must be smaller for better view
+      cardStyleBack = {
+        opacity: 0.5,
+        width: `${isMobile ? "60px" : "93px"}`, 
+        height: `${isMobile ? "102px" : "158px"}`
+      }
+      cardStyleFront = {
+        width: `${isMobile ? "60px" : "93px"}`, 
+        height: `${isMobile ? "102px" : "158px"}`
+      }
+    }
+
+  
   //Menage the display of the choosen cards
   useEffect(() => {
     if (flipCards.length > 0) {
@@ -212,21 +238,21 @@ function TarotLotteryDesktop(props) {
       <Row className="d-flex mb-3 text-center">
         <h1 className="color-primary mb-3"> {props.title} </h1>
       </Row>
-      <Row className="d-flex mb-4 justify-content-center">
+      <Row className="d-flex mb-4 justify-content-center gap-2">
         {Array.from({ length: props.cardSet }).map((_, idx) => (
           <Col
             key={idx}
-            className={`d-flex mb-2 justify-content-center ${
-              props.cardSet >= 10 ? "col-2 col-md-2 col-lg-1" : "col-4 col-md-2 col-lg-2"
+            className={`d-flex ms-1 me-1 mb-2 justify-content-center ${
+              props.cardSet > 10 ? "col-2 col-sm-1 col-md-2 col-lg-1" : "col-3 col-sm-2 col-md-2 col-lg-2"
             }   
           ${isMobile ? "" : props.cardSet < 10 && idx > 0 && idx < props.cardSet - 1 && "pt-3"} 
           `}
           >
-            <ReactCardFlip isFlipped={flipCards.length > idx} flipDirection="horizontal">
-              <div style={{ opacity: "0.5" ,  width: `${isMobile ? "93px" : "120px"}`, height: `${isMobile ? "157px" : "200px"}` }}>
+            <ReactCardFlip isFlipped={flipCards.length > idx} flipDirection="horizontal" flipSpeedFrontToBack="2" flipSpeedBackToFront="2">
+              <div style={cardStyleBack}>
                 <Image src={cardBackUrl} fill  alt={`back-of-card-${idx}`} />
               </div>
-              <div style={{ width: `${isMobile ? "93px" : "120px"}`, height: `${isMobile ? "157px" : "200px"}` }}>
+              <div style={cardStyleFront}>
                 <Card.Img id={`tarot-card-${idx}`} variant="top" alt={`tarot-card-${idx}`} />
               </div>
             </ReactCardFlip>
@@ -259,6 +285,8 @@ function TarotLotteryDesktop(props) {
               alt={`tarot-card`}
               width="120"
               height="205"
+              placeholder="blur"
+              blurDataURL="/img/placeholders/tarotLotteryGif.webp"
               onClick={() => {
                 const random = Math.floor(Math.random() * cardsSet.length);
                 const card = cardsSet[random];
