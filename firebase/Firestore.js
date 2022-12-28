@@ -33,7 +33,7 @@ const createUserFirestore = async (uid, name, lastName, email, age, provider, ca
   }
 };
 
-const createOrderFirestore = async (uid, name, age, email, cart, totalPrice) => {
+const createOrderFirestore = async (uid, name, age, email, cart, totalPrice, comments) => {
   const orderID = uuidv4().slice(0, 13);
   const docRef = doc(db, "orders", orderID);
   const orderData = {
@@ -48,6 +48,7 @@ const createOrderFirestore = async (uid, name, age, email, cart, totalPrice) => 
     answers: [],
     totalPrice: totalPrice,
     timeCreate: serverTimestamp(),
+    userComments: comments,
     //timePayment:
     //timeFinished:
   };

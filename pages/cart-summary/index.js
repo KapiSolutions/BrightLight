@@ -55,7 +55,7 @@ function CartSummaryPage() {
     let order = null;
     const localeLanguage = window.navigator.userLanguage || window.navigator.language; //to display the date in the email in the client's language format
     const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
-
+    const comments = document.getElementById("commentsField").value;
     //create order
     try {
       order = await createOrderFirestore(
@@ -64,7 +64,8 @@ function CartSummaryPage() {
         authUserFirestore?.age,
         authUserFirestore?.email,
         authUserFirestore?.cart,
-        totalPrice
+        totalPrice,
+        comments
       );
     } catch (error) {
       setErrorMsg("Something went wrong, please try again later.");
@@ -158,6 +159,24 @@ function CartSummaryPage() {
               </FloatingLabel>
               <FloatingLabel controlId="Bdate" label="Your birth date" className="mb-3 text-dark">
                 <Form.Control type="date" defaultValue={authUserFirestore?.age} disabled required />
+                <div className="d-flex justify-content-end">
+                  <OverlayTrigger
+                    trigger="click"
+                    placement="left"
+                    overlay={
+                      <Popover id="popover-basic">
+                        <Popover.Body>
+                          The date of birth is very important in tarot. It helps to get answers in the most accurate
+                          way.
+                        </Popover.Body>
+                      </Popover>
+                    }
+                  >
+                    <div className="text-end pe-3" style={{ position: "relative", top: "-46px", maxHeight: "0px" }}>
+                      <BsInfoCircle className="pointer" style={{ height: "20px", width: "20px" }} />
+                    </div>
+                  </OverlayTrigger>
+                </div>
               </FloatingLabel>
               <FloatingLabel controlId="Email" label="Your email address" className="mb-3 text-dark">
                 <Form.Control type="email" defaultValue={authUserFirestore?.email} disabled required />
@@ -168,8 +187,10 @@ function CartSummaryPage() {
                     overlay={
                       <Popover id="popover-basic">
                         <Popover.Body>
-                          You will receive all the answers to the given email address. They will also be available here
-                          in the <i>Profile -&gt; My orders</i> tab.
+                          You will receive all the answers to the given email address. They will also be available{" "}
+                          <Link href="/user/orders#main" passHref className="pointer">
+                            here.
+                          </Link>
                         </Popover.Body>
                       </Popover>
                     }
@@ -194,24 +215,49 @@ function CartSummaryPage() {
             ))}
           </section>
 
-          <section className="mt-4" style={{ maxHeight: "215px" }}>
+          {/* Comments to order */}
+          <section className="text-center mt-4">
+            <p className="text-start justify-self-start mb-0">
+              <small>
+                <strong>Comments to order:</strong>
+              </small>
+            </p>
+            <Form.Control
+              as="textarea"
+              id="commentsField"
+              placeholder="Your comments..."
+              style={{ minHeight: "80px" }}
+            />
+          </section>
+
+          {/* Where and How section */}
+          <section className="mt-4 mb-4" style={{ maxHeight: "200px" }}>
             <small>
               <strong>When and How?</strong>
             </small>
             <div className={`rounded p-2 ${theme == "light" ? "border" : "border border-dark"}`}>
               <p className="m-0">
                 <small>
-                  You will receive all the answers to the given email address. They will also be available here in the{" "}
-                  <i>Profile -&gt; My orders</i> tab.
+                  You will receive all the answers to the given email address.
+                  <br />
+                  Answers will be also available{" "}
+                  <Link href="/user/orders#main" passHref className="pointer">
+                    here.
+                  </Link>
                 </small>
               </p>
-              <p className="mt-2 mb-0 w-75">
-                <small>Everything will be ready within 48 hours after successful payment :)</small>
+              <p className=" mb-0 w-75">
+                <small>Everything will be ready within 48 hours of successful payment :)</small>
               </p>
             </div>
             <div
-              className="text-end"
-              style={{ position: "relative", bottom: isMobile ? "80px" : "90px", right: isMobile ? "-12px" : "-25px" }}
+              className="text-end w-25 float-end mb-0"
+              style={{
+                position: "relative",
+                bottom: isMobile ? "80px" : "90px",
+                right: isMobile ? "-2px" : "-25px",
+                maxHeight: "1px",
+              }}
             >
               <Image
                 src="/img/delivery_info.png"
