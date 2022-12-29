@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import Head from "next/head";
 import { Container, Form, InputGroup } from "react-bootstrap";
 import { useRouter } from "next/router";
@@ -13,9 +13,10 @@ function UserOrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState(false);
   const [message, setMessage] = useState("");
-  const [showOptions, setShowOptions] = useState(false);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, authUserFirestore, userOrders, updateUserData } = useAuth();
+  const initShowOptions = { show: false, sortBar: "1", showBar: "1" };
+  const [showOptions, updateShowOptions] = useReducer((state, updates) => ({ ...state, ...updates }), initShowOptions);
 
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -65,9 +66,11 @@ function UserOrdersPage() {
       document.getElementById("filterByType").value = "All orders";
     }
   };
+
   //Sort orders
   const sortBy = (e, sortMethod, filteredArray) => {
-    if (isMobile) {
+    if (isMobile && e) {
+      updateShowOptions({ sortBar: sortMethod });
       const children = document.getElementById("sortForm").childNodes;
       children.forEach((child) => {
         child.style = "border: 1px solid rgba(133, 133, 133, 0.389)";
@@ -93,11 +96,29 @@ function UserOrdersPage() {
         break;
     }
   };
+
   //Filter orders by type
   const filterByType = (e, filterBy, filteredArray) => {
     let value;
     let array;
     if (isMobile) {
+      switch (filterBy) {
+        case "All orders":
+          updateShowOptions({ showBar: "1" });
+          break;
+        case "Waiting for payment":
+          updateShowOptions({ showBar: "2" });
+          break;
+        case "In realization":
+          updateShowOptions({ showBar: "3" });
+          break;
+        case "Done":
+          updateShowOptions({ showBar: "4" });
+          break;
+
+        default:
+          break;
+      }
       const children = document.getElementById("showForm").childNodes;
       children.forEach((child) => {
         child.style = "border: 1px solid rgba(133, 133, 133, 0.389)";
@@ -129,8 +150,12 @@ function UserOrdersPage() {
     if (!isMobile && !filteredArray) {
       sortBy(null, document.getElementById("sortBy").value, filteredOrders);
     }
+    if(isMobile && !filteredArray){
+      sortBy(null, showOptions.sortBar, filteredOrders);
+    }
     return filteredOrders;
   };
+
   //Filter orders by Date
   const filterByDate = (e, filterBy, filteredArray) => {
     const value = e?.target.value ? e.target.value : filterBy;
@@ -183,11 +208,37 @@ function UserOrdersPage() {
       default:
         break;
     }
-
     //sort filtered array according to actual settings
     !filteredArray && sortBy(null, document.getElementById("sortBy").value, filteredOrders);
     return filteredOrders;
   };
+
+  useEffect(() => {
+    if (showOptions.show) {
+      const childrenSort = [...document.getElementById("sortForm").childNodes];
+      const childrenShow = [...document.getElementById("showForm").childNodes];
+
+      childrenSort.map((child, idx) => {
+        if (idx + 1 == showOptions.sortBar) {
+          child.style = "border: 1px solid rgba(133, 133, 133)";
+        } else {
+          child.style = "border: 1px solid rgba(133, 133, 133, 0.389)";
+        }
+      });
+      childrenShow.map((child, idx) => {
+        if (idx + 1 == showOptions.showBar) {
+          child.style = "border: 1px solid rgba(133, 133, 133)";
+        } else {
+          child.style = "border: 1px solid rgba(133, 133, 133, 0.389)";
+        }
+      });
+
+      // childrenSort.forEach((child) => {
+      //     child.style = "border: 1px solid rgba(133, 133, 133, 0.389)";
+      //   });
+      //   e.target.style = "border: 1px solid rgba(133, 133, 133)";
+    }
+  }, [showOptions]);
 
   return (
     <>
@@ -285,13 +336,13 @@ function UserOrdersPage() {
                     <InputGroup.Text
                       className="pointer border"
                       onClick={() => {
-                        setShowOptions(!showOptions);
+                        updateShowOptions({ show: !showOptions.show });
                       }}
                     >
                       <BsFilterRight style={{ width: "20px", height: "20px" }} />
                     </InputGroup.Text>
                   </Form>
-                  {showOptions && (
+                  {showOptions.show && (
                     <section className="d-block mt-3 color-primary" style={{ maxWidth: "100%" }}>
                       <div className="d-flex align-items-center mb-2 text-nowrap">
                         <div>Sort by:</div>
@@ -302,7 +353,6 @@ function UserOrdersPage() {
                         >
                           <div
                             className={`rounded m-1 p-2 pointer`}
-                            style={{ border: "1px solid rgba(133, 133, 133)" }}
                             onClick={(e) => {
                               sortBy(e, "1");
                             }}
@@ -341,11 +391,10 @@ function UserOrdersPage() {
                         <div
                           id="showForm"
                           className={`d-flex overflow-auto ms-2 ${styles.optionsBar}`}
-                          style={{ maxWidth: "75vw" }}
+                          style={{ maxWidth: "79vw" }}
                         >
                           <div
-                            className={`rounded m-1 p-2 pointer`}
-                            style={{ border: "1px solid rgba(133, 133, 133)" }}
+                            className={`rounded m-1 p-2 pointer ${styles.optionsBar}`}
                             onClick={(e) => {
                               filterByType(e, "All orders");
                             }}
