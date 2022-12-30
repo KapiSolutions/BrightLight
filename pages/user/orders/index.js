@@ -4,7 +4,7 @@ import { Container, Form, InputGroup } from "react-bootstrap";
 import { useRouter } from "next/router";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { useAuth } from "../../../context/AuthProvider";
-import UserOrderItem from "../../../components/UserOrderItem";
+import Order from "../../../components/UserOrder/Order";
 import { FiSearch } from "react-icons/fi";
 import { BsFilterRight } from "react-icons/bs";
 import styles from "../../../styles/pages/Orders.module.scss";
@@ -29,15 +29,18 @@ function UserOrdersPage() {
   useEffect(() => {
     if (isAuthenticated()) {
       isMobile && scroll();
-
       authUserFirestore && updateUserData(authUserFirestore?.id, null, true); //update only orders
-      setOrders([...userOrders].sort((a, b) => b.timeCreate.toDate() - a.timeCreate.toDate())); //sort and copy to new variable to prevent affecting on source data during operations
     } else {
       router.replace("/sign-in");
       return;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    setOrders([...userOrders].sort((a, b) => b.timeCreate.toDate() - a.timeCreate.toDate())); //sort and copy to new variable to prevent affecting on source data during operations
+  }, [userOrders])
+  
 
   //Searching for specific order
   const findOrder = (e) => {
@@ -150,7 +153,7 @@ function UserOrdersPage() {
     if (!isMobile && !filteredArray) {
       sortBy(null, document.getElementById("sortBy").value, filteredOrders);
     }
-    if(isMobile && !filteredArray){
+    if (isMobile && !filteredArray) {
       sortBy(null, showOptions.sortBar, filteredOrders);
     }
     return filteredOrders;
@@ -251,14 +254,15 @@ function UserOrdersPage() {
           <p className="color-primary">No orders yet.</p>
         ) : (
           <>
-            <section className={`text-center color-primary ${isMobile ? "" : "mt-2"}`}>
+            <section className={`text-center  ${isMobile ? "" : "mt-2"}`}>
               {!isMobile && (
                 <div className="text-start mb-4">
                   <FiSearch
-                    style={{ position: "relative", top: "59px", left: "11px", width: "20px", height: "20px" }}
+                    
+                    style={{ position: "relative", top: "59px", left: "11px", width: "20px", height: "20px"}}
                   />
 
-                  <Form className="text-start d-flex gap-4" onSubmit={findOrder}>
+                  <Form className="text-start d-flex gap-4 color-primary" onSubmit={findOrder}>
                     <Form.Group className="col-3">
                       <Form.Label className="mb-0">
                         <small>
@@ -435,7 +439,7 @@ function UserOrdersPage() {
               {message && <p className="color-primary mt-5">{message}</p>}
 
               {Array.from({ length: orders?.length }).map((_, idx) => (
-                <UserOrderItem key={idx} idx={idx} orders={orders} />
+                <Order key={idx} idx={idx} orders={orders} />
               ))}
             </section>
           </>

@@ -1,24 +1,28 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import axios from "axios";
-import getStripe from "../utils/get-stripejs";
-import { useAuth } from "../context/AuthProvider";
-import { Badge, Button, Modal } from "react-bootstrap";
+import getStripe from "../../utils/get-stripejs";
+import { useAuth } from "../../context/AuthProvider";
+import { Badge, Button, Modal, Spinner } from "react-bootstrap";
 import { useRouter } from "next/router";
 import { TbTrashX } from "react-icons/tb";
 import { IoIosArrowForward } from "react-icons/io";
-import { deleteDocInCollection } from "../firebase/Firestore";
-import { useDeviceStore } from "../stores/deviceStore";
+import { deleteDocInCollection } from "../../firebase/Firestore";
+import { useDeviceStore } from "../../stores/deviceStore";
+import OrderDetails from "./OrderDetails";
 
-function UserOrderItem(props) {
+function Order(props) {
   const router = useRouter();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
   const [show, setShow] = useState(false);
+  const [loading, setLoading] = useState(undefined);
+  const [showDetails, setShowDetails] = useState(false);
   const cardsIcon = "/img/cards-light.png";
 
   async function handlePayment() {
     try {
+      setLoading(true);
       const localeLanguage = window.navigator.userLanguage || window.navigator.language; //to display the date in the email in the client's language format
       const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
 
@@ -50,9 +54,11 @@ function UserOrderItem(props) {
       if (error) {
         setErrorMsg("Something went wrong, please try again later.");
       }
+      setLoading(undefined);
     } catch (error) {
       console.log(error);
       setErrorMsg("Something went wrong, please try again later.");
+      setLoading(undefined);
       return;
     }
   }
@@ -65,16 +71,11 @@ function UserOrderItem(props) {
     }
   }
 
-  const showDetails = () => {
-    router.push({
-      pathname: "/user/orders/[pid]",
-      query: { pid: props.orders[props.idx].id },
-      hash: "main",
-    });
+  const showDetailsFunc = () => {
+    setShowDetails(!showDetails);
   };
-
   return (
-    <>
+    <div className="color-primary">
       {props.idx === 0 && (
         <>
           {!isMobile && (
@@ -99,8 +100,8 @@ function UserOrderItem(props) {
         </>
       )}
 
-      <div className="d-flex align-items-center text-start w-100">
-        <div className="col-10 col-md-5 d-flex pointer" onClick={showDetails}>
+      <div className="d-flex align-items-center text-start w-100 flex-wrap">
+        <div className="col-10 col-md-5 d-flex pointer" onClick={showDetailsFunc}>
           <div>
             <Image src={cardsIcon} width="58" height="58" alt="tarot cards" />
           </div>
@@ -158,8 +159,8 @@ function UserOrderItem(props) {
             </div>
             <div className="col-2">{props.orders[props.idx].totalPrice} PLN</div>
             <div className="col-2">
-              <span className="pointer Hover" onClick={showDetails}>
-                Show details
+              <span className="pointer Hover" onClick={showDetailsFunc}>
+                {showDetails ? "Hide details" : "Show details"}
               </span>
               {!props.orders[props.idx].paid && (
                 <div className="d-flex flex-wrap mt-2 gap-3">
@@ -172,8 +173,12 @@ function UserOrderItem(props) {
                   >
                     Cancel
                   </Button>
-                  <Button variant="primary" className="text-light" size="sm" onClick={handlePayment}>
-                    Pay now
+                  <Button variant="primary" className="text-light" size="sm" onClick={handlePayment} disabled={loading}>
+                    {loading ? (
+                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                    ) : (
+                      "Pay now"
+                    )}
                   </Button>
                 </div>
               )}
@@ -181,8 +186,45 @@ function UserOrderItem(props) {
           </>
         )}
         {isMobile && (
-          <div className="col-2 text-center pointer" onClick={showDetails}>
-            <IoIosArrowForward style={{ height: "25px", width: "25px" }} />
+          <div className="col-2 text-center pointer" onClick={showDetailsFunc}>
+            <IoIosArrowForward
+              style={{ height: "25px", width: "25px", transform: `rotate(${showDetails ? "90" : "0"}deg)` }}
+            />
+          </div>
+        )}
+
+        {/* Details of the order */}
+        {showDetails && (
+          <div className="w-100">
+            {isMobile && !props.orders[props.idx].paid && (
+              <div className="d-flex flex-wrap mt-3 justify-content-end gap-4">
+                <span>Total: {props.orders[props.idx].totalPrice},00 PLN</span>
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => {
+                    setShow(true);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button variant="primary" className="text-light" size="sm" onClick={handlePayment} disabled={loading}>
+                  {loading ? (
+                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  ) : (
+                    "Pay now"
+                  )}
+                </Button>
+              </div>
+            )}
+            {/* Order Details */}
+            <OrderDetails order={props.orders[props.idx]} isMobile={isMobile} />
+
+            <div className="text-center mt-5 mb-4">
+              <Button variant="outline-accent4" className="pointer" onClick={showDetailsFunc}>
+                Hide details
+              </Button>
+            </div>
           </div>
         )}
       </div>
@@ -229,8 +271,8 @@ function UserOrderItem(props) {
           </Button>
         </Modal.Footer>
       </Modal>
-    </>
+    </div>
   );
 }
 
-export default UserOrderItem;
+export default Order;
