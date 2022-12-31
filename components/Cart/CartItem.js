@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthProvider";
-import { Card, Button, Spinner, FloatingLabel, Form } from "react-bootstrap";
+import { Card, Button, Spinner, Form } from "react-bootstrap";
 import { TbTrashX, TbArrowBackUp } from "react-icons/tb";
 import { AiOutlineEdit, AiOutlineSave } from "react-icons/ai";
 import { IoIosArrowForward } from "react-icons/io";
@@ -55,6 +55,7 @@ function CartItem(props) {
   }
   return (
     <div className={styles.OrderItem}>
+      <div className={`text-${props.theme === "light" ? "dark" : "light"}`}>
       <div className={styles.OrderHeader}>
         <Card.Img
           className={styles.OrderImg}
@@ -191,6 +192,7 @@ function CartItem(props) {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
