@@ -1,17 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthProvider";
 import { Card, Button, Spinner, FloatingLabel, Form } from "react-bootstrap";
 import { TbTrashX, TbArrowBackUp } from "react-icons/tb";
 import { AiOutlineEdit, AiOutlineSave } from "react-icons/ai";
-import styles from "../../styles/components/CartItem.module.scss";
+import { IoIosArrowForward } from "react-icons/io";
+import styles from "../../styles/components/Cart/CartItem.module.scss";
+import { getFileUrlStorage } from "../../firebase/Storage";
 
 function CartItem(props) {
   const { authUserFirestore, updateProfile } = useAuth();
+  const [showDetails, setShowDetails] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [fullDesc, setfullDesc] = useState(false);
   const [edit, setEdit] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
-  const truncLength = 100;
+  const item = authUserFirestore.cart[props.idx];
+
+  // Get url's for the item images
+  useEffect(() => {
+    getFileUrlStorage("images/cards", item.image)
+      .then((url) => {
+        const img = document.getElementById(`img-${props.idx.toString()}`);
+        img.setAttribute("src", url);
+      })
+      .catch((error) => console.log(error));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function deleteItem(item) {
     try {
@@ -38,132 +51,147 @@ function CartItem(props) {
       console.log(e);
     }
     setEdit(false);
-    // setfullDesc(false);
     setLoadingEdit(false);
   }
   return (
-    <Card
-      className={`
-              bg-bg${props.theme} 
-              text-${props.theme == "light" ? "dark" : "light"} 
-              border-${props.theme == "light" ? "dark" : "accent4"}  
-              shadow-sm mb-3
-              `}
-    >
-      <Card.Body className="pt-1 pb-2">
-        <Card.Text className="color-primary mb-0">
-          <span className="fs-4 mb-0">{authUserFirestore.cart[props.idx].name}</span>
-        </Card.Text>
-        <section className="pointer" onClick={() => !edit && setfullDesc(!fullDesc)}>
-          <p className="mt-0 mb-0">
-            <small>
-              <i>
-                {!edit && (
-                  <>
-                    {fullDesc ? (
-                      <>&quot;{authUserFirestore.cart[props.idx].question}&quot;</>
-                    ) : (
-                      <>&quot;{authUserFirestore.cart[props.idx].question.substring(0, truncLength)}...&quot;</>
-                    )}
-                  </>
-                )}
-              </i>
-            </small>
+    <div className={styles.OrderItem}>
+      <div className={styles.OrderHeader}>
+        <Card.Img
+          className={styles.OrderImg}
+          src="/img/placeholders/cartImage.webp"
+          id={`img-${props.idx}`}
+          alt="Item icon"
+        />
+        <div>
+          <p className={styles.OrderItemName}>{item.name}</p>
+          <p className={styles.OrderItemPrice}>
+            <small>{item.price},00 PLN</small>
           </p>
-          {edit && (
-            <>
-              <FloatingLabel label="Your Question:" className="text-dark">
-                <Form.Control
-                  as="textarea"
-                  id="questionFieldEdit"
-                  defaultValue={authUserFirestore.cart[props.idx].question}
-                  style={{ minHeight: "150px" }}
-                  className="mt-2"
-                  autoFocus
-                />
-              </FloatingLabel>
-            </>
-          )}
-          {fullDesc && (
-            <>
-              <p>
-                <small>Your cards:</small>
-              </p>
-              <ul>
-                <small>
-                  {Array.from({ length: authUserFirestore.cart[props.idx].cards.length }).map((_, idx) => (
-                    <li key={idx} className={styles.cardList}>
-                      {idx + 1}. {authUserFirestore.cart[props.idx].cards[idx]}
-                    </li>
-                  ))}
-                </small>
-              </ul>
-            </>
-          )}
-        </section>
-        <p className="mb-0 text-end">{authUserFirestore.cart[props.idx].price} PLN</p>
-      </Card.Body>
+        </div>
+        <div
+          className="pointer ms-auto"
+          onClick={() => {
+            setShowDetails(!showDetails);
+            setEdit(false);
+          }}
+        >
+          <IoIosArrowForward
+            style={{ height: "25px", width: "25px", transform: `rotate(${showDetails ? "90" : "0"}deg)` }}
+          />
+        </div>
+      </div>
+      {showDetails && (
+        <div className="w-100">
+          <div className="w-100 opacity-50">
+            <hr />
+          </div>
 
-      <Card.Footer className={`border-${props.theme == "light" ? "dark" : "accent4"} text-end`}>
-        {!edit && (
-          <Button
-            variant={`outline-${props.theme == "light" ? "dark" : "accent4"}`}
-            size="sm"
-            className="me-3 w-25"
-            onClick={() => {
-              setEdit(true);
-              setfullDesc(true);
-            }}
-          >
-            <AiOutlineEdit className={styles.icons}/>
-          </Button>
-        )}
-        {edit && (
-          <>
+          <div>
+            <p className="mb-0">Your cards:</p>
+            <div className="ms-2">
+              <small>
+                {Array.from({ length: item.cards.length }).map((_, idx) => (
+                  <li key={idx} style={{ display: "inline", listStyleType: "none" }}>
+                    {idx + 1}. {item.cards[idx]}{" "}
+                  </li>
+                ))}
+              </small>
+            </div>
+          </div>
+
+          <div className="w-100 opacity-50">
+            <hr />
+          </div>
+
+          <div>
+            <p className="mb-0">Your Question:</p>
+            <div className="ms-2">
+              {!edit && (
+                <p>
+                  <small>{item.question}</small>
+                </p>
+              )}
+
+              {edit && (
+                <>
+                  <Form.Control
+                    as="textarea"
+                    id="questionFieldEdit"
+                    defaultValue={item.question}
+                    style={{ minHeight: "100px" }}
+                    className="mt-2 text-dark"
+                    autoFocus
+                  />
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="w-100 opacity-50">
+            <hr />
+          </div>
+
+          {/* Footer control buttons */}
+          <div className="text-end mb-2">
+            {!edit && (
+              <Button
+                variant={`outline-${props.theme == "light" ? "dark" : "light"}`}
+                size="sm"
+                className="me-3 w-25"
+                onClick={() => {
+                  setEdit(true);
+                }}
+              >
+                <AiOutlineEdit className={styles.icons} />
+              </Button>
+            )}
+            {edit && (
+              <>
+                <Button
+                  variant={`outline-${props.theme == "light" ? "dark" : "accent4"}`}
+                  size="sm"
+                  className="me-3 w-25"
+                  onClick={() => {
+                    setEdit(false);
+                  }}
+                >
+                  <TbArrowBackUp className={styles.icons} />
+                </Button>
+                <Button
+                  variant={`outline-${props.theme == "light" ? "dark" : "accent4"}`}
+                  size="sm"
+                  className="me-3 w-25"
+                  onClick={() => {
+                    handleEdit();
+                  }}
+                >
+                  {loadingEdit ? (
+                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  ) : (
+                    <AiOutlineSave className={styles.icons} />
+                  )}
+                </Button>
+              </>
+            )}
             <Button
-              variant={`outline-${props.theme == "light" ? "dark" : "accent4"}`}
+              variant="primary"
               size="sm"
-              className="me-3 w-25"
+              className="w-25"
               onClick={() => {
-                setEdit(false);
-                // setfullDesc(false);
+                deleteItem(props.idx);
               }}
+              disabled={loading}
             >
-              <TbArrowBackUp className={styles.icons} />
-            </Button>
-            <Button
-              variant={`outline-${props.theme == "light" ? "dark" : "accent4"}`}
-              size="sm"
-              className="me-3 w-25"
-              onClick={() => {
-                handleEdit();
-              }}
-            >
-              {loadingEdit ? (
+              {loading ? (
                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
               ) : (
-                <AiOutlineSave className={styles.icons} />
+                <TbTrashX className={styles.icons} />
               )}
             </Button>
-          </>
-        )}
-        <Button
-          variant="primary"
-          size="sm"
-          className="w-25"
-          onClick={() => {
-            deleteItem(props.idx);
-          }}
-          disabled={loading}
-        >
-          {loading ? (
-            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-          ) : (
-            <TbTrashX className={styles.icons} />
-          )}
-        </Button>
-      </Card.Footer>
-    </Card>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

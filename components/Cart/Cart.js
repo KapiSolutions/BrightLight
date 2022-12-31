@@ -3,7 +3,6 @@ import { useAuth } from "../../context/AuthProvider";
 import { IoBagCheckOutline } from "react-icons/io5";
 import { useRouter } from "next/router";
 import CartItem from "./CartItem";
-import CartItem2 from "./CartItem2";
 
 function Cart(props) {
   const router = useRouter();
@@ -23,13 +22,10 @@ function Cart(props) {
     <>
       {authUserFirestore.cart.length > 0 ? (
         <>
-          {/* {Array.from({ length: authUserFirestore.cart.length }).map((_, idx) => (
-            <CartItem key={idx} idx={idx} theme={props.theme} update={updateProfile} />
-          ))} */}
           {Array.from({ length: authUserFirestore.cart.length }).map((_, idx) => (
             <CartItem key={idx} idx={idx} theme={props.theme} update={updateProfile} />
           ))}
-          <p className={`text-${props.theme === "light" ? "dark" : "light"} text-end`}>Total Price: {totalPrice} PLN</p>
+          <p className={`text-${props.theme === "light" ? "dark" : "light"} text-end`}>Total Price: {totalPrice},00 PLN</p>
           <hr className={`text-${revTheme}`} />
           <div
             onClick={() => {
