@@ -9,7 +9,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { RiAlertFill } from "react-icons/ri";
 import { BsCart4 } from "react-icons/bs";
-import Cart from "../../../Cart";
+import Cart from "../../../Cart/Cart";
 
 function MobileMenu(props) {
   const router = useRouter();

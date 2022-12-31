@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthProvider";
+import { useAuth } from "../../context/AuthProvider";
 import { Card, Button, Spinner, FloatingLabel, Form } from "react-bootstrap";
 import { TbTrashX, TbArrowBackUp } from "react-icons/tb";
 import { AiOutlineEdit, AiOutlineSave } from "react-icons/ai";
-import styles from "../styles/components/CartItem.module.scss";
+import styles from "../../styles/components/CartItem.module.scss";
 
 function CartItem(props) {
   const { authUserFirestore, updateProfile } = useAuth();
