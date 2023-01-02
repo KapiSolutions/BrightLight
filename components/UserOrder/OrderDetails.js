@@ -25,7 +25,7 @@ function OrderDetails(props) {
         </span>
       </div>
       {props.order.paid && (
-        <div className={`d-flex gap-${props.isMobile ? "2" : "4"}`}>
+        <div className={`d-flex gap-${props.isMobile ? "3" : "4"}`}>
           <span>
             <small>
               <strong>Payment ID</strong>
@@ -39,7 +39,7 @@ function OrderDetails(props) {
               <strong>{props.isMobile ? "Amount" : "Amount Paid"}</strong> <p>{props.order.totalPrice},00 PLN</p>
             </small>
           </span>
-          <span style={{ maxWidth: `${props.isMobile ? "min-content" : "fit-content"}` }}>
+          <span >
             <small>
               <strong>{props.isMobile ? "Method" : "Payment Method"}</strong> <p>{props.order.paymentMethod}</p>
             </small>
@@ -59,7 +59,7 @@ function OrderDetails(props) {
         {props.order.items.map((item, idx) => (
           <Item key={idx} idx={idx} item={item} order={props.order}/>
         ))}
-        <p>Total: {props.order.totalPrice},00 PLN</p>
+        <p className="text-end mt-3">Total: {props.order.totalPrice},00 PLN</p>
       </div>
     </div>
   );

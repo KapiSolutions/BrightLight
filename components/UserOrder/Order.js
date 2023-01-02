@@ -197,8 +197,8 @@ function Order(props) {
         {showDetails && (
           <div className="w-100">
             {isMobile && !props.orders[props.idx].paid && (
-              <div className="d-flex flex-wrap mt-3 justify-content-end gap-4">
-                <span>Total: {props.orders[props.idx].totalPrice},00 PLN</span>
+              <div className="d-flex mt-3 mb-5 justify-content-between gap-4">
+                <div className="d-flex gap-3 ms-2">
                 <Button
                   variant="outline-primary"
                   size="sm"
@@ -215,12 +215,14 @@ function Order(props) {
                     "Pay now"
                   )}
                 </Button>
+                </div>
+                <span>Total: {props.orders[props.idx].totalPrice},00 PLN</span>
               </div>
             )}
             {/* Order Details */}
             <OrderDetails order={props.orders[props.idx]} isMobile={isMobile} />
 
-            <div className="text-center mt-5 mb-4">
+            <div className="text-center mt-4 mb-4">
               <Button variant="outline-accent4" className="pointer" onClick={showDetailsFunc}>
                 Hide details
               </Button>
