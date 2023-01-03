@@ -55,6 +55,12 @@ const [imgID, setImgID] = useState(Math.random().toString(36).slice(2, 7));
     setEdit(false);
     setLoadingEdit(false);
   }
+
+  const styledCardName = (card) => {
+    card = card[0].toUpperCase() + card.slice(1)
+    card = card.replaceAll('-', ' ')
+    return card ;
+  }
   return (
     <div className={styles.OrderItem}>
       <div className={`text-${props.theme === "light" ? "dark" : "light"}`}>
@@ -95,7 +101,7 @@ const [imgID, setImgID] = useState(Math.random().toString(36).slice(2, 7));
               <small>
                 {Array.from({ length: item.cards.length }).map((_, idx) => (
                   <li key={idx} style={{ display: "inline", listStyleType: "none" }}>
-                    {idx + 1}. {item.cards[idx]}{" "}
+                    {idx + 1}. {styledCardName(item.cards[idx])}{" "}
                   </li>
                 ))}
               </small>

@@ -17,6 +17,12 @@ function Item(props) {
       .catch((error) => console.log(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const styledCardName = (card) => {
+    card = card[0].toUpperCase() + card.slice(1)
+    card = card.replaceAll('-', ' ')
+    return card ;
+  }
   return (
     <div className={styles.OrderItem}>
       <div className={styles.OrderHeader}>
@@ -55,7 +61,7 @@ function Item(props) {
               <small>
                 {Array.from({ length: props.item.cards.length }).map((_, idx) => (
                   <li key={idx} style={{ display: "inline", listStyleType: "none" }}>
-                    {idx + 1}. {props.item.cards[idx]}{" "}
+                    {idx + 1}. {styledCardName(props.item.cards[idx])}{" "}
                   </li>
                 ))}
               </small>
