@@ -147,6 +147,7 @@ const [imgID, setImgID] = useState(Math.random().toString(36).slice(2, 7));
                 variant={`outline-${props.theme == "light" ? "dark" : "light"}`}
                 size="sm"
                 className="me-3 w-25"
+                style={{maxWidth: "80px"}}
                 onClick={() => {
                   setEdit(true);
                 }}
@@ -157,9 +158,10 @@ const [imgID, setImgID] = useState(Math.random().toString(36).slice(2, 7));
             {edit && (
               <>
                 <Button
-                  variant={`outline-${props.theme == "light" ? "dark" : "accent4"}`}
+                  variant={`outline-${props.theme == "light" ? "dark" : "light"}`}
                   size="sm"
                   className="me-3 w-25"
+                  style={{maxWidth: "80px"}}
                   onClick={() => {
                     setEdit(false);
                   }}
@@ -167,9 +169,10 @@ const [imgID, setImgID] = useState(Math.random().toString(36).slice(2, 7));
                   <TbArrowBackUp className={styles.icons} />
                 </Button>
                 <Button
-                  variant={`outline-${props.theme == "light" ? "dark" : "accent4"}`}
+                  variant={`outline-${props.theme == "light" ? "dark" : "light"}`}
                   size="sm"
                   className="me-3 w-25"
+                  style={{maxWidth: "80px"}}
                   onClick={() => {
                     handleEdit();
                   }}
@@ -186,6 +189,7 @@ const [imgID, setImgID] = useState(Math.random().toString(36).slice(2, 7));
               variant="primary"
               size="sm"
               className="w-25"
+              style={{maxWidth: "80px"}}
               onClick={() => {
                 deleteItem(props.idx);
               }}
