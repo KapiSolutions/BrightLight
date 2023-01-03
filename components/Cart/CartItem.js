@@ -15,14 +15,16 @@ function CartItem(props) {
   const [loadingEdit, setLoadingEdit] = useState(false);
   const item = authUserFirestore.cart[props.idx];
 
+const [imgID, setImgID] = useState(Math.random().toString(36).slice(2, 7));
+
   // Get url's for the item images
   useEffect(() => {
     getFileUrlStorage("images/cards", item.image)
       .then((url) => {
-        const img = document.getElementById(`img-${props.idx.toString()}`);
+        const img = document.getElementById(`img-${imgID}`);
         img.setAttribute("src", url);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log("errror: ",error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -60,7 +62,7 @@ function CartItem(props) {
         <Card.Img
           className={styles.OrderImg}
           src="/img/placeholders/cartImage.webp"
-          id={`img-${props.idx}`}
+          id={`img-${imgID}`}
           alt="Item icon"
         />
         <div>

@@ -3,7 +3,6 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import getStripe from "../../utils/get-stripejs";
-import CartSummaryItem from "../../components/CartSummaryItem";
 import useLocalStorageState from "use-local-storage-state";
 import { useRouter } from "next/router";
 import { useAuth } from "../../context/AuthProvider";
@@ -12,6 +11,7 @@ import { BsInfoCircle } from "react-icons/bs";
 import { useDeviceStore } from "../../stores/deviceStore";
 import { createOrderFirestore } from "../../firebase/Firestore";
 import { getFileUrlStorage } from "../../firebase/Storage";
+import CartItem from "../../components/Cart/CartItem";
 
 function CartSummaryPage() {
   const router = useRouter();
@@ -204,14 +204,14 @@ function CartSummaryPage() {
             </Form>
           </section>
 
-          <section className="text-center mt-4">
+          <section className="mt-4">
             <p className="text-start justify-self-start mb-0">
               <small>
                 <strong>Cart items:</strong>
               </small>
             </p>
             {Array.from({ length: authUserFirestore?.cart.length }).map((_, idx) => (
-              <CartSummaryItem key={idx} idx={idx} theme={theme} />
+              <CartItem key={idx} idx={idx} theme={theme} />
             ))}
           </section>
 
@@ -239,14 +239,14 @@ function CartSummaryPage() {
               <p className="m-0">
                 <small>
                   You will receive all the answers to the given email address.
-                  <br />
+                  {isMobile ? " " : <><br /></>}
                   Answers will be also available{" "}
                   <Link href="/user/orders#main" passHref className="pointer">
                     here.
                   </Link>
                 </small>
               </p>
-              <p className=" mb-0 w-75">
+              <p className="mb-0 mt-2 w-75">
                 <small>Everything will be ready within 48 hours of successful payment :)</small>
               </p>
             </div>
@@ -255,14 +255,14 @@ function CartSummaryPage() {
               style={{
                 position: "relative",
                 bottom: isMobile ? "80px" : "90px",
-                right: isMobile ? "-2px" : "-25px",
+                right: isMobile ? "-5px" : "-25px",
                 maxHeight: "1px",
               }}
             >
               <Image
                 src="/img/delivery_info.png"
-                width={isMobile ? "100" : "130"}
-                height={isMobile ? "100" : "130"}
+                width={isMobile ? "90" : "130"}
+                height={isMobile ? "90" : "130"}
                 alt="Delivery unicorn with laptop"
               />
             </div>

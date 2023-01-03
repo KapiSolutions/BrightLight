@@ -7,7 +7,7 @@ import CartItem from "./CartItem";
 
 function Cart(props) {
   const router = useRouter();
-  const { authUserFirestore, updateProfile } = useAuth();
+  const { authUserFirestore } = useAuth();
   const revTheme = props.theme === "light" ? "dark" : "light";
   const [totalPrice, setTotalPrice] = useState(0);
 
@@ -24,7 +24,7 @@ function Cart(props) {
       {authUserFirestore.cart.length > 0 ? (
         <>
           {Array.from({ length: authUserFirestore.cart.length }).map((_, idx) => (
-            <CartItem key={idx} idx={idx} theme={props.theme} update={updateProfile} />
+            <CartItem key={idx} idx={idx} theme={props.theme} />
           ))}
           <p className={`text-${props.theme === "light" ? "dark" : "light"} text-end`}>Total Price: {totalPrice},00 PLN</p>
           <hr className={`text-${revTheme}`} />
