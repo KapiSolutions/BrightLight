@@ -2,8 +2,9 @@ import React from "react";
 import Head from "next/head";
 import { Container } from "react-bootstrap";
 import BlogItem from "../../components/BlogItem";
+import { getDocsFromCollection } from "../../firebase/Firestore";
 
-function BlogPage() {
+function BlogPage(props) {
   return (
     <>
       <Head>
@@ -12,8 +13,9 @@ function BlogPage() {
       <Container className="text-center mt-5 color-primary">
         <h1> BLOG </h1>
         <section className="d-flex justify-content-center gap-4 flex-wrap">
-          <BlogItem id={"asd"} desc={"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,"} title={"Title"} />
-          <BlogItem id={"asd"} desc={"Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,"} title={"Title"} />
+          {props.blogPosts.map((post) => (
+            <BlogItem key={post.id} blogPost={post} />
+          ))}
         </section>
       </Container>
     </>
@@ -21,3 +23,14 @@ function BlogPage() {
 }
 
 export default BlogPage;
+
+export async function getStaticProps() {
+  const docs = await getDocsFromCollection("blog");
+
+  return {
+    props: {
+      blogPosts: docs,
+    },
+    revalidate: 60, //1minute
+  };
+}
