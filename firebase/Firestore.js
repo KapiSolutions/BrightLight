@@ -1,5 +1,16 @@
 import { db } from "../config/firebase";
-import { doc, getDoc, getDocs, setDoc, deleteDoc, updateDoc, collection, query, where, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+  deleteDoc,
+  updateDoc,
+  collection,
+  query,
+  where,
+  serverTimestamp,
+} from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
 const getUserDataFirestore = async (uid) => {
@@ -49,8 +60,6 @@ const createOrderFirestore = async (uid, name, age, email, cart, totalPrice, com
     totalPrice: totalPrice,
     timeCreate: serverTimestamp(),
     userComments: comments,
-    //timePayment:
-    //timeFinished:
   };
   try {
     await setDoc(docRef, orderData);
@@ -81,6 +90,19 @@ const updateDocFields = async (collection, uid, update) => {
   }
 };
 
+const getDocsFromCollection = async (collectionName) => {
+  try {
+    const docs = [];
+    const querySnapshot = await getDocs(collection(db, collectionName));
+    querySnapshot.forEach((doc) => {
+      docs.push(doc.data());
+    });
+    return docs;
+  } catch (err) {
+    throw err;
+  }
+};
+
 const queryByFirestore = async (collName, state, condition, value) => {
   const dbRef = collection(db, collName);
   const q = query(dbRef, where(state, condition, value));
@@ -98,5 +120,6 @@ export {
   queryByFirestore,
   deleteDocInCollection,
   updateDocFields,
+  getDocsFromCollection,
   createOrderFirestore,
 };

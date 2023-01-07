@@ -2,8 +2,7 @@ import React from "react";
 import Head from "next/head";
 import { Container, Row, Col } from "react-bootstrap";
 import CardTarot from "../components/CardTarot";
-import { db } from "../config/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { getDocsFromCollection } from "../firebase/Firestore";
 
 export default function Home(props) {
   return (
@@ -31,15 +30,11 @@ export default function Home(props) {
 }
 
 export async function getStaticProps() {
-  const tarot = [];
-  const querySnapshot = await getDocs(collection(db, "tarot"));
-  querySnapshot.forEach((doc) => {
-    tarot.push(doc.data());
-  });
+  const docs = await getDocsFromCollection("tarot");
 
   return {
     props: {
-      tarot: tarot,
+      tarot: docs,
     },
     revalidate: 60, //1minute
   };
