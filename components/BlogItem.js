@@ -27,7 +27,8 @@ function BlogItem(props) {
         alt={post.title}
         variant="top"
         className="imgOpacity pointer"
-        src="/img/placeholders/Blog.webp"
+        style={{objectFit: "cover"}}
+        src="/img/blog/main.jpg"
         onClick={() => {
           router.push({
             pathname: "/blog/[pid]",
