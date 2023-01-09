@@ -17,3 +17,12 @@
     opacity:1;
   }
 }
+
+.noScrollBar {
+  -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.noScrollBar::-webkit-scrollbar {
+  display: none;  /* for IE, Edge and Firefox */
+}

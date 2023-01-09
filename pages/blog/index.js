@@ -26,10 +26,10 @@ export default BlogPage;
 
 export async function getStaticProps() {
   const docs = await getDocsFromCollection("blog");
-
+  
   return {
     props: {
-      blogPosts: docs,
+      blogPosts: JSON.parse(JSON.stringify(docs)),
     },
     revalidate: 60, //1minute
   };

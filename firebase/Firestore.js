@@ -103,6 +103,16 @@ const getDocsFromCollection = async (collectionName) => {
   }
 };
 
+const getDocById = async (collection, uid) => {
+  try {
+    const docRef = doc(db, collection, uid);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  } catch (err) {
+    throw err;
+  }
+};
+
 const queryByFirestore = async (collName, state, condition, value) => {
   const dbRef = collection(db, collName);
   const q = query(dbRef, where(state, condition, value));
@@ -114,6 +124,39 @@ const queryByFirestore = async (collName, state, condition, value) => {
   return docs.length > 0 ? docs : false;
 };
 
+const handleLikeBlog = async (action, blogID, userID, userName) => {
+  try {
+    const docRef = doc(db, "blog", blogID);
+    const docSnap = await getDoc(docRef);
+    let likes = [...docSnap.data().likes];
+    const likeExist = likes.find((like) => like.userID == userID);
+
+    if (action == "update") {
+      //Like exist so perform delete
+      if (likeExist) {
+        const idx = likes.findIndex((like) => like.userID == userID);
+        likes.splice(idx, 1);
+        await updateDoc(docRef, { likes: likes });
+      } else {
+        // Like doesn't exist so perform adding action
+        const newLike = {
+          date: new Date(),
+          userID: userID,
+          userName: userName,
+        };
+        likes.push(newLike);
+        await updateDoc(docRef, { likes: likes });
+      }
+      return [likeExist ? false : true, likes];
+    } else {
+      //only check if user have already liked a blog post(during initialization of the page)
+      return likeExist ? true : false;
+    }
+  } catch (err) {
+    throw err;
+  }
+};
+
 export {
   getUserDataFirestore,
   createUserFirestore,
@@ -121,5 +164,7 @@ export {
   deleteDocInCollection,
   updateDocFields,
   getDocsFromCollection,
+  getDocById,
   createOrderFirestore,
+  handleLikeBlog,
 };

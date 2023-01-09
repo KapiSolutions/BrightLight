@@ -235,11 +235,6 @@ function UserOrdersPage() {
           child.style = "border: 1px solid rgba(133, 133, 133, 0.389)";
         }
       });
-
-      // childrenSort.forEach((child) => {
-      //     child.style = "border: 1px solid rgba(133, 133, 133, 0.389)";
-      //   });
-      //   e.target.style = "border: 1px solid rgba(133, 133, 133)";
     }
   }, [showOptions]);
 
@@ -352,11 +347,11 @@ function UserOrdersPage() {
                         <div>Sort by:</div>
                         <div
                           id="sortForm"
-                          className={`d-flex overflow-auto ms-2 ${styles.optionsBar}`}
+                          className="d-flex overflow-auto ms-2 noScrollBar"
                           style={{ maxWidth: "75vw" }}
                         >
                           <div
-                            className={`rounded m-1 p-2 pointer`}
+                            className="rounded m-1 p-2 pointer"
                             onClick={(e) => {
                               sortBy(e, "1");
                             }}
@@ -394,11 +389,11 @@ function UserOrdersPage() {
                         <div>Show:</div>
                         <div
                           id="showForm"
-                          className={`d-flex overflow-auto ms-2 ${styles.optionsBar}`}
+                          className="d-flex overflow-auto ms-2 noScrollBar"
                           style={{ maxWidth: "79vw" }}
                         >
                           <div
-                            className={`rounded m-1 p-2 pointer ${styles.optionsBar}`}
+                            className={`rounded m-1 p-2 pointer`}
                             onClick={(e) => {
                               filterByType(e, "All orders");
                             }}
