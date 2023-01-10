@@ -10,12 +10,13 @@ import { IoIosArrowForward } from "react-icons/io";
 import { deleteDocInCollection } from "../../firebase/Firestore";
 import { useDeviceStore } from "../../stores/deviceStore";
 import OrderDetails from "./OrderDetails";
+import ConfirmActionModal from "../Modals/ConfirmActionModal";
 
 function Order(props) {
   const router = useRouter();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
-  const [show, setShow] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(undefined);
   const [showDetails, setShowDetails] = useState(false);
   const cardsIcon = "/img/cards-light.png";
@@ -66,7 +67,9 @@ function Order(props) {
     try {
       await deleteDocInCollection("orders", props.orders[props.idx].id);
       await updateUserData(authUserFirestore?.id, null, true); //update only orders
+      setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
+      setShowConfirmModal({ msg: "", itemID: "" });
       setErrorMsg("Something went wrong, please try again later.");
     }
   }
@@ -168,7 +171,10 @@ function Order(props) {
                     variant="outline-primary"
                     size="sm"
                     onClick={() => {
-                      setShow(true);
+                      setShowConfirmModal({
+                        msg: "You are trying to cancel your order, after which all your tarot cards will be lost. Confirm or return to orders.",
+                        itemID: "",
+                      });
                     }}
                   >
                     Cancel
@@ -199,22 +205,25 @@ function Order(props) {
             {isMobile && !props.orders[props.idx].paid && (
               <div className="d-flex mt-3 mb-5 justify-content-between gap-4">
                 <div className="d-flex gap-3 ms-2">
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={() => {
-                    setShow(true);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button variant="primary" className="text-light" size="sm" onClick={handlePayment} disabled={loading}>
-                  {loading ? (
-                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                  ) : (
-                    "Pay now"
-                  )}
-                </Button>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => {
+                      setShowConfirmModal({
+                        msg: "You are trying to cancel your order, after which all your tarot cards will be lost. Confirm or return to orders.",
+                        itemID: "",
+                      });
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="primary" className="text-light" size="sm" onClick={handlePayment} disabled={loading}>
+                    {loading ? (
+                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                    ) : (
+                      "Pay now"
+                    )}
+                  </Button>
                 </div>
                 <span>Total: {props.orders[props.idx].totalPrice},00 PLN</span>
               </div>
@@ -233,46 +242,11 @@ function Order(props) {
       <hr />
 
       {/* Modal which appears when user wants to cancel the order */}
-      <Modal
-        show={show}
-        onHide={() => {
-          setShow(false);
-        }}
-        centered
-        animation={true}
-        className="text-start"
-      >
-        <Modal.Header className="bg-secondary text-light" closeButton closeVariant="white">
-          <Modal.Title>
-            <TbTrashX className="mb-1 me-2" />
-            Are you sure?
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          You are trying to cancel your order, after which all your tarot cards will be lost. Confirm or return to
-          orders.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            className="me-3"
-            variant="outline-secondary"
-            onClick={() => {
-              setShow(false);
-            }}
-          >
-            Go Back
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setShow(false);
-              deleteOrder();
-            }}
-          >
-            Cancel Order
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ConfirmActionModal
+        msg={showConfirmModal.msg}
+        closeModal={() => setShowConfirmModal({ msg: "", itemID: "" })}
+        action={deleteOrder}
+      />
     </div>
   );
 }

@@ -159,6 +159,7 @@ function BlogPage(props) {
 
               <OverlayTrigger
                 placement="bottom"
+                trigger={['hover', 'focus', 'click']}
                 overlay={
                   <Tooltip>
                     {Array.from({ length: likes.length > likesToShow ? likesToShow : likes.length }).map((_, idx) => (
@@ -202,7 +203,7 @@ function BlogPage(props) {
                       className="pointer"
                       onClick={() =>
                         setShowConfirmModal({
-                          msg: "You are trying to delete your comment. Confirm or go back.",
+                          msg: "You are trying to delete your comment. Please confirm.",
                           itemID: comment.id,
                         })
                       }

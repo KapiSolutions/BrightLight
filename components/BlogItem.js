@@ -101,6 +101,7 @@ function BlogItem(props) {
               )}
               <OverlayTrigger
                 placement="bottom"
+                trigger={['hover', 'focus', 'click']}
                 overlay={
                   <Tooltip>
                     {Array.from({ length: likes.length > likesToShow ? likesToShow : likes.length }).map((_, idx) => (
