@@ -71,7 +71,7 @@ function BlogPage(props) {
       //get the latest comment list from the Firestore
       const actPost = await getDocById("blog", post.id);
       let updatedComments = actPost.comments;
-      updatedComments.push(newComment)
+      updatedComments.push(newComment);
 
       //update the comment list
       const data = await updateDocFields("blog", post.id, { comments: updatedComments });
@@ -132,31 +132,33 @@ function BlogPage(props) {
         {/* Actions */}
         <div className="d-inline-flex align-items-center justify-content-between w-100">
           <div className="d-flex">
-            <OverlayTrigger
-              placement="bottom"
-              overlay={
-                <Tooltip>
-                  {Array.from({ length: likes.length > likesToShow ? likesToShow : likes.length }).map((_, idx) => (
-                    <p key={idx} className="m-1 text-start">
-                      <strong>{likes[idx].userName}</strong>
-                    </p>
-                  ))}
-                  {likes.length > likesToShow && <p className="m-1 text-start">...</p>}
-                </Tooltip>
-              }
-            >
-              <div onClick={handleLike}>
-                {userLiked ? (
-                  <AiFillLike style={{ width: "22px", height: "22px" }} className="pointer me-1" />
-                ) : (
-                  <AiOutlineLike style={{ width: "22px", height: "22px" }} className="pointer me-1" />
-                )}
-                <span className="me-3">{likes.length}</span>
-              </div>
-            </OverlayTrigger>
+            <div>
+              {userLiked ? (
+                <AiFillLike style={{ width: "22px", height: "22px" }} className="pointer me-1" onClick={handleLike}/>
+              ) : (
+                <AiOutlineLike style={{ width: "22px", height: "22px" }} className="pointer me-1" onClick={handleLike}/>
+              )}
+
+              <OverlayTrigger
+                placement="bottom"
+                overlay={
+                  <Tooltip>
+                    {Array.from({ length: likes.length > likesToShow ? likesToShow : likes.length }).map((_, idx) => (
+                      <p key={idx} className="m-1 text-start">
+                        <strong>{likes[idx].userName}</strong>
+                      </p>
+                    ))}
+                    {likes.length > likesToShow && <p className="m-1 text-start">...</p>}
+                  </Tooltip>
+                }
+              >
+                <span className="me-2 p-1 pointer">{likes.length}</span>
+              </OverlayTrigger>
+            </div>
+
             <div>
               <AiOutlineComment style={{ width: "22px", height: "22px" }} className="pointer me-1" />
-              <span className="me-3">{comments.length}</span>
+              <span className="p-1">{comments.length}</span>
             </div>
           </div>
           <div className="text-end">
@@ -174,7 +176,9 @@ function BlogPage(props) {
                 <strong>{comment.userName} wrote:</strong>
               </p>
               <p className="mb-0">{comment.content}</p>
-              <p className="text-muted text-end">{new Date(comment.date.seconds*1000 + comment.date.nanoseconds/100000).toLocaleString()}</p>
+              <p className="text-muted text-end">
+                {new Date(comment.date.seconds * 1000 + comment.date.nanoseconds / 100000).toLocaleString()}
+              </p>
               <hr className="m-1" />
             </div>
           ))}
