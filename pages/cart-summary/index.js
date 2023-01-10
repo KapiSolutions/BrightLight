@@ -297,7 +297,7 @@ function CartSummaryPage() {
                   </Form.Check.Label>
                 </Form.Check>
               </div>
-              <h5 className="color-primary mt-4">Total Price: {totalPrice} PLN</h5>
+              <h5 className="color-primary mt-4">Total Price: {totalPrice},00 PLN</h5>
               <Button type="submit" className="mt-2" disabled={loading}>
                 {loading ? (
                   <>
