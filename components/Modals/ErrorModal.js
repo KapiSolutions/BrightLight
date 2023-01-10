@@ -7,15 +7,14 @@ function ErrorModal(props) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    props.msg && setShow(true);
+    props.msg ? setShow(true) : setShow(false);
   }, [props.msg]);
 
   return (
     <Modal
       show={show}
       onHide={() => {
-        setShow(false);
-        props.resetMsg("");
+        props.closeModal("");
       }}
       centered
       animation={true}
@@ -29,7 +28,16 @@ function ErrorModal(props) {
       <Modal.Body>
         {props.msg == "sign" ? (
           <p>
-            It looks like you are not signed in, please <Link href="/sign-in">Sign In </Link> first.
+            It looks like you are not signed in, please{" "}
+            <Link
+              href="/sign-in"
+              onClick={() => {
+                props.closeModal("");
+              }}
+            >
+              Sign In
+            </Link>{" "}
+            first.
           </p>
         ) : (
           props.msg
@@ -39,8 +47,7 @@ function ErrorModal(props) {
         <Button
           variant="secondary"
           onClick={() => {
-            setShow(false);
-            props.resetMsg("");
+            props.closeModal("");
           }}
         >
           Close

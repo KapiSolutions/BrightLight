@@ -27,7 +27,7 @@ function Layout({ children }) {
           <div className={styles.container}>
             <NewUserModal msg={successMsg} resetMsg={setSuccessMsg} user={authUserFirestore} update={updateProfile} />
             <DeleteUserModal msg={successMsg} resetMsg={setSuccessMsg} />
-            <ErrorModal msg={errorMsg} resetMsg={setErrorMsg} />
+            <ErrorModal msg={errorMsg} closeModal={setErrorMsg} />
 
             <Header className={styles.header} theme={theme} />
             <main name="main" className={`${styles.main} `}>

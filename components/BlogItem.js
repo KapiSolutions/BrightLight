@@ -10,7 +10,7 @@ import ErrorModal from "./Modals/ErrorModal";
 
 function BlogItem(props) {
   const router = useRouter();
-  const { authUserFirestore } = useAuth();
+  const { authUserFirestore, setErrorMsg } = useAuth();
   const [fullDesc, setfullDesc] = useState(false);
   const [showModal, setShowModal] = useState("");
   const truncLength = 100;
@@ -44,12 +44,8 @@ function BlogItem(props) {
       data[0] ? setUserLiked(true) : setUserLiked(false);
     } else {
       // show popup with sign in info
-      setShowModal("sign");
+      setErrorMsg("sign");
     }
-  };
-
-  const closeModal = () => {
-    setShowModal("");
   };
 
   return (
@@ -140,7 +136,6 @@ function BlogItem(props) {
           </Button>
         </Card.Footer>
       </Card>
-      <ErrorModal msg={showModal} resetMsg={closeModal} />
     </>
   );
 }

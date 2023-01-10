@@ -8,19 +8,20 @@ import { doc, getDoc, getDocs, collection } from "firebase/firestore";
 import { AiOutlineLike, AiFillLike, AiOutlineComment } from "react-icons/ai";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { useAuth } from "../../../context/AuthProvider";
-import { getDocById, handleLikeBlog, queryByFirestore, updateDocFields } from "../../../firebase/Firestore";
-import ErrorModal from "../../../components/Modals/ErrorModal";
+import { getDocById, handleLikeBlog, updateDocFields } from "../../../firebase/Firestore";
 import { v4 as uuidv4 } from "uuid";
+import ConfirmActionModal from "../../../components/Modals/ConfirmActionModal";
 
 function BlogPage(props) {
   const post = props.post;
   const commentRef = useRef();
-  const { authUserFirestore } = useAuth();
+  //setErrorMsg if contains message then fires a modal with that error - Layout.js and ErrorModal.js
+  const { authUserFirestore, setErrorMsg } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [likes, setLikes] = useState(post.likes);
   const [comments, setComments] = useState(post.comments);
   const [userLiked, setUserLiked] = useState(false);
-  const [showModal, setShowModal] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState({ msg: "", itemID: "" });
   const [loading, setLoading] = useState(false);
   const likesToShow = 6;
 
@@ -49,12 +50,8 @@ function BlogPage(props) {
       data[0] ? setUserLiked(true) : setUserLiked(false);
     } else {
       // show popup with sign in info
-      setShowModal("sign");
+      setErrorMsg("sign");
     }
-  };
-
-  const closeModal = () => {
-    setShowModal("");
   };
 
   async function handleSubmit(e) {
@@ -82,6 +79,23 @@ function BlogPage(props) {
       setLoading(false);
     }
   }
+
+  const deleteComment = async () => {
+    try {
+      //get the latest comment list from the Firestore
+      const actPost = await getDocById("blog", post.id);
+      let updatedComments = actPost.comments;
+      //get the index of the comment
+      const idx = updatedComments.findIndex((comment) => comment.id == showConfirmModal.itemID);
+      updatedComments.splice(idx, 1);
+      //update the comment list
+      const data = await updateDocFields("blog", post.id, { comments: updatedComments });
+      setComments(data.comments);
+      setShowConfirmModal({ msg: "", itemID: "" });
+    } catch (error) {
+        console.log(error)
+    }
+  };
   return (
     <>
       <Head>
@@ -134,9 +148,13 @@ function BlogPage(props) {
           <div className="d-flex">
             <div>
               {userLiked ? (
-                <AiFillLike style={{ width: "22px", height: "22px" }} className="pointer me-1" onClick={handleLike}/>
+                <AiFillLike style={{ width: "22px", height: "22px" }} className="pointer me-1" onClick={handleLike} />
               ) : (
-                <AiOutlineLike style={{ width: "22px", height: "22px" }} className="pointer me-1" onClick={handleLike}/>
+                <AiOutlineLike
+                  style={{ width: "22px", height: "22px" }}
+                  className="pointer me-1"
+                  onClick={handleLike}
+                />
               )}
 
               <OverlayTrigger
@@ -172,10 +190,30 @@ function BlogPage(props) {
         <section className="mt-5 d-flex flex-column gap-3">
           {comments.map((comment) => (
             <div key={comment.id}>
-              <p className="text-uppercase">
-                <strong>{comment.userName} wrote:</strong>
-              </p>
-              <p className="mb-0">{comment.content}</p>
+              <div className="d-flex">
+                <p className={`text-uppercase  ${authUserFirestore?.id == comment.userID && "col-9"}`}>
+                  <strong>{comment.userName} wrote:</strong>
+                </p>
+                {authUserFirestore?.id == comment.userID && (
+                  <div className="col-3 text-end">
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      className="pointer"
+                      onClick={() =>
+                        setShowConfirmModal({
+                          msg: "You are trying to delete your comment. Confirm or go back.",
+                          itemID: comment.id,
+                        })
+                      }
+                    >
+                      <strong>X</strong>
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <p className={`mb-0 `}>{comment.content}</p>
+
               <p className="text-muted text-end">
                 {new Date(comment.date.seconds * 1000 + comment.date.nanoseconds / 100000).toLocaleString()}
               </p>
@@ -218,7 +256,12 @@ function BlogPage(props) {
         </section>
       </Container>
 
-      <ErrorModal msg={showModal} resetMsg={closeModal} />
+      {/* Fires when user is trying do delete comment */}
+      <ConfirmActionModal
+        msg={showConfirmModal.msg}
+        closeModal={() => setShowConfirmModal({ msg: "", itemID: "" })}
+        action={deleteComment}
+      />
     </>
   );
 }
