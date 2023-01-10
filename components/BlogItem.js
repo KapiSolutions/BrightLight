@@ -113,7 +113,7 @@ function BlogItem(props) {
                   </Tooltip>
                 }
               >
-                <span className="ms-1 p-1 me-2">{likes.length}</span>
+                <span className="ms-1 p-1 me-2 pointer">{likes.length}</span>
               </OverlayTrigger>
             </div>
 
