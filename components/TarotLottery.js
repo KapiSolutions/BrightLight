@@ -7,6 +7,9 @@ import styles from "../styles/components/TarotLotteryDesktop.module.scss";
 import { useDeviceStore } from "../stores/deviceStore";
 import { useAuth } from "../context/AuthProvider";
 import { GiGlassHeart } from "react-icons/gi";
+import randomCards from "../public/img/randomCards.gif"
+import cardBackUrl from "../public/img/cards/back.png"
+import placeholder from "../utils/placeholder";
 
 function TarotLotteryDesktop(props) {
   const router = useRouter();
@@ -19,7 +22,6 @@ function TarotLotteryDesktop(props) {
   const [loading, setLoading] = useState(false);
   const [loadingBuy, setLoadingBuy] = useState(false);
 
-  const cardBackUrl = "/img/cards/back.png";
   const cardsUrl = "/img/cards/";
   const cardNames = [
     "fool",
@@ -250,7 +252,7 @@ function TarotLotteryDesktop(props) {
           >
             <ReactCardFlip isFlipped={flipCards.length > idx} flipDirection="horizontal" flipSpeedFrontToBack="2" flipSpeedBackToFront="2">
               <div style={cardStyleBack}>
-                <Image src={cardBackUrl} fill  alt={`back-of-card-${idx}`} />
+                <Image src={cardBackUrl} placeholder="blur" alt={`back-of-card-${idx}`} />
               </div>
               <div style={cardStyleFront}>
                 <Card.Img id={`tarot-card-${idx}`} variant="top" alt={`tarot-card-${idx}`} />
@@ -277,16 +279,14 @@ function TarotLotteryDesktop(props) {
             <strong>And the last one.</strong>
           </p>
         )}
-
         {window.innerWidth < 768 ? (
           <div id="cardMobile">
             <Image
-              src="/img/cardsMobileLottery.gif"
+              src={randomCards}
               alt={`tarot-card`}
-              width="120"
-              height="205"
+              className="rounded"
               placeholder="blur"
-              blurDataURL="/img/placeholders/tarotLotteryGif.webp"
+              blurDataURL={placeholder("light")}
               onClick={() => {
                 const random = Math.floor(Math.random() * cardsSet.length);
                 const card = cardsSet[random];
