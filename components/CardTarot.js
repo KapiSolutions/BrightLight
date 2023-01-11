@@ -40,11 +40,6 @@ function CardTarot(props) {
           setLoading(true);
         }}
       />
-      {loading && (
-        <div className="text-center" style={{ position: "relative", top: "-35%", height: "0px" }}>
-          <Spinner as="div" variant="primary" animation="border" size="lg" role="status" aria-hidden="true" />
-        </div>
-      )}
       <Card.Body>
         <Card.Title className="color-primary">
           <strong>{props.title}</strong>
