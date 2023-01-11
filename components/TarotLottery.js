@@ -7,8 +7,9 @@ import styles from "../styles/components/TarotLotteryDesktop.module.scss";
 import { useDeviceStore } from "../stores/deviceStore";
 import { useAuth } from "../context/AuthProvider";
 import { GiGlassHeart } from "react-icons/gi";
-import randomCards from "../public/img/randomCards.gif"
-import cardBackUrl from "../public/img/cards/back.png"
+import randomCards from "../public/img/randomCards.gif";
+import cardBackUrl from "../public/img/cards/back.png";
+import cardBackMin from "../public/img/cardBackMin.png";
 import placeholder from "../utils/placeholder";
 
 function TarotLotteryDesktop(props) {
@@ -104,32 +105,32 @@ function TarotLotteryDesktop(props) {
     "king-of-pentacles",
   ];
 
-  let cardStyleBack = {}
-  let cardStyleFront = {}
+  let cardStyleBack = {};
+  let cardStyleFront = {};
 
-    if (props.cardSet < 10){
-      cardStyleBack = {
-        opacity: 0.5,
-        width: `${isMobile ? "93px" : "118px"}`, 
-        height: `${isMobile ? "158px" : "200px"}`
-      }
-      cardStyleFront = {
-        width: `${isMobile ? "93px" : "118px"}`, 
-        height: `${isMobile ? "158px" : "200px"}`
-      }
-    }else { //cards must be smaller for better view
-      cardStyleBack = {
-        opacity: 0.5,
-        width: `${isMobile ? "60px" : "93px"}`, 
-        height: `${isMobile ? "102px" : "158px"}`
-      }
-      cardStyleFront = {
-        width: `${isMobile ? "60px" : "93px"}`, 
-        height: `${isMobile ? "102px" : "158px"}`
-      }
-    }
+  if (props.cardSet < 10) {
+    cardStyleBack = {
+      opacity: 0.5,
+      width: `${isMobile ? "93px" : "118px"}`,
+      height: `${isMobile ? "158px" : "200px"}`,
+    };
+    cardStyleFront = {
+      width: `${isMobile ? "93px" : "118px"}`,
+      height: `${isMobile ? "158px" : "200px"}`,
+    };
+  } else {
+    //cards must be smaller for better view
+    cardStyleBack = {
+      opacity: 0.5,
+      width: `${isMobile ? "60px" : "93px"}`,
+      height: `${isMobile ? "102px" : "158px"}`,
+    };
+    cardStyleFront = {
+      width: `${isMobile ? "60px" : "93px"}`,
+      height: `${isMobile ? "102px" : "158px"}`,
+    };
+  }
 
-  
   //Menage the display of the choosen cards
   useEffect(() => {
     if (flipCards.length > 0) {
@@ -250,9 +251,18 @@ function TarotLotteryDesktop(props) {
           ${isMobile ? "" : props.cardSet < 10 && idx > 0 && idx < props.cardSet - 1 && "pt-3"} 
           `}
           >
-            <ReactCardFlip isFlipped={flipCards.length > idx} flipDirection="horizontal" flipSpeedFrontToBack="2" flipSpeedBackToFront="2">
+            <ReactCardFlip
+              isFlipped={flipCards.length > idx}
+              flipDirection="horizontal"
+              flipSpeedFrontToBack="2"
+              flipSpeedBackToFront="2"
+            >
               <div style={cardStyleBack}>
-                <Image src={cardBackUrl} placeholder="blur" alt={`back-of-card-${idx}`} />
+                <Image
+                  src={cardBackUrl}
+                  fill
+                  alt={`back-of-card-${idx}`}
+                />
               </div>
               <div style={cardStyleFront}>
                 <Card.Img id={`tarot-card-${idx}`} variant="top" alt={`tarot-card-${idx}`} />
@@ -304,7 +314,7 @@ function TarotLotteryDesktop(props) {
                 className={`${styles.smallCard} pointer`}
                 onClick={() => setFlipCards([...flipCards, card])}
               >
-                <Image src="/img/card-back-min.png" width="59" height="100" alt={`back-${card}`} />
+                <Image src={cardBackMin} placeholder="blur" alt={`back-${card}`} />
               </div>
             ))}
           </div>
@@ -330,14 +340,14 @@ function TarotLotteryDesktop(props) {
                 <>
                   <ButtonGroup className={`pointer mt-4 ${styles.animatedBorderLight} rounded`}>
                     <Button className="btn-lg" variant="primary" onClick={handleBuy}>
-                    {loadingBuy ? (
-                      <>
-                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                        <span>Loading...</span>
-                      </>
-                    ) : (
-                      <span> Buy now </span>
-                    )}
+                      {loadingBuy ? (
+                        <>
+                          <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                          <span>Loading...</span>
+                        </>
+                      ) : (
+                        <span> Buy now </span>
+                      )}
                     </Button>
                     <Button
                       variant="outline-primary"

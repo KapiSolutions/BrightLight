@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, Spinner } from "react-bootstrap";
 import { useRouter } from "next/router";
 import styles from "../styles/components/CardTarot.module.scss";
 import { getFileUrlStorage } from "../firebase/Storage";
+import placeholder from "../utils/placeholder";
 
 function CardTarot(props) {
   const router = useRouter();
   const [fullDesc, setfullDesc] = useState(false);
+  const [loading, setLoading] = useState(false);
   const truncLength = 60;
 
   useEffect(() => {
@@ -23,17 +25,26 @@ function CardTarot(props) {
     <Card style={{ width: "18rem" }} className="background border shadow-sm">
       <Card.Img
         id={props.title}
+        src={placeholder("light")}
         variant="top"
-        className="imgOpacity pointer"
+        className={`imgOpacity pointer ${loading && "opacity-25"}`}
         alt={props.title}
         onClick={() => {
-          router.push({
-            pathname: "/card/[pid]",
-            query: { pid: props.id },
-            hash: "main",
-          });
+          if (!loading) {
+            router.push({
+              pathname: "/card/[pid]",
+              query: { pid: props.id },
+              hash: "main",
+            });
+          }
+          setLoading(true);
         }}
       />
+      {loading && (
+        <div className="text-center" style={{ position: "relative", top: "-35%", height: "0px" }}>
+          <Spinner as="div" variant="primary" animation="border" size="lg" role="status" aria-hidden="true" />
+        </div>
+      )}
       <Card.Body>
         <Card.Title className="color-primary">
           <strong>{props.title}</strong>
@@ -53,9 +64,18 @@ function CardTarot(props) {
               query: { pid: props.id },
               hash: "main",
             });
+            setLoading(true);
           }}
+          disabled={loading}
         >
-          Get it
+          {loading ? (
+            <>
+              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+              <span> Loading...</span>
+            </>
+          ) : (
+            <span> Get it </span>
+          )}
         </Button>
       </Card.Body>
     </Card>
