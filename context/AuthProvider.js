@@ -269,7 +269,6 @@ function AuthProvider({ children }) {
     setAdmin(authUserFirestore?.role === process.env.NEXT_PUBLIC_ADMIN_KEY);
   }, [authUserFirestore?.role])
   
-
   const value = {
     authUserCredential,
     authUserFirestore,
