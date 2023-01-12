@@ -79,7 +79,7 @@ function MobileMenu(props) {
                 <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 ms-auto me-3 ">
                   <Navbar.Toggle aria-controls="profile-nav">
                     {isAdmin ? (
-                      <GiTurd className={`${styles.mobileIcons} color-primary`} />
+                      <GiSparkSpirit className={`${styles.mobileIcons} color-primary`} />
                     ) : (
                       <FaRegUserCircle className={`${styles.mobileIcons} color-primary`} />
                     )}
@@ -106,19 +106,19 @@ function MobileMenu(props) {
                               <Link href="/admin/products#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>Products</Nav.Link>
                               </Link>
-                              <Link href="/admin/orders#main" passHref legacyBehavior>
+                              <Link href="/admin/blogs#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>Blog posts</Nav.Link>
                               </Link>
-                              <Link href="/admin/horoscope#main" passHref legacyBehavior>
+                              <Link href="/admin/users#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>Menage Users</Nav.Link>
                               </Link>
 
-                              <Link href="/admin/horoscope#main" passHref legacyBehavior>
+                              <Link href="/admin/orders#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>Menage Orders</Nav.Link>
                               </Link>
                               <div className="d-flex align-items-center">
                                 <GiWallet className={`${styles.iconsAdmin} text-${revTheme} color-primary me-1`} title="Finances" />
-                                <Link href="/admin/horoscope#main" passHref legacyBehavior>
+                                <Link href="/admin/finances#main" passHref legacyBehavior>
                                   <Nav.Link className={`text-${revTheme}`}>Finances</Nav.Link>
                                 </Link>
                               </div>

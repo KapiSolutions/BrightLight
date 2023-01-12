@@ -58,7 +58,7 @@ function DesktopMenu(props) {
           d-flex flex-nowrap align-items-center p-1`}
           fixed="top"
         >
-          <Container style={{minWidth: "95vw"}}>
+          <Container style={{ minWidth: "95vw" }}>
             <Link href="/" passHref legacyBehavior>
               <Navbar.Brand style={back ? (onTop ? { height: "40px" } : { height: "45px" }) : { height: "40px" }}>
                 <span className={`${styles.brand} ${back ? (onTop ? "fs-2" : "fs-4") : "fs-2"}`}>BrightLight</span>
@@ -140,27 +140,33 @@ function DesktopMenu(props) {
                           <Link href="/admin/products#main" passHref legacyBehavior>
                             <Dropdown.Item>Products</Dropdown.Item>
                           </Link>
-                          <Link href="/admin/orders#main" passHref legacyBehavior>
+                          <Link href="/admin/blogs#main" passHref legacyBehavior>
                             <Dropdown.Item>Blog posts</Dropdown.Item>
                           </Link>
-                          <Link href="/admin/horoscope#main" passHref legacyBehavior>
+                          <Link href="/admin/users#main" passHref legacyBehavior>
                             <Dropdown.Item>Menage Users</Dropdown.Item>
                           </Link>
                           <Dropdown.Divider />
-                          <Link href="/admin/horoscope#main" passHref legacyBehavior>
+                          <Link href="/admin/orders#main" passHref legacyBehavior>
                             <Dropdown.Item>Menage Orders</Dropdown.Item>
                           </Link>
                           <Dropdown.Divider />
-                          <Dropdown.Item onClick={handleLogout}>
+
+                          
+                          <Dropdown.Item>
                             <GiWallet className={`${styles.iconsAdmin} color-primary me-1`} title="Finances" />
-                            Finances
-                          </Dropdown.Item>
+                            <Link href="/admin/finances#main" passHref legacyBehavior>
+                              <span className="color-primary">Finances</span>
+                            </Link>
+                            </Dropdown.Item>
+                          
+
                         </Dropdown.Menu>
                       </Dropdown>
                     )}
                     {/* Shopping Cart */}
                     <Nav.Link onClick={() => setShowCart(true)}>
-                      <div className="d-flex align-items-center" >
+                      <div className="d-flex align-items-center">
                         <BsCart4 className={`${styles.cartIconDesktop} color-primary  ${styles.hover}`} />
                         {authUserFirestore.cart.length > 0 && (
                           <div style={{ position: "relative", top: "10px", left: "-2px", width: "1px" }}>
