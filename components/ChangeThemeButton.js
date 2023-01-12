@@ -1,6 +1,7 @@
 import React from "react";
 import useLocalStorageState from "use-local-storage-state";
 import { GiEvilMoon, GiUbisoftSun } from "react-icons/gi";
+// Dark Theme: GiNightSky GiNightSleep GiEvilMoon
 import styles from "../styles/components/ChangeThemeButton.module.scss";
 
 function ChangeThemeButton(props) {

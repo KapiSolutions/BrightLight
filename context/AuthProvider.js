@@ -39,6 +39,7 @@ function AuthProvider({ children }) {
   const [successMsg, setSuccessMsg] = useState("");
   const [tempCart, setTempCart] = useState(null);
   const [userOrders, setUserOrders] = useState([]);
+  const [isAdmin, setAdmin] = useState(false);
   const GoogleProvider = new GoogleAuthProvider();
   const FacebookProvider = new FacebookAuthProvider();
   const TwitterProvider = new TwitterAuthProvider();
@@ -62,7 +63,7 @@ function AuthProvider({ children }) {
         await updateDocFields("users", res.user.uid, { cart: user.cart });
         setTempCart(null);
       }
-      updateUserData(res.user.uid, null)
+      updateUserData(res.user.uid, null);
     });
   }
   function logoutUser() {
@@ -232,11 +233,15 @@ function AuthProvider({ children }) {
 
   async function updateUserData(uid, userData, onlyOrders) {
     if (!onlyOrders) {
-      !userData && setAuthUserFirestore(await getUserDataFirestore(uid));
-      userData && setAuthUserFirestore(userData);
+      if(userData){
+        setAuthUserFirestore(userData);
+      }else {
+        setAuthUserFirestore(await getUserDataFirestore(uid));
+      }
     }
     const orders = await queryByFirestore("orders", "userID", "==", uid);
     orders.length > 0 && setUserOrders(orders);
+
   }
   function clearUserData() {
     setAuthUserFirestore(null);
@@ -244,15 +249,26 @@ function AuthProvider({ children }) {
   }
   //Menage users login/out states
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setAuthUserCredential(user);
-      !user && clearUserData(); //after logging out clear all the user data
-      user && !authUserFirestore && updateUserData(user.uid, null, false); //after logging in load all the user data
+      if (user) {
+        if (!authUserFirestore) {
+          await updateUserData(user.uid, null, false); //after logging in load all the user data
+        }
+      }else{
+        clearUserData(); //after logging out clear all the user data
+      }
       setLoading(false);
     });
     return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  
+//check if user has Admin role
+  useEffect(() => {
+    setAdmin(authUserFirestore?.role === process.env.NEXT_PUBLIC_ADMIN_KEY);
+  }, [authUserFirestore?.role])
+  
 
   const value = {
     authUserCredential,
@@ -277,6 +293,7 @@ function AuthProvider({ children }) {
     setTempCart,
     userOrders,
     setUserOrders,
+    isAdmin,
   };
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

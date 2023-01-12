@@ -26,6 +26,11 @@
   width: 23px;
   height: 23px;
 }
+
+.iconsAdmin {
+  width: 20px;
+  height: 20px;
+}
 .cartIconDesktop {
   width: 25px;
   height: 25px;
@@ -56,3 +61,11 @@
     opacity:1;
   }
 }
+
+.adminBack {
+  background-image: url("/img/admin/lion.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: right;
+}
+
