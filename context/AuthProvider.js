@@ -255,6 +255,7 @@ function AuthProvider({ children }) {
         if (!authUserFirestore) {
           await updateUserData(user.uid, null, false); //after logging in load all the user data
         }
+        setAdmin(user.uid === process.env.NEXT_PUBLIC_ADMIN_KEY);
       }else{
         clearUserData(); //after logging out clear all the user data
       }
@@ -265,9 +266,9 @@ function AuthProvider({ children }) {
   }, []);
   
 //check if user has Admin role
-  useEffect(() => {
-    setAdmin(authUserFirestore?.role === process.env.NEXT_PUBLIC_ADMIN_KEY);
-  }, [authUserFirestore?.role])
+  // useEffect(() => {
+  //   setAdmin(authUserFirestore?.role === process.env.NEXT_PUBLIC_ADMIN_KEY);
+  // }, [authUserFirestore?.role])
   
 
   const value = {
