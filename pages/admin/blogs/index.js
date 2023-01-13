@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Container } from "react-bootstrap";
+import { Container, Button } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
-import TextEditor from "../../../components/TextEditor";
 
-function UserProfilePage() {
+function AdminBlogsPage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, isAdmin } = useAuth();
   const router = useRouter();
@@ -15,7 +14,7 @@ function UserProfilePage() {
   };
   async function scroll() {
     await sleep(300);
-    document.getElementById("ab-ctx").scrollIntoView();
+    document.getElementById("abn-ctx").scrollIntoView();
   }
 
   useEffect(() => {
@@ -35,14 +34,20 @@ function UserProfilePage() {
   return (
     <>
       <Head>
-        <title>BrightLight | Admin - Blog Posts</title>
+        <title>BrightLight | Admin - Blog Menagment</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5 color-primary" id="ab-ctx">
+      <Container className="justify-content-center text-center mt-5 color-primary" id="abn-ctx">
         <h1>Blog Menagment</h1>
-        <TextEditor />
+        <div className="text-end mb-5">
+          <Button onClick={() => {
+            router.push("/admin/blogs/new#main")
+          }}>Create new Blog</Button>
+        </div>
+        <p>Here will be the list of actual added blogs.</p>
+        
       </Container>
     </>
   );
 }
 
-export default UserProfilePage;
+export default AdminBlogsPage;

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic"; // (if using Next.js or use own dynamic loader)
 const Editor = dynamic(() => import("react-draft-wysiwyg").then((mod) => mod.Editor), { ssr: false });
-import { EditorState } from "draft-js";
-import { convertToHTML } from "draft-convert";
+import { EditorState, convertToRaw } from "draft-js";
+import draftToHtml from 'draftjs-to-html';
 import styles from "../styles/components/Admin/Blogs.module.scss";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import { uploadFileToStorage } from "../firebase/Storage";
-import parse from 'html-react-parser';
+const parse = require('html-react-parser');
+import DOMPurify from 'dompurify';
+
 
 //? in development mode set reactStrictMode: false (next.config)
 
@@ -15,11 +17,10 @@ function TextEditor(props) {
   const [convertedContent, setConvertedContent] = useState(null);
 
   useEffect(() => {
-    let html = convertToHTML(editorState.getCurrentContent());
+    // let html = convertToHTML(editorState.getCurrentContent());
+    let html = draftToHtml(convertToRaw(editorState.getCurrentContent()))
     setConvertedContent(html);
   }, [editorState]);
-
-  // console.log(convertedContent);
 
   const uploadImageCallBack = async (file) => {
     if (!file) return;
@@ -57,8 +58,8 @@ function TextEditor(props) {
         }}
       />
       <div className="mt-4 text-start">
-        <p>Converted html:</p>
-        {parse(`${convertedContent ? convertedContent : ""}`)}
+        <p>Preview:</p>
+        {parse(DOMPurify.sanitize(`${convertedContent ? convertedContent : ""}`))}
       </div>
     </div>
   );
