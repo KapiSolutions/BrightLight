@@ -9,7 +9,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { RiAlertFill } from "react-icons/ri";
 import { BsCart4 } from "react-icons/bs";
-import { GiFox, GiUnicorn, GiTurd, GiSparkSpirit, GiSharpCrown, GiWallet, GiTwoCoins } from "react-icons/gi";
+import { GiSparkSpirit, GiWallet } from "react-icons/gi";
 //admin icons: GiPimiento GiPiggyBank GiPointyHat GiPopcorn GiSharpCrown GiSparkSpirit GiStrawberry
 // GiSwordsEmblem GiTiara GiTurd GiTwoCoins GiUnicorn GiWallet GiAnarchy GiArcingBolt GiBleedingHeart
 // GiBulb GiBurningEmbers GiCardQueenHearts GiCowled GiCrownedHeart GiFireBottle GiFox GiSittingDog

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { Container } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
+import TextEditor from "../../../components/TextEditor";
 
 function UserProfilePage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -38,6 +39,7 @@ function UserProfilePage() {
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="ab-ctx">
         <h1>Blog Menagment</h1>
+        <TextEditor />
       </Container>
     </>
   );
