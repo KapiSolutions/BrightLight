@@ -41,10 +41,6 @@ function AdminNewBlogPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    console.log("blog: ", blogContent);
-  }, [blogContent]);
-
   const uploadMainPic = async (e) => {
     e.preventDefault();
     setImgUrlLoading(true);
