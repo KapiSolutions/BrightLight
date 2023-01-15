@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import ReactQuill, { Quill } from "react-quill";
-import "react-quill/dist/quill.snow.css";
 import ImageResize from "quill-image-resize-module-react";
-import DOMPurify from 'dompurify';
-
+import DOMPurify from "dompurify";
+import "react-quill/dist/quill.snow.css";
 Quill.register("modules/imageResize", ImageResize);
 
 function TextEditorQuill(props) {
-  const [editorState, setEditorState] = useState({ html: "" });
-  
+  const [editorState, setEditorState] = useState("");
+
   // Quill modules https://quilljs.com/docs/modules/
   const modules = {
     toolbar: [
@@ -47,20 +46,26 @@ function TextEditorQuill(props) {
     "video",
   ];
 
-  return (
-    <ReactQuill
-      theme={"snow"}
-      onChange={(html) => {
-        setEditorState({ html: html });
-        props.content(DOMPurify.sanitize(html));//send sanitized html to parent
-      }}
-      value={editorState.html}
-      modules={modules}
-      formats={formats}
-      bounds={"#root"}
-      placeholder={props.placeholder}
-    />
-  );
+  if (document) {
+    return (
+      <ReactQuill
+        theme={"snow"}
+        onChange={(html) => {
+          setEditorState(html);
+          props.content(DOMPurify.sanitize(html)); //send sanitized html to parent
+        }}
+        value={editorState}
+        modules={modules}
+        formats={formats}
+        bounds={"#root"}
+        placeholder={props.placeholder}
+      />
+    );
+  } else {
+    return (
+        <p>Loading..</p>
+    );
+  }
 }
 
 export default TextEditorQuill;
