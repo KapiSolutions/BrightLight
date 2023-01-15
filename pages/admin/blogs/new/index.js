@@ -1,17 +1,19 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { Container, Button, Form, Spinner } from "react-bootstrap";
 import { useAuth } from "../../../../context/AuthProvider";
 import { useDeviceStore } from "../../../../stores/deviceStore";
-import TextEditor from "../../../../components/TextEditor";
 import placeholder from "../../../../utils/placeholder";
 import Image from "next/image";
 import { uploadFileToStorage } from "../../../../firebase/Storage";
+import TextEditorQuill from "../../../../components/TextEditorQuill";
+const parse = require('html-react-parser');
 
 function AdminNewBlogPage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, isAdmin } = useAuth();
+  const [blogContent, setBlogContent] = useState("");
   const [imgUrl, setImgUrl] = useState(placeholder("pinkPX"));
   const [imgUrlLoading, setImgUrlLoading] = useState(false);
   const [mainPicStyle, setMainPicStyle] = useState("cover");
@@ -39,6 +41,10 @@ function AdminNewBlogPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    console.log("blog: ", blogContent);
+  }, [blogContent]);
+
   const uploadMainPic = async (e) => {
     e.preventDefault();
     setImgUrlLoading(true);
@@ -53,8 +59,8 @@ function AdminNewBlogPage() {
   };
 
   const changeMainPicStyle = (e) => {
-    setMainPicStyle(e?.target.value)
-  }
+    setMainPicStyle(e?.target.value);
+  };
 
   return (
     <>
@@ -94,7 +100,13 @@ function AdminNewBlogPage() {
         <div className="w-100 border mb-2 " style={{ minHeight: "150px", position: "relative" }}>
           <Image src={imgUrl} fill alt="uploaded file" style={{ objectFit: mainPicStyle }} />
         </div>
-        <TextEditor />
+
+        <TextEditorQuill placeholder={"Write something..."} content={setBlogContent} />
+        <br/><br/>
+        <div className="text-start">
+        Output html:
+        {parse(blogContent)}
+        </div>
       </Container>
     </>
   );
