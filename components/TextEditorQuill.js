@@ -62,9 +62,7 @@ function TextEditorQuill(props) {
       />
     );
   } else {
-    return (
-        <p>Loading..</p>
-    );
+    return <textarea value={props.placeholder} />;
   }
 }
 
