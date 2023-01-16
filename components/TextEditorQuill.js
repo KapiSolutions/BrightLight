@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-// import ReactQuill, { Quill } from "react-quill";
-// import ImageResize from "quill-image-resize-module-react";
-import "react-quill/dist/quill.snow.css";
-
-//! I option
 const ReactQuill = dynamic(
   async () => {
     const { default: RQ } = await import("react-quill");
@@ -20,7 +15,6 @@ const ReactQuill = dynamic(
     ssr: false,
   }
 );
-
 import DOMPurify from "dompurify";
 
 function TextEditorQuill(props) {
@@ -63,7 +57,7 @@ function TextEditorQuill(props) {
       },
       imageResize: {
         parchment: Quill.import("parchment"),
-        modules: ["Resize", "DisplaySize"],
+        modules: ["Resize", "DisplaySize", "Toolbar"],
       },
     });
 
@@ -79,6 +73,7 @@ function TextEditorQuill(props) {
       {enableEditor && (
         <ReactQuill
           theme={"snow"}
+          className="color-primary"
           onChange={(html) => {
             setEditorState({ html: html });
             props.content(DOMPurify.sanitize(html)); //send sanitized html to parent

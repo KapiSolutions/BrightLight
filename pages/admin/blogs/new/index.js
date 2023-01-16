@@ -8,10 +8,11 @@ import placeholder from "../../../../utils/placeholder";
 import Image from "next/image";
 import { uploadFileToStorage } from "../../../../firebase/Storage";
 import TextEditorQuill from "../../../../components/TextEditorQuill";
-const parse = require('html-react-parser');
+const parse = require("html-react-parser");
 
 function AdminNewBlogPage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const themeState = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
   const [blogContent, setBlogContent] = useState("");
   const [imgUrl, setImgUrl] = useState(placeholder("pinkPX"));
@@ -98,10 +99,12 @@ function AdminNewBlogPage() {
         </div>
 
         <TextEditorQuill placeholder={"Write something..."} content={setBlogContent} />
-        <br/><br/>
+
+        <br />
+        <br />
         <div className="text-start">
-        Output html:
-        {parse(blogContent)}
+          Output html:
+          {parse(blogContent)}
         </div>
       </Container>
     </>
