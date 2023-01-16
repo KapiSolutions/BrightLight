@@ -2,8 +2,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  &:hover{
-    background-color: rgba(120, 120, 120, 0.253);
+
+  &:hover {
+    background-color: rgba(198, 198, 198, 0.426);
   }
 }
 
@@ -11,7 +12,20 @@
   display: flex;
   justify-content: right;
   align-items: top;
-  &:hover{
+
+  &:hover {
     background-color: rgba(120, 120, 120, 0.253);
+
+    .pSelect {
+      opacity: 1;
+    }
   }
+
+  .pSelect {
+    opacity: 0;
+  }
+  p{
+    background-color: rgba(18, 18, 18, 0.758);
+  }
+
 }

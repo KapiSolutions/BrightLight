@@ -13,6 +13,18 @@ import {
 } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
+const createDocFirestore = async (collection, docID, data) => {
+  const docRef = doc(db, collection, docID);
+  try {
+    await setDoc(docRef, data);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  } catch (err) {
+    console.error("createDocFirestore Err: ", err);
+    throw err;
+  }
+};
+
 const getUserDataFirestore = async (uid) => {
   const docRef = doc(db, "users", uid);
   const docSnap = await getDoc(docRef);
@@ -158,6 +170,7 @@ const handleLikeBlog = async (action, blogID, userID, userName) => {
 };
 
 export {
+  createDocFirestore,
   getUserDataFirestore,
   createUserFirestore,
   queryByFirestore,

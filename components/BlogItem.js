@@ -1,23 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Badge, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Card, Button, Badge, OverlayTrigger, Tooltip, Spinner } from "react-bootstrap";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { getFileUrlStorage } from "../firebase/Storage";
 import { AiOutlineLike, AiFillLike, AiOutlineComment } from "react-icons/ai";
 import { useAuth } from "../context/AuthProvider";
 import { handleLikeBlog } from "../firebase/Firestore";
-import ErrorModal from "./Modals/ErrorModal";
+const parse = require("html-react-parser");
 
 function BlogItem(props) {
   const router = useRouter();
   const { authUserFirestore, setErrorMsg } = useAuth();
-  const [fullDesc, setfullDesc] = useState(false);
-  const [showModal, setShowModal] = useState("");
+  const [loading, setLoading] = useState(false);
   const truncLength = 100;
   const post = props.blogPost;
   const [likes, setLikes] = useState(post.likes);
   const [userLiked, setUserLiked] = useState(false);
   const likesToShow = 6;
+  const blogContent = parse(post.content);
 
   useEffect(() => {
     //check if user have already liked a blog post(during initialization of the page)
@@ -28,12 +27,6 @@ function BlogItem(props) {
         })
         .catch((error) => console.log(error));
     }
-    // getFileUrlStorage("images/cards", props.img)
-    //   .then((url) => {
-    //     const img = document.getElementById(props.id);
-    //     img.setAttribute("src", url);
-    //   })
-    //   .catch((error) => console.log(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUserFirestore]);
 
@@ -55,10 +48,11 @@ function BlogItem(props) {
           id={post.id}
           alt={post.title}
           variant="top"
-          className="imgOpacity pointer"
-          style={{ objectFit: "cover" }}
-          src="/img/blog/main.jpg"
+          className={`imgOpacity pointer ${loading && "opacity-25"}`}
+          style={{ objectFit: "cover", height: "200px" }}
+          src={post.mainImg}
           onClick={() => {
+            setLoading(true);
             router.push({
               pathname: "/blog/[pid]",
               query: { pid: post.id },
@@ -72,12 +66,12 @@ function BlogItem(props) {
               <strong>{post.title}</strong>
               <br />
               <small>
-                <i>By BrightLightGypsy - {post.date}</i>
+                <i>By {post.author} - {post.date}</i>
               </small>
             </p>
           </Card.Title>
-          <Card.Text id={`text-${post.id}`} className="color-primary text-muted mb-0">
-            {fullDesc ? post.content : `${post.content.substring(0, truncLength)}...`}
+          <Card.Text id={`text-${post.id}`} className="color-primary text-muted mb-0" style={{maxHeight: "80px", overflow: "hidden"}}>
+          {blogContent}
           </Card.Text>
 
           {/* Tags */}
@@ -126,6 +120,7 @@ function BlogItem(props) {
             variant="primary"
             className="float-end"
             onClick={() => {
+              setLoading(true);
               router.push({
                 pathname: "/blog/[pid]",
                 query: { pid: post.id },
@@ -133,7 +128,14 @@ function BlogItem(props) {
               });
             }}
           >
-            Read More
+            {loading ? (
+            <>
+              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+              <span> Loading...</span>
+            </>
+          ) : (
+            <span> Read More </span>
+          )}
           </Button>
         </Card.Footer>
       </Card>
