@@ -1,12 +1,17 @@
-.wrapper {
-    padding: 1rem;
-    border: 1px solid #ccc;
+.DropSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  &:hover{
+    background-color: rgba(120, 120, 120, 0.253);
   }
-  .editor {
-    background-color:lightgray;
-    padding: 1rem;
-    border: 1px solid #ccc;
+}
+
+.DropSectionLoaded {
+  display: flex;
+  justify-content: right;
+  align-items: top;
+  &:hover{
+    background-color: rgba(120, 120, 120, 0.253);
   }
-  .toolbar {
-    border: 1px solid #ccc;
-  }
+}
