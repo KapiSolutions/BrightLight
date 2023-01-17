@@ -102,13 +102,19 @@ const updateDocFields = async (collection, uid, update) => {
   }
 };
 
-const getDocsFromCollection = async (collectionName) => {
+const getDocsFromCollection = async (collectionName, onlyIds = false) => {
   try {
     const docs = [];
     const querySnapshot = await getDocs(collection(db, collectionName));
-    querySnapshot.forEach((doc) => {
-      docs.push(doc.data());
-    });
+    if(onlyIds){
+      querySnapshot.forEach((doc) => {
+        docs.push(doc.data().id);
+      });
+    }else{
+      querySnapshot.forEach((doc) => {
+        docs.push(doc.data());
+      });
+    }
     return docs;
   } catch (err) {
     throw err;
