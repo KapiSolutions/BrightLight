@@ -31,6 +31,6 @@ export async function getStaticProps() {
     props: {
       blogPosts: JSON.parse(JSON.stringify(docs)),
     },
-    revalidate: 60, //1minute
+    revalidate: 10, //10second
   };
 }
