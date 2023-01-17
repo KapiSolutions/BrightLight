@@ -4,6 +4,7 @@ import { Container } from "react-bootstrap";
 import { db } from "../../../config/firebase";
 import { doc, getDoc, getDocs, collection } from "firebase/firestore";
 import BlogPost from "../../../components/BlogPost";
+import { getDocById, getDocsFromCollection } from "../../../firebase/Firestore";
 
 function BlogPage(props) {
   return (
@@ -22,16 +23,7 @@ export default BlogPage;
 
 export async function getStaticProps(context) {
   const pid = context.params.pid;
-  let blogPost;
-
-  const ref = doc(db, "blog", pid);
-  const docSnap = await getDoc(ref);
-  if (docSnap.exists()) {
-    blogPost = docSnap.data();
-  } else {
-    error = "Error: data doesnt exist";
-  }
-
+  const blogPost = await getDocById("blog",pid);
   return {
     props: {
       post: JSON.parse(JSON.stringify(blogPost)),
@@ -41,20 +33,12 @@ export async function getStaticProps(context) {
 }
 
 export async function getStaticPaths() {
-  const BlogPostIds = [];
-  const querySnapshot = await getDocs(collection(db, "blog"));
-  querySnapshot.forEach((doc) => {
-    const blogID = {
-      pid: doc.data().id,
-    };
-    BlogPostIds.push(blogID);
-  });
-
+const docs = await getDocsFromCollection("blog", true);//true - get only Id's
   return {
-    paths: BlogPostIds.map((blogID) => {
+    paths: docs.map((doc) => {
       return {
         params: {
-          pid: blogID.pid,
+          pid: doc,
         },
       };
     }),

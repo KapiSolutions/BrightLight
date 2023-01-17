@@ -127,6 +127,7 @@ const getDocById = async (collection, uid) => {
     const docSnap = await getDoc(docRef);
     return docSnap.data();
   } catch (err) {
+    console.error("Error during getting document: ", err);
     throw err;
   }
 };

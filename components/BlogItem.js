@@ -11,7 +11,6 @@ function BlogItem(props) {
   const router = useRouter();
   const { authUserFirestore, setErrorMsg } = useAuth();
   const [loading, setLoading] = useState(false);
-  const truncLength = 100;
   const post = props.blogPost;
   const [likes, setLikes] = useState(post.likes);
   const [userLiked, setUserLiked] = useState(false);
@@ -70,9 +69,9 @@ function BlogItem(props) {
               </small>
             </p>
           </Card.Title>
-          <Card.Text id={`text-${post.id}`} className="color-primary text-muted mb-0" style={{maxHeight: "80px", overflow: "hidden"}}>
+          <section id={`text-${post.id}`} className="color-primary text-muted mb-0" style={{maxHeight: "80px", overflow: "hidden"}}>
           {blogContent}
-          </Card.Text>
+          </section>
 
           {/* Tags */}
           <section className="d-flex gap-2 mt-3 overflow-auto noScrollBar" style={{ maxWidth: "80vw" }}>

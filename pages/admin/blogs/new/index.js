@@ -13,7 +13,7 @@ import styles from "../../../../styles/components/Admin/Blogs.module.scss";
 import { BsCloudUpload } from "react-icons/bs";
 import BlogPost from "../../../../components/BlogPost";
 import { v4 as uuidv4 } from "uuid";
-import { createDocFirestore, getOnlyIdsFirestore } from "../../../../firebase/Firestore";
+import { createDocFirestore, getDocsFromCollection } from "../../../../firebase/Firestore";
 
 function AdminNewBlogPage() {
   const titleRef = useRef();
@@ -120,16 +120,15 @@ function AdminNewBlogPage() {
     setShowPreview(!showPreview);
   };
   const handleSendBlog = async () => {
-    await getOnlyIdsFirestore("blog");
-    // setLoading(true);
-    // try {
-    //   await createDocFirestore("blog", post.id, post);
-    //   router.push("/admin/blogs#main");
-    //   setLoading(false);
-    // } catch (error) {
-    //   console.log(error);
-    //   setLoading(false);
-    // }
+    setLoading(true);
+    try {
+      await createDocFirestore("blog", post.id, post);
+      router.push("/admin/blogs#main");
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
   };
 
   return (
