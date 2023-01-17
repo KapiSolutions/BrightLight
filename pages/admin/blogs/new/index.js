@@ -25,7 +25,8 @@ function AdminNewBlogPage() {
   const themeState = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
   const [blogContent, setBlogContent] = useState("");
-  const [imgUrl, setImgUrl] = useState({ loaded: false, path: placeholder("pinkPX") });
+  const [imgBase64, setImgBase64] = useState({ loaded: false, path: placeholder("pinkPX") }); //used only for preview
+  const [imgFile, setImgFile] = useState(null); //image wich will be uploaded to storage
   const [tags, setTags] = useState([]);
   const [mainPicStyle, setMainPicStyle] = useState("cover");
   const [showPreview, setShowPreview] = useState(false);
@@ -69,25 +70,14 @@ function AdminNewBlogPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ! Not used now
-  const uploadMainPic = async () => {
-    try {
-      const url = await uploadFileToStorage(imgFile[0], "blog/sda");
-      setImgUrl({ loaded: true, path: url });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   const changeMainPicStyle = (e) => {
     setMainPicStyle(e?.target.value);
   };
-  // !
 
-  const selectedImgToBase64 = (files) => {
+  const imgToBase64 = (files) => {
     const reader = new FileReader();
     reader.onloadend = () => {
-      setImgUrl({ loaded: true, path: reader.result });
+      setImgBase64({ loaded: true, path: reader.result });
       //console.log(reader.result);
       // Logs data:image/jpeg;base64,wL2dvYWwgbW9yZ...
       //? Convert to Base64 string
@@ -104,12 +94,13 @@ function AdminNewBlogPage() {
   };
 
   const handlePreview = () => {
+    const uid = uuidv4().slice(0, 13);
     updatePost({
-      id: uuidv4().slice(0, 13),
+      id: uid,
       author: authorRef.current?.value,
       content: blogContent,
       date: dateRef.current?.value,
-      mainImg: imgUrl.path,
+      mainImg: imgBase64.path,
       mainImgSource: mainImgSourceRef.current?.value,
       tags: tags,
       title: titleRef.current?.value,
@@ -119,10 +110,21 @@ function AdminNewBlogPage() {
 
     setShowPreview(!showPreview);
   };
+
+  //  upload main pic and update blog data on Create Blog request
+  const uploadImg = async () => {
+    const imgUrl = await uploadFileToStorage(imgFile, `blog/${post.id}`);
+    updatePost({ mainImg: imgUrl });
+    let postWithUrl = { ...post };
+    postWithUrl.mainImg = imgUrl;
+    return postWithUrl;
+  };
+
   const handleSendBlog = async () => {
     setLoading(true);
     try {
-      await createDocFirestore("blog", post.id, post);
+      const readyBlog = await uploadImg();
+      await createDocFirestore("blog", readyBlog.id, readyBlog);
       router.push("/admin/blogs#main");
       setLoading(false);
     } catch (error) {
@@ -130,7 +132,23 @@ function AdminNewBlogPage() {
       setLoading(false);
     }
   };
+  const convertHtml = () => {
+    console.log(blogContent);
+    const startString = "<img";
+    const endString = '"></p>';
+    const string = blogContent;
+    const imgTagExist = string.search(startString); //if exists then returns the index
 
+    if(imgTagExist > 0){
+        const stopIndex = imgTagExist + string.substring(imgTagExist).indexOf(endString);
+        const imgTag = string.slice(imgTagExist, stopIndex + 2);
+        const newContent = string.replace(imgTag,"{{img}}");
+        console.log(newContent);
+    }else{
+        console.log("Without img files");
+    }
+    
+  };
   return (
     <>
       <Head>
@@ -147,17 +165,24 @@ function AdminNewBlogPage() {
         </section>
         {/* Main picture & DropZone */}
         <div className="w-100 border rounded mb-2 " style={{ minHeight: mainPicHeight, position: "relative" }}>
-          <Dropzone onDrop={(acceptedFiles) => selectedImgToBase64(acceptedFiles)}>
+          <Dropzone
+            onDrop={(acceptedFiles) => {
+              imgToBase64(acceptedFiles);
+              setImgFile(acceptedFiles[0]);
+            }}
+          >
             {({ getRootProps, getInputProps }) => (
               <section style={{ position: "relative", zIndex: 100 }}>
                 <div
-                  className={`${imgUrl.loaded ? styles.DropSectionLoaded : styles.DropSection} color-primary pointer`}
+                  className={`${
+                    imgBase64.loaded ? styles.DropSectionLoaded : styles.DropSection
+                  } color-primary pointer`}
                   style={{ minHeight: mainPicHeight }}
                   {...getRootProps()}
                 >
                   <input {...getInputProps()} />
                   <div className="mt-1">
-                    {imgUrl.loaded ? (
+                    {imgBase64.loaded ? (
                       <>
                         {isMobile ? (
                           <p className="border rounded p-1 me-2 text-light">
@@ -186,14 +211,14 @@ function AdminNewBlogPage() {
             )}
           </Dropzone>
           <Image
-            src={imgUrl.path}
+            src={imgBase64.path}
             fill
             alt="uploaded file"
             style={{ objectFit: mainPicStyle, borderRadius: ".25rem" }}
           />
         </div>
         {/* Main image options */}
-        {imgUrl.loaded && (
+        {imgBase64.loaded && (
           <Form className="d-flex flex-nowrap align-items-center justify-content-end mb-2">
             <Form.Label className="me-2 mt-1">
               <small>Source:</small>
@@ -213,6 +238,7 @@ function AdminNewBlogPage() {
         )}
         {/* Text Editor */}
         <TextEditorQuill placeholder={"Here is place for your blog content..."} content={setBlogContent} />
+        {/* <Button onClick={convertHtml}>Convert</Button> */}
 
         {/* Tag menager */}
         <section className="mt-2 mb-2">
@@ -250,7 +276,7 @@ function AdminNewBlogPage() {
           </Form>
         </section>
         <div className="text-end">
-          <Button onClick={handlePreview}>Preview Blog</Button>
+          <Button onClick={handlePreview}>{showPreview ? "Close Preview" : "Preview Blog"}</Button>
         </div>
         {showPreview && (
           <div className="mt-4">
