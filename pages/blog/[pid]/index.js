@@ -1,8 +1,6 @@
 import React from "react";
 import Head from "next/head";
 import { Container } from "react-bootstrap";
-import { db } from "../../../config/firebase";
-import { doc, getDoc, getDocs, collection } from "firebase/firestore";
 import BlogPost from "../../../components/BlogPost";
 import { getDocById, getDocsFromCollection } from "../../../firebase/Firestore";
 
