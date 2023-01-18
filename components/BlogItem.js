@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { AiOutlineLike, AiFillLike, AiOutlineComment } from "react-icons/ai";
 import { useAuth } from "../context/AuthProvider";
-import { handleLikeBlog } from "../firebase/Firestore";
+import { getDocById, handleLikeBlog } from "../firebase/Firestore";
 const parse = require("html-react-parser");
 
 function BlogItem(props) {
@@ -13,6 +13,7 @@ function BlogItem(props) {
   const [loading, setLoading] = useState(false);
   const post = props.blogPost;
   const [likes, setLikes] = useState([]);
+  const [comments, setComments] = useState([]);
   const [userLiked, setUserLiked] = useState(false);
   const likesToShow = 6;
   const blogContent = parse(post.content);
@@ -22,7 +23,13 @@ function BlogItem(props) {
   };
 
   useEffect(() => {
-    setLikes(post.likes.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+    //Get act list of the likes and comments
+    getDocById("blog", post.id).then((doc) => {
+      setLikes(doc.likes.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+      setComments(doc.comments);
+    })
+    .catch((error) => console.log(error));
+    
     //check if user have already liked a blog post(during initialization of the page)
     if (authUserFirestore) {
       handleLikeBlog("check", post.id, authUserFirestore.id, authUserFirestore.name)
@@ -129,7 +136,7 @@ function BlogItem(props) {
 
             <div>
               <AiOutlineComment style={{ width: "22px", height: "22px" }} className="pointer" />
-              <span className="ms-1 p-1">{post.comments.length}</span>
+              <span className="ms-1 p-1">{comments.length}</span>
             </div>
           </div>
           <Button

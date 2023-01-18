@@ -30,9 +30,13 @@ function BlogPost(props) {
   };
 
   useEffect(() => {
-    //sort likes and comments - newest first
-    setLikes(post.likes.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
-    setComments(post.comments.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+    //Get and sort act list of the likes and comments
+    getDocById("blog", post.id)
+      .then((doc) => {
+        setLikes(doc.likes.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+        setComments(doc.comments.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+      })
+      .catch((error) => console.log(error));
 
     //check if user have already liked a blog post
     if (authUserFirestore && !previewMode) {
@@ -170,16 +174,16 @@ function BlogPost(props) {
               overlay={
                 <Tooltip>
                   {likes.map((_, idx) => (
-                      <section key={idx}>
-                        {idx < likesToShow && (
-                          <p className="m-1 text-start">
-                            <strong>
-                              {likes[idx].userName} {authUserFirestore?.id == likes[idx].userID && <small>(You)</small>}
-                            </strong>
-                          </p>
-                        )}
-                      </section>
-                    ))}
+                    <section key={idx}>
+                      {idx < likesToShow && (
+                        <p className="m-1 text-start">
+                          <strong>
+                            {likes[idx].userName} {authUserFirestore?.id == likes[idx].userID && <small>(You)</small>}
+                          </strong>
+                        </p>
+                      )}
+                    </section>
+                  ))}
                   {likes.length > likesToShow && <p className="m-1 text-start">...</p>}
                 </Tooltip>
               }
