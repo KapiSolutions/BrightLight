@@ -12,12 +12,17 @@ function BlogItem(props) {
   const { authUserFirestore, setErrorMsg } = useAuth();
   const [loading, setLoading] = useState(false);
   const post = props.blogPost;
-  const [likes, setLikes] = useState(post.likes);
+  const [likes, setLikes] = useState([]);
   const [userLiked, setUserLiked] = useState(false);
   const likesToShow = 6;
   const blogContent = parse(post.content);
 
+  const timeStampToDate = (time) => {
+    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  };
+
   useEffect(() => {
+    setLikes(post.likes.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
     //check if user have already liked a blog post(during initialization of the page)
     if (authUserFirestore) {
       handleLikeBlog("check", post.id, authUserFirestore.id, authUserFirestore.name)
@@ -32,8 +37,8 @@ function BlogItem(props) {
   const handleLike = async () => {
     if (authUserFirestore) {
       const data = await handleLikeBlog("update", post.id, authUserFirestore.id, authUserFirestore.name);
-      setLikes(data[1]);
-      data[0] ? setUserLiked(true) : setUserLiked(false);
+      setLikes(data[1].sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date))); 
+      data[0] ? setUserLiked(true) : setUserLiked(false); //data[0] contains info if user like or not this item
     } else {
       // show popup with sign in info
       setErrorMsg("sign");
@@ -65,12 +70,18 @@ function BlogItem(props) {
               <strong>{post.title}</strong>
               <br />
               <small>
-                <i>By {post.author} - {post.date}</i>
+                <i>
+                  By {post.author} - {post.date}
+                </i>
               </small>
             </p>
           </Card.Title>
-          <section id={`text-${post.id}`} className="color-primary text-muted mb-0" style={{maxHeight: "80px", overflow: "hidden"}}>
-          {blogContent}
+          <section
+            id={`text-${post.id}`}
+            className="color-primary text-muted mb-0"
+            style={{ maxHeight: "80px", overflow: "hidden" }}
+          >
+            {blogContent}
           </section>
 
           {/* Tags */}
@@ -88,19 +99,25 @@ function BlogItem(props) {
           <div className="d-flex gap-1">
             <div>
               {userLiked ? (
-                <AiFillLike style={{ width: "22px", height: "22px" }} className="pointer" onClick={handleLike}/>
+                <AiFillLike style={{ width: "22px", height: "22px" }} className="pointer" onClick={handleLike} />
               ) : (
-                <AiOutlineLike style={{ width: "22px", height: "22px" }} className="pointer" onClick={handleLike}/>
+                <AiOutlineLike style={{ width: "22px", height: "22px" }} className="pointer" onClick={handleLike} />
               )}
               <OverlayTrigger
                 placement="bottom"
-                trigger={['hover', 'focus', 'click']}
+                trigger={["hover", "focus", "click"]}
                 overlay={
                   <Tooltip>
-                    {Array.from({ length: likes.length > likesToShow ? likesToShow : likes.length }).map((_, idx) => (
-                      <p key={idx} className="m-1 text-start">
-                        <strong>{likes[idx].userName}</strong>
-                      </p>
+                    {likes.map((_, idx) => (
+                      <section key={idx}>
+                        {idx < likesToShow && (
+                          <p className="m-1 text-start">
+                            <strong>
+                              {likes[idx].userName} {authUserFirestore?.id == likes[idx].userID && <small>(You)</small>}
+                            </strong>
+                          </p>
+                        )}
+                      </section>
                     ))}
                     {likes.length > likesToShow && <p className="m-1 text-start">...</p>}
                   </Tooltip>
@@ -128,13 +145,13 @@ function BlogItem(props) {
             }}
           >
             {loading ? (
-            <>
-              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-              <span> Loading...</span>
-            </>
-          ) : (
-            <span> Read More </span>
-          )}
+              <>
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                <span> Loading...</span>
+              </>
+            ) : (
+              <span> Read More </span>
+            )}
           </Button>
         </Card.Footer>
       </Card>

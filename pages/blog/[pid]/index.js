@@ -26,7 +26,7 @@ export async function getStaticProps(context) {
     props: {
       post: JSON.parse(JSON.stringify(blogPost)),
     },
-    revalidate: 1,
+    revalidate: 30, //1 - 1 second
   };
 }
 

@@ -146,7 +146,7 @@ const queryByFirestore = async (collName, state, condition, value) => {
 const handleLikeBlog = async (action, blogID, userID, userName) => {
   try {
     const docRef = doc(db, "blog", blogID);
-    const docSnap = await getDoc(docRef);
+    let docSnap = await getDoc(docRef);
     let likes = [...docSnap.data().likes];
     const likeExist = likes.find((like) => like.userID == userID);
 
@@ -165,6 +165,8 @@ const handleLikeBlog = async (action, blogID, userID, userName) => {
         };
         likes.push(newLike);
         await updateDoc(docRef, { likes: likes });
+        docSnap = await getDoc(docRef); //get updated likes (to receive the same date format)
+        likes = [...docSnap.data().likes];
       }
       return [likeExist ? false : true, likes];
     } else {

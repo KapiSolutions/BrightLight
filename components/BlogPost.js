@@ -18,16 +18,24 @@ function BlogPost(props) {
   //setErrorMsg if contains message then fires a modal with that error - Layout.js and ErrorModal.js
   const { authUserFirestore, setErrorMsg } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const [likes, setLikes] = useState(post.likes);
-  const [comments, setComments] = useState(post.comments);
+  const [likes, setLikes] = useState([]);
+  const [comments, setComments] = useState([]);
   const [userLiked, setUserLiked] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState({ msg: "", itemID: "" });
   const [loading, setLoading] = useState(false);
   const likesToShow = 6;
 
+  const timeStampToDate = (time) => {
+    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  };
+
   useEffect(() => {
+    //sort likes and comments - newest first
+    setLikes(post.likes.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+    setComments(post.comments.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+
+    //check if user have already liked a blog post
     if (authUserFirestore && !previewMode) {
-      //check if user have already liked a blog post(during initialization of the page)
       handleLikeBlog("check", post.id, authUserFirestore.id, authUserFirestore.name)
         .then((data) => {
           data ? setUserLiked(true) : setUserLiked(false);
@@ -41,7 +49,7 @@ function BlogPost(props) {
     if (!previewMode) {
       if (authUserFirestore) {
         const data = await handleLikeBlog("update", post.id, authUserFirestore.id, authUserFirestore.name);
-        setLikes(data[1]);
+        setLikes(data[1].sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
         data[0] ? setUserLiked(true) : setUserLiked(false);
       } else {
         // show popup with sign in info
@@ -61,14 +69,14 @@ function BlogPost(props) {
       content: commentRef.current.value,
     };
     try {
-      //get the latest comment list from the Firestore
+      //get act. comments from the Firestore
       const actPost = await getDocById("blog", post.id);
       let updatedComments = actPost.comments;
       updatedComments.push(newComment);
 
-      //update the comment list
+      //update and sort the comments
       const data = await updateDocFields("blog", post.id, { comments: updatedComments });
-      setComments(data.comments);
+      setComments(data.comments.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
       commentRef.current.value = "";
       setLoading(false);
     } catch (error) {
@@ -92,6 +100,7 @@ function BlogPost(props) {
       console.log(error);
     }
   };
+
   return (
     <>
       <section className="d-flex gap-1">
@@ -160,11 +169,17 @@ function BlogPost(props) {
               trigger={["hover", "focus", "click"]}
               overlay={
                 <Tooltip>
-                  {Array.from({ length: likes.length > likesToShow ? likesToShow : likes.length }).map((_, idx) => (
-                    <p key={idx} className="m-1 text-start">
-                      <strong>{likes[idx].userName}</strong>
-                    </p>
-                  ))}
+                  {likes.map((_, idx) => (
+                      <section key={idx}>
+                        {idx < likesToShow && (
+                          <p className="m-1 text-start">
+                            <strong>
+                              {likes[idx].userName} {authUserFirestore?.id == likes[idx].userID && <small>(You)</small>}
+                            </strong>
+                          </p>
+                        )}
+                      </section>
+                    ))}
                   {likes.length > likesToShow && <p className="m-1 text-start">...</p>}
                 </Tooltip>
               }
@@ -220,9 +235,7 @@ function BlogPost(props) {
               </div>
               <p className={`mb-0 `}>{comment.content}</p>
 
-              <p className="text-muted text-end">
-                {new Date(comment.date.seconds * 1000 + comment.date.nanoseconds / 100000).toLocaleString()}
-              </p>
+              <p className="text-muted text-end">{timeStampToDate(comment.date).toLocaleString()}</p>
               <hr className="m-1" />
             </div>
           ))}
