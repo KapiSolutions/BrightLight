@@ -10,6 +10,9 @@ import { v4 as uuidv4 } from "uuid";
 import ConfirmActionModal from "../components/Modals/ConfirmActionModal";
 import styles from "../styles/components/BlogPost.module.scss";
 const parse = require("html-react-parser");
+import DOMPurify from "dompurify";
+import handlebars from "handlebars/dist/handlebars.min.js"; // instead of: import handlebars from "handlebars"; - the second causes errors wtf
+import { getFileUrlStorage } from "../firebase/Storage";
 
 function BlogPost(props) {
   const post = props.post;
@@ -21,6 +24,7 @@ function BlogPost(props) {
   const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState([]);
   const [userLiked, setUserLiked] = useState(false);
+  const [content, setContent] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState({ msg: "", itemID: "" });
   const [loading, setLoading] = useState(false);
   const likesToShow = 6;
@@ -29,22 +33,44 @@ function BlogPost(props) {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
 
-  useEffect(() => {
-    //Get and sort act list of the likes and comments
-    getDocById("blog", post.id)
-      .then((doc) => {
-        setLikes(doc.likes.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
-        setComments(doc.comments.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+  const convertHtml = async () => {
+    let replacements = {};
+    const template = handlebars.compile(post.content);
+    await Promise.all(
+      post.contentImages.map(async (img, idx) => {
+        const url = await getFileUrlStorage(`images/blog/${post.id}`, img.fileName);
+        const prop = img.fileName.slice(0, img.fileName.indexOf(".")); //img.FileName is eg. name.jpg => here take only the name
+        const imgTag = `<img src="${url}" alt="Blog tarot bright light gypsy ${post.title}" ${img.attributes.imgWidth}>`;
+        replacements = {
+          ...replacements,
+          [prop]: imgTag,
+        };
       })
-      .catch((error) => console.log(error));
+    );
+    setContent(DOMPurify.sanitize(template(replacements)));
+  };
 
-    //check if user have already liked a blog post
-    if (authUserFirestore && !previewMode) {
-      handleLikeBlog("check", post.id, authUserFirestore.id, authUserFirestore.name)
-        .then((data) => {
-          data ? setUserLiked(true) : setUserLiked(false);
+  useEffect(() => {
+    if (!previewMode) {
+      if (post.contentImages.length > 0) {
+        convertHtml();
+      }
+      //Get and sort act list of the likes and comments
+      getDocById("blog", post.id)
+        .then((doc) => {
+          setLikes(doc.likes.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+          setComments(doc.comments.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
         })
         .catch((error) => console.log(error));
+
+      //check if user have already liked a blog post
+      if (authUserFirestore) {
+        handleLikeBlog("check", post.id, authUserFirestore.id, authUserFirestore.name)
+          .then((data) => {
+            data ? setUserLiked(true) : setUserLiked(false);
+          })
+          .catch((error) => console.log(error));
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUserFirestore]);
@@ -123,20 +149,21 @@ function BlogPost(props) {
         </p>
       </div>
       <div className="w-100" style={{ minHeight: "200px", position: "relative" }}>
-        <Image src={post.mainImg} fill alt={post.title} style={{ objectFit: "cover", borderRadius: ".25rem" }} />
+        <Image src={post.mainImg.path} fill alt={post.title} style={{ objectFit: post.mainImg.style, borderRadius: ".25rem" }} />
       </div>
-      {post.mainImgSource && (
+      {post.mainImg.source && (
         <p className="text-start mb-0">
           <small>
             <i>
-              Source: <Link href={post.mainImgSource}> {post.mainImgSource} </Link>
+              Source: <Link href={post.mainImg.source}> {post.mainImg.source} </Link>
             </i>
           </small>
         </p>
       )}
 
       {/* Content of the Blog post */}
-      <div className={styles.contentWrapper}>{parse(post.content)}</div>
+      {/* when includes images then download them and modify html, if not then display raw content */}
+      <div className={styles.contentWrapper}>{content ? parse(content) : parse(post.content)}</div>
 
       {/* Tags */}
       {post.tags.length > 0 && (

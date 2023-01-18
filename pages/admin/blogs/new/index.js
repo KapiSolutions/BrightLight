@@ -13,7 +13,7 @@ import styles from "../../../../styles/components/Admin/Blogs.module.scss";
 import { BsCloudUpload } from "react-icons/bs";
 import BlogPost from "../../../../components/BlogPost";
 import { v4 as uuidv4 } from "uuid";
-import { createDocFirestore, getDocsFromCollection } from "../../../../firebase/Firestore";
+import { createDocFirestore } from "../../../../firebase/Firestore";
 
 function AdminNewBlogPage() {
   const titleRef = useRef();
@@ -25,8 +25,10 @@ function AdminNewBlogPage() {
   const themeState = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
   const [blogContent, setBlogContent] = useState("");
+  const [finalContent, setFinalContent] = useState("");
   const [imgBase64, setImgBase64] = useState({ loaded: false, path: placeholder("pinkPX") }); //used only for preview
   const [imgFile, setImgFile] = useState(null); //image wich will be uploaded to storage
+  const [contentImages, setContentImages] = useState([]); //store images added to blog content
   const [tags, setTags] = useState([]);
   const [mainPicStyle, setMainPicStyle] = useState("cover");
   const [showPreview, setShowPreview] = useState(false);
@@ -36,8 +38,12 @@ function AdminNewBlogPage() {
     author: "",
     content: "",
     date: "",
-    mainImg: "",
-    mainImgSource: "",
+    mainImg: {
+        path: "",
+        source: "",
+        style: "",
+    },
+    contentImages: [],
     tags: [],
     title: "",
     comments: [],
@@ -70,20 +76,19 @@ function AdminNewBlogPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    setShowPreview(false);
+  }, [blogContent]);
+
   const changeMainPicStyle = (e) => {
     setMainPicStyle(e?.target.value);
   };
 
+  //Convert eg. main image to to base64 to display it on the client without uploading files to the firebase storage
   const imgToBase64 = (files) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       setImgBase64({ loaded: true, path: reader.result });
-      //console.log(reader.result);
-      // Logs data:image/jpeg;base64,wL2dvYWwgbW9yZ...
-      //? Convert to Base64 string
-      // const getBase64StringFromDataURL = (dataURL) => dataURL.replace("data:", "").replace(/^.+,/, "");
-      // const base64 = getBase64StringFromDataURL(reader.result);
-      // Logs wL2dvYWwgbW9yZ...
     };
     reader.readAsDataURL(files[0]);
   };
@@ -91,33 +96,101 @@ function AdminNewBlogPage() {
   const handleTags = (e) => {
     let words = e.target.value.split(" ");
     setTags(words.filter((word) => word.length >= 1));
+    setShowPreview(false);
   };
 
-  const handlePreview = () => {
+  const handlePreview = async () => {
     const uid = uuidv4().slice(0, 13);
     updatePost({
       id: uid,
       author: authorRef.current?.value,
       content: blogContent,
       date: dateRef.current?.value,
-      mainImg: imgBase64.path,
-      mainImgSource: mainImgSourceRef.current?.value,
+      mainImg: {
+        path: imgBase64.path,
+        source: mainImgSourceRef.current?.value,
+        style: mainPicStyle,
+    },
       tags: tags,
       title: titleRef.current?.value,
-      comments: [],
-      likes: [],
     });
 
+    //prepare html and images for the submit action
+    await convertHtml();
     setShowPreview(!showPreview);
   };
 
-  //  upload main pic and update blog data on Create Blog request
+  //Get all the img elements and replace with {{}} handleBar variables,
+  //to not store base64 images in the firestore
+  const convertHtml = async () => {
+    let tmpContent = blogContent; //here will be stored the final html content
+    const imgCount = [...tmpContent.matchAll("<img")]; //Count how many images are added to the blog content
+    let imgList = [];
+
+    await Promise.all(
+      imgCount.map(async (img, idx) => {
+        let base64;
+        const startIndex = tmpContent.indexOf("<img");
+        const stopIndex = startIndex + tmpContent.substring(startIndex).indexOf('"></p>');
+        const imgTag = tmpContent.slice(startIndex, stopIndex + 2);
+        tmpContent = tmpContent.replace(imgTag, `{{{img${idx}}}}`);
+        //Get the raw base64 and other file data
+        const fileName = `img${idx}`;
+        const fileType = imgTag.slice(imgTag.indexOf(":") + 1, imgTag.indexOf("/")); //output image text etc...
+        const fileExtension = imgTag.slice(imgTag.indexOf("/") + 1, imgTag.indexOf(";")); //output jpg gif png etc...
+        const widthProp = imgTag.slice(imgTag.indexOf('width="'), imgTag.indexOf('">') + 1);
+        if (widthProp) {
+          base64 = imgTag.slice(imgTag.indexOf('src="') + 5, imgTag.indexOf('" width'));
+        } else {
+          base64 = imgTag.slice(imgTag.indexOf('src="') + 5, imgTag.indexOf('">'));
+        }
+        //create file
+        const file = await base64toFile(base64, fileName, fileType, fileExtension);
+        imgList.push({ file: file, imgWidth: widthProp });
+      })
+    );
+    setContentImages(imgList);
+    setFinalContent(tmpContent);
+  };
+
+  // convert base64 to the file format
+  const base64toFile = async (url, fileName, type, extension) => {
+    return fetch(url)
+      .then((res) => {
+        return res.arrayBuffer();
+      })
+      .then((buf) => {
+        const readyFile = new File([buf], `${fileName}.${extension}`, { type: `${type}/${extension}` });
+        return readyFile;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // upload main pic and update blog data on Create Blog request
   const uploadImg = async () => {
-    const imgUrl = await uploadFileToStorage(imgFile, `blog/${post.id}`);
-    updatePost({ mainImg: imgUrl });
-    let postWithUrl = { ...post };
-    postWithUrl.mainImg = imgUrl;
-    return postWithUrl;
+    try {
+      let imgContent = [];
+      //Create object containing all necessary info about images used in the blog content
+      //and upload these images to the firebase storage
+      await Promise.all(
+        contentImages.map(async (img, idx) => {
+          imgContent.push({ fileName: img.file.name, attributes: { imgWidth: img.imgWidth } });
+          await uploadFileToStorage(img.file, `images/blog/${post.id}`);
+        })
+      );
+      //upload main image
+      const imgUrl = await uploadFileToStorage(imgFile, `images/blog/${post.id}`);
+      //update blog data
+      let readyBlog = { ...post };
+      readyBlog.content = finalContent;
+      readyBlog.mainImg.path = imgUrl;
+      readyBlog.contentImages = imgContent;
+      return readyBlog;
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleSendBlog = async () => {
@@ -132,23 +205,7 @@ function AdminNewBlogPage() {
       setLoading(false);
     }
   };
-  const convertHtml = () => {
-    console.log(blogContent);
-    const startString = "<img";
-    const endString = '"></p>';
-    const string = blogContent;
-    const imgTagExist = string.search(startString); //if exists then returns the index
 
-    if(imgTagExist > 0){
-        const stopIndex = imgTagExist + string.substring(imgTagExist).indexOf(endString);
-        const imgTag = string.slice(imgTagExist, stopIndex + 2);
-        const newContent = string.replace(imgTag,"{{img}}");
-        console.log(newContent);
-    }else{
-        console.log("Without img files");
-    }
-    
-  };
   return (
     <>
       <Head>
@@ -160,7 +217,13 @@ function AdminNewBlogPage() {
         <section className="mt-2 mb-2">
           <Form className="text-start">
             <Form.Label style={{ position: "relative", top: "8px" }}>TITLE:</Form.Label>
-            <Form.Control type="text" placeholder="Add title" ref={titleRef} className="w-100" />
+            <Form.Control
+              type="text"
+              placeholder="Add title"
+              ref={titleRef}
+              onChange={() => setShowPreview(false)}
+              className="w-100"
+            />
           </Form>
         </section>
         {/* Main picture & DropZone */}
@@ -223,7 +286,14 @@ function AdminNewBlogPage() {
             <Form.Label className="me-2 mt-1">
               <small>Source:</small>
             </Form.Label>
-            <Form.Control type="text" size="sm" placeholder="(optional)" ref={mainImgSourceRef} className="w-75 me-2" />
+            <Form.Control
+              type="text"
+              size="sm"
+              placeholder="(optional)"
+              ref={mainImgSourceRef}
+              onChange={() => setShowPreview(false)}
+              className="w-75 me-2"
+            />
             <Form.Label className="me-2 mt-1">
               <small style={{ whiteSpace: "nowrap" }}>Image style:</small>
             </Form.Label>
@@ -238,7 +308,6 @@ function AdminNewBlogPage() {
         )}
         {/* Text Editor */}
         <TextEditorQuill placeholder={"Here is place for your blog content..."} content={setBlogContent} />
-        {/* <Button onClick={convertHtml}>Convert</Button> */}
 
         {/* Tag menager */}
         <section className="mt-2 mb-2">
@@ -256,18 +325,23 @@ function AdminNewBlogPage() {
           </div>
         </section>
 
-        {/* Tag menager */}
+        {/* Blog details */}
         <section className="mt-2 mb-2">
           <Form className="d-flex flex-wrap gap-2 text-start">
             <div className={`d-block ${isMobile && "w-100"}`}>
               <Form.Label style={{ position: "relative", top: "8px" }}>Author:</Form.Label>
-              <Form.Control type="text" onChange={() => {}} ref={authorRef} defaultValue={"BrightLightGypsy"} />
+              <Form.Control
+                type="text"
+                onChange={() => setShowPreview(false)}
+                ref={authorRef}
+                defaultValue={"BrightLightGypsy"}
+              />
             </div>
             <div className={`d-block ${isMobile && "w-100"}`}>
               <Form.Label style={{ position: "relative", top: "8px" }}>Date:</Form.Label>
               <Form.Control
                 type="text"
-                onChange={() => {}}
+                onChange={() => setShowPreview(false)}
                 ref={dateRef}
                 defaultValue={new Date().toLocaleDateString()}
               />

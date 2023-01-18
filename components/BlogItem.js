@@ -24,12 +24,13 @@ function BlogItem(props) {
 
   useEffect(() => {
     //Get act list of the likes and comments
-    getDocById("blog", post.id).then((doc) => {
-      setLikes(doc.likes.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
-      setComments(doc.comments);
-    })
-    .catch((error) => console.log(error));
-    
+    getDocById("blog", post.id)
+      .then((doc) => {
+        setLikes(doc.likes.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+        setComments(doc.comments);
+      })
+      .catch((error) => console.log(error));
+
     //check if user have already liked a blog post(during initialization of the page)
     if (authUserFirestore) {
       handleLikeBlog("check", post.id, authUserFirestore.id, authUserFirestore.name)
@@ -44,7 +45,7 @@ function BlogItem(props) {
   const handleLike = async () => {
     if (authUserFirestore) {
       const data = await handleLikeBlog("update", post.id, authUserFirestore.id, authUserFirestore.name);
-      setLikes(data[1].sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date))); 
+      setLikes(data[1].sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
       data[0] ? setUserLiked(true) : setUserLiked(false); //data[0] contains info if user like or not this item
     } else {
       // show popup with sign in info
@@ -60,8 +61,8 @@ function BlogItem(props) {
           alt={post.title}
           variant="top"
           className={`imgOpacity pointer ${loading && "opacity-25"}`}
-          style={{ objectFit: "cover", height: "200px" }}
-          src={post.mainImg}
+          style={{ objectFit: post.mainImg.style, height: "200px" }}
+          src={post.mainImg.path}
           onClick={() => {
             setLoading(true);
             router.push({
@@ -83,13 +84,18 @@ function BlogItem(props) {
               </small>
             </p>
           </Card.Title>
-          <section
+          <div
             id={`text-${post.id}`}
             className="color-primary text-muted mb-0"
-            style={{ maxHeight: "80px", overflow: "hidden" }}
+            style={{
+              maxHeight: "80px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maskImage: "linear-gradient(180deg, #000 85%, transparent)",
+            }}
           >
             {blogContent}
-          </section>
+          </div>
 
           {/* Tags */}
           <section className="d-flex gap-2 mt-3 overflow-auto noScrollBar" style={{ maxWidth: "80vw" }}>
