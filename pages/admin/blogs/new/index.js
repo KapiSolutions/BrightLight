@@ -41,7 +41,7 @@ function AdminNewBlogPage() {
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="ab-ctx">
         <h1>Create new Blog</h1>
-        <BlogTemplate />
+        <BlogTemplate post={null}/>
       </Container>
     </>
   );

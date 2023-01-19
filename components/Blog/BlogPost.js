@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Badge, Form, Button, Container, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Badge, Form, Button, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { AiOutlineLike, AiFillLike, AiOutlineComment } from "react-icons/ai";
 import { useDeviceStore } from "../../stores/deviceStore";
 import { useAuth } from "../../context/AuthProvider";
 import { getDocById, handleLikeBlog, updateDocFields } from "../../firebase/Firestore";
 import { v4 as uuidv4 } from "uuid";
 import ConfirmActionModal from "../Modals/ConfirmActionModal";
-import styles from "../../styles/components/BlogPost.module.scss";
+import styles from "../../styles/components/Blog/BlogPost.module.scss";
 const parse = require("html-react-parser");
 import DOMPurify from "dompurify";
 import handlebars from "handlebars/dist/handlebars.min.js"; // instead of: import handlebars from "handlebars"; - the second causes errors wtf
