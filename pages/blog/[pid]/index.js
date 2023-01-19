@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import { Container } from "react-bootstrap";
-import BlogPost from "../../../components/BlogPost";
+import BlogPost from "../../../components/Blog/BlogPost";
 import { getDocById, getDocsFromCollection } from "../../../firebase/Firestore";
 
 function BlogPage(props) {

@@ -3,8 +3,8 @@ import { Card, Button, Badge, OverlayTrigger, Tooltip, Spinner } from "react-boo
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { AiOutlineLike, AiFillLike, AiOutlineComment } from "react-icons/ai";
-import { useAuth } from "../context/AuthProvider";
-import { getDocById, handleLikeBlog } from "../firebase/Firestore";
+import { useAuth } from "../../context/AuthProvider";
+import { getDocById, handleLikeBlog } from "../../firebase/Firestore";
 const parse = require("html-react-parser");
 
 function BlogItem(props) {
