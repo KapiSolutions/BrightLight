@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 import { createDocFirestore } from "../../firebase/Firestore";
 
 function BlogTemplate(props) {
-  const postEdit = props.post; 
+  const postEdit = props.post;
   const titleRef = useRef();
   const authorRef = useRef();
   const dateRef = useRef();
@@ -35,6 +35,8 @@ function BlogTemplate(props) {
   const [mainPicStyle, setMainPicStyle] = useState("cover");
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(false);
+  const invalidInit = { title: false, mainImg: false, content: false, author: false, date: false };
+  const [invalid, updateInvalid] = useReducer((state, updates) => ({ ...state, ...updates }), invalidInit);
   const initPost = {
     id: "",
     author: "",
@@ -53,9 +55,11 @@ function BlogTemplate(props) {
   };
   const [post, updatePost] = useReducer((state, updates) => ({ ...state, ...updates }), initPost);
   const mainPicHeight = "200px";
+  const themeDarkInput = themeState == "dark" ? "bg-accent6 text-light" : "";
 
   useEffect(() => {
     setShowPreview(false);
+    updateInvalid({ content: false });
   }, [blogContent]);
 
   const changeMainPicStyle = (e) => {
@@ -64,6 +68,7 @@ function BlogTemplate(props) {
 
   //Convert eg. main image to to base64 to display it on the client without uploading files to the firebase storage
   const imgToBase64 = (files) => {
+    updateInvalid({ mainImg: false });
     const reader = new FileReader();
     reader.onloadend = () => {
       setImgBase64({ loaded: true, path: reader.result });
@@ -78,24 +83,93 @@ function BlogTemplate(props) {
   };
 
   const handlePreview = async () => {
+    let dataOK = true;
     const uid = uuidv4().slice(0, 13);
-    updatePost({
-      id: uid,
-      author: authorRef.current?.value,
-      content: blogContent,
-      date: dateRef.current?.value,
-      mainImg: {
-        path: imgBase64.path,
-        source: mainImgSourceRef.current?.value,
-        style: mainPicStyle,
-      },
-      tags: tags,
-      title: titleRef.current?.value,
-    });
+    // Convert the date
+    const inputDate = dateRef.current?.value;
+    const enDate = inputDate.includes("/"); //"01/12/2012"
+    const plDate = inputDate.includes("."); //"1.12.2012"
+    const csDate = inputDate.includes("-"); //"1-12-2012"
+    const splitChar = (enDate && "/") || (plDate && ".") || (csDate && "-");
+    const dArray = inputDate.split(splitChar);
+    const date = new Date(
+      `${dArray[2]}/
+      ${dArray[1]}/
+      ${dArray[0]}${" "} 
+      ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`
+    );
+    // check if user provided valid date format
+    if (date instanceof Date && !isNaN(date)) {
+      if (date < new Date("2000-01-01")) {
+        dataOK = false;
+        updateInvalid({ date: true }); //invalid
+        document.getElementsByName("blogTmpDate")[0].focus();
+        document.getElementsByName("blogTmpDate")[0].scrollIntoView({ block: "center", inline: "nearest" });
+      } else {
+        updateInvalid({ date: false }); //ok
+      }
+    } else {
+      dataOK = false;
+      updateInvalid({ date: true }); //invalid
+      document.getElementsByName("blogTmpDate")[0].focus();
+      document.getElementsByName("blogTmpDate")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    }
+    // check title field
+    if (titleRef.current?.value != "") {
+      updateInvalid({ title: false }); //ok
+    } else {
+      dataOK = false;
+      updateInvalid({ title: true }); //invalid
+      document.getElementsByName("blogTmpTitle")[0].focus();
+      document.getElementsByName("blogTmpTitle")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    }
+    // check author field
+    if (authorRef.current?.value != "") {
+      updateInvalid({ author: false }); //ok
+    } else {
+      dataOK = false;
+      updateInvalid({ author: true }); //invalid
+      document.getElementsByName("blogTmpAuthor")[0].focus();
+      document.getElementsByName("blogTmpAuthor")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    }
+    // check if main image was added
+    if (imgBase64.loaded) {
+      updateInvalid({ mainImg: false }); //ok
+    } else {
+      dataOK = false;
+      updateInvalid({ mainImg: true }); //invalid
+      document.getElementsByName("blogTmpImg")[0].focus();
+      document.getElementsByName("blogTmpImg")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    }
+    // check if blog content is added
+    if (blogContent == "" || blogContent == "<p><br></p>") {
+      dataOK = false;
+      updateInvalid({ content: true }); //invalid
+      document.getElementsByName("blogTmpContent")[0].focus();
+      document.getElementsByName("blogTmpContent")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    } else {
+      updateInvalid({ content: false }); //ok
+    }
 
-    //prepare html and images for the submit action
-    await convertHtml();
-    setShowPreview(!showPreview);
+    if (dataOK) {
+      updatePost({
+        id: uid,
+        author: authorRef.current?.value,
+        content: blogContent,
+        date: date,
+        mainImg: {
+          path: imgBase64.path,
+          source: mainImgSourceRef.current?.value,
+          style: mainPicStyle,
+        },
+        tags: tags,
+        title: titleRef.current?.value,
+      });
+
+      //prepare html and images for the submit action
+      await convertHtml();
+      setShowPreview(!showPreview);
+    }
   };
 
   //Get all the img elements and replace with {{}} handleBar variables,
@@ -191,15 +265,21 @@ function BlogTemplate(props) {
           <Form.Label style={{ position: "relative", top: "8px" }}>TITLE:</Form.Label>
           <Form.Control
             type="text"
+            name="blogTmpTitle"
             placeholder="Add title"
             ref={titleRef}
             onChange={() => setShowPreview(false)}
-            className="w-100"
+            className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
           />
+          {invalid.title && <small className="text-danger">Please add title.</small>}
         </Form>
       </section>
       {/* Main picture & DropZone */}
-      <div className="w-100 border rounded mb-2 " style={{ minHeight: mainPicHeight, position: "relative" }}>
+      <div
+        name="blogTmpImg"
+        className={`w-100 border rounded ${invalid.mainImg && "border-danger"}`}
+        style={{ minHeight: mainPicHeight, position: "relative" }}
+      >
         <Dropzone
           onDrop={(acceptedFiles) => {
             imgToBase64(acceptedFiles);
@@ -250,6 +330,11 @@ function BlogTemplate(props) {
           style={{ objectFit: mainPicStyle, borderRadius: ".25rem" }}
         />
       </div>
+      {invalid.mainImg && (
+        <div className="text-start mt-0">
+          <small className="text-danger">Please upload main picture.</small>
+        </div>
+      )}
       {/* Main image options */}
       {imgBase64.loaded && (
         <Form className="d-flex flex-nowrap align-items-center justify-content-end mb-2">
@@ -262,12 +347,18 @@ function BlogTemplate(props) {
             placeholder="(optional)"
             ref={mainImgSourceRef}
             onChange={() => setShowPreview(false)}
-            className="w-75 me-2"
+            className={`w-75 me-2 ${themeDarkInput}`}
           />
           <Form.Label className="me-2 mt-1">
             <small style={{ whiteSpace: "nowrap" }}>Image style:</small>
           </Form.Label>
-          <Form.Select type="text" size="sm" id="BlogMainPicViewProp" onChange={changeMainPicStyle} className="w-25">
+          <Form.Select
+            type="text"
+            size="sm"
+            id="BlogMainPicViewProp"
+            onChange={changeMainPicStyle}
+            className={`w-25 ${themeDarkInput}`}
+          >
             <option value="cover">Cover</option>
             <option value="fill">Fill</option>
             <option value="contain">Contain</option>
@@ -276,19 +367,27 @@ function BlogTemplate(props) {
           </Form.Select>
         </Form>
       )}
+
       {/* Text Editor */}
-      <TextEditorQuill placeholder={"Here is place for your blog content..."} content={setBlogContent} />
+      <div className={`mt-2 border rounded w-100 ${invalid.content && "border-danger border-2"}`} name="blogTmpContent">
+        <TextEditorQuill placeholder={"Here is place for your blog content..."} content={setBlogContent} />
+      </div>
+      {invalid.content && (
+        <div className="text-start mt-0">
+          <small className="text-danger">Please add some content.</small>
+        </div>
+      )}
 
       {/* Tag menager */}
       <section className="mt-2 mb-2">
         <Form className="text-start">
           <Form.Label style={{ position: "relative", top: "8px" }}>TAGS:</Form.Label>
-          <Form.Control type="text" placeholder="Eg: tag1 tag2" className="w-100" onChange={handleTags} />
+          <Form.Control type="text" placeholder="Eg: tag1 tag2" className={`w-100 ${themeDarkInput}`} onChange={handleTags} />
         </Form>
         <div className="d-flex flex-wrap gap-2 text-start mt-2">
           {tags.length > 0 &&
             tags.map((tag, idx) => (
-              <Badge key={idx} bg="dark" className="pointer">
+              <Badge key={idx} bg={themeState == "dark" ? "primary" : "dark"} className="pointer">
                 #{tag}
               </Badge>
             ))}
@@ -302,19 +401,25 @@ function BlogTemplate(props) {
             <Form.Label style={{ position: "relative", top: "8px" }}>Author:</Form.Label>
             <Form.Control
               type="text"
+              name="blogTmpAuthor"
               onChange={() => setShowPreview(false)}
               ref={authorRef}
               defaultValue={"BrightLightGypsy"}
+              className={`${invalid.author && "border border-danger"} ${themeDarkInput}`}
             />
+            {invalid.author && <small className="text-danger">Incorrect value.</small>}
           </div>
           <div className={`d-block ${isMobile && "w-100"}`}>
             <Form.Label style={{ position: "relative", top: "8px" }}>Date:</Form.Label>
             <Form.Control
               type="text"
+              name="blogTmpDate"
               onChange={() => setShowPreview(false)}
               ref={dateRef}
               defaultValue={new Date().toLocaleDateString()}
+              className={`${invalid.date && "border border-danger"} ${themeDarkInput}`}
             />
+            {invalid.date && <small className="text-danger">Incorrect value.</small>}
             <small className="text-muted ms-1">Today: {new Date().toLocaleDateString()}</small>
           </div>
         </Form>

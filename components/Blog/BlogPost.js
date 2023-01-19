@@ -144,7 +144,7 @@ function BlogPost(props) {
         <h1 className="color-primary mb-0"> {post.title} </h1>
         <p className="ms-2 text-muted">
           <i>
-            By {post.author} - {post.date}
+            By {post.author} - {previewMode ? post.date.toLocaleDateString() : timeStampToDate(post.date).toLocaleDateString() }
           </i>
         </p>
       </div>

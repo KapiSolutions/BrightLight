@@ -4,8 +4,11 @@ import { useRouter } from "next/router";
 import { Container, Button } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
+import { getDocsFromCollection } from "../../../firebase/Firestore";
+import BlogItemAdmin from "../../../components/Blog/BlogItemAdmin";
 
-function AdminBlogsPage() {
+function AdminBlogsPage(props) {
+  const posts = props.blogPosts;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, isAdmin } = useAuth();
   const router = useRouter();
@@ -39,15 +42,33 @@ function AdminBlogsPage() {
       <Container className="justify-content-center text-center mt-5 color-primary" id="abn-ctx">
         <h1>Blog Menagment</h1>
         <div className="text-end mb-5">
-          <Button onClick={() => {
-            router.push("/admin/blogs/new#main")
-          }}>Create new Blog</Button>
+          <Button
+            onClick={() => {
+              router.push("/admin/blogs/new#main");
+            }}
+          >
+            Create new Blog
+          </Button>
         </div>
-        <p>Here will be the list of actual added blogs.</p>
-        
+        <div>
+          {posts.map((post, idx) => (
+            <BlogItemAdmin key={idx} idx={idx} post={post}/>
+          ))}
+        </div>
       </Container>
     </>
   );
 }
 
 export default AdminBlogsPage;
+
+export async function getStaticProps() {
+  const docs = await getDocsFromCollection("blog");
+
+  return {
+    props: {
+      blogPosts: JSON.parse(JSON.stringify(docs)),
+    },
+    revalidate: 30, //1 - 1 second
+  };
+}

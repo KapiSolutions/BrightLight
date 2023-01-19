@@ -79,7 +79,7 @@ function BlogItem(props) {
               <br />
               <small>
                 <i>
-                  By {post.author} - {post.date}
+                  By {post.author} - {timeStampToDate(post.date).toLocaleDateString()}
                 </i>
               </small>
             </p>
