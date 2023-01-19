@@ -72,7 +72,7 @@ function BlogItemAdmin(props) {
             {isMobile ? (
               <>
                 <p className="mb-0">{post.title}</p>
-                <small>{timeStampToDate(post.date)}</small>
+                <small>{timeStampToDate(post.date).toLocaleDateString()}</small>
               </>
             ) : (
               <>
