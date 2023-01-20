@@ -3,11 +3,12 @@ import Image from "next/image";
 import { useAuth } from "../../context/AuthProvider";
 import { Badge, Button, Modal, Spinner } from "react-bootstrap";
 import { useRouter } from "next/router";
-import { TbTrashX } from "react-icons/tb";
+import { AiOutlineLike, AiOutlineComment } from "react-icons/ai";
 import { IoIosArrowForward } from "react-icons/io";
 import { deleteDocInCollection } from "../../firebase/Firestore";
 import { useDeviceStore } from "../../stores/deviceStore";
 import ConfirmActionModal from "../Modals/ConfirmActionModal";
+import { deleteFilesInDirStorage } from "../../firebase/Storage";
 
 function BlogItemAdmin(props) {
   const router = useRouter();
@@ -25,12 +26,15 @@ function BlogItemAdmin(props) {
 
   async function deleteBlog() {
     try {
-      await deleteDocInCollection("blog", blog.id);
-      //!Delete all the images in the storage
+      await deleteDocInCollection("blog", post.id);
+      await deleteFilesInDirStorage(`images/blog/${post.id}`);
+
+      props.refresh(); //refresh the blog list after deleting
       setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
       setShowConfirmModal({ msg: "", itemID: "" });
       setErrorMsg("Something went wrong, please try again later.");
+      console.log(error);
     }
   }
 
@@ -44,13 +48,13 @@ function BlogItemAdmin(props) {
           {!isMobile && (
             <>
               <div className="d-flex text-start w-100">
-                <div className="col-5">
+                <div className="col-4">
                   <strong>Blog title</strong>
                 </div>
                 <div className="col-3">
-                  <strong>Author</strong>
+                  <strong>Creation Date</strong>
                 </div>
-                <div className="col-2">
+                <div className="col-3">
                   <strong>Reactions</strong>
                 </div>
                 <div className="col-2">
@@ -64,20 +68,25 @@ function BlogItemAdmin(props) {
       )}
 
       <div className="d-flex align-items-center text-start w-100 flex-wrap">
-        <div className="col-10 col-md-5 d-flex pointer" onClick={showDetailsFunc}>
-          <div>
+        <div className="col-10 col-md-4 d-flex pointer" onClick={showDetailsFunc}>
+          <div className="d-flex align-items-center">
+            {/* <SiMicrodotblog style={{width: "25px", height: "25px"}}/> */}
             <Image src={cardsIcon} width="58" height="58" alt="tarot cards" />
           </div>
           <div>
             {isMobile ? (
               <>
                 <p className="mb-0">{post.title}</p>
-                <small>{timeStampToDate(post.date).toLocaleDateString()}</small>
+                <i>
+                  <small>
+                    By: {post.author} - {timeStampToDate(post.date).toLocaleDateString()}
+                  </small>
+                </i>
               </>
             ) : (
               <>
                 <p className="mb-0">{post.title}</p>
-                <small className="text-muted">{timeStampToDate(post.date).toLocaleDateString()}</small>
+                <small className="text-muted">By: {post.author}</small>
               </>
             )}
           </div>
@@ -85,33 +94,54 @@ function BlogItemAdmin(props) {
 
         {!isMobile && (
           <>
-            <div className="col-3 text-uppercase">{post.author}</div>
-            <div className="col-2">Likes & Comments</div>
-            <div className="col-2">
-                <div className="d-flex flex-wrap mt-2 gap-3">
-                  <Button variant="outline-primary" size="sm">
-                    Edit
-                  </Button>
-                  <Button
-                    variant="primary"
-                    className="text-light"
-                    size="sm"
-                    onClick={() => {
-                      setShowConfirmModal({
-                        msg: "You are trying to delete your Blog Post. This action is irreversible. Confirm or return to orders.",
-                        itemID: "",
-                      });
-                    }}
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                    ) : (
-                      "Delete"
-                    )}
-                  </Button>
+            <div className="col-3 text-uppercase">{timeStampToDate(post.date).toLocaleDateString()}</div>
+            <div className="col-3">
+              <div className="d-flex gap-1">
+                <div>
+                  <AiOutlineLike style={{ width: "22px", height: "22px" }} />
+                  <span className="ms-1 p-1 me-2">{post.likes.length}</span>
                 </div>
-              
+
+                <div>
+                  <AiOutlineComment style={{ width: "22px", height: "22px" }} />
+                  <span className="ms-1 p-1">{post.comments.length}</span>
+                </div>
+              </div>
+            </div>
+            <div className="col-2">
+              <div className="d-flex flex-wrap mt-2 gap-3">
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => {
+                    router.push({
+                      pathname: "/admin/blogs/[pid]",
+                      query: { pid: post.id },
+                      hash: "main",
+                    });
+                  }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="primary"
+                  className="text-light"
+                  size="sm"
+                  onClick={() => {
+                    setShowConfirmModal({
+                      msg: "You are trying to delete your Blog Post. This action is irreversible. Confirm or return to orders.",
+                      itemID: "",
+                    });
+                  }}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  ) : (
+                    "Delete"
+                  )}
+                </Button>
+              </div>
             </div>
           </>
         )}
@@ -122,9 +152,57 @@ function BlogItemAdmin(props) {
             />
           </div>
         )}
+        {/* Actions bar on Mobile */}
+        {showDetails && (
+          <div className="d-flex justify-content-between w-100 mt-3">
+            <div className="d-flex">
+              <div className="d-flex gap-1 ms-2">
+                <div>
+                  <AiOutlineLike style={{ width: "20px", height: "20px" }} />
+                  <small className="ms-1 p-1 me-2">{post.likes.length}</small>
+                </div>
 
-        {/* Details of the order */}
-        {showDetails && <p>Details - open new page</p>}
+                <div>
+                  <AiOutlineComment style={{ width: "20px", height: "20px" }} />
+                  <small className="ms-1 p-1">{post.comments.length}</small>
+                </div>
+              </div>
+            </div>
+            <div className="d-flex gap-3">
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={() => {
+                  router.push({
+                    pathname: "/admin/blogs/[pid]",
+                    query: { pid: post.id },
+                    hash: "main",
+                  });
+                }}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="primary"
+                className="text-light"
+                size="sm"
+                onClick={() => {
+                  setShowConfirmModal({
+                    msg: "You are trying to delete your Blog Post. This action is irreversible. Please confirm.",
+                    itemID: "",
+                  });
+                }}
+                disabled={loading}
+              >
+                {loading ? (
+                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                ) : (
+                  "Delete"
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
       <hr />
 

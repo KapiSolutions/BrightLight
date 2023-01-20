@@ -13,7 +13,8 @@ import styles from "../../styles/components/Blog/BlogTemplate.module.scss";
 import { BsCloudUpload } from "react-icons/bs";
 import BlogPost from "./BlogPost";
 import { v4 as uuidv4 } from "uuid";
-import { createDocFirestore } from "../../firebase/Firestore";
+import { createDocFirestore, getDocById, updateDocFields } from "../../firebase/Firestore";
+import Link from "next/link";
 
 function BlogTemplate(props) {
   const postEdit = props.post;
@@ -25,12 +26,13 @@ function BlogTemplate(props) {
 
   const isMobile = useDeviceStore((state) => state.isMobile);
   const themeState = useDeviceStore((state) => state.themeState);
-  const { isAuthenticated, isAdmin } = useAuth();
   const [blogContent, setBlogContent] = useState("");
   const [finalContent, setFinalContent] = useState("");
   const [imgBase64, setImgBase64] = useState({ loaded: false, path: placeholder("pinkPX") }); //used only for preview
   const [imgFile, setImgFile] = useState(null); //image wich will be uploaded to storage
+  const [editNewImage, setEditNewImage] = useState(false);
   const [contentImages, setContentImages] = useState([]); //store images added to blog content
+  const [tagsString, setTagsString] = useState("");
   const [tags, setTags] = useState([]);
   const [mainPicStyle, setMainPicStyle] = useState("cover");
   const [showPreview, setShowPreview] = useState(false);
@@ -57,13 +59,30 @@ function BlogTemplate(props) {
   const mainPicHeight = "200px";
   const themeDarkInput = themeState == "dark" ? "bg-accent6 text-light" : "";
 
+  //Update Blog content on evry editor state change
   useEffect(() => {
     setShowPreview(false);
     updateInvalid({ content: false });
   }, [blogContent]);
 
+  //Create string form tags array when edit mode is enabled
+  useEffect(() => {
+    if (postEdit) {
+      setImgBase64({ loaded: true, path: postEdit.mainImg.path }); //set url instead of base64
+      updateInvalid({ mainImg: false }); //main img setted
+      setBlogContent(postEdit.content);
+      setTagsString(postEdit.tags.join(" "));
+      setTags([...postEdit.tags]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const changeMainPicStyle = (e) => {
     setMainPicStyle(e?.target.value);
+  };
+
+  const timeStampToDate = (time) => {
+    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
 
   //Convert eg. main image to to base64 to display it on the client without uploading files to the firebase storage
@@ -153,7 +172,7 @@ function BlogTemplate(props) {
 
     if (dataOK) {
       updatePost({
-        id: uid,
+        id: `${postEdit ? postEdit.id : uid}`,
         author: authorRef.current?.value,
         content: blogContent,
         date: date,
@@ -164,6 +183,8 @@ function BlogTemplate(props) {
         },
         tags: tags,
         title: titleRef.current?.value,
+        comments: postEdit ? [...postEdit.comments] : [],
+        likes: postEdit ? [...postEdit.likes] : [],
       });
 
       //prepare html and images for the submit action
@@ -172,8 +193,8 @@ function BlogTemplate(props) {
     }
   };
 
-  //Get all the img elements and replace with {{}} handleBar variables,
-  //to not store base64 images in the firestore
+  //Get all the img elements and replace with {{{}}} handleBar variables,
+  //to not store base64 images in the firestore but img files in storage
   const convertHtml = async () => {
     let tmpContent = blogContent; //here will be stored the final html content
     const imgCount = [...tmpContent.matchAll("<img")]; //Count how many images are added to the blog content
@@ -221,9 +242,11 @@ function BlogTemplate(props) {
   };
 
   // upload main pic and update blog data on Create Blog request
-  const uploadImg = async () => {
+  const uploadImgAndGetReactions = async () => {
     try {
+      let readyBlog = { ...post };
       let imgContent = [];
+      let imgUrl = "";
       //Create object containing all necessary info about images used in the blog content
       //and upload these images to the firebase storage
       await Promise.all(
@@ -232,10 +255,19 @@ function BlogTemplate(props) {
           await uploadFileToStorage(img.file, `images/blog/${post.id}`);
         })
       );
-      //upload main image
-      const imgUrl = await uploadFileToStorage(imgFile, `images/blog/${post.id}`);
+      //upload main image when admin is creating new blog or in editing mode user added new image
+      if (editNewImage) {
+        imgUrl = await uploadFileToStorage(imgFile, `images/blog/${post.id}`);
+      } else {
+        imgUrl = postEdit.mainImg.path;
+      }
+      if (postEdit) {
+        const actData = await getDocById("blog", post.id);
+        readyBlog.likes = [...actData.likes]
+        readyBlog.comments = [...actData.comments]
+      }
+
       //update blog data
-      let readyBlog = { ...post };
       readyBlog.content = finalContent;
       readyBlog.mainImg.path = imgUrl;
       readyBlog.contentImages = imgContent;
@@ -248,8 +280,14 @@ function BlogTemplate(props) {
   const handleSendBlog = async () => {
     setLoading(true);
     try {
-      const readyBlog = await uploadImg();
-      await createDocFirestore("blog", readyBlog.id, readyBlog);
+      const readyBlog = await uploadImgAndGetReactions();
+      if (postEdit) {
+        //edit existing blog
+        await updateDocFields("blog", readyBlog.id, readyBlog);
+      } else {
+        //create new blog
+        await createDocFirestore("blog", readyBlog.id, readyBlog);
+      }
       router.push("/admin/blogs#main");
       setLoading(false);
     } catch (error) {
@@ -260,6 +298,14 @@ function BlogTemplate(props) {
 
   return (
     <>
+    <section className="d-flex gap-1">
+        <small>
+          <Link href="/admin/blogs#main">Blog Menagment</Link>
+        </small>
+        <small>&gt;</small>
+        <small>{postEdit ? postEdit.title : "New Blog"}</small>
+      </section>
+
       <section className="mt-2 mb-2">
         <Form className="text-start">
           <Form.Label style={{ position: "relative", top: "8px" }}>TITLE:</Form.Label>
@@ -269,6 +315,7 @@ function BlogTemplate(props) {
             placeholder="Add title"
             ref={titleRef}
             onChange={() => setShowPreview(false)}
+            defaultValue={postEdit ? postEdit.title : ""}
             className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
           />
           {invalid.title && <small className="text-danger">Please add title.</small>}
@@ -284,6 +331,7 @@ function BlogTemplate(props) {
           onDrop={(acceptedFiles) => {
             imgToBase64(acceptedFiles);
             setImgFile(acceptedFiles[0]);
+            setEditNewImage(true);
           }}
         >
           {({ getRootProps, getInputProps }) => (
@@ -346,6 +394,7 @@ function BlogTemplate(props) {
             size="sm"
             placeholder="(optional)"
             ref={mainImgSourceRef}
+            defaultValue={postEdit ? postEdit.mainImg.source : ""}
             onChange={() => setShowPreview(false)}
             className={`w-75 me-2 ${themeDarkInput}`}
           />
@@ -367,10 +416,13 @@ function BlogTemplate(props) {
           </Form.Select>
         </Form>
       )}
-
       {/* Text Editor */}
       <div className={`mt-2 border rounded w-100 ${invalid.content && "border-danger border-2"}`} name="blogTmpContent">
-        <TextEditorQuill placeholder={"Here is place for your blog content..."} content={setBlogContent} />
+        <TextEditorQuill
+          content={setBlogContent}
+          initOnEditMode={postEdit?.content}
+          placeholder={"Here is place for your blog content..."}
+        />
       </div>
       {invalid.content && (
         <div className="text-start mt-0">
@@ -382,7 +434,13 @@ function BlogTemplate(props) {
       <section className="mt-2 mb-2">
         <Form className="text-start">
           <Form.Label style={{ position: "relative", top: "8px" }}>TAGS:</Form.Label>
-          <Form.Control type="text" placeholder="Eg: tag1 tag2" className={`w-100 ${themeDarkInput}`} onChange={handleTags} />
+          <Form.Control
+            type="text"
+            placeholder="Eg: tag1 tag2"
+            className={`w-100 ${themeDarkInput}`}
+            onChange={handleTags}
+            defaultValue={tagsString}
+          />
         </Form>
         <div className="d-flex flex-wrap gap-2 text-start mt-2">
           {tags.length > 0 &&
@@ -404,7 +462,7 @@ function BlogTemplate(props) {
               name="blogTmpAuthor"
               onChange={() => setShowPreview(false)}
               ref={authorRef}
-              defaultValue={"BrightLightGypsy"}
+              defaultValue={postEdit ? postEdit.author : "BrightLightGypsy"}
               className={`${invalid.author && "border border-danger"} ${themeDarkInput}`}
             />
             {invalid.author && <small className="text-danger">Incorrect value.</small>}
@@ -416,7 +474,9 @@ function BlogTemplate(props) {
               name="blogTmpDate"
               onChange={() => setShowPreview(false)}
               ref={dateRef}
-              defaultValue={new Date().toLocaleDateString()}
+              defaultValue={
+                postEdit ? timeStampToDate(postEdit.date).toLocaleDateString() : new Date().toLocaleDateString()
+              }
               className={`${invalid.date && "border border-danger"} ${themeDarkInput}`}
             />
             {invalid.date && <small className="text-danger">Incorrect value.</small>}
@@ -430,7 +490,7 @@ function BlogTemplate(props) {
       {showPreview && (
         <div className="mt-4">
           <hr />
-          <BlogPost post={post} preview={true} />
+          <BlogPost post={post} preview={true} editMode={postEdit ? true : false} />
           <hr className="mt-5" />
           <div>
             <Button onClick={handleSendBlog} className="w-100" disabled={loading}>
@@ -440,7 +500,7 @@ function BlogTemplate(props) {
                   <span> Loading...</span>
                 </>
               ) : (
-                <span className="text-uppercase">Create this Blog!</span>
+                <span className="text-uppercase">{postEdit ? "Save changes!" : "Create this Blog!"}</span>
               )}
             </Button>
           </div>

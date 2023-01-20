@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { Container, Button } from "react-bootstrap";
@@ -6,9 +6,10 @@ import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
 import BlogItemAdmin from "../../../components/Blog/BlogItemAdmin";
+import FilterAndSortBar from "../../../components/FilterAndSortBar";
 
 function AdminBlogsPage(props) {
-  const posts = props.blogPosts;
+  const [posts, setPosts] = useState(props.blogPosts);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, isAdmin } = useAuth();
   const router = useRouter();
@@ -34,6 +35,12 @@ function AdminBlogsPage(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // refresh the blog list after deleting the blog item
+  const refreshBlogList = async () => {
+    const docs = await getDocsFromCollection("blog");
+    setPosts(JSON.parse(JSON.stringify(docs)));
+  };
   return (
     <>
       <Head>
@@ -51,8 +58,11 @@ function AdminBlogsPage(props) {
           </Button>
         </div>
         <div>
+          {/* <FilterAndSortBar /> */}
+        </div>
+        <div>
           {posts.map((post, idx) => (
-            <BlogItemAdmin key={idx} idx={idx} post={post}/>
+            <BlogItemAdmin key={idx} idx={idx} post={post} refresh={refreshBlogList} />
           ))}
         </div>
       </Container>

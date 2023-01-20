@@ -1,5 +1,5 @@
 import { storage } from "../config/firebase";
-import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { ref, getDownloadURL, uploadBytesResumable, deleteObject, listAll } from "firebase/storage";
 
 const getFileUrlStorage = async (path, fileName) => {
   const imageRef = ref(storage, `${path}/${fileName}`);
@@ -9,6 +9,35 @@ const getFileUrlStorage = async (path, fileName) => {
   } catch (error) {
     throw error;
   }
+};
+
+const deleteFilesInDirStorage = async (dir) => {
+  const listRef = ref(storage, dir);
+  listAll(listRef)
+    .then((res) => {
+      res.prefixes.forEach((folderRef) => {
+        // All the prefixes under listRef.
+        // You may call listAll() recursively on them.
+      });
+      res.items.forEach(async (itemRef) => {
+        // All the items under listRef.
+        // console.log(itemRef._location.path_)
+        const fileRef = ref(storage, itemRef._location.path_);
+        await deleteObject(fileRef);
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      throw error;
+    });
+
+  // const fileRef = ref(storage, `${path}/${fileName}`);
+  // try {
+  //   const res = await deleteObject(imageRef);
+  //   return res;
+  // } catch (error) {
+  //   throw error;
+  // }
 };
 
 const uploadFileToStorage = async (file, path) => {
@@ -35,4 +64,4 @@ const uploadFileToStorage = async (file, path) => {
   });
 };
 
-export { getFileUrlStorage, uploadFileToStorage };
+export { getFileUrlStorage, deleteFilesInDirStorage, uploadFileToStorage };

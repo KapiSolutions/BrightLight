@@ -91,7 +91,6 @@ function BlogItem(props) {
               maxHeight: "80px",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              maskImage: "linear-gradient(180deg, #000 85%, transparent)",
             }}
           >
             {blogContent}

@@ -66,6 +66,11 @@ function TextEditorQuill(props) {
 
   useEffect(() => {
     loadQuill();
+    //If editor is enabled in the edit post mode then use the post content on init in editor
+    if (props.initOnEditMode) {
+      editorState.html = props.initOnEditMode;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -51,7 +51,7 @@ function BlogPost(props) {
   };
 
   useEffect(() => {
-    if (!previewMode) {
+    if (!previewMode || (previewMode && props.editMode)) {
       if (post.contentImages.length > 0) {
         convertHtml();
       }
@@ -144,12 +144,18 @@ function BlogPost(props) {
         <h1 className="color-primary mb-0"> {post.title} </h1>
         <p className="ms-2 text-muted">
           <i>
-            By {post.author} - {previewMode ? post.date.toLocaleDateString() : timeStampToDate(post.date).toLocaleDateString() }
+            By {post.author} -{" "}
+            {previewMode ? post.date.toLocaleDateString() : timeStampToDate(post.date).toLocaleDateString()}
           </i>
         </p>
       </div>
       <div className="w-100" style={{ minHeight: "200px", position: "relative" }}>
-        <Image src={post.mainImg.path} fill alt={post.title} style={{ objectFit: post.mainImg.style, borderRadius: ".25rem" }} />
+        <Image
+          src={post.mainImg.path}
+          fill
+          alt={post.title}
+          style={{ objectFit: post.mainImg.style, borderRadius: ".25rem" }}
+        />
       </div>
       {post.mainImg.source && (
         <p className="text-start mb-0">
