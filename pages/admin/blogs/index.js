@@ -1,18 +1,23 @@
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Spinner } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
 import BlogItemAdmin from "../../../components/Blog/BlogItemAdmin";
-import FilterAndSortBar from "../../../components/FilterAndSortBar";
+import FilterAndSortBar from "../../../components/Blog/FilterAndSortBar";
 
 function AdminBlogsPage(props) {
-  const [posts, setPosts] = useState(props.blogPosts);
+  const [posts, setPosts] = useState([]);
+  const [message, setMessage] = useState("");
+  const [loadingNew, setLoadingNew] = useState(false);
+  const [loadingEdit, setLoadingEdit] = useState(false);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, isAdmin } = useAuth();
   const router = useRouter();
+  const idForSortingBar = "BlogAdmin";
+
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   };
@@ -41,6 +46,7 @@ function AdminBlogsPage(props) {
     const docs = await getDocsFromCollection("blog");
     setPosts(JSON.parse(JSON.stringify(docs)));
   };
+
   return (
     <>
       <Head>
@@ -48,22 +54,42 @@ function AdminBlogsPage(props) {
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="abn-ctx">
         <h1>Blog Menagment</h1>
-        <div className="text-end mb-5">
+        <div className="text-end mt-4">
           <Button
+            size="lg"
+            variant="outline-primary"
+            className={`${isMobile && "w-100"}`}
             onClick={() => {
               router.push("/admin/blogs/new#main");
+              setLoadingNew(true);
             }}
+            disabled={loadingNew}
           >
-            Create new Blog
+            {loadingNew ? (
+              <span>
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Loading
+              </span>
+            ) : (
+              "Create New Blog!"
+            )}
           </Button>
         </div>
-        <div>
-          {/* <FilterAndSortBar /> */}
-        </div>
+
+        <FilterAndSortBar
+          id={idForSortingBar}
+          refArray={props.blogPosts}
+          inputArray={posts}
+          outputArray={setPosts}
+          msg={setMessage}
+        />
+
         <div>
           {posts.map((post, idx) => (
             <BlogItemAdmin key={idx} idx={idx} post={post} refresh={refreshBlogList} />
           ))}
+
+          {/* Message as output after finding item in array */}
+          {message && <div className="mt-3">{message}</div>}
         </div>
       </Container>
     </>

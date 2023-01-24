@@ -9,6 +9,7 @@ import { deleteDocInCollection } from "../../firebase/Firestore";
 import { useDeviceStore } from "../../stores/deviceStore";
 import ConfirmActionModal from "../Modals/ConfirmActionModal";
 import { deleteFilesInDirStorage } from "../../firebase/Storage";
+import axios from "axios";
 
 function BlogItemAdmin(props) {
   const router = useRouter();
@@ -16,7 +17,8 @@ function BlogItemAdmin(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { setErrorMsg } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [loading, setLoading] = useState(undefined);
+  const [loadingEdit, setLoadingEdit] = useState(false);
+  const [loadingDel, setLoadingDel] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const cardsIcon = "/img/cards-light.png";
 
@@ -26,9 +28,14 @@ function BlogItemAdmin(props) {
 
   async function deleteBlog() {
     try {
+      const revalidateData = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        paths: ["/admin/blogs", "/blog"]
+      }
+      
       await deleteDocInCollection("blog", post.id);
       await deleteFilesInDirStorage(`images/blog/${post.id}`);
-
+      await axios.post("/api/revalidate", revalidateData);
       props.refresh(); //refresh the blog list after deleting
       setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
@@ -119,9 +126,15 @@ function BlogItemAdmin(props) {
                       query: { pid: post.id },
                       hash: "main",
                     });
+                    setLoadingEdit(true);
                   }}
+                  disabled={loadingEdit}
                 >
-                  Edit
+                  {loadingEdit ? (
+                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  ) : (
+                    "Edit"
+                  )}
                 </Button>
                 <Button
                   variant="primary"
@@ -133,9 +146,9 @@ function BlogItemAdmin(props) {
                       itemID: "",
                     });
                   }}
-                  disabled={loading}
+                  disabled={loadingDel}
                 >
-                  {loading ? (
+                  {loadingDel ? (
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                   ) : (
                     "Delete"
@@ -178,9 +191,15 @@ function BlogItemAdmin(props) {
                     query: { pid: post.id },
                     hash: "main",
                   });
+                  setLoadingEdit(true);
                 }}
+                disabled={loadingEdit}
               >
-                Edit
+                {loadingEdit ? (
+                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  ) : (
+                    "Edit"
+                  )}
               </Button>
               <Button
                 variant="primary"
@@ -192,9 +211,9 @@ function BlogItemAdmin(props) {
                     itemID: "",
                   });
                 }}
-                disabled={loading}
+                disabled={loadingDel}
               >
-                {loading ? (
+                {loadingDel ? (
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                 ) : (
                   "Delete"

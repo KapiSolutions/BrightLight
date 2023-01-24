@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useReducer, useRef } from "react";
-import Head from "next/head";
+import Link from "next/link";
 import Image from "next/image";
+import axios from "axios";
 import { useRouter } from "next/router";
 import { Button, Form, Spinner, Badge } from "react-bootstrap";
-import { useAuth } from "../../context/AuthProvider";
 import { useDeviceStore } from "../../stores/deviceStore";
 import { uploadFileToStorage } from "../../firebase/Storage";
 import placeholder from "../../utils/placeholder";
@@ -14,7 +14,7 @@ import { BsCloudUpload } from "react-icons/bs";
 import BlogPost from "./BlogPost";
 import { v4 as uuidv4 } from "uuid";
 import { createDocFirestore, getDocById, updateDocFields } from "../../firebase/Firestore";
-import Link from "next/link";
+
 
 function BlogTemplate(props) {
   const postEdit = props.post;
@@ -288,7 +288,14 @@ function BlogTemplate(props) {
         //create new blog
         await createDocFirestore("blog", readyBlog.id, readyBlog);
       }
+      const revalidateData = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        paths: ["/admin/blogs", "/blog"]
+      }
+      await axios.post("/api/revalidate", revalidateData);
+
       router.push("/admin/blogs#main");
+
       setLoading(false);
     } catch (error) {
       console.log(error);
