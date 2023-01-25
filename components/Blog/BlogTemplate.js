@@ -521,7 +521,7 @@ function BlogTemplate(props) {
           msg={showSuccess}
           btn={"Back"}
           closeFunc={() => {
-            router.back();
+            router.push("/admin/blogs#main");
             setShowSuccess("");
           }}
         />
