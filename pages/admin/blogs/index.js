@@ -7,13 +7,15 @@ import { useDeviceStore } from "../../../stores/deviceStore";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
 import BlogItemAdmin from "../../../components/Blog/BlogItemAdmin";
 import FilterAndSortBar from "../../../components/Blog/FilterAndSortBar";
+import { FiRefreshCcw } from "react-icons/fi";
 
 function AdminBlogsPage(props) {
   const [posts, setPosts] = useState([]);
   const [message, setMessage] = useState("");
   const [loadingNew, setLoadingNew] = useState(false);
-  const [loadingEdit, setLoadingEdit] = useState(false);
+  const [loadingRfs, setLoadingRfs] = useState(false);
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const themeState = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
   const router = useRouter();
   const idForSortingBar = "BlogAdmin";
@@ -25,6 +27,10 @@ function AdminBlogsPage(props) {
     await sleep(300);
     document.getElementById("abn-ctx").scrollIntoView();
   }
+
+  const timeStampToDate = (time) => {
+    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  };
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -43,8 +49,15 @@ function AdminBlogsPage(props) {
 
   // refresh the blog list after deleting the blog item
   const refreshBlogList = async () => {
-    const docs = await getDocsFromCollection("blog");
-    setPosts(JSON.parse(JSON.stringify(docs)));
+    setLoadingRfs(true);
+    try {
+      const docs = await getDocsFromCollection("blog");
+      setPosts(JSON.parse(JSON.stringify(docs)).sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
+      setLoadingRfs(false);
+    } catch (e) {
+      console.log(e);
+      setLoadingRfs(false);
+    }
   };
 
   return (
@@ -54,7 +67,7 @@ function AdminBlogsPage(props) {
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="abn-ctx">
         <h1>Blog Menagment</h1>
-        <div className="text-end mt-4">
+        <div className="d-flex justify-content-end gap-2 text-end mt-4">
           <Button
             size="lg"
             variant="outline-primary"
@@ -73,6 +86,18 @@ function AdminBlogsPage(props) {
               "Create New Blog!"
             )}
           </Button>
+          <Button
+            variant={`outline-${themeState == "light" ? "dark" : "accent3"}`}
+            size="md"
+            onClick={refreshBlogList}
+            disabled={loadingRfs}
+          >
+            {loadingRfs ? (
+              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+            ) : (
+              <FiRefreshCcw style={{ width: "25px", height: "25px" }} />
+            )}
+          </Button>
         </div>
 
         <FilterAndSortBar
@@ -81,6 +106,7 @@ function AdminBlogsPage(props) {
           inputArray={posts}
           outputArray={setPosts}
           msg={setMessage}
+          resetSettings={loadingRfs}
         />
 
         <div>
