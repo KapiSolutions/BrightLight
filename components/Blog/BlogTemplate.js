@@ -86,6 +86,17 @@ function BlogTemplate(props) {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
 
+  const onDropFunc = (files) => {
+    //Change main image name to "main"
+    // const oldName = files[0].name
+    // const newName = "main" + oldName.slice(oldName.lastIndexOf("."), oldName.length)
+    // const blob = new Blob([new Uint8Array(files[0])], {type: files[0].type });
+    // let tmpFile = new File([blob], newName, {type: files[0].type}) ;
+    imgToBase64(files);
+    setImgFile(files[0]);
+    setEditNewImage(true);
+  }
+
   //Convert eg. main image to to base64 to display it on the client without uploading files to the firebase storage
   const imgToBase64 = (files) => {
     updateInvalid({ mainImg: false });
@@ -293,10 +304,10 @@ function BlogTemplate(props) {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         paths: ["/admin/blogs", "/blog"],
       };
-      if(postEdit){
-        revalidateData.paths.push(`/blog/${readyBlog.id}`)
+      if (postEdit) {
+        revalidateData.paths.push(`/blog/${readyBlog.id}`);
       }
-      
+
       await axios.post("/api/revalidate", revalidateData);
       setShowSuccess(postEdit ? "Blog post edited successfuly!" : "Blog post created successfuly!");
       setLoading(false);
@@ -337,13 +348,7 @@ function BlogTemplate(props) {
         className={`w-100 border rounded ${invalid.mainImg && "border-danger"}`}
         style={{ minHeight: mainPicHeight, position: "relative" }}
       >
-        <Dropzone
-          onDrop={(acceptedFiles) => {
-            imgToBase64(acceptedFiles);
-            setImgFile(acceptedFiles[0]);
-            setEditNewImage(true);
-          }}
-        >
+        <Dropzone onDrop={(acceptedFiles) => onDropFunc(acceptedFiles)}>
           {({ getRootProps, getInputProps }) => (
             <section style={{ position: "relative", zIndex: 100 }}>
               <div
@@ -503,7 +508,12 @@ function BlogTemplate(props) {
           <BlogPost post={post} preview={true} editMode={postEdit ? true : false} />
           <hr className="mt-5" />
           <div>
-            <Button onClick={handleSendBlog} className="w-100" variant={showSuccess ? "success" : "primary"} disabled={loading}>
+            <Button
+              onClick={handleSendBlog}
+              className="w-100"
+              variant={showSuccess ? "success" : "primary"}
+              disabled={loading}
+            >
               {loading ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />

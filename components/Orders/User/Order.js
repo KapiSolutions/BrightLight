@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import axios from "axios";
-import getStripe from "../../utils/get-stripejs";
-import { useAuth } from "../../context/AuthProvider";
+import getStripe from "../../../utils/get-stripejs";
+import { useAuth } from "../../../context/AuthProvider";
 import { Badge, Button, Modal, Spinner } from "react-bootstrap";
 import { useRouter } from "next/router";
 import { TbTrashX } from "react-icons/tb";
 import { IoIosArrowForward } from "react-icons/io";
-import { deleteDocInCollection } from "../../firebase/Firestore";
-import { useDeviceStore } from "../../stores/deviceStore";
+import { deleteDocInCollection } from "../../../firebase/Firestore";
+import { useDeviceStore } from "../../../stores/deviceStore";
 import OrderDetails from "./OrderDetails";
-import ConfirmActionModal from "../Modals/ConfirmActionModal";
+import ConfirmActionModal from "../../Modals/ConfirmActionModal";
 
 function Order(props) {
   const router = useRouter();
