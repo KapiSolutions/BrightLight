@@ -14,7 +14,7 @@ import { BsCloudUpload } from "react-icons/bs";
 import BlogPost from "./BlogPost";
 import { v4 as uuidv4 } from "uuid";
 import { createDocFirestore, getDocById, updateDocFields } from "../../firebase/Firestore";
-
+import SuccessModal from "../Modals/SuccessModal";
 
 function BlogTemplate(props) {
   const postEdit = props.post;
@@ -26,6 +26,7 @@ function BlogTemplate(props) {
 
   const isMobile = useDeviceStore((state) => state.isMobile);
   const themeState = useDeviceStore((state) => state.themeState);
+  const [showSuccess, setShowSuccess] = useState("");
   const [blogContent, setBlogContent] = useState("");
   const [finalContent, setFinalContent] = useState("");
   const [imgBase64, setImgBase64] = useState({ loaded: false, path: placeholder("pinkPX") }); //used only for preview
@@ -263,8 +264,8 @@ function BlogTemplate(props) {
       }
       if (postEdit) {
         const actData = await getDocById("blog", post.id);
-        readyBlog.likes = [...actData.likes]
-        readyBlog.comments = [...actData.comments]
+        readyBlog.likes = [...actData.likes];
+        readyBlog.comments = [...actData.comments];
       }
 
       //update blog data
@@ -290,11 +291,13 @@ function BlogTemplate(props) {
       }
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
-        paths: ["/admin/blogs", "/blog"]
-      }
+        paths: ["/admin/blogs", "/blog"],
+      };
       await axios.post("/api/revalidate", revalidateData);
 
-      router.push("/admin/blogs#main");
+      //run success message and then manual redirect to the previous page
+      //to give some time for the revalidation
+      setShowSuccess(postEdit ? "Blog post edited successfuly!" : "Blog post created successfuly!");
 
       setLoading(false);
     } catch (error) {
@@ -305,7 +308,7 @@ function BlogTemplate(props) {
 
   return (
     <>
-    <section className="d-flex gap-1">
+      <section className="d-flex gap-1">
         <small>
           <Link href="/admin/blogs#main">Blog Menagment</Link>
         </small>
@@ -500,7 +503,7 @@ function BlogTemplate(props) {
           <BlogPost post={post} preview={true} editMode={postEdit ? true : false} />
           <hr className="mt-5" />
           <div>
-            <Button onClick={handleSendBlog} className="w-100" disabled={loading}>
+            <Button onClick={handleSendBlog} className="w-100" variant={showSuccess ? "success" : "primary"} disabled={loading}>
               {loading ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -512,6 +515,16 @@ function BlogTemplate(props) {
             </Button>
           </div>
         </div>
+      )}
+      {showSuccess && (
+        <SuccessModal
+          msg={showSuccess}
+          btn={"Back"}
+          closeFunc={() => {
+            router.back();
+            setShowSuccess("");
+          }}
+        />
       )}
     </>
   );

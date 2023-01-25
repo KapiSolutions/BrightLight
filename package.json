@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fireworks-js/react": "^2.10.1",
     "@fontsource/k2d": "^4.5.9",
     "@fontsource/ms-madi": "^4.5.2",
     "@fontsource/nothing-you-could-do": "^4.5.9",
