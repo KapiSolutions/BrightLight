@@ -20,6 +20,10 @@ function Order(props) {
   const [loading, setLoading] = useState(undefined);
   const [showDetails, setShowDetails] = useState(false);
 
+  const timeStampToDate = (time) => {
+    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  };
+
   async function handlePayment() {
     try {
       setLoading(true);
@@ -132,7 +136,7 @@ function Order(props) {
                   Tarot ({props.order?.items[0].name}
                   {props.order?.items.length > 1 && `, +${props.order?.items.length - 1} more..`})
                 </p>
-                <small className="text-muted">{props.order.id}</small>
+                <small className="text-muted">{timeStampToDate(props.order.timeCreate).toLocaleString()}</small>
               </>
             )}
           </div>
