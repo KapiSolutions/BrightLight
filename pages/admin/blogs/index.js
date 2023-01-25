@@ -69,7 +69,7 @@ function AdminBlogsPage(props) {
         <h1>Blog Menagment</h1>
         <div className="d-flex justify-content-end gap-2 text-end mt-4">
           <Button
-            size="lg"
+            size="md"
             variant="outline-primary"
             className={`${isMobile && "w-100"}`}
             onClick={() => {
@@ -91,11 +91,12 @@ function AdminBlogsPage(props) {
             size="md"
             onClick={refreshBlogList}
             disabled={loadingRfs}
+            title="Refresh list"
           >
             {loadingRfs ? (
               <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
             ) : (
-              <FiRefreshCcw style={{ width: "25px", height: "25px" }} />
+              <FiRefreshCcw style={{ width: "22px", height: "22px" }} />
             )}
           </Button>
         </div>
