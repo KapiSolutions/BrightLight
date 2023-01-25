@@ -293,12 +293,12 @@ function BlogTemplate(props) {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         paths: ["/admin/blogs", "/blog"],
       };
+      if(postEdit){
+        revalidateData.paths.push(`/blog/${readyBlog.id}`)
+      }
+      
       await axios.post("/api/revalidate", revalidateData);
-
-      //run success message and then manual redirect to the previous page
-      //to give some time for the revalidation
       setShowSuccess(postEdit ? "Blog post edited successfuly!" : "Blog post created successfuly!");
-
       setLoading(false);
     } catch (error) {
       console.log(error);
