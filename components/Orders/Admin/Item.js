@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Card } from "react-bootstrap";
+import { Card, Form, Button } from "react-bootstrap";
 import { getFileUrlStorage } from "../../../firebase/Storage";
 import styles from "../../../styles/components/UserOrder/Item.module.scss";
 import { IoIosArrowForward } from "react-icons/io";
@@ -56,7 +56,7 @@ function Item(props) {
           </div>
 
           <div>
-            <p className="mb-0">Your cards:</p>
+            <p className="mb-0">Cards:</p>
             <div className="ms-2">
               <small>
                 {Array.from({ length: props.item.cards.length }).map((_, idx) => (
@@ -73,30 +73,36 @@ function Item(props) {
           </div>
 
           <div>
-            <p className="mb-0">Your Question:</p>
+            <p className="mb-0">Question:</p>
             <div className="ms-2">
               <p>
                 <small>{props.item.question}</small>
               </p>
             </div>
           </div>
-          {props.order.status == "Done" && (
-            <>
-              <div className="w-100 opacity-50">
-                <hr />
-              </div>
-              <div>
-                <p className="mb-0">
-                  <strong>Answer:</strong>
-                </p>
-                <div className="ms-2">
-                  <p>
-                    <small>Answer..</small>
-                  </p>
+
+          <div className="w-100 opacity-50">
+            <hr />
+          </div>
+          <div>
+            <p className="mb-0">
+              <strong>Answer:</strong>
+            </p>
+            <div className="ms-2">
+              <Form>
+                <Form.Control
+                  as="textarea"
+                  id="adminOrderItemField"
+                  placeholder="Your answer..."
+                  style={{ minHeight: "80px" }}
+                  required
+                />
+                <div className="text-end mt-2 mb-2">
+                <Button type="submit">Add Answer!</Button>
                 </div>
-              </div>
-            </>
-          )}
+              </Form>
+            </div>
+          </div>
         </div>
       )}
     </div>

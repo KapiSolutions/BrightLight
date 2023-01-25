@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Container } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
 import { useAuth } from "../../../../context/AuthProvider";
 import { useDeviceStore } from "../../../../stores/deviceStore";
 import BlogTemplate from "../../../../components/Blog/BlogTemplate";
 import { getDocById, getDocsFromCollection } from "../../../../firebase/Firestore";
+import { VscBracketError } from "react-icons/vsc";
 
 function AdminEditBlogPage(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -42,7 +43,17 @@ function AdminEditBlogPage(props) {
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="abe-ctx">
         <h1>Edit Blog</h1>
-        <BlogTemplate post={props.post}/>
+        {props.post ? (
+          <BlogTemplate post={props.post} />
+        ) : (
+          <div className="text-center">
+            <VscBracketError style={{ width: "40px", height: "40px" }} className="mb-3" />
+            <h4 className="mt-0 mb-4">Blog does not exist.</h4>
+            <Button variant="outline-primary" onClick={() => router.replace("/admin/blogs#main")}>
+              Go Back
+            </Button>
+          </div>
+        )}
       </Container>
     </>
   );
@@ -50,20 +61,20 @@ function AdminEditBlogPage(props) {
 
 export default AdminEditBlogPage;
 
-
 export async function getStaticProps(context) {
   const pid = context.params.pid;
-  const blogPost = await getDocById("blog",pid);
+  const blogPost = await getDocById("blog", pid);
+
   return {
     props: {
-      post: JSON.parse(JSON.stringify(blogPost)),
+      post: blogPost ? JSON.parse(JSON.stringify(blogPost)) : null,
     },
     revalidate: 30, //1 - 1 second
   };
 }
 
 export async function getStaticPaths() {
-const docs = await getDocsFromCollection("blog", true);//true - get only Id's
+  const docs = await getDocsFromCollection("blog", true); //true - get only Id's
   return {
     paths: docs.map((doc) => {
       return {
@@ -72,7 +83,6 @@ const docs = await getDocsFromCollection("blog", true);//true - get only Id's
         },
       };
     }),
-    fallback: false,
+    fallback: "blocking",
   };
 }
-
