@@ -8,6 +8,7 @@ import { getDocsFromCollection } from "../../../firebase/Firestore";
 import BlogItemAdmin from "../../../components/Blog/BlogItemAdmin";
 import FilterAndSortBar from "../../../components/Blog/FilterAndSortBar";
 import { FiRefreshCcw } from "react-icons/fi";
+import Image from "next/image";
 
 function AdminBlogsPage(props) {
   const [posts, setPosts] = useState([]);

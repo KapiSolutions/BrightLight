@@ -6,17 +6,14 @@ import { useDeviceStore } from "../../stores/deviceStore";
 import useLocalStorageState from "use-local-storage-state";
 import styles from "../../styles/pages/About.module.scss";
 import { SiHellofresh } from "react-icons/si";
+import avatarPath from "../../public/img/about/avatar.png";
+import diamondPath from "../../public/img/about/diamond.png";
+import tarotPath from "../../public/img/about/tarot-cards.png";
+import japanPath from "../../public/img/about/japan-sticker.png";
 
 function AboutPage() {
-  const avatarPath = "/img/about/avatar.png";
-  const diamondPath = "/img/about/diamond.png";
-  const tarotPath = "/img/about/tarot-cards.png";
-  const japanPath = "/img/about/japan-sticker.png";
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const [theme, setTheme] = useLocalStorageState("theme", {
-    ssr: true,
-    defaultValue: "light",
-  });
+  const theme = useDeviceStore((state) => state.themeState);
   return (
     <>
       <Head>
@@ -30,7 +27,7 @@ function AboutPage() {
       
         <section className="d-flex flex-wrap justify-content-center mb-3 p-2">
           <div className={`text-${isMobile ? "center" : "end"} col-md-3 col-sm-12 m-auto`}>
-            <Image src={avatarPath} width="170" height="170" alt="Avatar" />
+            <Image src={avatarPath} width="170" height="170" alt="Avatar"/>
           </div>
           {isMobile && <h1 className="mt-0 color-primary text-center">About Me</h1>}
           <div className={`col-md-7 col-sm-12 align-self-center ${!isMobile && "pe-5"}`}>
@@ -55,7 +52,7 @@ function AboutPage() {
             </p>
           </div>
           <div className={`text-${isMobile ? "center" : "center"} col-md-4 col-sm-12 m-auto`}>
-            <Image src={tarotPath} width="170" height="170" alt="Tarot cards roses" />
+            <Image src={tarotPath} width="170" height="139" alt="Tarot cards roses"/>
           </div>
           <div className={`d-${isMobile ? "block" : "none"} col-md-8 col-sm-12 align-self-center`}>
             <p className={`text-${isMobile ? "center" : "end"}`}>
@@ -67,7 +64,7 @@ function AboutPage() {
 
         <section className="d-flex flex-wrap mb-2 p-2">
           <div className={`text-${isMobile ? "center" : "end"} col-md-3 col-sm-12 m-auto`}>
-            <Image src={diamondPath} width="170" height="170" alt="Diamond flower" />
+            <Image src={diamondPath} width="170" height="172" alt="Diamond flower"/>
           </div>
           <div className={`col-md-7 col-sm-12 align-self-center ${!isMobile && "pe-5"}`}>
             <p className={`text-${isMobile ? "center" : "start"}`}>
@@ -79,7 +76,7 @@ function AboutPage() {
         <hr className="color-primary w-50 m-auto mt-4 mb-5"/>
         <section className="mt-5">
           <div className={`${styles.japanBackLight} rounded pt-4 pb-1 mb-3`}>
-            <Image src={japanPath} width="170" height="170" alt="Japan sticker" />
+            <Image src={japanPath} width="170" height="159" alt="Japan sticker"/>
             <h2 className="mt-0 text-dark">Japan Dream</h2>
           </div>
           <p>One of my biggest dreams is to travel to Japan. Discovering beautiful nature and local culture.</p>
