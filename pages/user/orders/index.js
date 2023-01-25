@@ -11,6 +11,7 @@ function UserOrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState([]);
   const [message, setMessage] = useState("");
+  const [resetFilterBar, setResetFilterBar] = useState(false);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, authUserFirestore, userOrders, updateUserData } = useAuth();
   const idForSortingBar = "UserOrders";
@@ -22,7 +23,17 @@ function UserOrdersPage() {
     await sleep(300);
     document.getElementById("uo-ctx").scrollIntoView();
   }
+  const timeStampToDate = (time) => {
+    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  };
 
+//update and sort orders after eg. deletetion of the order
+  useEffect(() => {
+    setOrders(userOrders.sort((a, b) => timeStampToDate(b.timeCreate) - timeStampToDate(a.timeCreate)));
+    setResetFilterBar(!resetFilterBar);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userOrders]);
+  
   useEffect(() => {
     if (isAuthenticated()) {
       isMobile && scroll();
@@ -52,13 +63,13 @@ function UserOrdersPage() {
                 inputArray={orders}
                 outputArray={setOrders}
                 msg={setMessage}
-                // resetSettings={loadingRfs}
+                resetSettings={resetFilterBar}
               />
 
               {message && <p className="color-primary mt-5">{message}</p>}
 
-              {orders.map((_, idx) => (
-                <Order key={idx} idx={idx} orders={orders} />
+              {orders.map((order, idx) => (
+                <Order key={idx} idx={idx} order={order} />
               ))}
             </section>
           </>

@@ -19,6 +19,18 @@ function FilterAndSortBar(props) {
   };
 
   useEffect(() => {
+    //Reset options to default
+    if (!isMobile) {
+      document.getElementById(`filterByDate${props.id}`).value = "1";
+      document.getElementById(`filterByType${props.id}`).value = "All orders";
+      document.getElementById(`sortBy${props.id}`).value = "1";
+    }
+    setSortOption("1");
+    setFilterOption("1");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.resetSettings]);
+
+  useEffect(() => {
     //sort array on initialization
     props.outputArray(props.refArray.sort((a, b) => timeStampToDate(b.timeCreate) - timeStampToDate(a.timeCreate)));
     // eslint-disable-next-line react-hooks/exhaustive-deps

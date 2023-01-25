@@ -3,14 +3,14 @@ import Image from "next/image";
 import axios from "axios";
 import getStripe from "../../../utils/get-stripejs";
 import { useAuth } from "../../../context/AuthProvider";
-import { Badge, Button, Modal, Spinner } from "react-bootstrap";
+import { Badge, Button, Spinner } from "react-bootstrap";
 import { useRouter } from "next/router";
-import { TbTrashX } from "react-icons/tb";
 import { IoIosArrowForward } from "react-icons/io";
 import { deleteDocInCollection } from "../../../firebase/Firestore";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import OrderDetails from "./OrderDetails";
 import ConfirmActionModal from "../../Modals/ConfirmActionModal";
+import cardsIcon from "../../../public/img/cards-light.png";
 
 function Order(props) {
   const router = useRouter();
@@ -19,7 +19,6 @@ function Order(props) {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(undefined);
   const [showDetails, setShowDetails] = useState(false);
-  const cardsIcon = "/img/cards-light.png";
 
   async function handlePayment() {
     try {
@@ -28,14 +27,14 @@ function Order(props) {
       const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
 
       //prepare stripe product data
-      const stripeCart = props.orders[props.idx].items.map((_, idx) => ({
-        price: props.orders[props.idx].items[idx].s_id,
+      const stripeCart = props.order.items.map((_, idx) => ({
+        price: props.order.items[idx].s_id,
         quantity: 1,
       }));
 
       const orderData = {
         sendOrderConfirmEmail: false,
-        orderID: props.orders[props.idx].id,
+        orderID: props.order.id,
         stripeCart: stripeCart,
         localeLanguage: localeLanguage,
         localeTimeZone: localeTimeZone,
@@ -65,7 +64,7 @@ function Order(props) {
   }
   async function deleteOrder() {
     try {
-      await deleteDocInCollection("orders", props.orders[props.idx].id);
+      await deleteDocInCollection("orders", props.order.id);
       await updateUserData(authUserFirestore?.id, null, true); //update only orders
       setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
@@ -115,32 +114,25 @@ function Order(props) {
                   Tarot
                   <small>
                     {" "}
-                    ({props.orders[props.idx]?.items[0].name}
-                    {props.orders[props.idx]?.items.length > 1 &&
-                      `, +${props.orders[props.idx]?.items.length - 1} more..`}
-                    )
+                    ({props.order?.items[0].name}
+                    {props.order?.items.length > 1 && `, +${props.order?.items.length - 1} more..`})
                   </small>
                 </p>
-                {props.orders[props.idx].status != "Done" ? (
-                  <Badge
-                    bg={props.orders[props.idx].paid ? "warning" : "primary"}
-                    className={props.orders[props.idx].paid ? "text-dark" : ""}
-                  >
-                    {props.orders[props.idx].status}
+                {props.order.status != "Done" ? (
+                  <Badge bg={props.order.paid ? "warning" : "primary"} className={props.order.paid ? "text-dark" : ""}>
+                    {props.order.status}
                   </Badge>
                 ) : (
-                  <Badge bg="success">{props.orders[props.idx].status}!</Badge>
+                  <Badge bg="success">{props.order.status}!</Badge>
                 )}
               </>
             ) : (
               <>
                 <p className="mb-0">
-                  Tarot ({props.orders[props.idx]?.items[0].name}
-                  {props.orders[props.idx]?.items.length > 1 &&
-                    `, +${props.orders[props.idx]?.items.length - 1} more..`}
-                  )
+                  Tarot ({props.order?.items[0].name}
+                  {props.order?.items.length > 1 && `, +${props.order?.items.length - 1} more..`})
                 </p>
-                <small className="text-muted">{props.orders[props.idx].id}</small>
+                <small className="text-muted">{props.order.id}</small>
               </>
             )}
           </div>
@@ -149,23 +141,20 @@ function Order(props) {
         {!isMobile && (
           <>
             <div className="col-3 text-uppercase">
-              {props.orders[props.idx].status != "Done" ? (
-                <Badge
-                  bg={props.orders[props.idx].paid ? "warning" : "primary"}
-                  className={props.orders[props.idx].paid ? "text-dark" : ""}
-                >
-                  {props.orders[props.idx].status}
+              {props.order.status != "Done" ? (
+                <Badge bg={props.order.paid ? "warning" : "primary"} className={props.order.paid ? "text-dark" : ""}>
+                  {props.order.status}
                 </Badge>
               ) : (
-                <Badge bg="success">{props.orders[props.idx].status}!</Badge>
+                <Badge bg="success">{props.order.status}!</Badge>
               )}
             </div>
-            <div className="col-2">{props.orders[props.idx].totalPrice} PLN</div>
+            <div className="col-2">{props.order.totalPrice} PLN</div>
             <div className="col-2">
               <span className="pointer Hover" onClick={showDetailsFunc}>
                 {showDetails ? "Hide details" : "Show details"}
               </span>
-              {!props.orders[props.idx].paid && (
+              {!props.order.paid && (
                 <div className="d-flex flex-wrap mt-2 gap-3">
                   <Button
                     variant="outline-primary"
@@ -202,7 +191,7 @@ function Order(props) {
         {/* Details of the order */}
         {showDetails && (
           <div className="w-100">
-            {isMobile && !props.orders[props.idx].paid && (
+            {isMobile && !props.order.paid && (
               <div className="d-flex mt-3 mb-5 justify-content-between gap-4">
                 <div className="d-flex gap-3 ms-2">
                   <Button
@@ -225,11 +214,11 @@ function Order(props) {
                     )}
                   </Button>
                 </div>
-                <span>Total: {props.orders[props.idx].totalPrice},00 PLN</span>
+                <span>Total: {props.order.totalPrice},00 PLN</span>
               </div>
             )}
             {/* Order Details */}
-            <OrderDetails order={props.orders[props.idx]} isMobile={isMobile} />
+            <OrderDetails order={props.order} isMobile={isMobile} />
 
             <div className="text-center mt-4 mb-4">
               <Button variant="outline-accent4" className="pointer" onClick={showDetailsFunc}>
