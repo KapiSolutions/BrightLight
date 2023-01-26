@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card } from "react-bootstrap";
 import { getFileUrlStorage } from "../../../firebase/Storage";
-import styles from "../../../styles/components/UserOrder/Item.module.scss";
+import styles from "../../../styles/components/Orders/Item.module.scss";
 import { IoIosArrowForward } from "react-icons/io";
 
 function Item(props) {
