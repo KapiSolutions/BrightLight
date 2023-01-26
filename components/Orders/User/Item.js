@@ -6,10 +6,11 @@ import { IoIosArrowForward } from "react-icons/io";
 
 function Item(props) {
   const [showDetails, setShowDetails] = useState(false);
-
+  const item = props.item;
+  
   // Get url's for the item images
   useEffect(() => {
-    getFileUrlStorage("images/cards", props.item.image)
+    getFileUrlStorage("images/cards", item.image)
       .then((url) => {
         const img = document.getElementById(`${props.order.id}-${props.idx.toString()}`);
         img.setAttribute("src", url);
@@ -24,7 +25,7 @@ function Item(props) {
     return card;
   };
   return (
-    <div className={styles.OrderItem}>
+    <div className={`${styles.OrderItem} ${props.order.status == "Done" && "border border-success"}`}>
       <div className={styles.OrderHeader}>
         <Card.Img
           className={styles.OrderImg}
@@ -33,9 +34,9 @@ function Item(props) {
           alt="Item icon"
         />
         <div className="w-50">
-          <p className={styles.OrderItemName}>{props.item.name}</p>
+          <p className={styles.OrderItemName}>{item.name}</p>
           <p className={styles.OrderItemPrice}>
-            <small>{props.item.price},00 PLN</small>
+            <small>{item.price},00 PLN</small>
           </p>
         </div>
         <div
@@ -59,9 +60,9 @@ function Item(props) {
             <p className="mb-0">Your cards:</p>
             <div className="ms-2">
               <small>
-                {Array.from({ length: props.item.cards.length }).map((_, idx) => (
+                {item.cards.map((card, idx) => (
                   <li key={idx} style={{ display: "inline", listStyleType: "none" }}>
-                    {idx + 1}. {styledCardName(props.item.cards[idx])}{" "}
+                    {idx + 1}. {styledCardName(card)}{" "}
                   </li>
                 ))}
               </small>
@@ -76,7 +77,7 @@ function Item(props) {
             <p className="mb-0">Your Question:</p>
             <div className="ms-2">
               <p>
-                <small>{props.item.question}</small>
+                <small>{item.question}</small>
               </p>
             </div>
           </div>
@@ -91,7 +92,7 @@ function Item(props) {
                 </p>
                 <div className="ms-2">
                   <p>
-                    <small>Answer..</small>
+                    <small>{item.answer}</small>
                   </p>
                 </div>
               </div>

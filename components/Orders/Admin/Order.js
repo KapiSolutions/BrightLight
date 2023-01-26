@@ -115,7 +115,8 @@ function Order(props) {
               <span className="pointer Hover" onClick={showDetailsFunc}>
                 {showDetails ? "Hide details" : "Show details"}
               </span>
-              {!props.order.paid && (
+
+              {false && (
                 <div className="d-flex flex-wrap mt-2 gap-3">
                   <Button
                     variant="outline-primary"
@@ -138,6 +139,7 @@ function Order(props) {
                   </Button>
                 </div>
               )}
+
             </div>
           </>
         )}
@@ -167,7 +169,7 @@ function Order(props) {
                   >
                     Cancel
                   </Button>
-                  <Button variant="primary" className="text-light" size="sm" onClick={handlePayment} disabled={loading}>
+                  <Button variant="primary" className="text-light" size="sm"  disabled={loading}>
                     {loading ? (
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                     ) : (
@@ -179,13 +181,7 @@ function Order(props) {
               </div>
             )}
             {/* Order Details */}
-            <OrderDetails order={props.order} isMobile={isMobile} />
-
-            <div className="text-center mt-4 mb-4">
-              <Button variant="outline-accent4" className="pointer" onClick={showDetailsFunc}>
-                Hide details
-              </Button>
-            </div>
+            <OrderDetails order={props.order} isMobile={isMobile} refresh={props.refresh} />
           </div>
         )}
       </div>

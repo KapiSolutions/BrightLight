@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Container } from "react-bootstrap";
+import { Button, Container, Spinner } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import FilterAndSortBar from "../../../components/Orders/FilterAndSortBar_Orders";
 import Order from "../../../components/Orders/Admin/Order";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
+import { FiRefreshCcw } from "react-icons/fi";
 
 function UserProfilePage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const theme = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
   const [loadingRfs, setLoadingRfs] = useState(false);
   const [ordersRef, setOrdersRef] = useState([]); //reference list used for backup for sorting and filtering methods
@@ -64,6 +66,26 @@ function UserProfilePage() {
           <p className="color-primary">No orders yet.</p>
         ) : (
           <>
+            <div className="text-end">
+              <Button
+                variant={`outline-${theme == "light" ? "dark" : "accent3"}`}
+                size="md"
+                onClick={refreshOrderList}
+                disabled={loadingRfs}
+                title="Refresh list"
+                className={isMobile && "w-100"}
+              >
+                {loadingRfs ? (
+                  <>
+                    Loading <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  </>
+                ) : (
+                  <>
+                    Refresh List <FiRefreshCcw style={{ width: "20px", height: "20px" }} />
+                  </>
+                )}
+              </Button>
+            </div>
             <section className={`text-center  ${isMobile ? "" : "mt-2"}`}>
               <FilterAndSortBar
                 id={idForSortingBar}
@@ -71,13 +93,13 @@ function UserProfilePage() {
                 inputArray={orders}
                 outputArray={setOrders}
                 msg={setMessage}
-                // resetSettings={resetFilterBar}
+                resetSettings={loadingRfs}
               />
 
               {message && <p className="color-primary mt-5">{message}</p>}
 
               {orders.map((order, idx) => (
-                <Order key={idx} idx={idx} order={order} />
+                <Order key={idx} idx={idx} order={order} refresh={refreshOrderList} />
               ))}
             </section>
           </>

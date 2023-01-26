@@ -27,6 +27,7 @@ function FilterAndSortBar(props) {
     }
     setSortOption("1");
     setFilterOption("1");
+    props.outputArray(props.refArray.sort((a, b) => timeStampToDate(b.timeCreate) - timeStampToDate(a.timeCreate)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.resetSettings]);
 

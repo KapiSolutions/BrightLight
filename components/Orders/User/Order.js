@@ -223,12 +223,13 @@ function Order(props) {
             )}
             {/* Order Details */}
             <OrderDetails order={props.order} isMobile={isMobile} />
-
-            <div className="text-center mt-4 mb-4">
-              <Button variant="outline-accent4" className="pointer" onClick={showDetailsFunc}>
-                Hide details
-              </Button>
-            </div>
+            {isMobile && (
+              <div className="text-center mt-4 mb-4">
+                <Button variant="outline-accent4" className="pointer" onClick={showDetailsFunc}>
+                  Hide details
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>

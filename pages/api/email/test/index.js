@@ -1,4 +1,4 @@
-import sendEmail from "../../../utils/emails/sendEmail.js";
+import sendEmail from "../../../../utils/emails/sendEmail.js";
 
 //Email testing
 export default async function handler(req, res) {

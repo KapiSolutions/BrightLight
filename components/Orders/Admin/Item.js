@@ -1,15 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { Card, Form, Button } from "react-bootstrap";
+import React, { useEffect, useState, useRef } from "react";
+import { Card, Form, Button, Spinner } from "react-bootstrap";
 import { getFileUrlStorage } from "../../../firebase/Storage";
 import styles from "../../../styles/components/Orders/Item.module.scss";
+import { useAuth } from "../../../context/AuthProvider";
 import { IoIosArrowForward } from "react-icons/io";
+import { updateDocFields } from "../../../firebase/Firestore";
 
 function Item(props) {
+  const { setErrorMsg } = useAuth();
   const [showDetails, setShowDetails] = useState(false);
+  const [loadingAdd, setLoadingAdd] = useState(false);
+  const [lockAnswer, setLockAnswer] = useState(false);
+  const item = props.item;
+  const answerRef = useRef();
 
-  // Get url's for the item images
   useEffect(() => {
-    getFileUrlStorage("images/cards", props.item.image)
+    if (item.answer) {
+      setLockAnswer(true);
+      props.answersQt(props.idx);
+    }
+    // Get url's for the item images
+    getFileUrlStorage("images/cards", item.image)
       .then((url) => {
         const img = document.getElementById(`${props.order.id}-${props.idx.toString()}`);
         img.setAttribute("src", url);
@@ -23,8 +34,33 @@ function Item(props) {
     card = card.replaceAll("-", " ");
     return card;
   };
+
+  // Add answer to the item
+  const addAnswer = async (e) => {
+    e.preventDefault();
+    setLoadingAdd(true);
+    const answer = answerRef.current.value;
+    const items = [...props.order.items];
+    let tmpItems = [];
+    try {
+      items.map((item, idx) => {
+        if (idx == props.idx) {
+          item = { ...item, answer: answer };
+        }
+        tmpItems.push(item);
+      });
+      await updateDocFields("orders", props.order.id, { items: tmpItems });
+      props.answersQt(props.idx);
+      setLockAnswer(true);
+    } catch (err) {
+      console.log(err);
+      setErrorMsg("Something went wrong, please try again later.");
+    }
+
+    setLoadingAdd(false);
+  };
   return (
-    <div className={styles.OrderItem}>
+    <div className={`${styles.OrderItem} ${lockAnswer && "border border-success"}`}>
       <div className={styles.OrderHeader}>
         <Card.Img
           className={styles.OrderImg}
@@ -33,9 +69,9 @@ function Item(props) {
           alt="Item icon"
         />
         <div className="w-50">
-          <p className={styles.OrderItemName}>{props.item.name}</p>
+          <p className={styles.OrderItemName}>{item.name}</p>
           <p className={styles.OrderItemPrice}>
-            <small>{props.item.price},00 PLN</small>
+            <small>{item.price},00 PLN</small>
           </p>
         </div>
         <div
@@ -59,9 +95,9 @@ function Item(props) {
             <p className="mb-0">Cards:</p>
             <div className="ms-2">
               <small>
-                {Array.from({ length: props.item.cards.length }).map((_, idx) => (
+                {item.cards.map((card, idx) => (
                   <li key={idx} style={{ display: "inline", listStyleType: "none" }}>
-                    {idx + 1}. {styledCardName(props.item.cards[idx])}{" "}
+                    {idx + 1}. {styledCardName(card)}{" "}
                   </li>
                 ))}
               </small>
@@ -76,7 +112,7 @@ function Item(props) {
             <p className="mb-0">Question:</p>
             <div className="ms-2">
               <p>
-                <small>{props.item.question}</small>
+                <small>{item.question}</small>
               </p>
             </div>
           </div>
@@ -89,18 +125,53 @@ function Item(props) {
               <strong>Answer:</strong>
             </p>
             <div className="ms-2">
-              <Form>
+              <Form onSubmit={addAnswer}>
                 <Form.Control
                   as="textarea"
                   id="adminOrderItemField"
                   placeholder="Your answer..."
                   style={{ minHeight: "80px" }}
+                  className={`${lockAnswer && "border border-success"} ${props.order.status == "Done" && "mb-2"}`}
+                  ref={answerRef}
+                  defaultValue={item.answer ? item.answer : ""}
+                  disabled={lockAnswer}
                   required
                 />
-                <div className="text-end mt-2 mb-2">
-                <Button type="submit">Add Answer!</Button>
-                </div>
+                {props.order.status != "Done" && (
+                  <>
+                    {!lockAnswer && (
+                      <div className="text-end mt-2 mb-2">
+                        <Button type="submit" disabled={loadingAdd}>
+                          {loadingAdd ? (
+                            <>
+                              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                              <span> Adding...</span>
+                            </>
+                          ) : (
+                            <span> Add Answer! </span>
+                          )}
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                )}
               </Form>
+              {props.order.status != "Done" && (
+                <>
+                  {lockAnswer && (
+                    <div className="text-end mt-2 mb-2">
+                      <Button
+                        variant="outline-success"
+                        onClick={() => {
+                          setLockAnswer(false);
+                        }}
+                      >
+                        Edit Answer
+                      </Button>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
