@@ -4,7 +4,7 @@ import { getFileUrlStorage } from "../../../firebase/Storage";
 import styles from "../../../styles/components/Orders/Item.module.scss";
 import { useAuth } from "../../../context/AuthProvider";
 import { IoIosArrowForward } from "react-icons/io";
-import { updateDocFields } from "../../../firebase/Firestore";
+import { getDocById, updateDocFields } from "../../../firebase/Firestore";
 
 function Item(props) {
   const { setErrorMsg } = useAuth();
@@ -40,10 +40,10 @@ function Item(props) {
     e.preventDefault();
     setLoadingAdd(true);
     const answer = answerRef.current.value;
-    const items = [...props.order.items];
+    const tmpOrder = await getDocById("orders", props.order.id);
     let tmpItems = [];
     try {
-      items.map((item, idx) => {
+      tmpOrder.items.map((item, idx) => {
         if (idx == props.idx) {
           item = { ...item, answer: answer };
         }
