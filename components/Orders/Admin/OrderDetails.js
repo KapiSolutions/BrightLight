@@ -99,9 +99,10 @@ function OrderDetails(props) {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
       data: data,
+      type: "orderFinished"
     };
     try {
-      await axios.post("/api/email/orderfinished/", payload);
+      await axios.post("/api/email/", payload);
       setErrorEmail(false);
     } catch (error) {
       console.log(e);

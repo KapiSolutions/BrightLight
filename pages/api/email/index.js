@@ -1,8 +1,8 @@
-import sendEmail from "../../../../utils/emails/sendEmail";
+import sendEmail from "../../../utils/emails/sendEmail";
 
 export default async function orderFinishEmail(req, res) {
   if (req.method === "POST") {
-    const { secret, data } = req.body;
+    const { secret, data, type } = req.body;
 
     // Check the secret key first
     if (secret !== process.env.NEXT_PUBLIC_API_KEY) {
@@ -10,7 +10,7 @@ export default async function orderFinishEmail(req, res) {
     }
 
     try {
-      await sendEmail("orderFinished", data, "en");
+      await sendEmail(type, data, "en");
       return res.status(200).end("OK");
     } catch (error) {
       return res.status(500).end("Error revalidating");

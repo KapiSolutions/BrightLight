@@ -5,12 +5,15 @@ import { useAuth } from "../../../context/AuthProvider";
 import { Badge, Button, Spinner } from "react-bootstrap";
 import { useRouter } from "next/router";
 import { IoIosArrowForward } from "react-icons/io";
-import { deleteDocInCollection } from "../../../firebase/Firestore";
+import { IoCheckmarkDone } from "react-icons/io5";
+import { deleteDocInCollection, updateDocFields } from "../../../firebase/Firestore";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import OrderDetails from "./OrderDetails";
 import ConfirmActionModal from "../../Modals/ConfirmActionModal";
 import cardsIcon from "../../../public/img/cards-light.png";
 import { BsClockHistory } from "react-icons/bs";
+import { MdOutlineNotificationsActive } from "react-icons/md";
+import { getFileUrlStorage } from "../../../firebase/Storage";
 
 function Order(props) {
   const router = useRouter();
@@ -18,9 +21,10 @@ function Order(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [loading, setLoading] = useState(undefined);
+  const [loading, setLoading] = useState(false); //used for notification sending
   const [showDetails, setShowDetails] = useState(false);
-  const [timeRemains, setTimeRemains] = useState("");
+  const [timeOver, setTimeOver] = useState(false);
+  const [notificationSended, setNotificationSended] = useState(false);
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
@@ -31,6 +35,7 @@ function Order(props) {
       await deleteDocInCollection("orders", order.id);
       await updateUserData(authUserFirestore?.id, null, true); //update only orders
       setShowConfirmModal({ msg: "", itemID: "" });
+      props.refresh();//refresh the order list
     } catch (error) {
       setShowConfirmModal({ msg: "", itemID: "" });
       setErrorMsg("Something went wrong, please try again later.");
@@ -41,16 +46,55 @@ function Order(props) {
     setShowDetails(!showDetails);
   };
 
-  useEffect(() => {
-    //if paid then count from the payment time, if not then count from the order creation time
+  const remainingTime = () => {
     const startDate = order.paid ? timeStampToDate(order.timePayment) : timeStampToDate(order.timeCreate);
-    const endDate = new Date()
+    const endDate = new Date();
     const msInHour = 1000 * 60 * 60;
-    const diff = (endDate.getTime() - startDate.getTime())/ msInHour;
-    setTimeRemains(Math.round(diff))
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-  
+    const diff = Math.round(48-(endDate.getTime() - startDate.getTime()) / msInHour);
+    if (diff < 0) {
+      setTimeOver(true);
+    }
+    return diff;
+  };
+
+  const sendNotification = async () => {
+    setLoading(true);
+    try {
+      let items = [];
+      await Promise.all(
+        order.items.map(async (item) => {
+          items.push(...items, {
+            name: item.name,
+            price: item.price,
+            image: await getFileUrlStorage("images/cards", item.image),
+          });
+        })
+      );
+
+      const data = {
+        orderID: order.id,
+        userName: order.userName,
+        userEmail: order.userEmail,
+        totalPrice: order.totalPrice,
+        items: items,
+        timeCreate: timeStampToDate(order.timeCreate).toLocaleDateString(),
+      };
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        data: data,
+        type: "unpaidNotification",
+      };
+
+      await axios.post("/api/email/", payload);
+      setNotificationSended(true);
+      await updateDocFields("orders", order.id, { notification: "sended" });
+    } catch (error) {
+      console.log(error);
+      setErrorMsg("An error occurred during sending an email to the client.");
+    }
+    setLoading(false);
+  };
+
   return (
     <div className="color-primary">
       {props.idx === 0 && (
@@ -95,15 +139,17 @@ function Order(props) {
                 </p>
                 {order.status != "Done" ? (
                   <div className="d-flex align-items-center">
-                  <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
-                    {order.status}
-                  </Badge>
-                  <div className="ms-2">
-                    <span>
-                      <small className="me-1">Left..<strong>{timeRemains}H</strong></small>
-                      <BsClockHistory />
-                    </span>
-                  </div>
+                    <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
+                      {order.status}
+                    </Badge>
+                    <div className="ms-3">
+                      <span className={timeOver && "text-danger"}>
+                        <small className="me-1">
+                          <strong>{remainingTime()}H</strong>
+                        </small>
+                        <BsClockHistory />
+                      </span>
+                    </div>
                   </div>
                 ) : (
                   <Badge bg="success">{order.status}!</Badge>
@@ -130,8 +176,10 @@ function Order(props) {
                     {order.status}
                   </Badge>
                   <div className="ms-1">
-                    <span>
-                      <small className="me-2">Remains: <strong>{timeRemains}H</strong></small>
+                    <span className={timeOver && "text-danger"}>
+                      <small className="me-2">
+                      {order.paid ? "Finish in:" : "Deadline:"} <strong>{remainingTime()}H</strong>
+                      </small>
                       <BsClockHistory />
                     </span>
                   </div>
@@ -140,31 +188,49 @@ function Order(props) {
                 <Badge bg="success">{order.status}!</Badge>
               )}
             </div>
-            <div className="col-2">{order.totalPrice} PLN</div>
+            <div className="col-2">{order.totalPrice},00 PLN</div>
             <div className="col-2">
               <span className="pointer Hover" onClick={showDetailsFunc}>
                 {showDetails ? "Hide details" : "Show details"}
               </span>
 
-              {false && (
-                <div className="d-flex flex-wrap mt-2 gap-3">
+              {timeOver && !order.paid && (
+                <div className="d-flex align-items-center mt-2 gap-3">
                   <Button
                     variant="outline-primary"
                     size="sm"
                     onClick={() => {
                       setShowConfirmModal({
-                        msg: "You are trying to cancel your order, after which all your tarot cards will be lost. Confirm or return to orders.",
+                        msg: "You are trying to delete this order. Please confirm.",
                         itemID: "",
                       });
                     }}
                   >
-                    Cancel
+                    Delete
                   </Button>
-                  <Button variant="primary" className="text-light" size="sm" disabled={loading}>
-                    {loading ? (
-                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  <Button
+                    variant="primary"
+                    className="text-light"
+                    size="sm"
+                    disabled={loading || notificationSended || order.notification}
+                    title="Send email notification to the client."
+                    onClick={sendNotification}
+                  >
+                    {notificationSended || order.notification ? (
+                      <div className="d-flex align-items-center">
+                        Sended
+                        <IoCheckmarkDone />
+                      </div>
                     ) : (
-                      "Pay now"
+                      <>
+                        {loading ? (
+                          <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                        ) : (
+                          <span>
+                            Email <MdOutlineNotificationsActive />
+                          </span>
+                        )}
+                      </>
                     )}
                   </Button>
                 </div>
@@ -183,32 +249,50 @@ function Order(props) {
         {/* Details actions on Mobile */}
         {showDetails && (
           <div className="w-100">
-            {isMobile && !order.paid && false && (
-              <div className="d-flex mt-3 mb-5 justify-content-between gap-4">
-                <div className="d-flex gap-3 ms-2">
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={() => {
-                      setShowConfirmModal({
-                        msg: "You are trying to cancel your order, after which all your tarot cards will be lost. Confirm or return to orders.",
-                        itemID: "",
-                      });
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button variant="primary" className="text-light" size="sm" disabled={loading}>
-                    {loading ? (
-                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                    ) : (
-                      "Pay now"
-                    )}
-                  </Button>
-                </div>
-                <span>Total: {order.totalPrice},00 PLN</span>
+            {/* Mobile actions */}
+            {isMobile && !order.paid && timeOver && (
+              <div className="d-flex mt-4 mb-4 justify-content-end gap-4">
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => {
+                    setShowConfirmModal({
+                      msg: "You are trying to delete this order. Please confirm.",
+                      itemID: "",
+                    });
+                  }}
+                >
+                  Delete Order
+                </Button>
+                <Button
+                  variant="primary"
+                  className="text-light"
+                  size="sm"
+                  onClick={sendNotification}
+                  disabled={loading || notificationSended || order.notification}
+                >
+                  {notificationSended || order.notification ? (
+                    <div className="d-flex gap-1 align-items-center">
+                      Notification sended
+                      <IoCheckmarkDone />
+                    </div>
+                  ) : (
+                    <>
+                      {loading ? (
+                        <span>
+                          Sending <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                        </span>
+                      ) : (
+                        <span>
+                          Send notification <MdOutlineNotificationsActive />
+                        </span>
+                      )}
+                    </>
+                  )}
+                </Button>
               </div>
             )}
+
             {/* Order Details */}
             <OrderDetails order={order} isMobile={isMobile} refresh={props.refresh} />
           </div>

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title>Waiting for the payment</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      text-decoration: none;
+      background: none;
+      font-family: 'arial';
+      font-style: normal;
+      color: #3F3844;
+    }
+
+    p {
+      font-size: 16px;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-weight: normal;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 22px;
+    }
+
+    .Wrapper {
+      display: grid;
+      grid-template-rows: max-content max-content auto auto;
+      grid-template-columns: 100%;
+      min-width: 250px;
+      max-width: 600px;
+      gap: 20px;
+      margin: auto;
+      padding: 20px;
+      background-color: #FFF6FB;
+      border-radius: 12px;
+    }
+
+    /* Header Section */
+    .HeaderSection {
+      display: block;
+      grid-column: 1;
+      grid-row: 1;
+      width: calc(100% + 25px);
+      background: linear-gradient(270deg, #FFB5D8 0%, rgba(255, 181, 216, 0) 101.25%);
+      border-radius: 8px;
+    }
+
+    .HeaderLogo {
+      width: 160px;
+      margin-top: 10px;
+      float: right;
+    }
+
+    .HeaderImg {
+      width: 160px;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+
+    /* Message Section */
+    .MessageSection {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    /* Order Section */
+    .OrderSection {
+      grid-column: 1;
+      grid-row: 3;
+    }
+
+    .OrderItem {
+      display: flex;
+      flex-direction: row;
+      padding: 0px 10px 0px 5px;
+      margin-bottom: 10px;
+      background: rgba(255, 181, 216, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .OrderImg {
+      margin: 5px 10px 5px 0px;
+      width: 50px;
+      border-radius: 5px;
+    }
+
+    .OrderItemName {
+      max-height: 2.5rem;
+      overflow: hidden;
+      margin: auto auto auto 0px;
+    }
+
+    .OrderItemPrice {
+      margin: auto 0px auto auto;
+      white-space: nowrap;
+    }
+
+    /* Footer Section */
+    .FooterSection {
+      grid-column: 1;
+      grid-row: 4;
+      text-align: center;
+    }
+
+    .FooterIcons {
+      margin: 30px auto 30px auto;
+    }
+
+    .FooterIcon {
+      width: 40px;
+      cursor: pointer;
+    }
+
+    @media only screen and (max-width: 600px) {
+      body {
+        padding: 0;
+      }
+
+      p {
+        font-size: 14px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      h2 {
+        font-size: 16px;
+      }
+
+      .Wrapper {
+        max-width: 100vw;
+        padding: 10px;
+      }
+
+      .HeaderSection {
+        width: calc(100% + 20px);
+      }
+
+      .HeaderLogo {
+        width: 130px;
+      }
+
+      .FooterIcon {
+        width: 32px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Content Wrapper Body -->
+  <div class="Wrapper">
+    <!-- Header -->
+    <header class="HeaderSection">
+      <img class="HeaderLogo" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Femails%2FLogo.png?alt=media&token=0bb13cb4-b9ad-4bb5-ab1c-bcd297ab2e03" alt="Bright Light Gypsy Logo" />
+      <h2>Hi {{userName}}!</h2>
+      <h1><strong>Your order is still unpaid!</strong></h1>
+    </header>
+
+    <!-- Message -->
+    <section class="MessageSection">
+      <p>
+        It's been 48 hours since placing the order and your payment is still missing.
+      </p>
+      <p>
+        Please make payment as soon as possible otherwise the order will be deleted.
+      </p>
+      <p>
+        You can pay and check your order status <a href="https://brightlightgypsy.pl/user/orders#main"><strong>here.</strong></a>
+      </p>
+    </section>
+
+    <!-- Order details -->
+    <section class="OrderSection">
+      <h1><strong>Order Details</strong></h1>
+      <p>
+          Order number: <strong>{{orderID}}</strong>
+          <br>
+          Order date: <strong>{{timeCreate}}</strong>
+      </p>
+      <!-- <div class="OrderItem">
+        <img class="OrderImg" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Fcards%2Flovers.png?alt=media&token=d911cee3-3c3f-439a-a80f-07dc14defbc6" alt="Item icon" />
+        <p class="OrderItemName">Affiliate Compatibility</p>
+        <p class="OrderItemPrice">19,00 PLN</p>
+      </div> -->
+      {{{orderItems}}}
+
+      <div style="float:right">
+        <p><strong>Total: {{totalPrice}},00 PLN</strong></p>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="FooterSection">
+      <br>
+      <hr style="opacity: 0.3; width:80%;">
+      <br>
+      <p>
+        If you have any questions, don&apos;t hesitate to contact me.
+        <br>
+        You can reply directly to this email.
+      </p>
+      <div class="FooterIcons">
+        <a href="https://www.instagram.com/">
+          <img class="FooterIcon" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Femails%2Fig.png?alt=media&token=e56183d0-1f74-4b9c-a0b7-25368ed31ad2" alt="Instagram" />
+        </a>
+        <a href="https://bright-light.vercel.app">
+          <img class="FooterIcon" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Femails%2Fwww.png?alt=media&token=dbed6e9a-ba03-4813-912b-54f3248f4be2" alt="www" style="padding: 0px 25px 0px 25px" />
+        </a>
+        <a href="">
+          <img class="FooterIcon" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Femails%2Ftiktok.png?alt=media&token=2d772b3e-3281-4b2d-aaf3-c79f5e3b063f" alt="TikTok" />
+        </a>
+      </div>
+      <p style="text-transform: uppercase"><strong>Stay always in the bright light!</strong></p>
+    </footer>
+  </div>
+</body>
+
+</html>

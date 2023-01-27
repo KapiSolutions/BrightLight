@@ -7,6 +7,7 @@ import { promises as fs } from "fs";
 import orderConfirmation from "./en/orderConfirmation";
 import paymentConfirmation from "./en/paymentConfirmation";
 import orderFinished from "./en/orderFinished";
+import unpaidNotification from "./en/unpaidNotification";
 
 export default async function sendEmail(emailType, data, language) {
   await new Promise(async (resolve, reject) => {
@@ -30,6 +31,11 @@ export default async function sendEmail(emailType, data, language) {
           const { emailData_of, replacements_of } = orderFinished(data);
           emailData = emailData_of;
           replacements = replacements_of;
+          break;
+          case "unpaidNotification":
+          const { emailData_un, replacements_un } = unpaidNotification(data);
+          emailData = emailData_un;
+          replacements = replacements_un;
           break;
 
         default:
