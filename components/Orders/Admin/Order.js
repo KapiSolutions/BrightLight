@@ -153,7 +153,7 @@ function Order(props) {
         {/* Details actions on Mobile */}
         {showDetails && (
           <div className="w-100">
-            {isMobile && !props.order.paid && false  && (
+            {isMobile && !props.order.paid && false && (
               <div className="d-flex mt-3 mb-5 justify-content-between gap-4">
                 <div className="d-flex gap-3 ms-2">
                   <Button
