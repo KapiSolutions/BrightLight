@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { useAuth } from "../../../context/AuthProvider";
@@ -10,14 +10,17 @@ import { useDeviceStore } from "../../../stores/deviceStore";
 import OrderDetails from "./OrderDetails";
 import ConfirmActionModal from "../../Modals/ConfirmActionModal";
 import cardsIcon from "../../../public/img/cards-light.png";
+import { BsClockHistory } from "react-icons/bs";
 
 function Order(props) {
   const router = useRouter();
+  const order = props.order;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(undefined);
   const [showDetails, setShowDetails] = useState(false);
+  const [timeRemains, setTimeRemains] = useState("");
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
@@ -25,7 +28,7 @@ function Order(props) {
 
   async function deleteOrder() {
     try {
-      await deleteDocInCollection("orders", props.order.id);
+      await deleteDocInCollection("orders", order.id);
       await updateUserData(authUserFirestore?.id, null, true); //update only orders
       setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
@@ -37,6 +40,17 @@ function Order(props) {
   const showDetailsFunc = () => {
     setShowDetails(!showDetails);
   };
+
+  useEffect(() => {
+    //if paid then count from the payment time, if not then count from the order creation time
+    const startDate = order.paid ? timeStampToDate(order.timePayment) : timeStampToDate(order.timeCreate);
+    const endDate = new Date()
+    const msInHour = 1000 * 60 * 60;
+    const diff = (endDate.getTime() - startDate.getTime())/ msInHour;
+    setTimeRemains(Math.round(diff))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  
   return (
     <div className="color-primary">
       {props.idx === 0 && (
@@ -75,25 +89,33 @@ function Order(props) {
                   Tarot
                   <small>
                     {" "}
-                    ({props.order?.items[0].name}
-                    {props.order?.items.length > 1 && `, +${props.order?.items.length - 1} more..`})
+                    ({order?.items[0].name}
+                    {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                   </small>
                 </p>
-                {props.order.status != "Done" ? (
-                  <Badge bg={props.order.paid ? "warning" : "primary"} className={props.order.paid ? "text-dark" : ""}>
-                    {props.order.status}
+                {order.status != "Done" ? (
+                  <div className="d-flex align-items-center">
+                  <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
+                    {order.status}
                   </Badge>
+                  <div className="ms-2">
+                    <span>
+                      <small className="me-1">Left..<strong>{timeRemains}H</strong></small>
+                      <BsClockHistory />
+                    </span>
+                  </div>
+                  </div>
                 ) : (
-                  <Badge bg="success">{props.order.status}!</Badge>
+                  <Badge bg="success">{order.status}!</Badge>
                 )}
               </>
             ) : (
               <>
                 <p className="mb-0">
-                  Tarot ({props.order?.items[0].name}
-                  {props.order?.items.length > 1 && `, +${props.order?.items.length - 1} more..`})
+                  Tarot ({order?.items[0].name}
+                  {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                 </p>
-                <small className="text-muted">{timeStampToDate(props.order.timeCreate).toLocaleString()}</small>
+                <small className="text-muted">{timeStampToDate(order.timeCreate).toLocaleString()}</small>
               </>
             )}
           </div>
@@ -102,15 +124,23 @@ function Order(props) {
         {!isMobile && (
           <>
             <div className="col-3 text-uppercase">
-              {props.order.status != "Done" ? (
-                <Badge bg={props.order.paid ? "warning" : "primary"} className={props.order.paid ? "text-dark" : ""}>
-                  {props.order.status}
-                </Badge>
+              {order.status != "Done" ? (
+                <div>
+                  <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
+                    {order.status}
+                  </Badge>
+                  <div className="ms-1">
+                    <span>
+                      <small className="me-2">Remains: <strong>{timeRemains}H</strong></small>
+                      <BsClockHistory />
+                    </span>
+                  </div>
+                </div>
               ) : (
-                <Badge bg="success">{props.order.status}!</Badge>
+                <Badge bg="success">{order.status}!</Badge>
               )}
             </div>
-            <div className="col-2">{props.order.totalPrice} PLN</div>
+            <div className="col-2">{order.totalPrice} PLN</div>
             <div className="col-2">
               <span className="pointer Hover" onClick={showDetailsFunc}>
                 {showDetails ? "Hide details" : "Show details"}
@@ -153,7 +183,7 @@ function Order(props) {
         {/* Details actions on Mobile */}
         {showDetails && (
           <div className="w-100">
-            {isMobile && !props.order.paid && false && (
+            {isMobile && !order.paid && false && (
               <div className="d-flex mt-3 mb-5 justify-content-between gap-4">
                 <div className="d-flex gap-3 ms-2">
                   <Button
@@ -176,11 +206,11 @@ function Order(props) {
                     )}
                   </Button>
                 </div>
-                <span>Total: {props.order.totalPrice},00 PLN</span>
+                <span>Total: {order.totalPrice},00 PLN</span>
               </div>
             )}
             {/* Order Details */}
-            <OrderDetails order={props.order} isMobile={isMobile} refresh={props.refresh} />
+            <OrderDetails order={order} isMobile={isMobile} refresh={props.refresh} />
           </div>
         )}
       </div>
