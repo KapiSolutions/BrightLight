@@ -23,6 +23,7 @@ function Order(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [tmpOrder, setTmpOrder] = useState(null);
   const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
+  const [errorEmail, setErrorEmail] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(false); //used for notification sending
   const [showDetails, setShowDetails] = useState(false);
@@ -30,7 +31,6 @@ function Order(props) {
   const [notificationSended, setNotificationSended] = useState(false);
   const [paymentDisabled, setPaymentDisabled] = useState(false);
   //paymentDisabled: user have an extra [x] hours for payment after getting an notification, after that time the payment isn't available -> admin can safely delete the order
-  
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
@@ -39,7 +39,7 @@ function Order(props) {
   useEffect(() => {
     if (order.notificationTime || tmpOrder?.notificationTime) {
       setNotificationSended(true);
-    }else{
+    } else {
       setNotificationSended(false);
       setPaymentDisabled(false);
     }
@@ -48,15 +48,33 @@ function Order(props) {
 
   async function deleteOrder() {
     try {
-      await deleteDocInCollection("orders", order.id);
-      await updateUserData(authUserFirestore?.id, null, true); //update only orders
+      // await deleteDocInCollection("orders", order.id);
+      //send email to the client due to order cancellation
+      await sendEmail({ orderID: order.id, userName: order.userName, userEmail: order.userEmail });
       setShowConfirmModal({ msg: "", itemID: "" });
       props.refresh(); //refresh the order list
     } catch (error) {
+      console.log(error)
       setShowConfirmModal({ msg: "", itemID: "" });
       setErrorMsg("Something went wrong, please try again later.");
     }
   }
+
+  const sendEmail = async (data) => {
+    const payload = {
+      secret: process.env.NEXT_PUBLIC_API_KEY,
+      data: data,
+      type: "orderCancelled",
+    };
+    try {
+      await axios.post("/api/email/", payload);
+      setErrorEmail(false);
+    } catch (error) {
+      console.log(error);
+      setErrorEmail(true);
+      setErrorMsg("Order deleted but an error occurred during sending an email to the client.");
+    }
+  };
 
   const sendNotification = async () => {
     setLoading(true);
