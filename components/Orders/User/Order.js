@@ -12,10 +12,12 @@ import OrderDetails from "./OrderDetails";
 import ConfirmActionModal from "../../Modals/ConfirmActionModal";
 import cardsIcon from "../../../public/img/cards-light.png";
 import { BsClockHistory } from "react-icons/bs";
+import appConfig from "../../../config/appConfig";
 
 function Order(props) {
   const router = useRouter();
   const order = props.order;
+  const config = appConfig();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -25,8 +27,6 @@ function Order(props) {
   const [notificationSended, setNotificationSended] = useState(false);
   const [paymentDisabled, setPaymentDisabled] = useState(false);
   //paymentDisabled: user have an extra [x] hours for payment after getting an notification, after that time the payment isn't available -> admin can safely delete the order
-
-  const extraTimeForPayment = 24;
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
@@ -103,7 +103,8 @@ function Order(props) {
     const startDate = order.paid ? timeStampToDate(order.timePayment) : timeStampToDate(order.timeCreate);
     const endDate = new Date();
     const msInHour = 1000 * 60 * 60;
-    const diff = Math.round(48 - (endDate.getTime() - startDate.getTime()) / msInHour);
+    const deadline = !order.paid ? config.timePayment : config.timeRealization;
+    const diff = Math.round(deadline - (endDate.getTime() - startDate.getTime()) / msInHour);
     let extraTime;
     if (!order.paid && notificationSended) {
       extraTime = checkDeadline();
@@ -121,7 +122,7 @@ function Order(props) {
     const startDate = timeStampToDate(order.notificationTime);
     const endDate = new Date();
     const msInHour = 1000 * 60 * 60;
-    const diff = Math.round(extraTimeForPayment - (endDate.getTime() - startDate.getTime()) / msInHour);
+    const diff = Math.round(config.timeExtraPayment - (endDate.getTime() - startDate.getTime()) / msInHour);
     if (diff <= 0 && !paymentDisabled) {
       setPaymentDisabled(true);
     } else if (diff > 0 && paymentDisabled) {
