@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import axios from "axios";
 import getStripe from "../../../utils/get-stripejs";
@@ -11,18 +11,36 @@ import { useDeviceStore } from "../../../stores/deviceStore";
 import OrderDetails from "./OrderDetails";
 import ConfirmActionModal from "../../Modals/ConfirmActionModal";
 import cardsIcon from "../../../public/img/cards-light.png";
+import { BsClockHistory } from "react-icons/bs";
 
 function Order(props) {
   const router = useRouter();
+  const order = props.order;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(undefined);
   const [showDetails, setShowDetails] = useState(false);
+  const [timeOver, setTimeOver] = useState(false);
+  const [notificationSended, setNotificationSended] = useState(false);
+  const [paymentDisabled, setPaymentDisabled] = useState(false);
+  //paymentDisabled: user have an extra [x] hours for payment after getting an notification, after that time the payment isn't available -> admin can safely delete the order
+
+  const extraTimeForPayment = 24;
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
+
+  useEffect(() => {
+    if (order.notificationTime) {
+      setNotificationSended(true);
+    } else {
+      setNotificationSended(false);
+      setPaymentDisabled(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handlePayment() {
     try {
@@ -31,14 +49,14 @@ function Order(props) {
       const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
 
       //prepare stripe product data
-      const stripeCart = props.order.items.map((_, idx) => ({
-        price: props.order.items[idx].s_id,
+      const stripeCart = order.items.map((_, idx) => ({
+        price: order.items[idx].s_id,
         quantity: 1,
       }));
 
       const orderData = {
         sendOrderConfirmEmail: false,
-        orderID: props.order.id,
+        orderID: order.id,
         stripeCart: stripeCart,
         localeLanguage: localeLanguage,
         localeTimeZone: localeTimeZone,
@@ -68,7 +86,7 @@ function Order(props) {
   }
   async function deleteOrder() {
     try {
-      await deleteDocInCollection("orders", props.order.id);
+      await deleteDocInCollection("orders", order.id);
       await updateUserData(authUserFirestore?.id, null, true); //update only orders
       setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
@@ -80,6 +98,38 @@ function Order(props) {
   const showDetailsFunc = () => {
     setShowDetails(!showDetails);
   };
+
+  const remainingTime = () => {
+    const startDate = order.paid ? timeStampToDate(order.timePayment) : timeStampToDate(order.timeCreate);
+    const endDate = new Date();
+    const msInHour = 1000 * 60 * 60;
+    const diff = Math.round(48 - (endDate.getTime() - startDate.getTime()) / msInHour);
+    let extraTime;
+    if (!order.paid && notificationSended) {
+      extraTime = checkDeadline();
+    }
+    if (diff < 0 && !timeOver) {
+      setTimeOver(true);
+    } else if (diff >= 0 && timeOver) {
+      setTimeOver(false);
+    }
+
+    return extraTime ? extraTime : diff;
+  };
+
+  const checkDeadline = () => {
+    const startDate = timeStampToDate(order.notificationTime);
+    const endDate = new Date();
+    const msInHour = 1000 * 60 * 60;
+    const diff = Math.round(extraTimeForPayment - (endDate.getTime() - startDate.getTime()) / msInHour);
+    if (diff <= 0 && !paymentDisabled) {
+      setPaymentDisabled(true);
+    } else if (diff > 0 && paymentDisabled) {
+      setPaymentDisabled(false);
+    }
+    return diff;
+  };
+
   return (
     <div className="color-primary">
       {props.idx === 0 && (
@@ -118,25 +168,43 @@ function Order(props) {
                   Tarot
                   <small>
                     {" "}
-                    ({props.order?.items[0].name}
-                    {props.order?.items.length > 1 && `, +${props.order?.items.length - 1} more..`})
+                    ({order?.items[0].name}
+                    {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                   </small>
                 </p>
-                {props.order.status != "Done" ? (
-                  <Badge bg={props.order.paid ? "warning" : "primary"} className={props.order.paid ? "text-dark" : ""}>
-                    {props.order.status}
-                  </Badge>
+                {order.status != "Done" ? (
+                  <div className="d-flex align-items-center">
+                    <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
+                      {order.status}
+                    </Badge>
+                    {!order.paid && paymentDisabled && <small className="ms-1">Payment time has expired!</small>}
+                    {!order.paid && !paymentDisabled && (
+                      <div className="ms-2">
+                        <span className={timeOver ? "text-danger" : ""}>
+                          <small className="me-1">
+                            {timeOver
+                              ? notificationSended
+                                ? "Extra time: "
+                                : "Time's up: "
+                              : "Deadline: "}
+                            <strong>{remainingTime()}H</strong>
+                          </small>
+                          <BsClockHistory />
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 ) : (
-                  <Badge bg="success">{props.order.status}!</Badge>
+                  <Badge bg="success">{order.status}!</Badge>
                 )}
               </>
             ) : (
               <>
                 <p className="mb-0">
-                  Tarot ({props.order?.items[0].name}
-                  {props.order?.items.length > 1 && `, +${props.order?.items.length - 1} more..`})
+                  Tarot ({order?.items[0].name}
+                  {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                 </p>
-                <small className="text-muted">{timeStampToDate(props.order.timeCreate).toLocaleString()}</small>
+                <small className="text-muted">{timeStampToDate(order.timeCreate).toLocaleString()}</small>
               </>
             )}
           </div>
@@ -145,20 +213,45 @@ function Order(props) {
         {!isMobile && (
           <>
             <div className="col-3 text-uppercase">
-              {props.order.status != "Done" ? (
-                <Badge bg={props.order.paid ? "warning" : "primary"} className={props.order.paid ? "text-dark" : ""}>
-                  {props.order.status}
-                </Badge>
+              {order.status != "Done" ? (
+                <>
+                  <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
+                    {order.status}
+                  </Badge>
+                  {!order.paid && (
+                    <div className="ms-1">
+                      {paymentDisabled ? (
+                        <small className="me-2">Payment time has expired!</small>
+                      ) : (
+                        <span className={timeOver ? "text-danger" : ""}>
+                          <small className="me-1">
+                            {order.paid
+                              ? timeOver
+                                ? "Hurry up! "
+                                : "Finish in: "
+                              : timeOver
+                              ? notificationSended
+                                ? "Extra time: "
+                                : "Time's up: "
+                              : "Deadline: "}
+                            <strong>{remainingTime()}H</strong>
+                          </small>
+                          <BsClockHistory />
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </>
               ) : (
-                <Badge bg="success">{props.order.status}!</Badge>
+                <Badge bg="success">{order.status}!</Badge>
               )}
             </div>
-            <div className="col-2">{props.order.totalPrice} PLN</div>
+            <div className="col-2">{order.totalPrice} PLN</div>
             <div className="col-2">
               <span className="pointer Hover" onClick={showDetailsFunc}>
                 {showDetails ? "Hide details" : "Show details"}
               </span>
-              {!props.order.paid && (
+              {!order.paid && !paymentDisabled && (
                 <div className="d-flex flex-wrap mt-2 gap-3">
                   <Button
                     variant="outline-primary"
@@ -172,6 +265,7 @@ function Order(props) {
                   >
                     Cancel
                   </Button>
+
                   <Button variant="primary" className="text-light" size="sm" onClick={handlePayment} disabled={loading}>
                     {loading ? (
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -195,7 +289,7 @@ function Order(props) {
         {/* Details of the order */}
         {showDetails && (
           <div className="w-100">
-            {isMobile && !props.order.paid && (
+            {isMobile && !order.paid && !paymentDisabled && (
               <div className="d-flex mt-3 mb-5 justify-content-between gap-4">
                 <div className="d-flex gap-3 ms-2">
                   <Button
@@ -218,11 +312,12 @@ function Order(props) {
                     )}
                   </Button>
                 </div>
-                <span>Total: {props.order.totalPrice},00 PLN</span>
+                <span>Total: {order.totalPrice},00 PLN</span>
               </div>
             )}
+
             {/* Order Details */}
-            <OrderDetails order={props.order} isMobile={isMobile} />
+            <OrderDetails order={order} isMobile={isMobile} />
             {isMobile && (
               <div className="text-center mt-4 mb-4">
                 <Button variant="outline-accent4" className="pointer" onClick={showDetailsFunc}>

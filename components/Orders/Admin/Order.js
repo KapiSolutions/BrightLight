@@ -19,43 +19,43 @@ function Order(props) {
   const router = useRouter();
   const order = props.order;
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const [tmpOrder, setTmpOrder] = useState(null);
   const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(false); //used for notification sending
   const [showDetails, setShowDetails] = useState(false);
   const [timeOver, setTimeOver] = useState(false);
   const [notificationSended, setNotificationSended] = useState(false);
+  const [paymentDisabled, setPaymentDisabled] = useState(false);
+  //paymentDisabled: user have an extra [x] hours for payment after getting an notification, after that time the payment isn't available -> admin can safely delete the order
+
+  const extraTimeForPayment = 24;
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
+
+  useEffect(() => {
+    if (order.notificationTime || tmpOrder?.notificationTime) {
+      setNotificationSended(true);
+    }else{
+      setNotificationSended(false);
+      setPaymentDisabled(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function deleteOrder() {
     try {
       await deleteDocInCollection("orders", order.id);
       await updateUserData(authUserFirestore?.id, null, true); //update only orders
       setShowConfirmModal({ msg: "", itemID: "" });
-      props.refresh();//refresh the order list
+      props.refresh(); //refresh the order list
     } catch (error) {
       setShowConfirmModal({ msg: "", itemID: "" });
       setErrorMsg("Something went wrong, please try again later.");
     }
   }
-
-  const showDetailsFunc = () => {
-    setShowDetails(!showDetails);
-  };
-
-  const remainingTime = () => {
-    const startDate = order.paid ? timeStampToDate(order.timePayment) : timeStampToDate(order.timeCreate);
-    const endDate = new Date();
-    const msInHour = 1000 * 60 * 60;
-    const diff = Math.round(48-(endDate.getTime() - startDate.getTime()) / msInHour);
-    if (diff < 0 && !timeOver) {
-      setTimeOver(true);
-    }
-    return diff;
-  };
 
   const sendNotification = async () => {
     setLoading(true);
@@ -86,13 +86,52 @@ function Order(props) {
       };
 
       await axios.post("/api/email/", payload);
+
+      const updatedOrder = await updateDocFields("orders", order.id, { notificationTime: new Date() });
+      setTmpOrder(updatedOrder);
       setNotificationSended(true);
-      await updateDocFields("orders", order.id, { notification: "sended" });
     } catch (error) {
       console.log(error);
       setErrorMsg("An error occurred during sending an email to the client.");
     }
     setLoading(false);
+  };
+
+  const showDetailsFunc = () => {
+    setShowDetails(!showDetails);
+  };
+
+  const remainingTime = () => {
+    const startDate = order.paid ? timeStampToDate(order.timePayment) : timeStampToDate(order.timeCreate);
+    const endDate = new Date();
+    const msInHour = 1000 * 60 * 60;
+    const diff = Math.round(48 - (endDate.getTime() - startDate.getTime()) / msInHour);
+    let extraTime;
+    if (!order.paid && notificationSended) {
+      extraTime = checkDeadline();
+    }
+    if (diff < 0 && !timeOver) {
+      setTimeOver(true);
+    } else if (diff >= 0 && timeOver) {
+      setTimeOver(false);
+    }
+
+    return extraTime ? extraTime : diff;
+  };
+
+  const checkDeadline = () => {
+    const startDate = order.notificationTime
+      ? timeStampToDate(order.notificationTime)
+      : timeStampToDate(tmpOrder.notificationTime);
+    const endDate = new Date();
+    const msInHour = 1000 * 60 * 60;
+    const diff = Math.round(extraTimeForPayment - (endDate.getTime() - startDate.getTime()) / msInHour);
+    if (diff <= 0 && !paymentDisabled) {
+      setPaymentDisabled(true);
+    } else if (diff > 0 && paymentDisabled) {
+      setPaymentDisabled(false);
+    }
+    return diff;
   };
 
   return (
@@ -132,7 +171,6 @@ function Order(props) {
                 <p className="mb-0">
                   Tarot
                   <small>
-                    {" "}
                     ({order?.items[0].name}
                     {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                   </small>
@@ -142,13 +180,26 @@ function Order(props) {
                     <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
                       {order.status}
                     </Badge>
-                    <div className="ms-3">
-                      <span className={timeOver ? "text-danger" : ""}>
-                        <small className="me-1">
-                          <strong>{remainingTime()}H</strong>
-                        </small>
-                        <BsClockHistory />
-                      </span>
+                    <div className="ms-2">
+                      {paymentDisabled ? (
+                        <small className="me-2 text-success text-uppercase">Delete the order.</small>
+                      ) : (
+                        <span className={timeOver ? "text-danger" : ""}>
+                          <small className="me-1">
+                            {order.paid
+                              ? timeOver
+                                ? "Hurry up! "
+                                : "Finish in: "
+                              : timeOver
+                              ? notificationSended
+                                ? "Extra time: "
+                                : "Time's up: "
+                              : "Deadline: "}
+                            <strong>{remainingTime()}H</strong>
+                          </small>
+                          <BsClockHistory />
+                        </span>
+                      )}
                     </div>
                   </div>
                 ) : (
@@ -177,10 +228,25 @@ function Order(props) {
                   </Badge>
                   <div className="ms-1">
                     <span className={timeOver ? "text-danger" : ""}>
-                      <small className="me-2">
-                      {order.paid ? "Finish in:" : "Deadline:"} <strong>{remainingTime()}H</strong>
-                      </small>
-                      <BsClockHistory />
+                      {paymentDisabled ? (
+                        <small className="me-2 text-success">You can delete the order.</small>
+                      ) : (
+                        <>
+                          <small className="me-1">
+                            {order.paid
+                              ? timeOver
+                                ? "Hurry up! "
+                                : "Finish in: "
+                              : timeOver
+                              ? notificationSended
+                                ? "Extra time: "
+                                : "Time's up: "
+                              : "Deadline: "}
+                            <strong>{remainingTime()}H</strong>
+                          </small>
+                          <BsClockHistory />
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -197,7 +263,8 @@ function Order(props) {
               {timeOver && !order.paid && (
                 <div className="d-flex align-items-center mt-2 gap-3">
                   <Button
-                    variant="outline-primary"
+                    variant={`outline-${paymentDisabled ? "success" : "primary"}`}
+                    title={paymentDisabled ? "You can safely delete an Order" : "Delete an Order"}
                     size="sm"
                     onClick={() => {
                       setShowConfirmModal({
@@ -209,14 +276,14 @@ function Order(props) {
                     Delete
                   </Button>
                   <Button
-                    variant="primary"
+                    variant={notificationSended ? "success" : "primary"}
                     className="text-light"
                     size="sm"
-                    disabled={loading || notificationSended || order.notification}
+                    disabled={loading || notificationSended || order.notificationTime}
                     title="Send email notification to the client."
                     onClick={sendNotification}
                   >
-                    {notificationSended || order.notification ? (
+                    {notificationSended || order.notificationTime ? (
                       <div className="d-flex align-items-center">
                         Sended
                         <IoCheckmarkDone />
@@ -253,7 +320,7 @@ function Order(props) {
             {isMobile && !order.paid && timeOver && (
               <div className="d-flex mt-4 mb-4 justify-content-end gap-4">
                 <Button
-                  variant="outline-primary"
+                  variant={`outline-${paymentDisabled ? "success" : "primary"}`}
                   size="sm"
                   onClick={() => {
                     setShowConfirmModal({
@@ -265,13 +332,13 @@ function Order(props) {
                   Delete Order
                 </Button>
                 <Button
-                  variant="primary"
+                  variant={notificationSended ? "success" : "primary"}
                   className="text-light"
                   size="sm"
                   onClick={sendNotification}
-                  disabled={loading || notificationSended || order.notification}
+                  disabled={loading || notificationSended || order.notificationTime}
                 >
-                  {notificationSended || order.notification ? (
+                  {notificationSended || order.notificationTime ? (
                     <div className="d-flex gap-1 align-items-center">
                       Notification sended
                       <IoCheckmarkDone />

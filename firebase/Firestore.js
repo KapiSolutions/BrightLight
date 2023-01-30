@@ -66,7 +66,7 @@ const createOrderFirestore = async (uid, name, age, email, cart, totalPrice, com
     userAge: age,
     userEmail: email,
     items: cart,
-    status: "Waiting for payment",
+    status: "Unpaid",
     paid: false,
     totalPrice: totalPrice,
     timeCreate: serverTimestamp(),

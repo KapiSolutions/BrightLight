@@ -184,7 +184,7 @@ function FilterAndSortBar(props) {
         case "All orders":
           setFilterOption("1");
           break;
-        case "Waiting for payment":
+        case "Unpaid":
           setFilterOption("2");
           break;
         case "In realization":
@@ -285,7 +285,7 @@ function FilterAndSortBar(props) {
                 </Form.Label>
                 <Form.Select type="text" id={`filterByType${props.id}`}>
                   <option value="All orders">All orders</option>
-                  <option value="Waiting for payment">Waiting for payment</option>
+                  <option value="Unpaid">Unpaid</option>
                   <option value="In realization">In realization</option>
                   <option value="Done">Done</option>
                 </Form.Select>
@@ -397,7 +397,7 @@ function FilterAndSortBar(props) {
                     <div
                       className={`rounded m-1 p-2 pointer ${sortItem}`}
                       onClick={(e) => {
-                        filterByType(e, "Waiting for payment");
+                        filterByType(e, "Unpaid");
                       }}
                     >
                       Unpaid
