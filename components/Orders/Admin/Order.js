@@ -48,7 +48,7 @@ function Order(props) {
 
   async function deleteOrder() {
     try {
-      // await deleteDocInCollection("orders", order.id);
+      await deleteDocInCollection("orders", order.id);
       //send email to the client due to order cancellation
       await sendEmail({ orderID: order.id, userName: order.userName, userEmail: order.userEmail });
       setShowConfirmModal({ msg: "", itemID: "" });
