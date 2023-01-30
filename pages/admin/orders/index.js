@@ -73,7 +73,7 @@ function UserProfilePage() {
                 onClick={refreshOrderList}
                 disabled={loadingRfs}
                 title="Refresh list"
-                className={isMobile && "w-100"}
+                className={isMobile ? "w-100" : ""}
               >
                 {loadingRfs ? (
                   <>

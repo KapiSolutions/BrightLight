@@ -51,7 +51,7 @@ function Order(props) {
     const endDate = new Date();
     const msInHour = 1000 * 60 * 60;
     const diff = Math.round(48-(endDate.getTime() - startDate.getTime()) / msInHour);
-    if (diff < 0) {
+    if (diff < 0 && !timeOver) {
       setTimeOver(true);
     }
     return diff;
@@ -143,7 +143,7 @@ function Order(props) {
                       {order.status}
                     </Badge>
                     <div className="ms-3">
-                      <span className={timeOver && "text-danger"}>
+                      <span className={timeOver ? "text-danger" : ""}>
                         <small className="me-1">
                           <strong>{remainingTime()}H</strong>
                         </small>
@@ -176,7 +176,7 @@ function Order(props) {
                     {order.status}
                   </Badge>
                   <div className="ms-1">
-                    <span className={timeOver && "text-danger"}>
+                    <span className={timeOver ? "text-danger" : ""}>
                       <small className="me-2">
                       {order.paid ? "Finish in:" : "Deadline:"} <strong>{remainingTime()}H</strong>
                       </small>
