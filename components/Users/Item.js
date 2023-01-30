@@ -18,15 +18,15 @@ function Item(props) {
   };
 
   async function deleteUser() {
-    try {
-      await deleteDocInCollection("users", user.id);
-      setShowConfirmModal({ msg: "", itemID: "" });
-      //   props.refresh(); //refresh the order list
-    } catch (error) {
-      console.log(error);
-      setShowConfirmModal({ msg: "", itemID: "" });
-      setErrorMsg("Something went wrong, please try again later.");
-    }
+    // try {
+    //   await deleteDocInCollection("users", user.id);
+    //   setShowConfirmModal({ msg: "", itemID: "" });
+    //   //   props.refresh(); //refresh the order list
+    // } catch (error) {
+    //   console.log(error);
+    //   setShowConfirmModal({ msg: "", itemID: "" });
+    //   setErrorMsg("Something went wrong, please try again later.");
+    // }
   }
   return (
     <div className="color-primary">
@@ -114,47 +114,50 @@ function Item(props) {
           </>
         )}
         {isMobile && (
-          <div className="col-2 text-center pointer" onClick={showDetailsFunc}>
-            <IoIosArrowForward
-              style={{ height: "25px", width: "25px", transform: `rotate(${showDetails ? "90" : "0"}deg)` }}
-            />
-          </div>
-        )}
-        {/* Actions bar on Mobile */}
-        {showDetails && (
-          <div className="mt-3 w-100">
-            <div>
-              <p>
-                <small className="text-uppercase">
-                  <strong>Email:</strong> {user.email}
-                </small>
-                <br />
-                <small className="text-uppercase">
-                  <strong>Provider:</strong> {user.signProvider}
-                </small>
-              </p>
+          <>
+            <div className="col-2 text-center pointer" onClick={showDetailsFunc}>
+              <IoIosArrowForward
+                style={{ height: "25px", width: "25px", transform: `rotate(${showDetails ? "90" : "0"}deg)` }}
+              />
             </div>
-            <div className="w-100 text-end">
-              <Button
-                variant="primary"
-                className="text-light"
-                size="sm"
-                onClick={() => {
-                  setShowConfirmModal({
-                    msg: "You are trying to delete the user. This action is irreversible. Please confirm.",
-                    itemID: "",
-                  });
-                }}
-                disabled={loadingDel}
-              >
-                {loadingDel ? (
-                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                ) : (
-                  "Delete User"
-                )}
-              </Button>
-            </div>
-          </div>
+
+            {/* Actions bar on Mobile */}
+            {showDetails && (
+              <div className="mt-3 w-100">
+                <div>
+                  <p>
+                    <small className="text-uppercase">
+                      <strong>Email:</strong> {user.email}
+                    </small>
+                    <br />
+                    <small className="text-uppercase">
+                      <strong>Provider:</strong> {user.signProvider}
+                    </small>
+                  </p>
+                </div>
+                <div className="w-100 text-end">
+                  <Button
+                    variant="primary"
+                    className="text-light"
+                    size="sm"
+                    onClick={() => {
+                      setShowConfirmModal({
+                        msg: "You are trying to delete the user. This action is irreversible. Please confirm.",
+                        itemID: "",
+                      });
+                    }}
+                    disabled={loadingDel}
+                  >
+                    {loadingDel ? (
+                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                    ) : (
+                      "Delete User"
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
       <hr />
