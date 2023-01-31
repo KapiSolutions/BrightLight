@@ -120,7 +120,8 @@ function User(props) {
                       itemID: "",
                     });
                   }}
-                  disabled={loadingDel}
+                  disabled
+                  // disabled={loadingDel}
                 >
                   {loadingDel ? (
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -220,7 +221,8 @@ function User(props) {
                         itemID: "",
                       });
                     }}
-                    disabled={loadingDel}
+                    disabled
+                    // disabled={loadingDel}
                   >
                     {loadingDel ? (
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
