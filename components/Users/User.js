@@ -93,7 +93,7 @@ function User(props) {
             ) : (
               <>
                 <p className="mb-0">{user.name}</p>
-                <small className="text-muted">Role: {user.role == "user" ? "User" : "Admin"}</small>
+                {/* <small className="text-muted">Role: {user.role == "user" ? "User" : "Admin"}</small> */}
               </>
             )}
           </div>
@@ -130,6 +130,42 @@ function User(props) {
                 </Button>
               </div>
             </div>
+
+            {/* Actions bar on Desktops */}
+            {showDetails && (
+              <div className="mt-3 w-100">
+                <div>
+                  <p>
+                    <small className="text-uppercase">
+                      <strong>Role:</strong> {user.role == "user" ? "User" : "Admin"}
+                    </small>
+                    <br />
+
+                    <small className="text-uppercase">
+                      <strong>ID:</strong> {user.id}
+                    </small>
+                  </p>
+                </div>
+                <div className="w-100 opacity-50">
+                  <hr />
+                </div>
+                <div>
+                  <p className="text-uppercase">
+                    <small>
+                      <strong>User orders:</strong>
+                    </small>
+                  </p>
+                  <div className="d-flex flex-row flex-wrap">
+                    {userOrders.map((order, idx) => (
+                      <div key={idx} className="d-block col-4 p-1">
+                        <OrderItem order={order} />
+                      </div>
+                    ))}
+                  </div>
+                  {userOrders.length == 0 && <p>No orders yet.</p>}
+                </div>
+              </div>
+            )}
           </>
         )}
         {isMobile && (
@@ -170,9 +206,8 @@ function User(props) {
                   {userOrders.map((order, idx) => (
                     <OrderItem key={idx} order={order} />
                   ))}
-                  {userOrders.length == 0 && (
-                    <p>No orders yet.</p>
-                  )}
+
+                  {userOrders.length == 0 && <p>No orders yet.</p>}
                 </div>
                 <div className="w-100 text-end">
                   <Button

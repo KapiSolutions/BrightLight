@@ -48,12 +48,12 @@ function UserProfilePage() {
         <title>BrightLight | Admin - Users</title>
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="au-ctx">
-        <h1>Users</h1>
+        <h1>Menage Users</h1>
 
         {users.map((user, idx) => (
           <User key={idx} idx={idx} user={user} />
         ))}
-        
+
       </Container>
     </>
   );

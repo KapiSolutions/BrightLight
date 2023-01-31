@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from "next/router";
-import { Badge, Button } from "react-bootstrap";
+import { Badge, Button, Spinner } from "react-bootstrap";
 import { IoIosArrowForward } from "react-icons/io";
 import styles from "../../styles/components/Users/OrderItem.module.scss";
 import icon from "../../public/img/cards-light.png";
@@ -12,6 +12,7 @@ function OrderItem(props) {
   const router = useRouter();
   const theme = useDeviceStore((state) => state.themeState);
   const [showDetails, setShowDetails] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
@@ -90,13 +91,25 @@ function OrderItem(props) {
 
             {/* Footer control buttons */}
             <div className="text-end mb-2">
-              <Button variant="primary" size="sm" onClick={() => {
-                router.push({
-                    pathname: '/admin/orders',
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  router.push({
+                    pathname: "/admin/orders",
+                    hash: "main",
                     query: { id: order.id },
-                })
-              }}>
-                Open in orders menager
+                  });
+                  setLoading(true);
+                }}
+              >
+                {loading ? (
+                  <span>
+                    Redirecting <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  </span>
+                ) : (
+                  <span>Open in orders menager</span>
+                )}
               </Button>
             </div>
           </div>
