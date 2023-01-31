@@ -1,20 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { FaRegUser, FaUserSecret } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
+import { useAuth } from "../../context/AuthProvider";
+import { queryByFirestore } from "../../firebase/Firestore";
 import { useDeviceStore } from "../../stores/deviceStore";
 import ConfirmActionModal from "../Modals/ConfirmActionModal";
+import OrderItem from "./OrderItem";
 
-function Item(props) {
+function User(props) {
+  const { setErrorMsg } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [loadingDel, setLoadingDel] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-
+  const [userOrders, setUserOrders] = useState([]);
   const user = props.user;
 
   const showDetailsFunc = () => {
     setShowDetails(!showDetails);
+  };
+
+  useEffect(() => {
+    getUserOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getUserOrders = async () => {
+    try {
+      const orders = await queryByFirestore("orders", "userID", "==", user.id);
+      setUserOrders(orders ? orders : []);
+    } catch (error) {
+      console.log(error);
+      setErrorMsg("Something went wrong, please try again later.");
+    }
   };
 
   async function deleteUser() {
@@ -55,7 +74,7 @@ function Item(props) {
       )}
 
       <div className="d-flex align-items-center text-start w-100 flex-wrap">
-        <div className="col-10 col-md-3 d-flex pointer">
+        <div className="col-10 col-md-3 d-flex">
           <div className="d-flex align-items-center me-2">
             {user.role == "user" ? (
               <FaRegUser style={{ width: "25px", height: "25px" }} />
@@ -68,7 +87,7 @@ function Item(props) {
               <>
                 <p className="mb-0">{user.name}</p>
                 <i>
-                  <small>Role: {user.role == "user" ? "User" : "Admin"}</small>
+                  <small>{user.email}</small>
                 </i>
               </>
             ) : (
@@ -127,13 +146,33 @@ function Item(props) {
                 <div>
                   <p>
                     <small className="text-uppercase">
-                      <strong>Email:</strong> {user.email}
+                      <strong>Role:</strong> {user.role == "user" ? "User" : "Admin"}
                     </small>
                     <br />
                     <small className="text-uppercase">
                       <strong>Provider:</strong> {user.signProvider}
                     </small>
+                    <br />
+                    <small className="text-uppercase">
+                      <strong>ID:</strong> {user.id}
+                    </small>
                   </p>
+                </div>
+                <div className="w-100 opacity-50">
+                  <hr />
+                </div>
+                <div>
+                  <p className="text-uppercase">
+                    <small>
+                      <strong>User orders:</strong>
+                    </small>
+                  </p>
+                  {userOrders.map((order, idx) => (
+                    <OrderItem key={idx} order={order} />
+                  ))}
+                  {userOrders.length == 0 && (
+                    <p>No orders yet.</p>
+                  )}
                 </div>
                 <div className="w-100 text-end">
                   <Button
@@ -172,4 +211,4 @@ function Item(props) {
   );
 }
 
-export default Item;
+export default User;

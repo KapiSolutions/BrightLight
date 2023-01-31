@@ -5,7 +5,7 @@ import { Container } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
-import Item from "../../../components/Users/Item";
+import User from "../../../components/Users/User";
 
 function UserProfilePage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -51,8 +51,9 @@ function UserProfilePage() {
         <h1>Users</h1>
 
         {users.map((user, idx) => (
-          <Item key={idx} idx={idx} user={user} />
+          <User key={idx} idx={idx} user={user} />
         ))}
+        
       </Container>
     </>
   );
