@@ -34,6 +34,7 @@ function FilterAndSortBar(props) {
   useEffect(() => {
     //sort array on initialization
     props.outputArray(props.refArray.sort((a, b) => timeStampToDate(b.timeCreate) - timeStampToDate(a.timeCreate)));
+    findBy(null, props.autoFind);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -62,11 +63,15 @@ function FilterAndSortBar(props) {
   }, [showOptions]);
 
   //Find blog by tags or words in titles
-  const findBy = async (e) => {
-    e.preventDefault();
+  // (inputID: from the router query, only used on init when admin redirects from the user management page)
+  const findBy = async (e, inputID) => {
+    e?.preventDefault();
     props.msg("");
     let itemFounded = false;
-    const input = document.getElementById(`find${props.id}${isMobile ? "Mobile" : ""}`).value;
+    const input = inputID ? inputID : document.getElementById(`find${props.id}${isMobile ? "Mobile" : ""}`).value;
+    if (inputID) {
+      document.getElementById(`find${props.id}${isMobile ? "Mobile" : ""}`).value = inputID;
+    }
     if (input !== "") {
       props.refArray.map((item) => {
         if (item.id == input) {

@@ -10,6 +10,7 @@ import { getDocsFromCollection } from "../../../firebase/Firestore";
 import { FiRefreshCcw } from "react-icons/fi";
 
 function UserProfilePage() {
+  const router = useRouter();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
@@ -19,7 +20,7 @@ function UserProfilePage() {
   const [message, setMessage] = useState("");
   const idForSortingBar = "AdminOrders";
 
-  const router = useRouter();
+  
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   };
@@ -55,6 +56,7 @@ function UserProfilePage() {
       setLoadingRfs(false);
     }
   };
+
   return (
     <>
       <Head>
@@ -94,6 +96,7 @@ function UserProfilePage() {
                 outputArray={setOrders}
                 msg={setMessage}
                 resetSettings={loadingRfs}
+                autoFind={router.query.id}//find order by id on init when redirect eg from user management page
               />
 
               {message && <p className="color-primary mt-5">{message}</p>}
