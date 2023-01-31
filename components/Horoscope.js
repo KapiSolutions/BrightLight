@@ -12,9 +12,16 @@ function Horoscope() {
   const [zodiac, setZodiac] = useState(null);
   const [when, setWhen] = useState("today");
   const baseURL = "https://aztro.sameerkumar.website";
-  const month = authUserFirestore.age.slice(5, 7);
-  const day = authUserFirestore.age.slice(8, 10);
+  const month = authUserFirestore?.age.slice(5, 7);
+  const day = authUserFirestore?.age.slice(8, 10);
   const zodiacPath = "/img/zodiac/";
+
+  useEffect(() => {
+  if(!authUserFirestore){
+    return;
+  }
+  }, [authUserFirestore])
+  
 
   function getZodiac(month, day) {
     var datecode = month * 1 + day; //this will give us a number represent month and day
