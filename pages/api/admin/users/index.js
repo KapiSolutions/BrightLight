@@ -2,7 +2,7 @@ import admin from "firebase-admin";
 
 export default async function orderFinishEmail(req, res) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_KEY);
-  if (req.method === "POST") {
+  // if (req.method === "POST") {
     // const { secret, data, type } = req.body;
 
     // Check the secret key first
@@ -33,10 +33,10 @@ export default async function orderFinishEmail(req, res) {
       console.log(error);
       return res.status(500).end("Error");
     }
-  } else {
-    res.setHeader("Allow", "POST");
-    res.status(405).end("Method Not Allowed");
-  }
+  // } else {
+  //   res.setHeader("Allow", "POST");
+  //   res.status(405).end("Method Not Allowed");
+  // }
 }
 
 // https://dev.to/vvo/how-to-add-firebase-service-account-json-files-to-vercel-ph5
