@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Button, Spinner } from "react-bootstrap";
 import { FaRegUser, FaUserSecret } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
 import { useAuth } from "../../context/AuthProvider";
-import { queryByFirestore } from "../../firebase/Firestore";
+import { deleteDocInCollection, queryByFirestore } from "../../firebase/Firestore";
 import { useDeviceStore } from "../../stores/deviceStore";
 import ConfirmActionModal from "../Modals/ConfirmActionModal";
 import OrderItem from "./OrderItem";
@@ -37,15 +38,27 @@ function User(props) {
   };
 
   async function deleteUser() {
-    // try {
-    //   await deleteDocInCollection("users", user.id);
-    //   setShowConfirmModal({ msg: "", itemID: "" });
-    //   //   props.refresh(); //refresh the order list
-    // } catch (error) {
-    //   console.log(error);
-    //   setShowConfirmModal({ msg: "", itemID: "" });
-    //   setErrorMsg("Something went wrong, please try again later.");
-    // }
+    const payload = {
+      secret: process.env.NEXT_PUBLIC_API_KEY,
+      data: { uid: user.id },
+      type: "delete",
+    };
+    try {
+      const res = await axios.post("/api/admin/users/", payload);
+      if (res.status === 200) {
+        await deleteDocInCollection("users", user.id);
+        setShowConfirmModal({ msg: "", itemID: "" });
+      } else {
+        setShowConfirmModal({ msg: "", itemID: "" });
+        setErrorMsg("Something went wrong, please try again later.");
+      }
+
+      props.refresh(); //refresh the user list
+    } catch (error) {
+      console.log(error);
+      setShowConfirmModal({ msg: "", itemID: "" });
+      setErrorMsg("Something went wrong, please try again later.");
+    }
   }
   return (
     <div className="color-primary">
@@ -120,8 +133,7 @@ function User(props) {
                       itemID: "",
                     });
                   }}
-                  disabled
-                  // disabled={loadingDel}
+                  disabled={loadingDel}
                 >
                   {loadingDel ? (
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -221,8 +233,7 @@ function User(props) {
                         itemID: "",
                       });
                     }}
-                    disabled
-                    // disabled={loadingDel}
+                    disabled={loadingDel}
                   >
                     {loadingDel ? (
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />

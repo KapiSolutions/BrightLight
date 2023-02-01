@@ -51,7 +51,7 @@ function UserProfilePage() {
         <h1>Menage Users</h1>
 
         {users.map((user, idx) => (
-          <User key={idx} idx={idx} user={user} />
+          <User key={idx} idx={idx} user={user} refresh={getUserList}/>
         ))}
 
       </Container>
