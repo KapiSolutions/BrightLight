@@ -158,7 +158,7 @@ function User(props) {
                   </p>
                   <div className="d-flex flex-row flex-wrap">
                     {userOrders.map((order, idx) => (
-                      <div key={idx} className="d-block col-4 p-1">
+                      <div key={idx} className="d-block col-lg-4 col-md-6 p-1">
                         <OrderItem order={order} />
                       </div>
                     ))}
