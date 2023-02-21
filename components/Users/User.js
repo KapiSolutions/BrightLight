@@ -25,7 +25,7 @@ function User(props) {
   useEffect(() => {
     getUserOrders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   const getUserOrders = async () => {
     try {
@@ -52,7 +52,6 @@ function User(props) {
         setShowConfirmModal({ msg: "", itemID: "" });
         setErrorMsg("Something went wrong, please try again later.");
       }
-
       props.refresh(); //refresh the user list
     } catch (error) {
       console.log(error);

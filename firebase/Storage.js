@@ -11,6 +11,16 @@ const getFileUrlStorage = async (path, fileName) => {
   }
 };
 
+const deleteFileInStorage = async (path, fileName) => {
+    const fileRef = ref(storage, `${path}/${fileName}`);
+  try {
+    const res = await deleteObject(fileRef);
+    return res;
+  } catch (error) {
+    throw error;
+  }
+}
+
 const deleteFilesInDirStorage = async (dir) => {
   const listRef = ref(storage, dir);
   listAll(listRef)
@@ -30,14 +40,6 @@ const deleteFilesInDirStorage = async (dir) => {
       console.log(error);
       throw error;
     });
-
-  // const fileRef = ref(storage, `${path}/${fileName}`);
-  // try {
-  //   const res = await deleteObject(imageRef);
-  //   return res;
-  // } catch (error) {
-  //   throw error;
-  // }
 };
 
 const uploadFileToStorage = async (file, path) => {
@@ -64,4 +66,4 @@ const uploadFileToStorage = async (file, path) => {
   });
 };
 
-export { getFileUrlStorage, deleteFilesInDirStorage, uploadFileToStorage };
+export { getFileUrlStorage, deleteFileInStorage, deleteFilesInDirStorage, uploadFileToStorage };

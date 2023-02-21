@@ -34,8 +34,8 @@ export async function getStaticProps() {
 
   return {
     props: {
-      tarot: docs,
+      tarot: JSON.parse(JSON.stringify(docs)),
     },
-    revalidate: 60, //1minute
+    revalidate: 30,
   };
 }
