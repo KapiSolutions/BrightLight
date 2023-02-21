@@ -1,28 +1,36 @@
 import React from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Container, Alert } from "react-bootstrap";
-import { RiAlertFill } from "react-icons/ri";
-import { db } from "../../config/firebase";
-import { doc, getDoc, getDocs, collection } from "firebase/firestore";
+import { Container, Button } from "react-bootstrap";
 import TarotLottery from "../../components/TarotLottery";
+import { getDocById, getDocsFromCollection } from "../../firebase/Firestore";
+import { VscBracketError } from "react-icons/vsc";
 
 function CardPage(props) {
   const router = useRouter();
   return (
     <>
       <Head>
-        <title>BrightLight | {!!props.error ? "Error" : props.tarot.title}</title>
+        <title>BrightLight | {props.tarot ? props.tarot.title : "404 Error"}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5">
-        {!!props.error ? (
-          <Alert variant="danger" className="m-5">
-            <RiAlertFill className="me-2 mb-1 iconSizeAlert" data-size="2" />
-            <strong>Ups! </strong>
-            {props.error}
-          </Alert>
+        {props.tarot ? (
+          <TarotLottery
+            id={router.query.pid}
+            title={props.tarot.title}
+            price={props.tarot.price}
+            cardSet={props.tarot.cardSet}
+            s_id={props.tarot.s_id}
+            image={props.tarot.image}
+          />
         ) : (
-          <TarotLottery id={router.query.pid} title={props.tarot.title} price={props.tarot.price} cardSet={props.tarot.cardSet} s_id={props.tarot.s_id} image={props.tarot.image} />
+          <div className="text-center">
+            <VscBracketError style={{ width: "40px", height: "40px" }} className="mb-3" />
+            <h4 className="mt-0 mb-4">Tarot does not exist.</h4>
+            <Button variant="outline-primary" onClick={() => router.replace("/#main")}>
+              Go Back
+            </Button>
+          </div>
         )}
       </Container>
     </>
@@ -32,45 +40,27 @@ function CardPage(props) {
 export default CardPage;
 
 export async function getStaticProps(context) {
-  const pid = context.params.pid;
-  let tarotCards = null;
-  let error = "";
-
-  const ref = doc(db, "tarot", pid);
-  const docSnap = await getDoc(ref);
-  if (docSnap.exists()) {
-    tarotCards = docSnap.data();
-  } else {
-    error = "Error: card doesnt exist";
-  }
+  const id = context.params.pid;
+  const doc = await getDocById("tarot", id);
 
   return {
     props: {
-      tarot: tarotCards,
-      error: error,
+      tarot: doc ? JSON.parse(JSON.stringify(doc)) : null,
     },
-    revalidate: 60,
+    revalidate: 30,
   };
 }
 
 export async function getStaticPaths() {
-  const cardIds = [];
-  const querySnapshot = await getDocs(collection(db, "tarot"));
-  querySnapshot.forEach((doc) => {
-    const cardId = {
-      pid: doc.data().id,
-    };
-    cardIds.push(cardId);
-  });
-
+  const docs = await getDocsFromCollection("tarot", true); //true - get only Id's
   return {
-    paths: cardIds.map((cardId) => {
+    paths: docs.map((doc) => {
       return {
         params: {
-          pid: cardId.pid,
+          pid: doc,
         },
       };
     }),
-    fallback: false,
+    fallback: "blocking",
   };
 }
