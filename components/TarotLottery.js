@@ -14,6 +14,7 @@ import placeholder from "../utils/placeholder";
 
 function TarotLotteryDesktop(props) {
   const router = useRouter();
+  const tarot = props.tarot;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { authUserFirestore, setTempCart, updateProfile, setErrorMsg } = useAuth();
   const [flipCards, setFlipCards] = useState([]);
@@ -108,7 +109,7 @@ function TarotLotteryDesktop(props) {
   let cardStyleBack = {};
   let cardStyleFront = {};
 
-  if (props.cardSet < 10) {
+  if (tarot.cardSet < 10) {
     cardStyleBack = {
       opacity: 0.5,
       width: `${isMobile ? "93px" : "118px"}`,
@@ -144,9 +145,9 @@ function TarotLotteryDesktop(props) {
         document.getElementById(cardNo).style.display = "none";
       }
     }
-    if (flipCards.length === props.cardSet && !isMobile) {
+    if (flipCards.length === tarot.cardSet && !isMobile) {
       document.getElementById("cardSetContainer").style.display = "none";
-    } else if (flipCards.length === props.cardSet && isMobile) {
+    } else if (flipCards.length === tarot.cardSet && isMobile) {
       document.getElementById("cardMobile").style.display = "none";
     }
 
@@ -174,12 +175,12 @@ function TarotLotteryDesktop(props) {
     const question = document.getElementById("questionField").value;
     if (question) {
       const cartItem = {
-        name: props.title,
+        name: tarot.title,
         cards: userCards,
         question: question,
-        price: props.price,
-        s_id: props.s_id,
-        image: props.image,
+        price: tarot.price,
+        s_id: tarot.s_id,
+        image: tarot.image,
       };
       setTempCart(cartItem);
       router.push("/sign-in");
@@ -191,12 +192,12 @@ function TarotLotteryDesktop(props) {
       setErrorMsg("");
       setLoadingBuy(true);
       const cartItem = {
-        name: props.title,
+        name: tarot.title,
         cards: userCards,
         question: question,
-        price: props.price,
-        s_id: props.s_id,
-        image: props.image,
+        price: tarot.price,
+        s_id: tarot.s_id,
+        image: tarot.image,
       };
       let cart = [...authUserFirestore.cart];
       cart.push(cartItem);
@@ -215,18 +216,18 @@ function TarotLotteryDesktop(props) {
     const question = document.getElementById("questionField").value;
     if (question) {
       const cartItem = {
-        name: props.title,
+        name: tarot.title,
         cards: userCards,
         question: question,
-        price: props.price,
-        s_id: props.s_id,
-        image: props.image,
+        price: tarot.price,
+        s_id: tarot.s_id,
+        image: tarot.image,
       };
       let cart = [...authUserFirestore.cart];
       cart.push(cartItem);
       try {
         await updateProfile({ cart: cart });
-        setMessage(`The ${props.title} tarot successfully added to the cart!`);
+        setMessage(`The ${tarot.title} tarot successfully added to the cart!`);
       } catch (error) {
         setErrorMsg(error);
       }
@@ -239,16 +240,16 @@ function TarotLotteryDesktop(props) {
   return (
     <>
       <Row className="d-flex mb-3 text-center">
-        <h1 className="color-primary mb-3"> {props.title} </h1>
+        <h1 className="color-primary mb-3"> {tarot.title} </h1>
       </Row>
       <Row className="d-flex mb-4 justify-content-center gap-2">
-        {Array.from({ length: props.cardSet }).map((_, idx) => (
+        {Array.from({ length: tarot.cardSet }).map((_, idx) => (
           <Col
             key={idx}
             className={`d-flex ms-1 me-1 mb-2 justify-content-center ${
-              props.cardSet > 10 ? "col-2 col-sm-1 col-md-2 col-lg-1" : "col-3 col-sm-2 col-md-2 col-lg-2"
+              tarot.cardSet > 10 ? "col-2 col-sm-1 col-md-2 col-lg-1" : "col-3 col-sm-2 col-md-2 col-lg-2"
             }   
-          ${isMobile ? "" : props.cardSet < 10 && idx > 0 && idx < props.cardSet - 1 && "pt-3"} 
+          ${isMobile ? "" : tarot.cardSet < 10 && idx > 0 && idx < tarot.cardSet - 1 && "pt-3"} 
           `}
           >
             <ReactCardFlip
@@ -276,15 +277,15 @@ function TarotLotteryDesktop(props) {
         {flipCards.length === 0 && (
           <p className="color-primary">
             Focus deeply on your question and {window.innerWidth < 768 && "TAP below to"}{" "}
-            <strong>choose {props.cardSet} cards</strong>
+            <strong>choose {tarot.cardSet} cards</strong>
           </p>
         )}
-        {flipCards.length > 0 && flipCards.length < props.cardSet - 1 && (
+        {flipCards.length > 0 && flipCards.length < tarot.cardSet - 1 && (
           <p className="color-primary">
-            <strong>Okay, {props.cardSet - flipCards.length} more left..</strong>
+            <strong>Okay, {tarot.cardSet - flipCards.length} more left..</strong>
           </p>
         )}
-        {flipCards.length == props.cardSet - 1 && (
+        {flipCards.length == tarot.cardSet - 1 && (
           <p className="color-primary">
             <strong>And the last one.</strong>
           </p>
@@ -320,7 +321,7 @@ function TarotLotteryDesktop(props) {
           </div>
         )}
 
-        {flipCards.length == props.cardSet && !message && (
+        {flipCards.length == tarot.cardSet && !message && (
           <div>
             <h4 className="mt-0 color-primary">Okay!</h4>
             <p className="color-primary">
@@ -356,7 +357,7 @@ function TarotLotteryDesktop(props) {
                       style={{ pointerEvents: "none" }}
                     >
                       <p className="mb-1">
-                        <small>{props.price} PLN</small>
+                        <small>{tarot.price} PLN</small>
                       </p>
                     </Button>
                   </ButtonGroup>
@@ -390,7 +391,7 @@ function TarotLotteryDesktop(props) {
             </Form>
           </div>
         )}
-        {flipCards.length == props.cardSet && message && (
+        {flipCards.length == tarot.cardSet && message && (
           <section className="color-primary mt-1">
             <p>{message}</p>
             <GiGlassHeart style={{ width: "30px", height: "30px" }} />

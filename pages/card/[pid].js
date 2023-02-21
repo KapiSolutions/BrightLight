@@ -15,14 +15,7 @@ function CardPage(props) {
       </Head>
       <Container className="justify-content-center text-center mt-5">
         {props.tarot ? (
-          <TarotLottery
-            id={router.query.pid}
-            title={props.tarot.title}
-            price={props.tarot.price}
-            cardSet={props.tarot.cardSet}
-            s_id={props.tarot.s_id}
-            image={props.tarot.image}
-          />
+          <TarotLottery tarot={props.tarot} />
         ) : (
           <div className="text-center">
             <VscBracketError style={{ width: "40px", height: "40px" }} className="mb-3" />
