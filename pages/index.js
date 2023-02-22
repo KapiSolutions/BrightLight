@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import { Container, Row, Col } from "react-bootstrap";
-import CardTarot from "../components/CardTarot";
+import ProductCard from "../components/Products/ProductCard";
 import { getDocsFromCollection } from "../firebase/Firestore";
 
 export default function Home(props) {
@@ -18,9 +18,9 @@ export default function Home(props) {
         </Row>
 
         <Row sm={2} md={2} lg={3} className="g-4 justify-content-center">
-          {props.tarot.map((tarot) => (
-            <Col key={tarot.id} className="d-flex justify-content-center">
-              <CardTarot id={tarot.id} title={tarot.title} desc={tarot.description} img={tarot.image} />
+          {props.products.map((product) => (
+            <Col key={product.id} className="d-flex justify-content-center">
+              <ProductCard product={product} />
             </Col>
           ))}
         </Row>
@@ -34,7 +34,7 @@ export async function getStaticProps() {
 
   return {
     props: {
-      tarot: JSON.parse(JSON.stringify(docs)),
+      products: JSON.parse(JSON.stringify(docs)),
     },
     revalidate: 30,
   };

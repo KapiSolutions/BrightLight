@@ -9,48 +9,58 @@ import { uploadFileToStorage } from "../../../firebase/Storage";
 import placeholder from "../../../utils/placeholder";
 import Dropzone from "react-dropzone";
 import styles from "../../../styles/components/Blog/BlogTemplate.module.scss";
-import { BsCloudUpload } from "react-icons/bs";
+import { BsCloudUpload, BsCurrencyExchange } from "react-icons/bs";
+import { SiGoogletranslate } from "react-icons/si";
 import { v4 as uuidv4 } from "uuid";
-import { createDocFirestore, getDocById, updateDocFields } from "../../../firebase/Firestore";
+import { createDocFirestore, updateDocFields } from "../../../firebase/Firestore";
 import SuccessModal from "../../Modals/SuccessModal";
+import ProductCardTmp from "../ProductCardTmp";
 
 function ProductTemplate(props) {
   const prodEdit = props.product;
-  const titleRef = useRef();
-  const descRef = useRef();
-  const priceRef = useRef();
+  const titleRef_en = useRef();
+  const descRef_en = useRef();
+  const priceRef_en = useRef();
+
+  const titleRef_pl = useRef();
+  const descRef_pl = useRef();
+  const priceRef_pl = useRef();
+
   const cardsRef = useRef();
   const router = useRouter();
 
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const themeState = useDeviceStore((state) => state.themeState);
+  const theme = useDeviceStore((state) => state.themeState);
   const [showSuccess, setShowSuccess] = useState("");
-  const [description, setDescription] = useState("");
   const [imgBase64, setImgBase64] = useState({ loaded: false, path: placeholder("pinkPX") }); //used only for preview
   const [imgFile, setImgFile] = useState(null); //image wich will be uploaded to storage
   const [editNewImage, setEditNewImage] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(false);
-  const invalidInit = { title: false, image: false, description: false, price: false, cardSet: false };
-  const [invalid, updateInvalid] = useReducer((state, updates) => ({ ...state, ...updates }), invalidInit);
-  const initPost = {
-    id: "",
-    title: "",
-    description: "",
-    price: 0,
-    cardSet: 0,
-    image: ""
+  const [loadingExc, setLoadingExc] = useState(false);
+  const invalidInit = {
+    title: false,
+    image: false,
+    desc: false,
+    price: false,
+    cardSet: false,
   };
-  const [product, updatePost] = useReducer((state, updates) => ({ ...state, ...updates }), initPost);
-  const mainPicHeight = "200px";
-  const themeDarkInput = themeState == "dark" ? "bg-accent6 text-light" : "";
+  const [invalid, updateInvalid] = useReducer((state, updates) => ({ ...state, ...updates }), invalidInit);
+  const initProduct = {
+    id: "",
+    title: { en: "", pl: "" },
+    desc: { en: "", pl: "" },
+    price: { en: { amount: 0, currency: "usd", s_id: "" }, pl: { amount: 0, currency: "pln", s_id: "" } },
+    cardSet: 0,
+    image: "",
+  };
+  const [product, updateProduct] = useReducer((state, updates) => ({ ...state, ...updates }), initProduct);
+  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
 
-  //Create string form tags array when edit mode is enabled
   useEffect(() => {
     if (prodEdit) {
       setImgBase64({ loaded: true, path: prodEdit.image }); //set url instead of base64
       updateInvalid({ image: false }); //main img setted
-      setDescription(prodEdit.description);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -79,14 +89,14 @@ function ProductTemplate(props) {
     let dataOK = true;
     const uid = uuidv4().slice(0, 13);
 
-    // check title field
-    if (titleRef.current?.value != "") {
+    // check title/name field
+    if (titleRef_en.current?.value != "" && titleRef_pl.current?.value != "") {
       updateInvalid({ title: false }); //ok
     } else {
       dataOK = false;
       updateInvalid({ title: true }); //invalid
-      document.getElementsByName("ProdAdminTmpTitle")[0].focus();
-      document.getElementsByName("ProdAdminTmpTitle")[0].scrollIntoView({ block: "center", inline: "nearest" });
+      document.getElementsByName("ProdAdminTmpTitleEN")[0].focus();
+      document.getElementsByName("ProdAdminTmpTitleEN")[0].scrollIntoView({ block: "center", inline: "nearest" });
     }
     // check if main image was added
     if (imgBase64.loaded) {
@@ -98,38 +108,64 @@ function ProductTemplate(props) {
       document.getElementsByName("ProdAdminTmpImg")[0].scrollIntoView({ block: "center", inline: "nearest" });
     }
     // check if description is added
-    if (description == ""){
-      dataOK = false;
-      updateInvalid({ description: true }); //invalid
-      document.getElementsByName("ProdAdminTmpDesc")[0].focus();
-      document.getElementsByName("ProdAdminTmpDesc")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    if (descRef_en.current?.value != "" && descRef_pl.current?.value != "") {
+      updateInvalid({ desc: false }); //ok
     } else {
-      updateInvalid({ description: false }); //ok
+      dataOK = false;
+      updateInvalid({ desc: true }); //invalid
+      document.getElementsByName("ProdAdminTmpDescEN")[0].focus();
+      document.getElementsByName("ProdAdminTmpDescEN")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    }
+
+    // check if cards quantity is added
+    if (cardsRef.current?.value > 0) {
+      updateInvalid({ cardSet: false }); //ok
+    } else {
+      dataOK = false;
+      updateInvalid({ cardSet: true }); //invalid
+      document.getElementsByName("ProdAdminTmpCards")[0].focus();
+      document.getElementsByName("ProdAdminTmpCards")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    }
+
+    // check if prices are added
+    if (priceRef_en.current?.value > 0 && priceRef_pl.current?.value > 0) {
+      updateInvalid({ price: false }); //ok
+    } else {
+      dataOK = false;
+      updateInvalid({ price: true }); //invalid
+      document.getElementsByName("ProdAdminTmpPrice")[0].focus();
+      document.getElementsByName("ProdAdminTmpPrice")[0].scrollIntoView({ block: "center", inline: "nearest" });
     }
 
     if (dataOK) {
-      updatePost({
+      updateProduct({
         id: `${prodEdit ? prodEdit.id : uid}`,
-        description: description,
         image: imgBase64.path,
-        title: titleRef.current?.value,
+        title: { en: titleRef_en.current?.value, pl: titleRef_pl.current?.value },
+        desc: { en: descRef_en.current?.value, pl: descRef_pl.current?.value },
+        price: {
+          en: { amount: priceRef_en.current?.value, currency: "usd", s_id: "" },
+          pl: { amount: priceRef_pl.current?.value, currency: "pln", s_id: "" },
+        },
+        cardSet: cardsRef.current?.value,
       });
+
       setShowPreview(!showPreview);
     }
   };
 
-  // upload main pic and update blog data on Create Blog request
+  // upload main pic
   const uploadImg = async () => {
     try {
       let readyProduct = { ...product };
       let imgUrl = "";
-      //upload main image when admin is creating new blog or in editing mode user added new image
+      //upload main image when admin is creating new product or in editing mode user added new image
       if (editNewImage) {
-        imgUrl = await uploadFileToStorage(imgFile, `images/blog/${product.id}`);
+        imgUrl = await uploadFileToStorage(imgFile, `images/products/${product.id}`);
       } else {
         imgUrl = prodEdit.image;
       }
-      //update blog data
+      //update product data
       readyProduct.image = imgUrl;
       return readyProduct;
     } catch (error) {
@@ -143,17 +179,17 @@ function ProductTemplate(props) {
       const readyProduct = await uploadImg();
       if (prodEdit) {
         //edit existing blog
-        await updateDocFields("tarot", readyProduct.id, readyProduct);
+        await updateDocFields("products", readyProduct.id, readyProduct);
       } else {
         //create new blog
-        await createDocFirestore("tarot", readyProduct.id, readyProduct);
+        await createDocFirestore("products", readyProduct.id, readyProduct);
       }
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         paths: ["/admin/products", "/"],
       };
       if (prodEdit) {
-        revalidateData.paths.push(`/blog/${readyProduct.id}`);
+        revalidateData.paths.push(`/${readyProduct.id}`);
       }
 
       await axios.post("/api/revalidate", revalidateData);
@@ -165,9 +201,63 @@ function ProductTemplate(props) {
     }
   };
 
+  const exchangeAmount = async () => {
+    setLoadingExc(true);
+    const pln = priceRef_pl.current.value;
+    const usd = priceRef_en.current.value;
+    const have = usd > 0 ? "USD" : pln > 0 ? "PLN" : "USD";
+    const want = have === "USD" ? "PLN" : "USD";
+    const amount = have === "USD" ? usd : pln;
+
+    const options = {
+      method: "GET",
+      url: "https://api.api-ninjas.com/v1/convertcurrency",
+      params: { have: have, want: want, amount: amount },
+      headers: {
+        "X-Api-Key": process.env.NEXT_PUBLIC_NINJAS_KEY,
+      },
+    };
+
+    try {
+      const res = await axios.request(options);
+      if (want === "USD") {
+        priceRef_en.current.value = res.data.new_amount;
+      } else {
+        priceRef_pl.current.value = res.data.new_amount;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setLoadingExc(false);
+  };
+
+  const translateText = async (inputText, outputText) => {
+    const from = "en";
+    const to = "pl";
+    let translatedTxt = "";
+    if (inputText != "") {
+      try {
+        const res = await axios.get(
+          `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURI(
+            inputText
+          )}`
+        );
+        res.data[0].map((text) => {
+          translatedTxt += text[0];
+        });
+        outputText.current.value = translatedTxt;
+        // console.log(translatedTxt);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      outputText.current.value = "";
+    }
+  };
+
   return (
     <>
-      <section className="d-flex gap-1">
+      <section className="d-flex gap-1 mb-2">
         <small>
           <Link href="/admin/products#main">Products Menagment</Link>
         </small>
@@ -175,120 +265,280 @@ function ProductTemplate(props) {
         <small>{prodEdit ? prodEdit.title : "New Product"}</small>
       </section>
 
-      <section className="mt-2 mb-2">
-        <Form className="text-start">
-          <Form.Label style={{ position: "relative", top: "8px" }}>TITLE:</Form.Label>
-          <Form.Control
-            type="text"
-            name="ProdAdminTmpTitle"
-            placeholder="Add title"
-            ref={titleRef}
-            onChange={() => setShowPreview(false)}
-            defaultValue={prodEdit ? prodEdit.title : ""}
-            className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
-          />
-          {invalid.title && <small className="text-danger">Please add title.</small>}
-        </Form>
-      </section>
-      {/* Main picture & DropZone */}
-      <div
-        name="ProdAdminTmpImg"
-        className={`w-100 border rounded ${invalid.image && "border-danger"}`}
-        style={{ minHeight: mainPicHeight, position: "relative" }}
-      >
-        <Dropzone onDrop={(acceptedFiles) => onDropFunc(acceptedFiles)}>
-          {({ getRootProps, getInputProps }) => (
-            <section style={{ position: "relative", zIndex: 100 }}>
-              <div
-                className={`${imgBase64.loaded ? styles.DropSectionLoaded : styles.DropSection} color-primary pointer`}
-                style={{ minHeight: mainPicHeight }}
-                {...getRootProps()}
-              >
-                <input {...getInputProps()} />
-                <div className="mt-1">
-                  {imgBase64.loaded ? (
-                    <>
-                      {isMobile ? (
-                        <p className="border rounded p-1 me-2 text-light">
-                          <small>Select another</small>
-                        </p>
+      <div className={`d-flex align-items-center ${isMobile && "flex-wrap"}`}>
+        {/* Main picture & DropZone */}
+        <div className={`col-12 col-md-3 ${!isMobile && "pe-3"}`}>
+          <p className="text-start mb-0">Main picture:</p>
+          <div
+            name="ProdAdminTmpImg"
+            className={`border  rounded ${invalid.image && "border-danger"}`}
+            style={{ minHeight: "170px", position: "relative" }}
+          >
+            <Dropzone onDrop={(acceptedFiles) => onDropFunc(acceptedFiles)}>
+              {({ getRootProps, getInputProps }) => (
+                <section style={{ position: "relative", zIndex: 100 }}>
+                  <div
+                    className={`${
+                      imgBase64.loaded ? styles.DropSectionLoaded : styles.DropSection
+                    } color-primary pointer`}
+                    style={{ minHeight: "170px" }}
+                    {...getRootProps()}
+                  >
+                    <input {...getInputProps()} />
+                    <div className="mt-1">
+                      {imgBase64.loaded ? (
+                        <>
+                          {isMobile ? (
+                            <p className="border rounded p-1 me-1 text-light">
+                              <small>Select another</small>
+                            </p>
+                          ) : (
+                            <p className={`${styles.pSelect} border rounded p-1 me-2 text-light`}>
+                              <small>Select or Drop another file</small>
+                            </p>
+                          )}
+                        </>
                       ) : (
-                        <p className={`${styles.pSelect} border rounded p-1 me-2 text-light`}>
-                          <small>Select or Drop another file</small>
-                        </p>
+                        <>
+                          <p className="text-muted text-uppercase">Main Picture</p>
+                          <p className="mb-2">
+                            Drag &#39;n&#39; drop some files here
+                            <br />
+                            or click to select files
+                          </p>
+                          <BsCloudUpload style={{ width: "25px", height: "25px" }} />
+                        </>
                       )}
-                    </>
-                  ) : (
-                    <>
-                      <p className="text-muted text-uppercase">Main Picture</p>
-                      <p className="mb-2">
-                        Drag &#39;n&#39; drop some files here
-                        <br />
-                        or click to select files
-                      </p>
-                      <BsCloudUpload style={{ width: "25px", height: "25px" }} />
-                    </>
-                  )}
-                </div>
-              </div>
-            </section>
+                    </div>
+                  </div>
+                </section>
+              )}
+            </Dropzone>
+            <Image
+              src={imgBase64.path}
+              fill
+              alt="uploaded file"
+              style={{ borderRadius: ".25rem", objectFit: "contain" }}
+            />
+          </div>
+          {invalid.image && (
+            <div className="text-start mt-0">
+              <small className="text-danger">Please upload main picture.</small>
+            </div>
           )}
-        </Dropzone>
-        <Image
-          src={imgBase64.path}
-          fill
-          alt="uploaded file"
-          style={{borderRadius: ".25rem" }}
-        />
-      </div>
-      {invalid.image && (
-        <div className="text-start mt-0">
-          <small className="text-danger">Please upload main picture.</small>
         </div>
-      )}
-      
-      {/* Description */}
+
+        <div className="col-12 col-md-9">
+          {/* Name of the product */}
+          <section className="mt-2 mb-3">
+            <Form className={`d-flex text-start align-items-end ${isMobile && "flex-wrap"}`}>
+              <div className={`w-100 ${!isMobile && "me-2"}`}>
+                <Form.Label style={{ position: "relative", top: "8px" }}>Name of the product:</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="ProdAdminTmpTitleEN"
+                  placeholder="Add name"
+                  ref={titleRef_en}
+                  onChange={() => setShowPreview(false)}
+                  defaultValue={prodEdit ? prodEdit.title : ""}
+                  className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
+                />
+              </div>
+
+              {!isMobile && (
+                <div>
+                  <Button
+                    variant={`outline-${theme == "dark" ? "light" : "accent1"}`}
+                    className="d-flex align-items-center"
+                    onClick={() => {
+                      translateText(titleRef_en.current.value, titleRef_pl);
+                    }}
+                  >
+                    <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+                  </Button>
+                </div>
+              )}
+
+              <div className={`w-100 ${!isMobile && "ms-2"}`}>
+                <Form.Label style={{ position: "relative", top: "8px" }}>Nazwa produktu:</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="ProdAdminTmpTitlePL"
+                  placeholder="Dodaj nazwę"
+                  ref={titleRef_pl}
+                  onChange={() => setShowPreview(false)}
+                  defaultValue={prodEdit ? prodEdit.title : ""}
+                  className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
+                />
+                {isMobile && (
+                  <div style={{ height: "0" }}>
+                    <Button
+                      variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+                      size="sm"
+                      className="d-flex align-items-center ms-auto me-0"
+                      style={{ position: "relative", top: "-35px", right: "3px" }}
+                      onClick={() => {
+                        translateText(titleRef_en.current.value, titleRef_pl);
+                      }}
+                    >
+                      <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </Form>
+            {invalid.title && <small className="text-danger">Please add title.</small>}
+            {isMobile && (
+              <div className="mt-3 pt-1">
+                <hr />
+              </div>
+            )}
+          </section>
+
+          {/* Description */}
+          <section className="mb-3">
+            <Form className={`d-flex text-start align-items-center ${isMobile && "flex-wrap"}`}>
+              <div className={`w-100 ${!isMobile && "me-2"}`}>
+                <Form.Label style={{ position: "relative", top: "8px" }}>Description:</Form.Label>
+                <Form.Control
+                  type="text"
+                  as="textarea"
+                  name="ProdAdminTmpDescEN"
+                  placeholder="Add some text..."
+                  ref={descRef_en}
+                  onChange={() => setShowPreview(false)}
+                  defaultValue={prodEdit ? prodEdit.desc.en : ""}
+                  className={`${invalid.desc && "border border-danger"} w-100 ${themeDarkInput}`}
+                />
+              </div>
+              <div className="mt-4">
+                {!isMobile && (
+                  <Button
+                    variant={`outline-${theme == "dark" ? "light" : "accent1"}`}
+                    className="d-flex align-items-center"
+                    onClick={() => {
+                      translateText(descRef_en.current.value, descRef_pl);
+                    }}
+                  >
+                    <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+                  </Button>
+                )}
+              </div>
+              <div className={`w-100 ${!isMobile && "ms-2"}`}>
+                <Form.Label style={{ position: "relative", top: "8px" }}>Opis:</Form.Label>
+                <Form.Control
+                  type="text"
+                  as="textarea"
+                  name="ProdAdminTmpDescPL"
+                  placeholder="Dodaj opis..."
+                  ref={descRef_pl}
+                  onChange={() => setShowPreview(false)}
+                  defaultValue={prodEdit ? prodEdit.desc.pl : ""}
+                  className={`${invalid.desc && "border border-danger"} w-100 ${themeDarkInput}`}
+                />
+                {isMobile && (
+                  <div style={{ height: "0" }}>
+                    <Button
+                      variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+                      size="sm"
+                      className="d-flex align-items-center ms-auto me-0"
+                      style={{ position: "relative", top: "-38px", right: "5px" }}
+                      onClick={() => {
+                        translateText(descRef_en.current.value, descRef_pl);
+                      }}
+                    >
+                      <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </Form>
+            {invalid.desc && <small className="text-danger">Please add the description.</small>}
+          </section>
+        </div>
+      </div>
+
+      {/* Cards */}
       <section className="mt-2 mb-2">
-        <Form className="text-start">
-          <Form.Label style={{ position: "relative", top: "8px" }}>Description:</Form.Label>
-          <Form.Control
-            type="text"
-            as="textarea"
-            name="ProdAdminTmpDesc"
-            placeholder="Add some text..."
-            ref={descRef}
-            onChange={() => setShowPreview(false)}
-            defaultValue={prodEdit ? prodEdit.description : ""}
-            className={`${invalid.description && "border border-danger"} w-100 ${themeDarkInput}`}
-          />
-          {invalid.description && <small className="text-danger">Please add descsription.</small>}
+        <Form className="text-start d-flex gap-md-2 flex-wrap align-items-top">
+          <div className="col-md-2 col-12">
+            <Form.Label style={{ position: "relative", top: "8px" }}>Cards quantity:</Form.Label>
+            <Form.Control
+              type="number"
+              name="ProdAdminTmpCards"
+              placeholder="Add some text..."
+              ref={cardsRef}
+              onChange={() => setShowPreview(false)}
+              defaultValue={prodEdit ? prodEdit.cardSet : 0}
+              className={`${invalid.cardSet && "border border-danger"} ${themeDarkInput}`}
+            />
+            {invalid.cardSet && <small className="text-danger">Add quantity of cards.</small>}
+          </div>
+          {/* Prices */}
+          <div className="col-md-4 col-12" name="ProdAdminTmpPrice">
+            <Form.Label style={{ position: "relative", top: "8px" }}>Price:</Form.Label>
+            <div className="d-flex gap-1">
+              <Form.Control
+                type="number"
+                min="0"
+                step="any"
+                ref={priceRef_en}
+                onChange={() => setShowPreview(false)}
+                defaultValue={prodEdit ? prodEdit.cardSet : 0}
+                className={`${invalid.cards && "border border-danger"} ${themeDarkInput}`}
+              />
+              <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
+                USD
+              </span>
+              <Form.Control
+                type="number"
+                min="0"
+                step="any"
+                ref={priceRef_pl}
+                onChange={() => setShowPreview(false)}
+                defaultValue={prodEdit ? prodEdit.cardSet : 0}
+                className={`${invalid.cards && "border border-danger"} ${themeDarkInput}`}
+              />
+              <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
+                PLN
+              </span>
+            </div>
+            {invalid.price && <small className="text-danger">Please add the price.</small>}
+          </div>
+          <div
+            className={`col-md-2 col-12 d-flex  
+            ${invalid.cardSet || invalid.price ? "align-items-center" : "align-items-end"}`}
+          >
+            <Button
+              className={`w-100 ${isMobile && "mt-3"}`}
+              variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+              onClick={exchangeAmount}
+              disabled={loadingExc}
+            >
+              {loadingExc ? (
+                <>
+                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  <span> Converting...</span>
+                </>
+              ) : (
+                <>
+                  USD <BsCurrencyExchange /> PLN
+                </>
+              )}
+            </Button>
+          </div>
         </Form>
       </section>
 
-      {/* Description */}
-      <section className="mt-2 mb-2">
-        <Form className="text-start">
-          <Form.Label style={{ position: "relative", top: "8px" }}>Cards quantity:</Form.Label>
-          <Form.Control
-            type="number"
-            name="ProdAdminTmpCards"
-            placeholder="Add some text..."
-            ref={cardsRef}
-            onChange={() => setShowPreview(false)}
-            defaultValue={prodEdit ? prodEdit.cardSet : 0}
-            className={`w-25 ${invalid.cards && "border border-danger"} ${themeDarkInput}`}
-          />
-          {invalid.description && <small className="text-danger">Please add number of cards.</small>}
-        </Form>
-      </section>
-
-      <div className="text-end">
+      <div className="text-end mt-4">
         <Button onClick={handlePreview}>{showPreview ? "Close Preview" : "Preview Product"}</Button>
       </div>
       {showPreview && (
         <div className="mt-4">
           <hr />
-          {/* <BlogPost product={product} preview={true} editMode={prodEdit ? true : false} /> */}
+          <div className="d-flex justify-content-center text-start">
+            <ProductCardTmp product={product} />
+          </div>
           <hr className="mt-5" />
           <div>
             <Button
@@ -303,7 +553,7 @@ function ProductTemplate(props) {
                   <span> Loading...</span>
                 </>
               ) : (
-                <span className="text-uppercase">{prodEdit ? "Save changes!" : "Create this Blog!"}</span>
+                <span className="text-uppercase">{prodEdit ? "Save changes!" : "Create this Product!"}</span>
               )}
             </Button>
           </div>
