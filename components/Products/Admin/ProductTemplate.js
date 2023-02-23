@@ -27,13 +27,15 @@ function ProductTemplate(props) {
   const priceRef_pl = useRef();
 
   const cardsRef = useRef();
+  const categoryRef = useRef();
   const router = useRouter();
 
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const [showSuccess, setShowSuccess] = useState("");
   const [imgBase64, setImgBase64] = useState({ loaded: false, path: placeholder("pinkPX") }); //used only for preview
-  const [imgFile, setImgFile] = useState(null); //image wich will be uploaded to storage
+  const [imgFile, setImgFile] = useState(null); //image wich will be uploaded to the storage
+  const [imgUrl, setImgUrl] = useState(""); //image path wich will be uploaded to the Stripe
   const [editNewImage, setEditNewImage] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -44,6 +46,7 @@ function ProductTemplate(props) {
     desc: false,
     price: false,
     cardSet: false,
+    category: false,
   };
   const [invalid, updateInvalid] = useReducer((state, updates) => ({ ...state, ...updates }), invalidInit);
   const initProduct = {
@@ -53,6 +56,8 @@ function ProductTemplate(props) {
     price: { en: { amount: 0, currency: "usd", s_id: "" }, pl: { amount: 0, currency: "pln", s_id: "" } },
     cardSet: 0,
     image: "",
+    category: "",
+    creationDate: null,
   };
   const [product, updateProduct] = useReducer((state, updates) => ({ ...state, ...updates }), initProduct);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
@@ -140,48 +145,93 @@ function ProductTemplate(props) {
     if (dataOK) {
       updateProduct({
         id: `${prodEdit ? prodEdit.id : uid}`,
-        image: imgBase64.path,
+        image: imgBase64.path, //used for preview image without uploading to the firestorage
         title: { en: titleRef_en.current?.value, pl: titleRef_pl.current?.value },
         desc: { en: descRef_en.current?.value, pl: descRef_pl.current?.value },
         price: {
-          en: { amount: priceRef_en.current?.value, currency: "usd", s_id: "" },
-          pl: { amount: priceRef_pl.current?.value, currency: "pln", s_id: "" },
+          en: { amount: parseFloat(priceRef_en.current?.value).toFixed(2), currency: "usd", s_id: "" },
+          pl: { amount: parseFloat(priceRef_pl.current?.value).toFixed(2), currency: "pln", s_id: "" },
         },
         cardSet: cardsRef.current?.value,
+        category: categoryRef.current?.value,
+        creationDate: new Date(),
       });
 
       setShowPreview(!showPreview);
     }
   };
 
-  // upload main pic
-  const uploadImg = async () => {
+  // Upload main picture and add Stripe products
+  const prepareData = async () => {
     try {
       let readyProduct = { ...product };
       let imgUrl = "";
       //upload main image when admin is creating new product or in editing mode user added new image
       if (editNewImage) {
         imgUrl = await uploadFileToStorage(imgFile, `images/products/${product.id}`);
+        setImgUrl(imgUrl); //used for Stripe
       } else {
         imgUrl = prodEdit.image;
       }
+
+      // Add/Update Stripe products
+      if (prodEdit) {
+        console.log("edit");
+      } else {
+        const res = await addStripeProduct("en");
+        if (res.status == 200) {
+          readyProduct.price.en.prod_id = res.data.id;
+          readyProduct.price.en.s_id = res.data.default_price;
+          const res_pl = await addStripeProduct("pl");
+          if (res_pl.status == 200) {
+            readyProduct.price.pl.prod_id = res_pl.data.id;
+            readyProduct.price.pl.s_id = res_pl.data.default_price;
+          }
+        }
+      }
+
       //update product data
-      readyProduct.image = imgUrl;
+      readyProduct.image = imgFile.name; //use file name instead of path for the firestore product data
       return readyProduct;
     } catch (error) {
       console.error(error);
+      throw error;
     }
   };
+
+  const addStripeProduct = async (lang) => {
+    // console.log(Math.trunc(priceRef_pl.current?.value * 1000));
+    const payload = {
+      secret: process.env.NEXT_PUBLIC_API_KEY,
+      mode: "create",
+      data: {
+        id: product.id,
+        name: lang === "en" ? product.title.en : product.title.pl,
+        desc: lang === "en" ? product.desc.en : product.desc.pl,
+        images: [imgUrl],
+        price: Math.trunc((lang === "en" ? product.price.en.amount : product.price.pl.amount) * 100),
+        currency: lang === "en" ? product.price.en.currency : product.price.pl.currency,
+      },
+    };
+    try {
+      return await axios.post("/api/stripe/products", payload);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
+  const updateStripeProduct = async (lang) => {};
 
   const createProduct = async () => {
     setLoading(true);
     try {
-      const readyProduct = await uploadImg();
+      const readyProduct = await prepareData();
       if (prodEdit) {
-        //edit existing blog
+        //edit existing product
         await updateDocFields("products", readyProduct.id, readyProduct);
       } else {
-        //create new blog
+        //create new product
         await createDocFirestore("products", readyProduct.id, readyProduct);
       }
       const revalidateData = {
@@ -458,13 +508,16 @@ function ProductTemplate(props) {
         </div>
       </div>
 
-      {/* Cards */}
+      {/* Attributes */}
       <section className="mt-2 mb-2">
-        <Form className="text-start d-flex gap-md-2 flex-wrap align-items-top">
-          <div className="col-md-2 col-12">
+        <Form className="text-start d-flex gap-md-2 flex-wrap align-items-top justify-content-center">
+          {/* Cards */}
+          <div className={`col-md-2 col-6 ${isMobile && "pe-2"}`}>
             <Form.Label style={{ position: "relative", top: "8px" }}>Cards quantity:</Form.Label>
             <Form.Control
               type="number"
+              min="0"
+              step="any"
               name="ProdAdminTmpCards"
               placeholder="Add some text..."
               ref={cardsRef}
@@ -472,6 +525,27 @@ function ProductTemplate(props) {
               defaultValue={prodEdit ? prodEdit.cardSet : 0}
               className={`${invalid.cardSet && "border border-danger"} ${themeDarkInput}`}
             />
+            {invalid.cardSet && <small className="text-danger">Add quantity of cards.</small>}
+          </div>
+          {/* Category */}
+          <div className="col-md-2 col-6">
+            <Form.Label style={{ position: "relative", top: "8px" }}>Category:</Form.Label>
+            <Form.Select
+              type="text"
+              name="ProdAdminTmpCategory"
+              placeholder="Add some text..."
+              ref={categoryRef}
+              onChange={() => setShowPreview(false)}
+              defaultValue={prodEdit ? prodEdit.cardSet : 0}
+              className={`${invalid.cardSet && "border border-danger"} ${themeDarkInput}`}
+            >
+              <option value="love">Love</option>
+              <option value="success">Success</option>
+              <option value="celtic-cross">Celtic cross</option>
+              <option value="spiritual">Spiritual</option>
+              <option value="career-path">Career path</option>
+              <option value="three-card">Three card</option>
+            </Form.Select>
             {invalid.cardSet && <small className="text-danger">Add quantity of cards.</small>}
           </div>
           {/* Prices */}
@@ -537,7 +611,7 @@ function ProductTemplate(props) {
         <div className="mt-4">
           <hr />
           <div className="d-flex justify-content-center text-start">
-            <ProductCardTmp product={product} />
+            <ProductCardTmp product={product} preview={true} />
           </div>
           <hr className="mt-5" />
           <div>
@@ -564,7 +638,7 @@ function ProductTemplate(props) {
           msg={showSuccess}
           btn={"Back"}
           closeFunc={() => {
-            router.push("/admin/blogs#main");
+            router.push("/admin/products#main");
             setShowSuccess("");
           }}
         />

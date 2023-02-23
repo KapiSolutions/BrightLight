@@ -4,7 +4,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const { secret, data, mode } = req.body;
+    const { secret, mode, data } = req.body;
     let product;
     let price;
 
@@ -18,13 +18,14 @@ export default async function handler(req, res) {
         case "create":
           product = await stripe.products.create({
             name: data.name,
-            description: data.description,
+            description: data.desc,
             images: data.images,
             default_price_data: {
-              unit_amount: data.priceAmount, //price in cents, eg. 2000 means 20$ or 20pln etc.
-              currency: data.priceCurrency,
+              unit_amount: data.price, //price in cents, eg. 2000 means 20$ or 20pln etc.
+              currency: data.currency,
             },
           });
+          res.status(200).json(product);
           break;
         case "update":
           product = await stripe.products.retrieve(data.id);
@@ -55,17 +56,16 @@ export default async function handler(req, res) {
               images: data.images ? data.images : product.images,
             });
           }
+          res.status(200).json(product);
           break;
         case "get":
           product = await stripe.products.retrieve(data.id);
+          res.status(200).json(product);
           break;
         default:
+          res.status(500).end("Case not supported");
           break;
       }
-
-      console.log(product);
-
-      res.status(200).end("Done");
     } catch (err) {
       console.log(err);
       res.status(err.statusCode || 500).json(err.message);

@@ -8,17 +8,23 @@ import placeholder from "../../utils/placeholder";
 function ProductCardTmp(props) {
   const router = useRouter();
   const product = props.product;
+  const preview = props.preview; //true when creating new product or updating existing
   const [fullDesc, setfullDesc] = useState(false);
   const [loading, setLoading] = useState(false);
   const truncLength = 60;
 
   useEffect(() => {
-    getFileUrlStorage("images/cards", product.image)
-      .then((url) => {
-        const img = document.getElementById(product.title);
-        img.setAttribute("src", url);
-      })
-      .catch((error) => console.log(error));
+    if (!preview) {
+      getFileUrlStorage("images/cards", product.image)
+        .then((url) => {
+          const img = document.getElementById(product.title.en);
+          img.setAttribute("src", url);
+        })
+        .catch((error) => console.log(error));
+    } else {
+      const img = document.getElementById(product.title.en);
+      img.setAttribute("src", product.image);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -46,7 +52,8 @@ function ProductCardTmp(props) {
           <strong>{product.title.en}</strong>
         </Card.Title>
         <Card.Text id={`text-${product.id}`} className={`${styles.cardText} color-primary`}>
-          {fullDesc ? product.desc.en : `${product.desc.en.substring(0, truncLength)}...`}
+          {fullDesc ? product.desc.en : `${product.desc.en.substring(0, truncLength)}`}
+          {!fullDesc && product.desc.en.length > truncLength && "..."}
         </Card.Text>
         <Button variant="outline-accent3" className="float-start" onClick={() => setfullDesc(!fullDesc)}>
           {fullDesc ? "Read Less" : "Read more"}
@@ -55,12 +62,14 @@ function ProductCardTmp(props) {
           variant="primary"
           className="float-end"
           onClick={() => {
-            router.push({
-              pathname: "/card/[pid]",
-              query: { pid: product.id },
-              hash: "main",
-            });
-            setLoading(true);
+            if(!preview){
+              router.push({
+                pathname: "/card/[pid]",
+                query: { pid: product.id },
+                hash: "main",
+              });
+              setLoading(true);
+            }
           }}
           disabled={loading}
         >

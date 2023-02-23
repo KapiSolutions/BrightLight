@@ -20,7 +20,7 @@ export default function Home(props) {
         <Row sm={2} md={2} lg={3} className="g-4 justify-content-center">
           {props.products.map((product) => (
             <Col key={product.id} className="d-flex justify-content-center">
-              <ProductCard product={product} />
+              <ProductCard product={product} preview={false} />
             </Col>
           ))}
         </Row>
