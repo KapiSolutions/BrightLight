@@ -6,6 +6,7 @@ import { BsFilterRight } from "react-icons/bs";
 
 function FilterAndSortBar(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const lang = useDeviceStore((state) => state.lang);
   const [showOptions, setShowOptions] = useState(false);
   const [sortOption, setSortOption] = useState("1");
   const sortItem = {
@@ -48,7 +49,7 @@ function FilterAndSortBar(props) {
     if (input !== "") {
       props.refArray.map((item) => {
         //Search for key words in titles
-        if (item.title.includes(input) || item.title.toLowerCase().includes(input)) {
+        if (item.title[lang].includes(input) || item.title[lang].toLowerCase().includes(input)) {
           tmpItems.push(item);
           itemFounded = true;
         }
@@ -85,6 +86,12 @@ function FilterAndSortBar(props) {
         break;
       case "2":
         props.outputArray(array.sort((a, b) => timeStampToDate(a.createDate) - timeStampToDate(b.createDate)));
+        break;
+        case "3":
+        props.outputArray(array.sort((a, b) => b.price[lang].amount - a.price[lang].amount));
+        break;
+      case "4":
+        props.outputArray(array.sort((a, b) => a.price[lang].amount - b.price[lang].amount));
         break;
       default:
         break;
@@ -199,6 +206,8 @@ function FilterAndSortBar(props) {
                 <Form.Select type="text" id={`sortBy${props.id}`}>
                   <option value="1">Date &#8600;</option>
                   <option value="2">Date &#8599;</option>
+                  <option value="3">Price &#8600;</option>
+                  <option value="4">Price &#8599;</option>
                 </Form.Select>
               </Form.Group>
             </Form>

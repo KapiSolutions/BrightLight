@@ -15,6 +15,7 @@ function AdminProductsPage(props) {
   const { isAuthenticated, isAdmin } = useAuth();
   const router = useRouter();
   const [products, setProducts] = useState([]);
+  const [refProducts, setRefProducts] = useState(props.products);
   const [message, setMessage] = useState("");
   const [loadingNew, setLoadingNew] = useState(false);
   const [loadingRfs, setLoadingRfs] = useState(false);
@@ -53,6 +54,7 @@ function AdminProductsPage(props) {
       setLoadingRfs(true);
       try {
         const docs = await getDocsFromCollection("products");
+        setRefProducts(JSON.parse(JSON.stringify(docs)));
         setProducts(JSON.parse(JSON.stringify(docs)).sort((a, b) => timeStampToDate(b.createDate) - timeStampToDate(a.createDate)));
         setReload(!reload);
         setLoadingRfs(false);
@@ -104,7 +106,7 @@ function AdminProductsPage(props) {
 
         <FilterAndSortBar
           id={idForSortingBar}
-          refArray={props.products}
+          refArray={refProducts}
           inputArray={products}
           outputArray={setProducts}
           msg={setMessage}
