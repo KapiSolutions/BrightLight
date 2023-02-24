@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { createDocFirestore, updateDocFields } from "../../../firebase/Firestore";
 import SuccessModal from "../../Modals/SuccessModal";
 import ProductCardTmp from "../ProductCardTmp";
+import { useAuth } from "../../../context/AuthProvider";
 
 function ProductTemplate(props) {
   const prodEdit = props.product;
@@ -30,6 +31,7 @@ function ProductTemplate(props) {
   const categoryRef = useRef();
   const router = useRouter();
 
+  const { setErrorMsg } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const [showSuccess, setShowSuccess] = useState("");
@@ -57,7 +59,8 @@ function ProductTemplate(props) {
     cardSet: 0,
     image: "",
     category: "",
-    creationDate: null,
+    createDate: null,
+    active: true
   };
   const [product, updateProduct] = useReducer((state, updates) => ({ ...state, ...updates }), initProduct);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
@@ -154,7 +157,8 @@ function ProductTemplate(props) {
         },
         cardSet: cardsRef.current?.value,
         category: categoryRef.current?.value,
-        creationDate: new Date(),
+        createDate: new Date(),
+        active: true
       });
 
       setShowPreview(!showPreview);
@@ -247,6 +251,7 @@ function ProductTemplate(props) {
       setLoading(false);
     } catch (error) {
       console.log(error);
+      setErrorMsg("Something went wrong, please try again later.");
       setLoading(false);
     }
   };

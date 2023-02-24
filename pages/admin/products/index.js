@@ -51,7 +51,7 @@ function AdminProductsPage(props) {
     const refreshProductList = async () => {
       setLoadingRfs(true);
       try {
-        const docs = await getDocsFromCollection("tarot");
+        const docs = await getDocsFromCollection("products");
         setProducts(JSON.parse(JSON.stringify(docs)).sort((a, b) => timeStampToDate(b.createDate) - timeStampToDate(a.createDate)));
         setLoadingRfs(false);
       } catch (e) {
@@ -64,7 +64,7 @@ function AdminProductsPage(props) {
       <Head>
         <title>BrightLight | Admin - Products</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5 color-primary" id="abn-ctx">
+      <Container className="justify-content-center text-center mt-5 color-primary" id="ap-ctx">
         <h1>Product Menagment</h1>
         <div className="d-flex justify-content-end gap-2 text-end mt-4">
           <Button
@@ -125,7 +125,7 @@ function AdminProductsPage(props) {
 export default AdminProductsPage;
 
 export async function getStaticProps() {
-  const docs = await getDocsFromCollection("tarot");
+  const docs = await getDocsFromCollection("products");
 
   return {
     props: {

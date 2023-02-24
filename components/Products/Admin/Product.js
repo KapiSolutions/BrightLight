@@ -3,7 +3,6 @@ import Image from "next/image";
 import { useAuth } from "../../../context/AuthProvider";
 import { Badge, Button, Card, Spinner } from "react-bootstrap";
 import { useRouter } from "next/router";
-import { AiOutlineLike, AiOutlineComment } from "react-icons/ai";
 import { IoIosArrowForward } from "react-icons/io";
 import { deleteDocInCollection, updateDocFields } from "../../../firebase/Firestore";
 import { useDeviceStore } from "../../../stores/deviceStore";
@@ -13,6 +12,7 @@ import axios from "axios";
 
 function Product(props) {
   const router = useRouter();
+  const lang = "en";
   const product = props.product;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
@@ -22,16 +22,15 @@ function Product(props) {
   const [loadingDel, setLoadingDel] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
-  const cardsIcon = "/img/cards-light.png";
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
 
   useEffect(() => {
-    getFileUrlStorage("images/cards", product.image)
+    getFileUrlStorage(`images/products/${product.id}`, product.image)
       .then((url) => {
-        const img = document.getElementById(`${product.title}-AdminPic`);
+        const img = document.getElementById(`${product.title[lang]}-AdminPic`);
         img.setAttribute("src", url);
       })
       .catch((error) => console.log(error));
@@ -110,15 +109,15 @@ function Product(props) {
           <div className="d-flex align-items-center me-2">
             <Card.Img
               src="/img/placeholders/cartImage.webp"
-              id={`${product.title}-AdminPic`}
+              id={`${product.title[lang]}-AdminPic`}
               height="58"
-              alt={product.title}
+              alt={product.title[lang]}
             />
           </div>
           <div>
             {isMobile ? (
               <>
-                <p className={`mb-0 ${!product.active && "text-muted"}`}>{product.title}</p>
+                <p className={`mb-0 ${!product.active && "text-muted"}`}>{product.title[lang]}</p>
                 <i>
                   <small className={!product.active ? "text-muted" : ""}>
                     {timeStampToDate(product.createDate).toLocaleDateString()}
@@ -128,7 +127,7 @@ function Product(props) {
               </>
             ) : (
               <>
-                <p className={`mb-0 ${!product.active && "text-muted"}`}>{product.title}</p>
+                <p className={`mb-0 ${!product.active && "text-muted"}`}>{product.title[lang]}</p>
                 <small className="text-muted">{timeStampToDate(product.createDate).toLocaleDateString()}</small>
               </>
             )}
@@ -146,7 +145,10 @@ function Product(props) {
               </Badge>
             </div>
             <div className={`col-2 col-lg-3 pointer ${!product.active && "text-muted"}`} onClick={showDetailsFunc}>
-              <span>{product.price},00 PLN</span>
+              <span className="me-1">{product.price[lang].amount}</span>
+              <span className="text-uppercase">{product.price[lang].currency}</span>
+              <span className="ms-1 me-1">/ {product.price[lang === "en" ? "pl" : "en"].amount}</span>
+              <span className="text-uppercase">{product.price[lang === "en" ? "pl" : "en"].currency}</span>
             </div>
             <div className="col-4 col-lg-3">
               <div className="d-flex flex-wrap mt-2 gap-3">
@@ -272,20 +274,35 @@ function Product(props) {
             </div>
 
             <div className="mt-3">
-              <p className="mb-0">Price: {product.price},00 PLN</p>
+              <p className="mb-0">
+                <strong>Price:</strong>
+                <span className="ms-1 me-1">{product.price[lang].amount}</span>
+                <span className="text-uppercase">{product.price[lang].currency}</span>
+                <span className="ms-1 me-1">/ {product.price[lang === "en" ? "pl" : "en"].amount}</span>
+                <span className="text-uppercase">{product.price[lang === "en" ? "pl" : "en"].currency}</span>
+              </p>
               <div className="d-flex gap-2">
                 <p className="mb-0">
-                  <strong>Status: </strong> {product.active ? "Active" : "Disabled"}
+                  <small>
+                    <strong>Status: </strong> {product.active ? "Active" : "Disabled"}
+                  </small>
                 </p>
                 <p>
-                  <strong>Cards: </strong> {product.cardSet}
+                  <small>
+                    <strong>Cards: </strong> {product.cardSet}
+                  </small>
+                </p>
+                <p>
+                  <small>
+                    <strong>Category: </strong> {product.category}
+                  </small>
                 </p>
               </div>
               <p className="mb-0">
                 <strong>Description:</strong>
               </p>
               <p>
-                <small>{product.description}</small>
+                <small>{product.desc[lang]}</small>
               </p>
             </div>
           </div>
@@ -293,15 +310,20 @@ function Product(props) {
         {/* Details on Desktops */}
         {showDetails && !isMobile && (
           <div className="mt-2">
-            <p>
-              <strong>Cards: </strong> {product.cardSet}
-            </p>
-            <p className="mb-0">
-                <strong>Description:</strong>
+            <div className="d-flex gap-3">
+              <p>
+                <strong>Cards: </strong> {product.cardSet}
               </p>
               <p>
-                <small>{product.description}</small>
+                <strong>Category: </strong> {product.category}
               </p>
+            </div>
+            <p className="mb-0">
+              <strong>Description:</strong>
+            </p>
+            <p>
+              <small>{product.desc[lang]}</small>
+            </p>
           </div>
         )}
       </div>
