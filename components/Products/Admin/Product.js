@@ -12,10 +12,10 @@ import axios from "axios";
 
 function Product(props) {
   const router = useRouter();
-  const lang = "en";
   const product = props.product;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
+  const lang = useDeviceStore((state) => state.lang);
   const { setErrorMsg } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
@@ -35,7 +35,7 @@ function Product(props) {
       })
       .catch((error) => console.log(error));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.reload]);
 
   async function deleteProduct() {
     setLoadingDel(true);
@@ -45,8 +45,10 @@ function Product(props) {
         paths: ["/admin/products", "/"],
       };
 
-      // await deleteDocInCollection("tarot", product.id);
-      // await deleteFileInStorage("images/cards", product.image);
+      await deleteDocInCollection("products", product.id);
+      await deleteStripeProduct("en");
+      await deleteStripeProduct("pl");
+      await deleteFilesInDirStorage(`images/products/${product.id}`);
       await axios.post("/api/revalidate", revalidateData);
       props.refresh(); //refresh the product list
       setShowConfirmModal({ msg: "", itemID: "" });
@@ -65,7 +67,7 @@ function Product(props) {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         paths: ["/admin/products", "/"],
       };
-      await updateDocFields("tarot", product.id, { active: !product.active });
+      await updateDocFields("products", product.id, { active: !product.active });
       await axios.post("/api/revalidate", revalidateData);
       props.refresh(); //refresh the product list
     } catch (error) {
@@ -77,6 +79,23 @@ function Product(props) {
 
   const showDetailsFunc = () => {
     setShowDetails(!showDetails);
+  };
+
+  const deleteStripeProduct = async (lang) => {
+    const payload = {
+      secret: process.env.NEXT_PUBLIC_API_KEY,
+      mode: "delete",
+      data: {
+        prod_id: product.price[lang].prod_id,
+        s_id: product.price[lang].s_id,
+      },
+    };
+    try {
+      return await axios.post("/api/stripe/products", payload);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   };
   return (
     <div className="color-primary">

@@ -28,7 +28,7 @@ export default async function handler(req, res) {
           res.status(200).json(product);
           break;
         case "update":
-          product = await stripe.products.retrieve(data.id);
+          product = await stripe.products.retrieve(data.prod_id);
 
           if (data.priceAmount) {
             const oldPrice = product.default_price;
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
               product: data.id,
             });
             //Add new price to the product
-            product = await stripe.products.update(data.id, {
+            product = await stripe.products.update(data.prod_id, {
               name: data.name ? data.name : product.name,
               description: data.description ? data.description : product.description,
               images: data.images ? data.images : product.images,
@@ -58,8 +58,22 @@ export default async function handler(req, res) {
           }
           res.status(200).json(product);
           break;
+        case "delete":
+          // There is no way to delete the product by API, Fuck you Stripe.
+          // const deleted = await stripe.products.del(data.prod_id);
+          // According to the official approach from the Stripe team:
+          // first unset the product price, then archive the price and then archive the product - wtf
+          await stripe.products.update(data.prod_id, {
+            default_price: "",
+            active: false,
+          });
+          await stripe.prices.update(data.s_id, {
+            active: false,
+          });
+          res.status(200).json({ message: "Successfully archived!" });
+          break;
         case "get":
-          product = await stripe.products.retrieve(data.id);
+          product = await stripe.products.retrieve(data.prod_id);
           res.status(200).json(product);
           break;
         default:
