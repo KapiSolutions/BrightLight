@@ -19,7 +19,6 @@ function AdminProductsPage(props) {
   const [message, setMessage] = useState("");
   const [loadingNew, setLoadingNew] = useState(false);
   const [loadingRfs, setLoadingRfs] = useState(false);
-  const [reload, setReload] = useState(false); //used when user delete product to reload pictures of the rest. Without it products can have different images.
   const idForSortingBar = "ProductsAdmin";
 
   const sleep = (milliseconds) => {
@@ -56,7 +55,6 @@ function AdminProductsPage(props) {
         const docs = await getDocsFromCollection("products");
         setRefProducts(JSON.parse(JSON.stringify(docs)));
         setProducts(JSON.parse(JSON.stringify(docs)).sort((a, b) => timeStampToDate(b.createDate) - timeStampToDate(a.createDate)));
-        setReload(!reload);
         setLoadingRfs(false);
       } catch (e) {
         console.log(e);
@@ -115,7 +113,7 @@ function AdminProductsPage(props) {
 
         <div>
           {products.map((product, idx) => (
-            <Product key={idx} idx={idx} product={product} refresh={refreshProductList} reload={reload} />
+            <Product key={idx} idx={idx} product={product} refresh={refreshProductList} />
           ))}
 
           {/* Message as output after finding item in array */}

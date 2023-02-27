@@ -27,16 +27,6 @@ function Product(props) {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
 
-  useEffect(() => {
-    getFileUrlStorage(`images/products/${product.id}`, product.image)
-      .then((url) => {
-        const img = document.getElementById(`${product.title[lang]}-AdminPic`);
-        img.setAttribute("src", url);
-      })
-      .catch((error) => console.log(error));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.reload]);
-
   async function deleteProduct() {
     setLoadingDel(true);
     try {
@@ -127,8 +117,7 @@ function Product(props) {
         <div className="col-10 col-md-4 d-flex pointer" onClick={showDetailsFunc}>
           <div className="d-flex align-items-center me-2">
             <Card.Img
-              src="/img/placeholders/cartImage.webp"
-              id={`${product.title[lang]}-AdminPic`}
+              src={product.image.path}
               height="58"
               alt={product.title[lang]}
             />
@@ -244,7 +233,7 @@ function Product(props) {
                 size="sm"
                 onClick={() => {
                   router.push({
-                    pathname: "/admin/blogs/[pid]",
+                    pathname: "/admin/products/[pid]",
                     query: { pid: product.id },
                     hash: "main",
                   });

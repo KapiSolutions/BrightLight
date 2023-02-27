@@ -13,26 +13,10 @@ function ProductCardTmp(props) {
   const [loading, setLoading] = useState(false);
   const truncLength = 60;
 
-  useEffect(() => {
-    if (!preview) {
-      getFileUrlStorage("images/cards", product.image)
-        .then((url) => {
-          const img = document.getElementById(product.title.en);
-          img.setAttribute("src", url);
-        })
-        .catch((error) => console.log(error));
-    } else {
-      const img = document.getElementById(product.title.en);
-      img.setAttribute("src", product.image);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <Card style={{ width: "18rem" }} className="background border shadow-sm">
       <Card.Img
-        id={product.title.en}
-        src={placeholder("light")}
+        src={product.image.path}
         variant="top"
         className={`imgOpacity pointer ${loading && "opacity-25"}`}
         alt={product.title.en}

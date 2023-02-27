@@ -16,33 +16,18 @@ export default async function handler(req, res) {
     try {
       switch (mode) {
         case "create":
-          product = await stripe.products.create({
-            name: data.name,
-            description: data.desc,
-            images: data.images,
-            default_price_data: {
-              unit_amount: data.price, //price in cents, eg. 2000 means 20$ or 20pln etc.
-              currency: data.currency,
-            },
-          });
+          product = await stripe.products.create(data);
           res.status(200).json(product);
           break;
         case "update":
-          product = await stripe.products.retrieve(data.prod_id);
-
-          if (data.priceAmount) {
+          if (data.price) {
+            product = await stripe.products.retrieve(data.id);
             const oldPrice = product.default_price;
             //Create new price
-            price = await stripe.prices.create({
-              unit_amount: data.priceAmount,
-              currency: data.priceCurrency,
-              product: data.id,
-            });
-            //Add new price to the product
-            product = await stripe.products.update(data.prod_id, {
-              name: data.name ? data.name : product.name,
-              description: data.description ? data.description : product.description,
-              images: data.images ? data.images : product.images,
+            price = await stripe.prices.create(data.price);
+            //Add new price to the product and update product data
+            product = await stripe.products.update(data.id, {
+              ...data.prod,
               default_price: price.id,
             });
             //Archive the old price(there is no way to change the price amount, currency etc.)
@@ -50,11 +35,7 @@ export default async function handler(req, res) {
               active: false,
             });
           } else {
-            product = await stripe.products.update(data.id, {
-              name: data.name ? data.name : product.name,
-              description: data.description ? data.description : product.description,
-              images: data.images ? data.images : product.images,
-            });
+            product = await stripe.products.update(data.id, data.prod);
           }
           res.status(200).json(product);
           break;

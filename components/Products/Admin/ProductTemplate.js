@@ -5,7 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { Button, Form, Spinner } from "react-bootstrap";
 import { useDeviceStore } from "../../../stores/deviceStore";
-import { uploadFileToStorage } from "../../../firebase/Storage";
+import { deleteFileInStorage, getFileUrlStorage, uploadFileToStorage } from "../../../firebase/Storage";
 import placeholder from "../../../utils/placeholder";
 import Dropzone from "react-dropzone";
 import styles from "../../../styles/components/Blog/BlogTemplate.module.scss";
@@ -37,7 +37,6 @@ function ProductTemplate(props) {
   const [showSuccess, setShowSuccess] = useState("");
   const [imgBase64, setImgBase64] = useState({ loaded: false, path: placeholder("pinkPX") }); //used only for preview
   const [imgFile, setImgFile] = useState(null); //image wich will be uploaded to the storage
-  const [imgUrl, setImgUrl] = useState(""); //image path wich will be uploaded to the Stripe
   const [editNewImage, setEditNewImage] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -57,18 +56,25 @@ function ProductTemplate(props) {
     desc: { en: "", pl: "" },
     price: { en: { amount: 0, currency: "usd", s_id: "" }, pl: { amount: 0, currency: "pln", s_id: "" } },
     cardSet: 0,
-    image: "",
+    image: {
+      name: "",
+      path: "",
+    },
     category: "",
     createDate: null,
-    active: true
+    active: true,
   };
   const [product, updateProduct] = useReducer((state, updates) => ({ ...state, ...updates }), initProduct);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
 
   useEffect(() => {
     if (prodEdit) {
-      setImgBase64({ loaded: true, path: prodEdit.image }); //set url instead of base64
-      updateInvalid({ image: false }); //main img setted
+      getFileUrlStorage(`images/products/${prodEdit.id}`, prodEdit.image)
+        .then((url) => {
+          setImgBase64({ loaded: true, path: url }); //set url instead of base64
+          updateInvalid({ image: false }); //main img setted
+        })
+        .catch((error) => console.log(error));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -148,17 +154,30 @@ function ProductTemplate(props) {
     if (dataOK) {
       updateProduct({
         id: `${prodEdit ? prodEdit.id : uid}`,
-        image: imgBase64.path, //used for preview image without uploading to the firestorage
+        image: {
+          name: "",
+          path: imgBase64.path //used for preview image without uploading to the firestorage
+        }, 
         title: { en: titleRef_en.current?.value, pl: titleRef_pl.current?.value },
         desc: { en: descRef_en.current?.value, pl: descRef_pl.current?.value },
         price: {
-          en: { amount: parseFloat(priceRef_en.current?.value).toFixed(2), currency: "usd", s_id: "" },
-          pl: { amount: parseFloat(priceRef_pl.current?.value).toFixed(2), currency: "pln", s_id: "" },
+          en: {
+            amount: parseFloat(priceRef_en.current?.value).toFixed(2),
+            currency: "usd",
+            prod_id: prodEdit ? prodEdit.price.en.prod_id : "",
+            s_id: prodEdit ? prodEdit.price.en.s_id : "",
+          },
+          pl: {
+            amount: parseFloat(priceRef_pl.current?.value).toFixed(2),
+            currency: "pln",
+            prod_id: prodEdit ? prodEdit.price.pl.prod_id : "",
+            s_id: prodEdit ? prodEdit.price.pl.s_id : "",
+          },
         },
         cardSet: cardsRef.current?.value,
         category: categoryRef.current?.value,
-        createDate: new Date(),
-        active: true
+        createDate: prodEdit ? timeStampToDate(prodEdit.createDate) : new Date(),
+        active: true,
       });
 
       setShowPreview(!showPreview);
@@ -170,32 +189,41 @@ function ProductTemplate(props) {
     try {
       let readyProduct = { ...product };
       let imgUrl = "";
-      //upload main image when admin is creating new product or in editing mode user added new image
-      if (editNewImage) {
+      
+      //upload main picture to the storage
+      if (editNewImage) { //true when adding new product mode and when admin change the image in editing mode
         imgUrl = await uploadFileToStorage(imgFile, `images/products/${product.id}`);
-        setImgUrl(imgUrl); //used for Stripe
+        if(prodEdit){
+          readyProduct.image.name = imgFile.name;
+          readyProduct.image.path = imgFile.imgUrl;
+          await deleteFileInStorage(`images/products/${prodEdit.id}`, prodEdit.image); // delete the old image from the storage
+        } 
       } else {
-        imgUrl = prodEdit.image;
+        imgUrl = prodEdit.image.path;
+        readyProduct.image.name = prodEdit.image.name;
+        readyProduct.image.path = prodEdit.image.path;
       }
 
       // Add/Update Stripe products
       if (prodEdit) {
-        console.log("edit");
+        const res = await updateStripeProduct("en",imgUrl);
+        res && (readyProduct.price.en.s_id = res.data.default_price);
+
+        const res_pl = await updateStripeProduct("pl",imgUrl);
+        res_pl && (readyProduct.price.pl.s_id = res_pl.data.default_price);
       } else {
-        const res = await addStripeProduct("en");
+        readyProduct.image = imgFile.name; //use file name instead of path for the firestore product data
+        const res = await addStripeProduct("en",imgUrl);
         if (res.status == 200) {
           readyProduct.price.en.prod_id = res.data.id;
           readyProduct.price.en.s_id = res.data.default_price;
-          const res_pl = await addStripeProduct("pl");
+          const res_pl = await addStripeProduct("pl",imgUrl);
           if (res_pl.status == 200) {
             readyProduct.price.pl.prod_id = res_pl.data.id;
             readyProduct.price.pl.s_id = res_pl.data.default_price;
           }
         }
       }
-
-      //update product data
-      readyProduct.image = imgFile.name; //use file name instead of path for the firestore product data
       return readyProduct;
     } catch (error) {
       console.error(error);
@@ -203,18 +231,18 @@ function ProductTemplate(props) {
     }
   };
 
-  const addStripeProduct = async (lang) => {
-    // console.log(Math.trunc(priceRef_pl.current?.value * 1000));
+  const addStripeProduct = async (lang,imgUrl) => {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
       mode: "create",
       data: {
-        id: product.id,
-        name: lang === "en" ? product.title.en : product.title.pl,
-        desc: lang === "en" ? product.desc.en : product.desc.pl,
+        name: product.title[lang],
+        // desc: product.desc[lang],
         images: [imgUrl],
-        price: Math.trunc((lang === "en" ? product.price.en.amount : product.price.pl.amount) * 100),
-        currency: lang === "en" ? product.price.en.currency : product.price.pl.currency,
+        default_price_data: {
+          unit_amount: Math.trunc(product.price[lang].amount * 100), //price in cents, eg. 2000 means 20$ or 20pln etc.
+          currency: product.price[lang].currency,
+        },
       },
     };
     try {
@@ -225,7 +253,46 @@ function ProductTemplate(props) {
     }
   };
 
-  const updateStripeProduct = async (lang) => {};
+  const updateStripeProduct = async (lang,imgUrl) => {
+    let tmpData = null;
+    let tmpPrice = null;
+
+    if (product.title[lang] != prodEdit.title[lang]) {
+      tmpData = { ...tmpData, name: product.title[lang] };
+    }
+
+    // if (product.desc[lang] != prodEdit.desc[lang]) {
+    //   tmpData = { ...tmpData, description: product.desc[lang] };
+    // }
+
+    if (product.price[lang].amount != prodEdit.price[lang].amount) {
+      tmpPrice = {
+        product: prodEdit.price[lang].prod_id,
+        unit_amount: Math.trunc(product.price[lang].amount * 100),
+        currency: product.price[lang].currency,
+      };
+    }
+
+    if (imgUrl != "") {
+      tmpData = { ...tmpData, images: [imgUrl] };
+    }
+
+    const payload = {
+      secret: process.env.NEXT_PUBLIC_API_KEY,
+      mode: "update",
+      data: { prod: tmpData, price: tmpPrice, id: prodEdit.price[lang].prod_id },
+    };
+    if (tmpData || tmpPrice) {
+      try {
+        return await axios.post("/api/stripe/products", payload);
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    } else {
+      return null;
+    }
+  };
 
   const createProduct = async () => {
     setLoading(true);
@@ -243,7 +310,7 @@ function ProductTemplate(props) {
         paths: ["/admin/products", "/"],
       };
       if (prodEdit) {
-        revalidateData.paths.push(`/${readyProduct.id}`);
+        revalidateData.paths.push(`/card/${readyProduct.id}`);
       }
 
       await axios.post("/api/revalidate", revalidateData);
@@ -317,7 +384,7 @@ function ProductTemplate(props) {
           <Link href="/admin/products#main">Products Menagment</Link>
         </small>
         <small>&gt;</small>
-        <small>{prodEdit ? prodEdit.title : "New Product"}</small>
+        <small>{prodEdit ? prodEdit.id : "New Product"}</small>
       </section>
 
       <div className={`d-flex align-items-center ${isMobile && "flex-wrap"}`}>
@@ -395,7 +462,7 @@ function ProductTemplate(props) {
                   placeholder="Add name"
                   ref={titleRef_en}
                   onChange={() => setShowPreview(false)}
-                  defaultValue={prodEdit ? prodEdit.title : ""}
+                  defaultValue={prodEdit ? prodEdit.title.en : ""}
                   className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
                 />
               </div>
@@ -422,7 +489,7 @@ function ProductTemplate(props) {
                   placeholder="Dodaj nazwę"
                   ref={titleRef_pl}
                   onChange={() => setShowPreview(false)}
-                  defaultValue={prodEdit ? prodEdit.title : ""}
+                  defaultValue={prodEdit ? prodEdit.title.pl : ""}
                   className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
                 />
                 {isMobile && (
@@ -541,8 +608,8 @@ function ProductTemplate(props) {
               placeholder="Add some text..."
               ref={categoryRef}
               onChange={() => setShowPreview(false)}
-              defaultValue={prodEdit ? prodEdit.cardSet : 0}
-              className={`${invalid.cardSet && "border border-danger"} ${themeDarkInput}`}
+              defaultValue={prodEdit ? prodEdit.category : 0}
+              className={themeDarkInput}
             >
               <option value="love">Love</option>
               <option value="success">Success</option>
@@ -563,8 +630,8 @@ function ProductTemplate(props) {
                 step="any"
                 ref={priceRef_en}
                 onChange={() => setShowPreview(false)}
-                defaultValue={prodEdit ? prodEdit.cardSet : 0}
-                className={`${invalid.cards && "border border-danger"} ${themeDarkInput}`}
+                defaultValue={prodEdit ? prodEdit.price.en.amount : 0}
+                className={`${invalid.price && "border border-danger"} ${themeDarkInput}`}
               />
               <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
                 USD
@@ -575,8 +642,8 @@ function ProductTemplate(props) {
                 step="any"
                 ref={priceRef_pl}
                 onChange={() => setShowPreview(false)}
-                defaultValue={prodEdit ? prodEdit.cardSet : 0}
-                className={`${invalid.cards && "border border-danger"} ${themeDarkInput}`}
+                defaultValue={prodEdit ? prodEdit.price.pl.amount : 0}
+                className={`${invalid.price && "border border-danger"} ${themeDarkInput}`}
               />
               <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
                 PLN
