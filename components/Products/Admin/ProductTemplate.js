@@ -69,7 +69,7 @@ function ProductTemplate(props) {
 
   useEffect(() => {
     if (prodEdit) {
-      getFileUrlStorage(`images/products/${prodEdit.id}`, prodEdit.image)
+      getFileUrlStorage(`images/products/${prodEdit.id}`, prodEdit.image.name)
         .then((url) => {
           setImgBase64({ loaded: true, path: url }); //set url instead of base64
           updateInvalid({ image: false }); //main img setted
