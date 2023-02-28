@@ -33,7 +33,7 @@ function ProductCard(props) {
           onClick={() => {
             if (!loading) {
               router.push({
-                pathname: "/card/[pid]",
+                pathname: "/product/[pid]",
                 query: { pid: product.id },
                 hash: "main",
               });
@@ -66,7 +66,7 @@ function ProductCard(props) {
           onClick={() => {
             if (!preview) {
               router.push({
-                pathname: "/card/[pid]",
+                pathname: "/product/[pid]",
                 query: { pid: product.id },
                 hash: "main",
               });
