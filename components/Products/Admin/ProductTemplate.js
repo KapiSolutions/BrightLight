@@ -195,8 +195,8 @@ function ProductTemplate(props) {
         imgUrl = await uploadFileToStorage(imgFile, `images/products/${product.id}`);
         if(prodEdit){
           readyProduct.image.name = imgFile.name;
-          readyProduct.image.path = imgFile.imgUrl;
-          await deleteFileInStorage(`images/products/${prodEdit.id}`, prodEdit.image); // delete the old image from the storage
+          readyProduct.image.path = imgUrl;
+          await deleteFileInStorage(`images/products/${prodEdit.id}`, prodEdit.image.name); // delete the old image from the storage
         } 
       } else {
         imgUrl = prodEdit.image.path;
@@ -441,6 +441,7 @@ function ProductTemplate(props) {
               fill
               alt="uploaded file"
               style={{ borderRadius: ".25rem", objectFit: "contain" }}
+              sizes="(max-width: 768px) 100vw, 33vw"
             />
           </div>
           {invalid.image && (
