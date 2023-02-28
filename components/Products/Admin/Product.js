@@ -9,6 +9,7 @@ import { useDeviceStore } from "../../../stores/deviceStore";
 import ConfirmActionModal from "../../Modals/ConfirmActionModal";
 import { deleteFileInStorage, deleteFilesInDirStorage, getFileUrlStorage } from "../../../firebase/Storage";
 import axios from "axios";
+import placeholder from "../../../utils/placeholder";
 
 function Product(props) {
   const router = useRouter();
@@ -115,11 +116,15 @@ function Product(props) {
 
       <div className="d-flex align-items-center text-start w-100 flex-wrap rounded p-1">
         <div className="col-10 col-md-4 d-flex pointer" onClick={showDetailsFunc}>
-          <div className="d-flex align-items-center me-2">
-            <Card.Img
+          <div className="d-flex align-items-center me-2" style={{position: "relative", width: "46px"}}>
+            <Image
               src={product.image.path}
-              height="58"
-              alt={product.title[lang]}
+              alt={`${product.title[lang]} - Bright Light Gypsy Tarot`}
+              fill
+              placeholder='blur'
+              blurDataURL={placeholder("dark")}
+              className="rounded"
+              sizes="33vw"
             />
           </div>
           <div>
