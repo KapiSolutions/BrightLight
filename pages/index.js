@@ -30,7 +30,7 @@ export default function Home(props) {
 }
 
 export async function getStaticProps() {
-  const docs = await getDocsFromCollection("tarot");
+  const docs = await getDocsFromCollection("products");
 
   return {
     props: {
