@@ -116,14 +116,14 @@ function Product(props) {
 
       <div className="d-flex align-items-center text-start w-100 flex-wrap rounded p-1">
         <div className="col-10 col-md-4 d-flex pointer" onClick={showDetailsFunc}>
-          <div className="d-flex align-items-center me-2" style={{position: "relative", width: "46px"}}>
+          <div className="d-flex align-items-center me-2" style={{ position: "relative", width: "46px" }}>
             <Image
               src={product.image.path}
               alt={`${product.title[lang]} - Bright Light Gypsy Tarot`}
               fill
-              placeholder='blur'
+              placeholder="blur"
               blurDataURL={placeholder("dark")}
-              className="rounded"
+              className={`rounded ${!product.active && "opacity-50"}`}
               sizes="33vw"
             />
           </div>
@@ -133,8 +133,10 @@ function Product(props) {
                 <p className={`mb-0 ${!product.active && "text-muted"}`}>{product.title[lang]}</p>
                 <i>
                   <small className={!product.active ? "text-muted" : ""}>
-                    {timeStampToDate(product.createDate).toLocaleDateString()}
-                    {!product.active && " - disabled"}
+                    <span className="me-1">{product.price[lang].amount}</span>
+                    <span className="text-uppercase">{product.price[lang].currency}</span>
+                    <span className="ms-1 me-1">/ {product.price[lang === "en" ? "pl" : "en"].amount}</span>
+                    <span className="text-uppercase">{product.price[lang === "en" ? "pl" : "en"].currency}</span>
                   </small>
                 </i>
               </>
@@ -167,8 +169,9 @@ function Product(props) {
               <div className="d-flex flex-wrap mt-2 gap-3">
                 {/* Edit Button */}
                 <Button
-                  variant="outline-primary"
+                  variant="warning"
                   size="sm"
+                  className="border-dark"
                   onClick={() => {
                     router.push({
                       pathname: "/admin/products/[pid]",
@@ -187,7 +190,7 @@ function Product(props) {
                 </Button>
                 {/* Activate / Disable product Button */}
                 <Button
-                  variant={product.active ? "outline-accent4" : "outline-success"}
+                  variant={product.active ? "outline-success" : "outline-accent4"}
                   size="sm"
                   onClick={changeStatus}
                   disabled={loadingStatus}
@@ -233,7 +236,7 @@ function Product(props) {
           <div className="w-100">
             <div className="d-flex gap-3 mt-3 justify-content-between">
               <Button
-                variant="outline-primary"
+                variant="warning"
                 className="col-3"
                 size="sm"
                 onClick={() => {
@@ -254,7 +257,7 @@ function Product(props) {
               </Button>
               {/* Activate / Disable product Button */}
               <Button
-                variant={product.active ? "outline-accent4" : "outline-success"}
+                variant={product.active ? "outline-success" : "outline-accent4"}
                 className="col-3"
                 size="sm"
                 onClick={changeStatus}
@@ -287,13 +290,6 @@ function Product(props) {
             </div>
 
             <div className="mt-3">
-              <p className="mb-0">
-                <strong>Price:</strong>
-                <span className="ms-1 me-1">{product.price[lang].amount}</span>
-                <span className="text-uppercase">{product.price[lang].currency}</span>
-                <span className="ms-1 me-1">/ {product.price[lang === "en" ? "pl" : "en"].amount}</span>
-                <span className="text-uppercase">{product.price[lang === "en" ? "pl" : "en"].currency}</span>
-              </p>
               <div className="d-flex gap-2">
                 <p className="mb-0">
                   <small>
@@ -308,6 +304,11 @@ function Product(props) {
                 <p>
                   <small>
                     <strong>Category: </strong> {product.category}
+                  </small>
+                </p>
+                <p>
+                  <small>
+                    <strong>Date: </strong> {timeStampToDate(product.createDate).toLocaleDateString()}
                   </small>
                 </p>
               </div>
