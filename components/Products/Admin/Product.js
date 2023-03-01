@@ -37,8 +37,8 @@ function Product(props) {
       };
 
       await deleteDocInCollection("products", product.id);
-      await deleteStripeProduct("en");
-      await deleteStripeProduct("pl");
+      await deleteStripeProduct("usd");
+      await deleteStripeProduct("pln");
       await deleteFilesInDirStorage(`images/products/${product.id}`);
       await axios.post("/api/revalidate", revalidateData);
       props.refresh(); //refresh the product list
@@ -72,13 +72,13 @@ function Product(props) {
     setShowDetails(!showDetails);
   };
 
-  const deleteStripeProduct = async (lang) => {
+  const deleteStripeProduct = async (ccy) => {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
       mode: "delete",
       data: {
-        prod_id: product.price[lang].prod_id,
-        s_id: product.price[lang].s_id,
+        prod_id: product.price[ccy].prod_id,
+        s_id: product.price[ccy].s_id,
       },
     };
     try {
@@ -88,6 +88,7 @@ function Product(props) {
       throw error;
     }
   };
+  
   return (
     <div className="color-primary">
       {props.idx === 0 && (
@@ -133,10 +134,10 @@ function Product(props) {
                 <p className={`mb-0 ${!product.active && "text-muted"}`}>{product.title[lang]}</p>
                 <i>
                   <small className={!product.active ? "text-muted" : ""}>
-                    <span className="me-1">{product.price[lang].amount}</span>
-                    <span className="text-uppercase">{product.price[lang].currency}</span>
-                    <span className="ms-1 me-1">/ {product.price[lang === "en" ? "pl" : "en"].amount}</span>
-                    <span className="text-uppercase">{product.price[lang === "en" ? "pl" : "en"].currency}</span>
+                    <span className="me-1">{product.price.usd.amount}</span>
+                    <span className="text-uppercase">{product.price.usd.currency}</span>
+                    <span className="ms-1 me-1">/ {product.price.pln.amount}</span>
+                    <span className="text-uppercase">{product.price.pln.currency}</span>
                   </small>
                 </i>
               </>
@@ -160,10 +161,10 @@ function Product(props) {
               </Badge>
             </div>
             <div className={`col-2 col-lg-3 pointer ${!product.active && "text-muted"}`} onClick={showDetailsFunc}>
-              <span className="me-1">{product.price[lang].amount}</span>
-              <span className="text-uppercase">{product.price[lang].currency}</span>
-              <span className="ms-1 me-1">/ {product.price[lang === "en" ? "pl" : "en"].amount}</span>
-              <span className="text-uppercase">{product.price[lang === "en" ? "pl" : "en"].currency}</span>
+            <span className="me-1">{product.price.usd.amount}</span>
+                    <span className="text-uppercase">{product.price.usd.currency}</span>
+                    <span className="ms-1 me-1">/ {product.price.pln.amount}</span>
+                    <span className="text-uppercase">{product.price.pln.currency}</span>
             </div>
             <div className="col-4 col-lg-3">
               <div className="d-flex flex-wrap mt-2 gap-3">

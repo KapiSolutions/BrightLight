@@ -20,6 +20,7 @@ function TarotLotteryDesktop(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const lang = useDeviceStore((state) => state.lang);
+  const currency = "usd";
   const { authUserFirestore, setTempCart, updateProfile, setErrorMsg } = useAuth();
   const [flipCards, setFlipCards] = useState([]);
   const [userCards, setUserCards] = useState([]);
@@ -371,8 +372,8 @@ function TarotLotteryDesktop(props) {
                       style={{ pointerEvents: "none" }}
                     >
                       <span>
-                        {product.price[lang].amount}{" "}
-                        <span className="text-uppercase">{product.price[lang].currency}</span>
+                        {product.price[currency].amount}{" "}
+                        <span className="text-uppercase">{currency}</span>
                       </span>
                     </Button>
                   </ButtonGroup>

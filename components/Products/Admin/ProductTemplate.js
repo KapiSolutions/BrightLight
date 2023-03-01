@@ -14,18 +14,18 @@ import { SiGoogletranslate } from "react-icons/si";
 import { v4 as uuidv4 } from "uuid";
 import { createDocFirestore, updateDocFields } from "../../../firebase/Firestore";
 import SuccessModal from "../../Modals/SuccessModal";
-import ProductCardTmp from "../ProductCardTmp";
+import ProductCard from "../ProductCard";
 import { useAuth } from "../../../context/AuthProvider";
 
 function ProductTemplate(props) {
   const prodEdit = props.product;
   const titleRef_en = useRef();
   const descRef_en = useRef();
-  const priceRef_en = useRef();
+  const priceRef_usd = useRef();
 
   const titleRef_pl = useRef();
   const descRef_pl = useRef();
-  const priceRef_pl = useRef();
+  const priceRef_pln = useRef();
 
   const cardsRef = useRef();
   const categoryRef = useRef();
@@ -54,7 +54,7 @@ function ProductTemplate(props) {
     id: "",
     title: { en: "", pl: "" },
     desc: { en: "", pl: "" },
-    price: { en: { amount: 0, currency: "usd", s_id: "" }, pl: { amount: 0, currency: "pln", s_id: "" } },
+    price: { usd: { amount: 0, currency: "usd", s_id: "" }, pln: { amount: 0, currency: "pln", s_id: "" } },
     cardSet: 0,
     image: {
       name: "",
@@ -142,7 +142,7 @@ function ProductTemplate(props) {
     }
 
     // check if prices are added
-    if (priceRef_en.current?.value > 0 && priceRef_pl.current?.value > 0) {
+    if (priceRef_usd.current?.value > 0 && priceRef_pln.current?.value > 0) {
       updateInvalid({ price: false }); //ok
     } else {
       dataOK = false;
@@ -161,17 +161,17 @@ function ProductTemplate(props) {
         title: { en: titleRef_en.current?.value, pl: titleRef_pl.current?.value },
         desc: { en: descRef_en.current?.value, pl: descRef_pl.current?.value },
         price: {
-          en: {
-            amount: parseFloat(priceRef_en.current?.value).toFixed(2),
+          usd: {
+            amount: parseFloat(priceRef_usd.current?.value).toFixed(2),
             currency: "usd",
-            prod_id: prodEdit ? prodEdit.price.en.prod_id : "",
-            s_id: prodEdit ? prodEdit.price.en.s_id : "",
+            prod_id: prodEdit ? prodEdit.price.usd.prod_id : "",
+            s_id: prodEdit ? prodEdit.price.usd.s_id : "",
           },
-          pl: {
-            amount: parseFloat(priceRef_pl.current?.value).toFixed(2),
+          pln: {
+            amount: parseFloat(priceRef_pln.current?.value).toFixed(2),
             currency: "pln",
-            prod_id: prodEdit ? prodEdit.price.pl.prod_id : "",
-            s_id: prodEdit ? prodEdit.price.pl.s_id : "",
+            prod_id: prodEdit ? prodEdit.price.pln.prod_id : "",
+            s_id: prodEdit ? prodEdit.price.pln.s_id : "",
           },
         },
         cardSet: cardsRef.current?.value,
@@ -206,21 +206,21 @@ function ProductTemplate(props) {
 
       // Add/Update Stripe products
       if (prodEdit) {
-        const res = await updateStripeProduct("en",imgUrl);
-        res && (readyProduct.price.en.s_id = res.data.default_price);
+        const res = await updateStripeProduct("en", "usd" ,imgUrl);
+        res && (readyProduct.price.usd.s_id = res.data.default_price);
 
-        const res_pl = await updateStripeProduct("pl",imgUrl);
-        res_pl && (readyProduct.price.pl.s_id = res_pl.data.default_price);
+        const res_pl = await updateStripeProduct("pl", "pln",imgUrl);
+        res_pl && (readyProduct.price.pln.s_id = res_pl.data.default_price);
       } else {
         readyProduct.image = imgFile.name; //use file name instead of path for the firestore product data
-        const res = await addStripeProduct("en",imgUrl);
+        const res = await addStripeProduct("en", "usd",imgUrl);
         if (res.status == 200) {
-          readyProduct.price.en.prod_id = res.data.id;
-          readyProduct.price.en.s_id = res.data.default_price;
-          const res_pl = await addStripeProduct("pl",imgUrl);
+          readyProduct.price.usd.prod_id = res.data.id;
+          readyProduct.price.usd.s_id = res.data.default_price;
+          const res_pl = await addStripeProduct("pl", "pln",imgUrl);
           if (res_pl.status == 200) {
-            readyProduct.price.pl.prod_id = res_pl.data.id;
-            readyProduct.price.pl.s_id = res_pl.data.default_price;
+            readyProduct.price.pln.prod_id = res_pl.data.id;
+            readyProduct.price.pln.s_id = res_pl.data.default_price;
           }
         }
       }
@@ -231,7 +231,7 @@ function ProductTemplate(props) {
     }
   };
 
-  const addStripeProduct = async (lang,imgUrl) => {
+  const addStripeProduct = async (lang, ccy, imgUrl) => {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
       mode: "create",
@@ -240,8 +240,8 @@ function ProductTemplate(props) {
         // desc: product.desc[lang],
         images: [imgUrl],
         default_price_data: {
-          unit_amount: Math.trunc(product.price[lang].amount * 100), //price in cents, eg. 2000 means 20$ or 20pln etc.
-          currency: product.price[lang].currency,
+          unit_amount: Math.trunc(product.price[ccy].amount * 100), //price in cents, eg. 2000 means 20$ or 20pln etc.
+          currency: product.price[ccy].currency,
         },
       },
     };
@@ -253,7 +253,7 @@ function ProductTemplate(props) {
     }
   };
 
-  const updateStripeProduct = async (lang,imgUrl) => {
+  const updateStripeProduct = async (lang, ccy, imgUrl) => {
     let tmpData = null;
     let tmpPrice = null;
 
@@ -265,11 +265,11 @@ function ProductTemplate(props) {
     //   tmpData = { ...tmpData, description: product.desc[lang] };
     // }
 
-    if (product.price[lang].amount != prodEdit.price[lang].amount) {
+    if (product.price[ccy].amount != prodEdit.price[ccy].amount) {
       tmpPrice = {
-        product: prodEdit.price[lang].prod_id,
-        unit_amount: Math.trunc(product.price[lang].amount * 100),
-        currency: product.price[lang].currency,
+        product: prodEdit.price[ccy].prod_id,
+        unit_amount: Math.trunc(product.price[ccy].amount * 100),
+        currency: product.price[ccy].currency,
       };
     }
 
@@ -280,7 +280,7 @@ function ProductTemplate(props) {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
       mode: "update",
-      data: { prod: tmpData, price: tmpPrice, id: prodEdit.price[lang].prod_id },
+      data: { prod: tmpData, price: tmpPrice, id: prodEdit.price[ccy].prod_id },
     };
     if (tmpData || tmpPrice) {
       try {
@@ -310,7 +310,7 @@ function ProductTemplate(props) {
         paths: ["/admin/products", "/"],
       };
       if (prodEdit) {
-        revalidateData.paths.push(`/card/${readyProduct.id}`);
+        revalidateData.paths.push(`/product/${readyProduct.id}`);
       }
 
       await axios.post("/api/revalidate", revalidateData);
@@ -325,8 +325,8 @@ function ProductTemplate(props) {
 
   const exchangeAmount = async () => {
     setLoadingExc(true);
-    const pln = priceRef_pl.current.value;
-    const usd = priceRef_en.current.value;
+    const pln = priceRef_pln.current.value;
+    const usd = priceRef_usd.current.value;
     const have = usd > 0 ? "USD" : pln > 0 ? "PLN" : "USD";
     const want = have === "USD" ? "PLN" : "USD";
     const amount = have === "USD" ? usd : pln;
@@ -343,9 +343,9 @@ function ProductTemplate(props) {
     try {
       const res = await axios.request(options);
       if (want === "USD") {
-        priceRef_en.current.value = res.data.new_amount;
+        priceRef_usd.current.value = res.data.new_amount;
       } else {
-        priceRef_pl.current.value = res.data.new_amount;
+        priceRef_pln.current.value = res.data.new_amount;
       }
     } catch (error) {
       console.log(error);
@@ -629,9 +629,9 @@ function ProductTemplate(props) {
                 type="number"
                 min="0"
                 step="any"
-                ref={priceRef_en}
+                ref={priceRef_usd}
                 onChange={() => setShowPreview(false)}
-                defaultValue={prodEdit ? prodEdit.price.en.amount : 0}
+                defaultValue={prodEdit ? prodEdit.price.usd.amount : 0}
                 className={`${invalid.price && "border border-danger"} ${themeDarkInput}`}
               />
               <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
@@ -641,9 +641,9 @@ function ProductTemplate(props) {
                 type="number"
                 min="0"
                 step="any"
-                ref={priceRef_pl}
+                ref={priceRef_pln}
                 onChange={() => setShowPreview(false)}
-                defaultValue={prodEdit ? prodEdit.price.pl.amount : 0}
+                defaultValue={prodEdit ? prodEdit.price.pln.amount : 0}
                 className={`${invalid.price && "border border-danger"} ${themeDarkInput}`}
               />
               <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
@@ -684,7 +684,7 @@ function ProductTemplate(props) {
         <div className="mt-4">
           <hr />
           <div className="d-flex justify-content-center text-start">
-            <ProductCardTmp product={product} preview={true} />
+            <ProductCard product={product} preview={true} />
           </div>
           <hr className="mt-5" />
           <div>

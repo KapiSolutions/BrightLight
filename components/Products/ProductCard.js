@@ -11,6 +11,7 @@ function ProductCard(props) {
   const product = props.product;
   const preview = props.preview; //true when creating new product or updating existing
   const lang = useDeviceStore((state) => state.lang);
+  const currency = "usd";
   const theme = useDeviceStore((state) => state.themeState);
   const [fullDesc, setfullDesc] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -58,8 +59,8 @@ function ProductCard(props) {
       </Card.Body>
       <Card.Footer className={`d-flex align-items-center justify-content-between ${theme === "dark" && "border-top border-dark"}`}>
         <span className="text-muted">
-          {product.price[lang].amount.replace('.', ',')}
-          <span className="text-uppercase ms-1">{product.price[lang].currency}</span>
+          {product.price[currency].amount.replace('.', ',')}
+          <span className="text-uppercase ms-1">{currency}</span>
         </span>
         <Button
           variant="primary"
