@@ -7,6 +7,7 @@ import { BsFilterRight } from "react-icons/bs";
 function FilterAndSortBar(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const lang = useDeviceStore((state) => state.lang);
+  const currency = useDeviceStore((state) => state.currency);
   const [showOptions, setShowOptions] = useState(false);
   const [sortOption, setSortOption] = useState("1");
   const sortItem = {
@@ -88,10 +89,10 @@ function FilterAndSortBar(props) {
         props.outputArray(array.sort((a, b) => timeStampToDate(a.createDate) - timeStampToDate(b.createDate)));
         break;
         case "3":
-        props.outputArray(array.sort((a, b) => b.price[lang].amount - a.price[lang].amount));
+        props.outputArray(array.sort((a, b) => b.price[currency].amount - a.price[currency].amount));
         break;
       case "4":
-        props.outputArray(array.sort((a, b) => a.price[lang].amount - b.price[lang].amount));
+        props.outputArray(array.sort((a, b) => a.price[currency].amount - b.price[currency].amount));
         break;
       default:
         break;
@@ -264,6 +265,22 @@ function FilterAndSortBar(props) {
                       }}
                     >
                       Date &#8599;
+                    </div>
+                    <div
+                      className={`rounded m-1 p-2 pointer ${sortItem}`}
+                      onClick={(e) => {
+                        sortBy(e, "3");
+                      }}
+                    >
+                      Price &#8600;
+                    </div>
+                    <div
+                      className={`rounded m-1 p-2 pointer ${sortItem}`}
+                      onClick={(e) => {
+                        sortBy(e, "4");
+                      }}
+                    >
+                      Price &#8599;
                     </div>
                   </div>
                 </div>
