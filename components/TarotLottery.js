@@ -15,12 +15,11 @@ import Link from "next/link";
 
 function TarotLotteryDesktop(props) {
   const router = useRouter();
-  const currencyRef = useRef();
   const product = props.product;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const lang = useDeviceStore((state) => state.lang);
-  const currency = "usd";
+  const currency = useDeviceStore((state) => state.currency);
   const { authUserFirestore, setTempCart, updateProfile, setErrorMsg } = useAuth();
   const [flipCards, setFlipCards] = useState([]);
   const [userCards, setUserCards] = useState([]);
@@ -348,6 +347,7 @@ function TarotLotteryDesktop(props) {
                   as="textarea"
                   id="questionField"
                   placeholder="Leave a comment here"
+                  className={themeDarkInput}
                   style={{ minHeight: "150px" }}
                   required
                 />

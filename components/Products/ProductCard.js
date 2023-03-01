@@ -11,7 +11,7 @@ function ProductCard(props) {
   const product = props.product;
   const preview = props.preview; //true when creating new product or updating existing
   const lang = useDeviceStore((state) => state.lang);
-  const currency = "usd";
+  const currency = useDeviceStore((state) => state.currency);
   const theme = useDeviceStore((state) => state.themeState);
   const [fullDesc, setfullDesc] = useState(false);
   const [loading, setLoading] = useState(false);
