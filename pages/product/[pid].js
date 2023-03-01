@@ -17,7 +17,7 @@ function ProductPage(props) {
       </Head>
       <Container className="justify-content-center text-center mt-5">
         {props.product ? (
-          <TarotLottery tarot={props.product} />
+          <TarotLottery product={props.product} />
         ) : (
           <div className="text-center">
             <VscBracketError style={{ width: "40px", height: "40px" }} className="mb-3" />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import ReactCardFlip from "react-card-flip";
@@ -11,11 +11,15 @@ import randomCards from "../public/img/randomCards.gif";
 import cardBackUrl from "../public/img/cards/back.png";
 import cardBackMin from "../public/img/cardBackMin.png";
 import placeholder from "../utils/placeholder";
+import Link from "next/link";
 
 function TarotLotteryDesktop(props) {
   const router = useRouter();
-  const tarot = props.tarot;
+  const currencyRef = useRef();
+  const product = props.product;
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const theme = useDeviceStore((state) => state.themeState);
+  const lang = useDeviceStore((state) => state.lang);
   const { authUserFirestore, setTempCart, updateProfile, setErrorMsg } = useAuth();
   const [flipCards, setFlipCards] = useState([]);
   const [userCards, setUserCards] = useState([]);
@@ -23,6 +27,7 @@ function TarotLotteryDesktop(props) {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingBuy, setLoadingBuy] = useState(false);
+  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
 
   const cardsUrl = "/img/cards/";
   const cardNames = [
@@ -109,8 +114,9 @@ function TarotLotteryDesktop(props) {
   let cardStyleBack = {};
   let cardStyleFront = {};
 
-  if (tarot.cardSet < 10) {
+  if (product.cardSet < 10) {
     cardStyleBack = {
+      postion: "relative",
       opacity: 0.5,
       width: `${isMobile ? "93px" : "118px"}`,
       height: `${isMobile ? "158px" : "200px"}`,
@@ -122,6 +128,7 @@ function TarotLotteryDesktop(props) {
   } else {
     //cards must be smaller for better view
     cardStyleBack = {
+      postion: "relative",
       opacity: 0.5,
       width: `${isMobile ? "60px" : "93px"}`,
       height: `${isMobile ? "102px" : "158px"}`,
@@ -135,7 +142,7 @@ function TarotLotteryDesktop(props) {
   //Menage the display of the choosen cards
   useEffect(() => {
     if (flipCards.length > 0) {
-      const img = document.getElementById(`tarot-card-${flipCards.length - 1}`);
+      const img = document.getElementById(`product-card-${flipCards.length - 1}`);
       const cardNo = flipCards[flipCards.length - 1];
       const cardName = cardNames[cardNo];
       img.setAttribute("src", `${cardsUrl}/${cardName}.png`);
@@ -145,16 +152,15 @@ function TarotLotteryDesktop(props) {
         document.getElementById(cardNo).style.display = "none";
       }
     }
-    if (flipCards.length === tarot.cardSet && !isMobile) {
+    if (flipCards.length == product.cardSet && !isMobile) {
       document.getElementById("cardSetContainer").style.display = "none";
-    } else if (flipCards.length === tarot.cardSet && isMobile) {
+    } else if (flipCards.length == product.cardSet && isMobile) {
       document.getElementById("cardMobile").style.display = "none";
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [flipCards]);
 
-  //Create and shuffle tarot cards array
+  //Create and shuffle product cards array
   useEffect(() => {
     const cardsArr = [];
     for (let i = 0; i < 78; i++) {
@@ -175,12 +181,13 @@ function TarotLotteryDesktop(props) {
     const question = document.getElementById("questionField").value;
     if (question) {
       const cartItem = {
-        name: tarot.title,
+        name: product.title,
+        product_id: product.id,
         cards: userCards,
         question: question,
-        price: tarot.price,
-        s_id: tarot.s_id,
-        image: tarot.image,
+        choosenCurrency: "",
+        price: product.price,
+        image: product.image.name,
       };
       setTempCart(cartItem);
       router.push("/sign-in");
@@ -192,12 +199,13 @@ function TarotLotteryDesktop(props) {
       setErrorMsg("");
       setLoadingBuy(true);
       const cartItem = {
-        name: tarot.title,
+        name: product.title,
+        product_id: product.id,
         cards: userCards,
         question: question,
-        price: tarot.price,
-        s_id: tarot.s_id,
-        image: tarot.image,
+        choosenCurrency: "",
+        price: product.price,
+        image: product.image.name,
       };
       let cart = [...authUserFirestore.cart];
       cart.push(cartItem);
@@ -216,18 +224,19 @@ function TarotLotteryDesktop(props) {
     const question = document.getElementById("questionField").value;
     if (question) {
       const cartItem = {
-        name: tarot.title,
+        name: product.title,
+        product_id: product.id,
         cards: userCards,
         question: question,
-        price: tarot.price,
-        s_id: tarot.s_id,
-        image: tarot.image,
+        choosenCurrency: "",
+        price: product.price,
+        image: product.image.name,
       };
       let cart = [...authUserFirestore.cart];
       cart.push(cartItem);
       try {
         await updateProfile({ cart: cart });
-        setMessage(`The ${tarot.title} tarot successfully added to the cart!`);
+        setMessage(`The ${product.title[lang]} tarot successfully added to the cart!`);
       } catch (error) {
         setErrorMsg(error);
       }
@@ -239,17 +248,25 @@ function TarotLotteryDesktop(props) {
   }
   return (
     <>
+      <section className="d-flex gap-1 mb-2">
+        <small>
+          <Link href="/#main">Home</Link>
+        </small>
+        <small>&gt;</small>
+        <small>{product.title[lang]}</small>
+      </section>
       <Row className="d-flex mb-3 text-center">
-        <h1 className="color-primary mb-3"> {tarot.title} </h1>
+        <h1 className="color-primary mb-3"> {product.title[lang]} </h1>
       </Row>
       <Row className="d-flex mb-4 justify-content-center gap-2">
-        {Array.from({ length: tarot.cardSet }).map((_, idx) => (
+        
+        {Array.from({ length: product.cardSet }).map((_, idx) => (
           <Col
             key={idx}
             className={`d-flex ms-1 me-1 mb-2 justify-content-center ${
-              tarot.cardSet > 10 ? "col-2 col-sm-1 col-md-2 col-lg-1" : "col-3 col-sm-2 col-md-2 col-lg-2"
+              product.cardSet > 10 ? "col-2 col-sm-1 col-md-2 col-lg-1" : "col-3 col-sm-2 col-md-2 col-lg-2"
             }   
-          ${isMobile ? "" : tarot.cardSet < 10 && idx > 0 && idx < tarot.cardSet - 1 && "pt-3"} 
+          ${isMobile ? "" : product.cardSet < 10 && idx > 0 && idx < product.cardSet - 1 && "pt-3"} 
           `}
           >
             <ReactCardFlip
@@ -259,14 +276,10 @@ function TarotLotteryDesktop(props) {
               flipSpeedBackToFront="2"
             >
               <div style={cardStyleBack}>
-                <Image
-                  src={cardBackUrl}
-                  fill
-                  alt={`back-of-card-${idx}`}
-                />
+                <Image src={cardBackUrl} fill alt={`back-of-card-${idx}`} />
               </div>
               <div style={cardStyleFront}>
-                <Card.Img id={`tarot-card-${idx}`} variant="top" alt={`tarot-card-${idx}`} />
+                <Card.Img id={`product-card-${idx}`} variant="top" alt={`product-card-${idx}`} />
               </div>
             </ReactCardFlip>
           </Col>
@@ -274,18 +287,19 @@ function TarotLotteryDesktop(props) {
       </Row>
 
       <Row className="d-flex justify-content-center">
+
         {flipCards.length === 0 && (
           <p className="color-primary">
             Focus deeply on your question and {window.innerWidth < 768 && "TAP below to"}{" "}
-            <strong>choose {tarot.cardSet} cards</strong>
+            <strong>choose {product.cardSet} cards</strong>
           </p>
         )}
-        {flipCards.length > 0 && flipCards.length < tarot.cardSet - 1 && (
+        {flipCards.length > 0 && flipCards.length < product.cardSet - 1 && (
           <p className="color-primary">
-            <strong>Okay, {tarot.cardSet - flipCards.length} more left..</strong>
+            <strong>Okay, {product.cardSet - flipCards.length} more left..</strong>
           </p>
         )}
-        {flipCards.length == tarot.cardSet - 1 && (
+        {flipCards.length == product.cardSet - 1 && (
           <p className="color-primary">
             <strong>And the last one.</strong>
           </p>
@@ -294,7 +308,7 @@ function TarotLotteryDesktop(props) {
           <div id="cardMobile">
             <Image
               src={randomCards}
-              alt={`tarot-card`}
+              alt={`product-card`}
               className="rounded"
               placeholder="blur"
               blurDataURL={placeholder("light")}
@@ -321,7 +335,7 @@ function TarotLotteryDesktop(props) {
           </div>
         )}
 
-        {flipCards.length == tarot.cardSet && !message && (
+        {flipCards.length == product.cardSet && !message && (
           <div>
             <h4 className="mt-0 color-primary">Okay!</h4>
             <p className="color-primary">
@@ -356,9 +370,10 @@ function TarotLotteryDesktop(props) {
                       onClick={handleBuy}
                       style={{ pointerEvents: "none" }}
                     >
-                      <p className="mb-1">
-                        <small>{tarot.price} PLN</small>
-                      </p>
+                      <span>
+                        {product.price[lang].amount}{" "}
+                        <span className="text-uppercase">{product.price[lang].currency}</span>
+                      </span>
                     </Button>
                   </ButtonGroup>
                   <br />
@@ -391,7 +406,7 @@ function TarotLotteryDesktop(props) {
             </Form>
           </div>
         )}
-        {flipCards.length == tarot.cardSet && message && (
+        {flipCards.length == product.cardSet && message && (
           <section className="color-primary mt-1">
             <p>{message}</p>
             <GiGlassHeart style={{ width: "30px", height: "30px" }} />
