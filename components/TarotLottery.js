@@ -341,7 +341,7 @@ function TarotLotteryDesktop(props) {
             <p className="color-primary">
               Now, if you are curious about what your cards say, you can get your own private interpretation!
             </p>
-            <Form className="mt-4 m-auto" style={{ maxWidth: "500px" }} onSubmit={handleSubmit}>
+            <Form className="mt-4 m-auto color-primary" style={{ maxWidth: "500px" }} onSubmit={handleSubmit}>
               <FloatingLabel label="Your Question..">
                 <Form.Control
                   as="textarea"
