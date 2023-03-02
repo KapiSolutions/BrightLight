@@ -186,7 +186,7 @@ function TarotLotteryDesktop(props) {
         cards: userCards,
         question: question,
         price: product.price,
-        image: product.image.name,
+        image: product.image,
       };
       setTempCart(cartItem);
       router.push("/sign-in");
@@ -203,7 +203,7 @@ function TarotLotteryDesktop(props) {
         cards: userCards,
         question: question,
         price: product.price,
-        image: product.image.name,
+        image: product.image,
       };
       let cart = [...authUserFirestore.cart];
       cart.push(cartItem);
@@ -227,7 +227,7 @@ function TarotLotteryDesktop(props) {
         cards: userCards,
         question: question,
         price: product.price,
-        image: product.image.name,
+        image: product.image,
       };
       let cart = [...authUserFirestore.cart];
       cart.push(cartItem);
