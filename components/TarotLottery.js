@@ -185,7 +185,6 @@ function TarotLotteryDesktop(props) {
         product_id: product.id,
         cards: userCards,
         question: question,
-        choosenCurrency: "",
         price: product.price,
         image: product.image.name,
       };
@@ -203,7 +202,6 @@ function TarotLotteryDesktop(props) {
         product_id: product.id,
         cards: userCards,
         question: question,
-        choosenCurrency: "",
         price: product.price,
         image: product.image.name,
       };
@@ -228,7 +226,6 @@ function TarotLotteryDesktop(props) {
         product_id: product.id,
         cards: userCards,
         question: question,
-        choosenCurrency: "",
         price: product.price,
         image: product.image.name,
       };
