@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useAuth } from "../../../context/AuthProvider";
-import { Badge, Button, Card, Spinner } from "react-bootstrap";
+import { Badge, Button, Spinner } from "react-bootstrap";
 import { useRouter } from "next/router";
 import { IoIosArrowForward } from "react-icons/io";
 import { deleteDocInCollection, updateDocFields } from "../../../firebase/Firestore";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import ConfirmActionModal from "../../Modals/ConfirmActionModal";
-import { deleteFileInStorage, deleteFilesInDirStorage, getFileUrlStorage } from "../../../firebase/Storage";
+import { deleteFilesInDirStorage } from "../../../firebase/Storage";
 import axios from "axios";
 import placeholder from "../../../utils/placeholder";
 
@@ -125,6 +125,7 @@ function Product(props) {
               placeholder="blur"
               blurDataURL={placeholder("dark")}
               className={`rounded ${!product.active && "opacity-50"}`}
+              style={{objectFit: "cover"}}
               sizes="33vw"
             />
           </div>
