@@ -3,7 +3,6 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import getStripe from "../../utils/get-stripejs";
-import useLocalStorageState from "use-local-storage-state";
 import { useRouter } from "next/router";
 import { useAuth } from "../../context/AuthProvider";
 import { OverlayTrigger, Popover, FloatingLabel, Form, Button, Container, Spinner } from "react-bootstrap";
@@ -16,15 +15,12 @@ import CartItem from "../../components/Cart/CartItem";
 function CartSummaryPage() {
   const router = useRouter();
   const { isAuthenticated, authUserFirestore, setErrorMsg, updateProfile } = useAuth();
-  const isMobile = useDeviceStore((state) => state.isMobile);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(undefined);
-  const [paymentStart, setPaymentStart] = useState(false);
-  const [theme, setTheme] = useLocalStorageState("theme", {
-    ssr: true,
-    defaultValue: "light",
-  });
+  const isMobile = useDeviceStore((state) => state.isMobile);
+  const lang = useDeviceStore((state) => state.lang);
+  const currency = useDeviceStore((state) => state.currency);
+  const theme = useDeviceStore((state) => state.themeState);
 
   useEffect(() => {
     if (isAuthenticated()) {
@@ -39,19 +35,17 @@ function CartSummaryPage() {
   useEffect(() => {
     let total = 0;
     authUserFirestore?.cart.forEach((item) => {
-      total = total + item.price;
+      total = total + parseFloat(item.price[currency].amount);
     });
     setTotalPrice(total);
 
     total == 0 && !loading && router.replace("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authUserFirestore?.cart]);
+  }, [authUserFirestore?.cart, currency]);
 
   async function handleCheckout(e) {
     e.preventDefault();
-    setError("");
     setLoading(true);
-    setPaymentStart(true);
     let order = null;
     const localeLanguage = window.navigator.userLanguage || window.navigator.language; //to display the date in the email in the client's language format
     const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
@@ -65,6 +59,8 @@ function CartSummaryPage() {
         authUserFirestore?.email,
         authUserFirestore?.cart,
         totalPrice,
+        currency,
+        lang,
         comments
       );
     } catch (error) {
@@ -76,36 +72,45 @@ function CartSummaryPage() {
     try {
       //prepare stripe product data
       const stripeCart = authUserFirestore?.cart.map((_, idx) => ({
-        price: authUserFirestore?.cart[idx].s_id,
+        price: authUserFirestore?.cart[idx].price[currency].s_id,
         quantity: 1,
       }));
       //prepare cart items data for email notification
       const cartItems = await Promise.all(
         authUserFirestore?.cart.map(async (_, idx) => ({
-          name: authUserFirestore?.cart[idx].name,
-          price: authUserFirestore?.cart[idx].price,
-          image: await getFileUrlStorage("images/cards", authUserFirestore?.cart[idx].image),
+          name: authUserFirestore?.cart[idx].name[lang],
+          price: authUserFirestore?.cart[idx].price[currency],
+          currency: currency,
+          image: await getFileUrlStorage(
+            `images/products/${authUserFirestore?.cart[idx].product_id}`,
+            authUserFirestore?.cart[idx].image.name
+          ),
         }))
       );
 
-      const orderData = {
-        sendOrderConfirmEmail: true,
-        orderID: order.id,
-        userName: order.userName,
-        userEmail: order.userEmail,
-        totalPrice: order.totalPrice,
-        cartItems: cartItems,
-        stripeCart: stripeCart,
-        localeLanguage: localeLanguage,
-        localeTimeZone: localeTimeZone,
-        timeCreate: order.timeCreate.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        data: {
+          sendOrderConfirmEmail: true,
+          orderID: order.id,
+          userName: order.userName,
+          userEmail: order.userEmail,
+          totalPrice: order.totalPrice,
+          currency: order.currency,
+          cartItems: cartItems,
+          stripeCart: stripeCart,
+          localeLanguage: localeLanguage,
+          localeTimeZone: localeTimeZone,
+          language: lang,
+          timeCreate: order.timeCreate.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
+        },
       };
 
       //clean cart
       await updateProfile({ cart: [] });
 
       //start checkoutSession
-      const checkoutSession = await axios.post("/api/stripe/checkout_session", orderData);
+      const checkoutSession = await axios.post("/api/stripe/checkout_session", payload);
       if (checkoutSession.statusCode === 500) {
         console.error(checkoutSession.message);
         return;
@@ -239,7 +244,13 @@ function CartSummaryPage() {
               <p className="m-0">
                 <small>
                   You will receive all the answers to the given email address.
-                  {isMobile ? " " : <><br /></>}
+                  {isMobile ? (
+                    " "
+                  ) : (
+                    <>
+                      <br />
+                    </>
+                  )}
                   Answers will be also available{" "}
                   <Link href="/user/orders#main" passHref className="pointer">
                     here.
@@ -297,7 +308,10 @@ function CartSummaryPage() {
                   </Form.Check.Label>
                 </Form.Check>
               </div>
-              <h5 className="color-primary mt-4">Total Price: {totalPrice},00 PLN</h5>
+              <h5 className="color-primary mt-4">
+                Total Price: {totalPrice}
+                <span className="text-uppercase ms-1">{currency}</span>
+              </h5>
               <Button type="submit" className="mt-2" disabled={loading}>
                 {loading ? (
                   <>

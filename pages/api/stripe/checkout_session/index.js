@@ -4,12 +4,17 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
-    const data = { ...req.body };
+    const { secret, data } = req.body;
     const stripeCart = data.stripeCart;
     const orderID = data.orderID;
 
+    // Check the secret key first
+    if (secret !== process.env.NEXT_PUBLIC_API_KEY) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
     if (data.sendOrderConfirmEmail) {
-      await sendEmail("orderConfirmation", data, "en");
+      await sendEmail("orderConfirmation", data, data.language);
     }
 
     try {

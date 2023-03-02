@@ -2,15 +2,17 @@ import React from "react";
 import Item from "./Item";
 
 function OrderDetails(props) {
+  const order = props.order;
+
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
   return (
     <div className="mt-4 mb-4 color-primary">
-      {props.order.status == "Done" && (
+      {order.status == "Done" && (
         <div>
           <p>
-            <strong>Completed:</strong> <u>{timeStampToDate(props.order.timeFinish).toLocaleString()}</u>
+            <strong>Completed:</strong> <u>{timeStampToDate(order.timeFinish).toLocaleString()}</u>
           </p>
           <div className="w-100 opacity-50">
             <hr />
@@ -23,19 +25,19 @@ function OrderDetails(props) {
         <span>
           <small>
             <strong>Status</strong>
-            <p>{props.order.status}</p>
+            <p>{order.status}</p>
           </small>
         </span>
         <span>
           <small>
             <strong>Order Date</strong>
-            <p>{timeStampToDate(props.order.timeCreate).toLocaleString()}</p>
+            <p>{timeStampToDate(order.timeCreate).toLocaleString()}</p>
           </small>
         </span>
         <span>
           <small>
             <strong>Order ID</strong>
-            <p>{props.order.id}</p>
+            <p>{order.id}</p>
           </small>
         </span>
       </div>
@@ -45,29 +47,33 @@ function OrderDetails(props) {
       </div>
 
       {/* Payment details */}
-      {props.order.paid && (
+      {order.paid && (
         <div className={`d-flex gap-${props.isMobile ? "3" : "4"}`}>
           <span>
             <small>
-              <strong>{props.isMobile ? "Amount" : "Amount Paid"}</strong> <p>{props.order.totalPrice},00 PLN</p>
+              <strong>{props.isMobile ? "Amount" : "Amount Paid"}</strong>
+              <p>
+                {order.totalPrice}
+                <span className="text-uppercase ms-1">{order.currency}</span>
+              </p>
             </small>
           </span>
           <span>
             <small>
               <strong>{props.isMobile ? "Method" : "Payment Method"}</strong>
-              <p className="text-uppercase">{props.order.paymentMethod}</p>
+              <p className="text-uppercase">{order.paymentMethod}</p>
             </small>
           </span>
           <span>
             <small>
-              <strong>Payment Date</strong> <p>{timeStampToDate(props.order.timePayment).toLocaleString()}</p>
+              <strong>Payment Date</strong> <p>{timeStampToDate(order.timePayment).toLocaleString()}</p>
             </small>
           </span>
           <span>
             <small>
               <strong>Payment ID</strong>
               <p style={{ maxWidth: `${props.isMobile ? "100px" : "200px"}`, overflowWrap: "break-word" }}>
-                {props.order.paymentID}
+                {order.paymentID}
               </p>
             </small>
           </span>
@@ -75,14 +81,14 @@ function OrderDetails(props) {
       )}
 
       {/* User Comments */}
-      {props.order.userComments && (
+      {order.userComments && (
         <>
           <p className="mb-0 mt-2">
             <strong>Your comments:</strong>
           </p>
           <div className="border rounded p-2">
             <p>
-              <small>{props.order.userComments}</small>
+              <small>{order.userComments}</small>
             </p>
           </div>
         </>
@@ -93,10 +99,13 @@ function OrderDetails(props) {
         <p>
           <strong>Order items:</strong>
         </p>
-        {props.order.items.map((item, idx) => (
-          <Item key={idx} idx={idx} item={item} order={props.order} />
+        {order.items.map((item, idx) => (
+          <Item key={idx} idx={idx} item={item} order={order} />
         ))}
-        <p className="text-end mt-3">Total: {props.order.totalPrice},00 PLN</p>
+        <p className="text-end mt-3">
+          Total: {order.totalPrice}
+          <span className="text-uppercase ms-1">{order.currency}</span>
+        </p>
       </div>
     </div>
   );

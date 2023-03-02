@@ -17,12 +17,12 @@ import { getFileUrlStorage } from "../../../firebase/Storage";
 import appConfig from "../../../config/appConfig";
 
 function Order(props) {
-  const router = useRouter();
   const order = props.order;
   const config = appConfig();
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const lang = useDeviceStore((state) => state.lang);
   const [tmpOrder, setTmpOrder] = useState(null);
-  const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
+  const { setErrorMsg } = useAuth();
   const [errorEmail, setErrorEmail] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(false); //used for notification sending
@@ -54,7 +54,7 @@ function Order(props) {
       setShowConfirmModal({ msg: "", itemID: "" });
       props.refresh(); //refresh the order list
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setShowConfirmModal({ msg: "", itemID: "" });
       setErrorMsg("Something went wrong, please try again later.");
     }
@@ -83,9 +83,9 @@ function Order(props) {
       await Promise.all(
         order.items.map(async (item) => {
           items.push(...items, {
-            name: item.name,
-            price: item.price,
-            image: await getFileUrlStorage("images/cards", item.image),
+            name: item.name[lang],
+            price: item.price[order.currency].amount,
+            image: await getFileUrlStorage(`images/products/${item.product_id}`, item.image.name),
           });
         })
       );
@@ -95,6 +95,7 @@ function Order(props) {
         userName: order.userName,
         userEmail: order.userEmail,
         totalPrice: order.totalPrice,
+        currency: order.currency,
         items: items,
         timeCreate: timeStampToDate(order.timeCreate).toLocaleDateString(),
       };
@@ -191,7 +192,7 @@ function Order(props) {
                 <p className="mb-0">
                   Tarot
                   <small>
-                    ({order?.items[0].name}
+                    ({order?.items[0].name[lang]}
                     {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                   </small>
                 </p>
@@ -229,7 +230,7 @@ function Order(props) {
             ) : (
               <>
                 <p className="mb-0">
-                  Tarot ({order?.items[0].name}
+                  Tarot ({order?.items[0].name[lang]}
                   {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                 </p>
                 <small className="text-muted">{timeStampToDate(order.timeCreate).toLocaleString()}</small>
@@ -274,7 +275,10 @@ function Order(props) {
                 <Badge bg="success">{order.status}!</Badge>
               )}
             </div>
-            <div className="col-2">{order.totalPrice},00 PLN</div>
+            <div className="col-2">
+              {order.totalPrice}
+              <span className="text-uppercase ms-1">{order.currency}</span>
+            </div>
             <div className="col-2">
               <span className="pointer Hover" onClick={showDetailsFunc}>
                 {showDetails ? "Hide details" : "Show details"}

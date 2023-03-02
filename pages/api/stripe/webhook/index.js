@@ -50,9 +50,10 @@ export default async function handler(req, res) {
 
         const cartItems = await Promise.all(
           data.items.map(async (_, idx) => ({
-            name: data.items[idx].name,
-            price: data.items[idx].price,
-            image: await getFileUrlStorage("images/cards", data.items[idx].image),
+            name: data.items[idx].name[data.language],
+            price: data.items[idx].price[data.currency].amount,
+            currency: data.currency,
+            image: await getFileUrlStorage(`images/products/${data.items[idx].product_id}`, data.items[idx].image.name),
           }))
         );
 
@@ -62,6 +63,7 @@ export default async function handler(req, res) {
           userName: data.userName,
           userEmail: data.userEmail,
           totalPrice: data.totalPrice,
+          currency: data.currency,
           cartItems: cartItems,
           paymentID: event.data.object.payment_intent,
           paymentMethod: data.paymentMethod,
@@ -69,7 +71,7 @@ export default async function handler(req, res) {
           timePayment: data.timePayment.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
         };
         //Send confirmation email about the succeeded payment
-        await sendEmail("paymentConfirmation", dataEmail, "en");
+        await sendEmail("paymentConfirmation", dataEmail, data.language);
       } catch (e) {
         console.error(e);
       }

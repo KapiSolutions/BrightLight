@@ -12,6 +12,7 @@ function OrderDetails(props) {
   const order = props.order;
   const { setErrorMsg } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const lang = useDeviceStore((state) => state.lang);
   const [answersQt, setAnswersQt] = useState(Array.from(Array(order.items.length), () => false)); //[false,false...], set tu true when item is answered
   const [readyToFinish, setReadyToFinish] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -54,10 +55,12 @@ function OrderDetails(props) {
         userName: tmpOrder.userName,
         userEmail: tmpOrder.userEmail,
         totalPrice: tmpOrder.totalPrice,
+        currency: tmpOrder.currency,
         items: tmpOrder.items,
+        language: lang,
       });
       await sendEmail(emailData);
-      setShowSuccess("Order successfully Completed!")
+      setShowSuccess("Order successfully Completed!");
       //refresh the order list:
       props.refresh();
     } catch (error) {
@@ -72,7 +75,7 @@ function OrderDetails(props) {
     try {
       await Promise.all(
         data.items.map(async (item, idx) => {
-          const url = await getFileUrlStorage("images/cards", item.image);
+          const url = await getFileUrlStorage(`images/products/${item.product_id}`, item.image.name);
           let cards = "";
           data.items[idx].cards.map((card, idx) => {
             cards += `${idx + 1}. ${styledCardName(card)} `;
@@ -99,7 +102,7 @@ function OrderDetails(props) {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
       data: data,
-      type: "orderFinished"
+      type: "orderFinished",
     };
     try {
       await axios.post("/api/email/", payload);
@@ -113,158 +116,164 @@ function OrderDetails(props) {
 
   return (
     <>
-    <div className="mt-4 mb-4 color-primary">
-      {order.status == "Done" && (
-        <div>
-          <p>
-            <strong>Completed:</strong> <u>{timeStampToDate(order.timeFinish).toLocaleString()}</u>
-          </p>
-          <div className="w-100 opacity-50">
-            <hr />
-          </div>
-        </div>
-      )}
-
-      {/* Order details */}
-      <div className="d-flex gap-4">
-        <span>
-          <small>
-            <strong>Status</strong>
-            <p style={{ whiteSpace: "nowrap" }}>{order.status}</p>
-          </small>
-        </span>
-        <span>
-          <small>
-            <strong>Order Date</strong>
-            <p>{timeStampToDate(order.timeCreate).toLocaleString()}</p>
-          </small>
-        </span>
-        <span>
-          <small>
-            <strong>Order ID</strong>
-            <p>{order.id}</p>
-          </small>
-        </span>
-      </div>
-
-      {/* Payment details */}
-      {order.paid && (
-        <>
-          <div className="w-100 opacity-50">
-            <hr />
-          </div>
-          <div className={`d-flex gap-${isMobile ? "3" : "4"}`}>
-            <span>
-              <small>
-                <strong>{isMobile ? "Amount" : "Amount Paid"}</strong> <p>{order.totalPrice},00 PLN</p>
-              </small>
-            </span>
-            <span>
-              <small>
-                <strong>{isMobile ? "Method" : "Payment Method"}</strong>
-                <p className="text-uppercase">{order.paymentMethod}</p>
-              </small>
-            </span>
-            <span>
-              <small>
-                <strong>Payment Date</strong> <p>{timeStampToDate(order.timePayment).toLocaleString()}</p>
-              </small>
-            </span>
-            <span>
-              <small>
-                <strong>Payment ID</strong>
-                <p style={{ maxWidth: `${isMobile ? "100px" : "200px"}`, overflowWrap: "break-word" }}>
-                  {order.paymentID}
-                </p>
-              </small>
-            </span>
-          </div>
-        </>
-      )}
-
-      <div className="w-100 opacity-50">
-        <hr />
-      </div>
-
-      {/* Client details */}
-      <div className="d-flex gap-3">
-        <span>
-          <small>
-            <strong>Client</strong> <p>{order.userName}</p>
-          </small>
-        </span>
-        <span>
-          <small>
-            <strong>Email</strong>{" "}
-            <p type="email" style={{ maxWidth: `${isMobile ? "120px" : "300px"}`, overflowWrap: "break-word" }}>
-              {order.userEmail}
-            </p>
-          </small>
-        </span>
-        <span>
-          <small>
-            <strong>Client ID</strong>{" "}
-            <p style={{ maxWidth: `${isMobile ? "120px" : "300px"}`, overflowWrap: "break-word" }}>
-              {order.userID}
-            </p>
-          </small>
-        </span>
-      </div>
-
-      {/* User Comments */}
-      {order.userComments && (
-        <>
-          <p className="mb-0 mt-2">
-            <strong>Client comments:</strong>
-          </p>
-          <div className="border rounded p-2">
+      <div className="mt-4 mb-4 color-primary">
+        {order.status == "Done" && (
+          <div>
             <p>
-              <small>{order.userComments}</small>
+              <strong>Completed:</strong> <u>{timeStampToDate(order.timeFinish).toLocaleString()}</u>
             </p>
+            <div className="w-100 opacity-50">
+              <hr />
+            </div>
           </div>
-        </>
-      )}
+        )}
 
-      {/* Order items */}
-      <div className="mt-3">
-        <p>
-          <strong>Order items:</strong>
-        </p>
-        {order.items.map((item, idx) => (
-          <Item key={idx} idx={idx} item={item} order={order} answersQt={answersQtFunc} />
-        ))}
-        <p className="text-end mt-3">Total: {order.totalPrice},00 PLN</p>
-      </div>
+        {/* Order details */}
+        <div className="d-flex gap-4">
+          <span>
+            <small>
+              <strong>Status</strong>
+              <p style={{ whiteSpace: "nowrap" }}>{order.status}</p>
+            </small>
+          </span>
+          <span>
+            <small>
+              <strong>Order Date</strong>
+              <p>{timeStampToDate(order.timeCreate).toLocaleString()}</p>
+            </small>
+          </span>
+          <span>
+            <small>
+              <strong>Order ID</strong>
+              <p>{order.id}</p>
+            </small>
+          </span>
+        </div>
 
-      {/* Finish order Button */}
-      {order.status == "Done" ? (
-        <div className="text-end">
-          <p className="fs-5">
-            <strong>Completed!</strong>
+        {/* Payment details */}
+        {order.paid && (
+          <>
+            <div className="w-100 opacity-50">
+              <hr />
+            </div>
+            <div className={`d-flex gap-${isMobile ? "3" : "4"}`}>
+              <span>
+                <small>
+                  <strong>{isMobile ? "Amount" : "Amount Paid"}</strong>{" "}
+                  <p>
+                    {order.totalPrice}
+                    <span className="text-uppercase ms-1">{order.currency}</span>
+                  </p>
+                </small>
+              </span>
+              <span>
+                <small>
+                  <strong>{isMobile ? "Method" : "Payment Method"}</strong>
+                  <p className="text-uppercase">{order.paymentMethod}</p>
+                </small>
+              </span>
+              <span>
+                <small>
+                  <strong>Payment Date</strong> <p>{timeStampToDate(order.timePayment).toLocaleString()}</p>
+                </small>
+              </span>
+              <span>
+                <small>
+                  <strong>Payment ID</strong>
+                  <p style={{ maxWidth: `${isMobile ? "100px" : "200px"}`, overflowWrap: "break-word" }}>
+                    {order.paymentID}
+                  </p>
+                </small>
+              </span>
+            </div>
+          </>
+        )}
+
+        <div className="w-100 opacity-50">
+          <hr />
+        </div>
+
+        {/* Client details */}
+        <div className="d-flex gap-3">
+          <span>
+            <small>
+              <strong>Client</strong> <p>{order.userName}</p>
+            </small>
+          </span>
+          <span>
+            <small>
+              <strong>Email</strong>{" "}
+              <p type="email" style={{ maxWidth: `${isMobile ? "120px" : "300px"}`, overflowWrap: "break-word" }}>
+                {order.userEmail}
+              </p>
+            </small>
+          </span>
+          <span>
+            <small>
+              <strong>Client ID</strong>{" "}
+              <p style={{ maxWidth: `${isMobile ? "120px" : "300px"}`, overflowWrap: "break-word" }}>{order.userID}</p>
+            </small>
+          </span>
+        </div>
+
+        {/* User Comments */}
+        {order.userComments && (
+          <>
+            <p className="mb-0 mt-2">
+              <strong>Client comments:</strong>
+            </p>
+            <div className="border rounded p-2">
+              <p>
+                <small>{order.userComments}</small>
+              </p>
+            </div>
+          </>
+        )}
+
+        {/* Order items */}
+        <div className="mt-3">
+          <p>
+            <strong>Order items:</strong>
+          </p>
+          {order.items.map((item, idx) => (
+            <Item key={idx} idx={idx} item={item} order={order} answersQt={answersQtFunc} />
+          ))}
+          <p className="text-end mt-3">
+            Total:
+            {order.totalPrice}
+            <span className="text-uppercase ms-1">{order.currency}</span>
           </p>
         </div>
-      ) : (
-        <>
-          {readyToFinish && (
-            <div className="d-flex gap-3 justify-content-end align-items-center">
-              <span className="fs-5">Great! Let&apos;s.. </span>
-              <Button variant="primary" onClick={finishOrder} disabled={loading}>
-                {loading ? (
-                  <>
-                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                    <span> Processing...</span>
-                  </>
-                ) : (
-                  <span> Finish The Order! </span>
-                )}
-              </Button>
-            </div>
-          )}
-        </>
-      )}
-    </div>
 
-    {showSuccess && (
+        {/* Finish order Button */}
+        {order.status == "Done" ? (
+          <div className="text-end">
+            <p className="fs-5">
+              <strong>Completed!</strong>
+            </p>
+          </div>
+        ) : (
+          <>
+            {readyToFinish && (
+              <div className="d-flex gap-3 justify-content-end align-items-center">
+                <span className="fs-5">Great! Let&apos;s.. </span>
+                <Button variant="primary" onClick={finishOrder} disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                      <span> Processing...</span>
+                    </>
+                  ) : (
+                    <span> Finish The Order! </span>
+                  )}
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {showSuccess && (
         <SuccessModal
           msg={showSuccess}
           btn={"Great!"}

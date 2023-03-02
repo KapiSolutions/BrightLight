@@ -6,9 +6,12 @@ import { AiOutlineEdit, AiOutlineSave } from "react-icons/ai";
 import { IoIosArrowForward } from "react-icons/io";
 import styles from "../../styles/components/Cart/CartItem.module.scss";
 import { getFileUrlStorage } from "../../firebase/Storage";
+import { useDeviceStore } from "../../stores/deviceStore";
 
 function CartItem(props) {
   const { authUserFirestore, updateProfile } = useAuth();
+  const lang = useDeviceStore((state) => state.lang);
+  const currency = useDeviceStore((state) => state.currency);
   const [showDetails, setShowDetails] = useState(false);
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -19,7 +22,7 @@ const [imgID, setImgID] = useState(Math.random().toString(36).slice(2, 7));
 
   // Get url's for the item images
   useEffect(() => {
-    getFileUrlStorage("images/cards", item.image)
+    getFileUrlStorage(`images/products/${item.product_id}`, item.image.name)
       .then((url) => {
         const img = document.getElementById(`img-${imgID}`);
         img.setAttribute("src", url);
@@ -72,9 +75,10 @@ const [imgID, setImgID] = useState(Math.random().toString(36).slice(2, 7));
           alt="Item icon"
         />
         <div>
-          <p className={styles.OrderItemName}>{item.name}</p>
+          <p className={styles.OrderItemName}>{item.name[lang]}</p>
           <p className={styles.OrderItemPrice}>
-            <small>{item.price},00 PLN</small>
+            <small>{item.price[currency].amount}
+            <span className="text-uppercase ms-1">{currency}</span></small>
           </p>
         </div>
         <div

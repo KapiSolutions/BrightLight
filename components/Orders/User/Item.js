@@ -3,16 +3,19 @@ import { Card } from "react-bootstrap";
 import { getFileUrlStorage } from "../../../firebase/Storage";
 import styles from "../../../styles/components/Orders/Item.module.scss";
 import { IoIosArrowForward } from "react-icons/io";
+import { useDeviceStore } from "../../../stores/deviceStore";
 
 function Item(props) {
   const [showDetails, setShowDetails] = useState(false);
+  const lang = useDeviceStore((state) => state.lang);
   const item = props.item;
-  
+  const order = props.order;
+
   // Get url's for the item images
   useEffect(() => {
-    getFileUrlStorage("images/cards", item.image)
+    getFileUrlStorage(`images/products/${item.product_id}`, item.image.name)
       .then((url) => {
-        const img = document.getElementById(`${props.order.id}-${props.idx.toString()}`);
+        const img = document.getElementById(`${order.id}-${props.idx.toString()}`);
         img.setAttribute("src", url);
       })
       .catch((error) => console.log(error));
@@ -25,18 +28,21 @@ function Item(props) {
     return card;
   };
   return (
-    <div className={`${styles.OrderItem} ${props.order.status == "Done" && "border border-success"}`}>
+    <div className={`${styles.OrderItem} ${order.status == "Done" && "border border-success"}`}>
       <div className={styles.OrderHeader}>
         <Card.Img
           className={styles.OrderImg}
           src="/img/placeholders/cartImage.webp"
-          id={`${props.order.id}-${props.idx}`}
+          id={`${order.id}-${props.idx}`}
           alt="Item icon"
         />
         <div className="w-50">
-          <p className={styles.OrderItemName}>{item.name}</p>
+          <p className={styles.OrderItemName}>{item.name[lang]}</p>
           <p className={styles.OrderItemPrice}>
-            <small>{item.price},00 PLN</small>
+            <small>
+              {item.price[order.currency].amount}
+              <span className="text-uppercase ms-1">{order.currency}</span>
+            </small>
           </p>
         </div>
         <div
@@ -81,7 +87,7 @@ function Item(props) {
               </p>
             </div>
           </div>
-          {props.order.status == "Done" && (
+          {order.status == "Done" && (
             <>
               <div className="w-100 opacity-50">
                 <hr />

@@ -5,12 +5,15 @@ import styles from "../../../styles/components/Orders/Item.module.scss";
 import { useAuth } from "../../../context/AuthProvider";
 import { IoIosArrowForward } from "react-icons/io";
 import { getDocById, updateDocFields } from "../../../firebase/Firestore";
+import { useDeviceStore } from "../../../stores/deviceStore";
 
 function Item(props) {
   const { setErrorMsg } = useAuth();
+  const order = props.order;
   const [showDetails, setShowDetails] = useState(false);
   const [loadingAdd, setLoadingAdd] = useState(false);
   const [lockAnswer, setLockAnswer] = useState(false);
+  const lang = useDeviceStore((state) => state.lang);
   const item = props.item;
   const answerRef = useRef();
 
@@ -20,9 +23,9 @@ function Item(props) {
       props.answersQt(props.idx);
     }
     // Get url's for the item images
-    getFileUrlStorage("images/cards", item.image)
+    getFileUrlStorage(`images/products/${item.product_id}`, item.image.name)
       .then((url) => {
-        const img = document.getElementById(`${props.order.id}-${props.idx.toString()}`);
+        const img = document.getElementById(`${order.id}-${props.idx.toString()}`);
         img.setAttribute("src", url);
       })
       .catch((error) => console.log(error));
@@ -40,7 +43,7 @@ function Item(props) {
     e.preventDefault();
     setLoadingAdd(true);
     const answer = answerRef.current.value;
-    const tmpOrder = await getDocById("orders", props.order.id);
+    const tmpOrder = await getDocById("orders", order.id);
     let tmpItems = [];
     try {
       tmpOrder.items.map((item, idx) => {
@@ -49,7 +52,7 @@ function Item(props) {
         }
         tmpItems.push(item);
       });
-      await updateDocFields("orders", props.order.id, { items: tmpItems });
+      await updateDocFields("orders", order.id, { items: tmpItems });
       props.answersQt(props.idx);
       setLockAnswer(true);
     } catch (err) {
@@ -65,13 +68,16 @@ function Item(props) {
         <Card.Img
           className={styles.OrderImg}
           src="/img/placeholders/cartImage.webp"
-          id={`${props.order.id}-${props.idx}`}
+          id={`${order.id}-${props.idx}`}
           alt="Item icon"
         />
         <div className="w-50">
-          <p className={styles.OrderItemName}>{item.name}</p>
+          <p className={styles.OrderItemName}>{item.name[lang]}</p>
           <p className={styles.OrderItemPrice}>
-            <small>{item.price},00 PLN</small>
+            <small>
+              {item.price[order.currency].amount}
+              <span className="text-uppercase ms-1">{order.currency}</span>
+            </small>
           </p>
         </div>
         <div
@@ -131,13 +137,13 @@ function Item(props) {
                   id="adminOrderItemField"
                   placeholder="Your answer..."
                   style={{ minHeight: "80px" }}
-                  className={`${lockAnswer && "border border-success"} ${props.order.status == "Done" && "mb-2"}`}
+                  className={`${lockAnswer && "border border-success"} ${order.status == "Done" && "mb-2"}`}
                   ref={answerRef}
                   defaultValue={item.answer ? item.answer : ""}
                   disabled={lockAnswer}
                   required
                 />
-                {props.order.status != "Done" && (
+                {order.status != "Done" && (
                   <>
                     {!lockAnswer && (
                       <div className="text-end mt-2 mb-2">
@@ -156,7 +162,7 @@ function Item(props) {
                   </>
                 )}
               </Form>
-              {props.order.status != "Done" && (
+              {order.status != "Done" && (
                 <>
                   {lockAnswer && (
                     <div className="text-end mt-2 mb-2">

@@ -19,6 +19,7 @@ function Order(props) {
   const order = props.order;
   const config = appConfig();
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const lang = useDeviceStore((state) => state.lang);
   const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(undefined);
@@ -49,21 +50,24 @@ function Order(props) {
       const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
 
       //prepare stripe product data
-      const stripeCart = order.items.map((_, idx) => ({
-        price: order.items[idx].s_id,
+      const stripeCart = order.items.map((item) => ({
+        price: item.price[order.currency].s_id,
         quantity: 1,
       }));
 
-      const orderData = {
-        sendOrderConfirmEmail: false,
-        orderID: order.id,
-        stripeCart: stripeCart,
-        localeLanguage: localeLanguage,
-        localeTimeZone: localeTimeZone,
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        data: {
+          sendOrderConfirmEmail: false,
+          orderID: order.id,
+          stripeCart: stripeCart,
+          localeLanguage: localeLanguage,
+          localeTimeZone: localeTimeZone,
+        },
       };
 
       //start checkoutSession
-      const checkoutSession = await axios.post("/api/stripe/checkout_session", orderData);
+      const checkoutSession = await axios.post("/api/stripe/checkout_session", payload);
       if (checkoutSession.statusCode === 500) {
         console.error(checkoutSession.message);
         return;
@@ -169,7 +173,7 @@ function Order(props) {
                   Tarot
                   <small>
                     {" "}
-                    ({order?.items[0].name}
+                    ({order?.items[0].name[lang]}
                     {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                   </small>
                 </p>
@@ -183,11 +187,7 @@ function Order(props) {
                       <div className="ms-2">
                         <span className={timeOver ? "text-danger" : ""}>
                           <small className="me-1">
-                            {timeOver
-                              ? notificationSended
-                                ? "Extra time: "
-                                : "Time's up: "
-                              : "Deadline: "}
+                            {timeOver ? (notificationSended ? "Extra time: " : "Time's up: ") : "Deadline: "}
                             <strong>{remainingTime()}H</strong>
                           </small>
                           <BsClockHistory />
@@ -202,7 +202,7 @@ function Order(props) {
             ) : (
               <>
                 <p className="mb-0">
-                  Tarot ({order?.items[0].name}
+                  Tarot ({order?.items[0].name[lang]}
                   {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                 </p>
                 <small className="text-muted">{timeStampToDate(order.timeCreate).toLocaleString()}</small>
@@ -247,7 +247,10 @@ function Order(props) {
                 <Badge bg="success">{order.status}!</Badge>
               )}
             </div>
-            <div className="col-2">{order.totalPrice} PLN</div>
+            <div className="col-2">
+              {order.totalPrice}
+              <span className="text-uppercase ms-1">{order.currency}</span>
+            </div>
             <div className="col-2">
               <span className="pointer Hover" onClick={showDetailsFunc}>
                 {showDetails ? "Hide details" : "Show details"}
@@ -313,7 +316,10 @@ function Order(props) {
                     )}
                   </Button>
                 </div>
-                <span>Total: {order.totalPrice},00 PLN</span>
+                <span>
+                  Total: {order.totalPrice}
+                  <span className="text-uppercase ms-1">{order.currency}</span>
+                </span>
               </div>
             )}
 

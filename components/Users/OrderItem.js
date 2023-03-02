@@ -11,6 +11,7 @@ function OrderItem(props) {
   const order = props.order;
   const router = useRouter();
   const theme = useDeviceStore((state) => state.themeState);
+  const lang = useDeviceStore((state) => state.lang);
   const [showDetails, setShowDetails] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -24,12 +25,15 @@ function OrderItem(props) {
           <Image src={icon} width="58" height="58" alt="tarot cards" />
           <div>
             <p className={styles.OrderItemName}>
-              {order?.items[0].name}
+              {order?.items[0].name[lang]}
               {order?.items.length > 1 && `, +${order?.items.length - 1} more..`}
             </p>
             <div className="d-flex align-items-center gap-2">
               <p className={styles.OrderItemPrice}>
-                <small>{order.totalPrice},00 PLN</small>
+                <small>
+                  {order.totalPrice}
+                  <span className="text-uppercase ms-1">{order.currency}</span>
+                </small>
               </p>
               <Badge
                 bg={order.paid ? (order.status == "Done" ? "success" : "warning") : "primary"}
