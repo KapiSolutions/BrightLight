@@ -116,7 +116,7 @@ function TarotLotteryDesktop(props) {
 
   if (product.cardSet < 10) {
     cardStyleBack = {
-      postion: "relative",
+      position: "relative",
       opacity: 0.5,
       width: `${isMobile ? "93px" : "118px"}`,
       height: `${isMobile ? "158px" : "200px"}`,
@@ -128,7 +128,7 @@ function TarotLotteryDesktop(props) {
   } else {
     //cards must be smaller for better view
     cardStyleBack = {
-      postion: "relative",
+      position: "relative",
       opacity: 0.5,
       width: `${isMobile ? "60px" : "93px"}`,
       height: `${isMobile ? "102px" : "158px"}`,
@@ -328,6 +328,7 @@ function TarotLotteryDesktop(props) {
                 id={card}
                 className={`${styles.smallCard} pointer`}
                 onClick={() => setFlipCards([...flipCards, card])}
+                style={{position: "relative"}}
               >
                 <Image src={cardBackMin} placeholder="blur" alt={`back-${card}`} />
               </div>
