@@ -18,7 +18,7 @@ const ReactQuill = dynamic(
 import DOMPurify from "dompurify";
 
 function TextEditorQuill(props) {
-  const [editorState, setEditorState] = useState({ html: "" });
+  const [editorState, setEditorState] = useState("");
   const [enableEditor, setEnableEditor] = useState(false);
   // Quill modules https://quilljs.com/docs/modules/
   const [modules, setModules] = useState({});
@@ -37,7 +37,7 @@ function TextEditorQuill(props) {
     "indent",
     "link",
     "image",
-    "video",
+    "align"
   ];
 
   const loadQuill = async () => {
@@ -47,8 +47,8 @@ function TextEditorQuill(props) {
         [{ header: "1" }, { header: "2" }, { font: [] }],
         [{ size: [] }],
         ["bold", "italic", "underline", "strike", "blockquote"],
-        [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
-        ["link", "image", "video"],
+        [{ align: [] },{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+        ["link", "image"],
         ["clean"],
       ],
       clipboard: {
@@ -68,10 +68,13 @@ function TextEditorQuill(props) {
     loadQuill();
     //If editor is enabled in the edit post mode then use the post content on init in editor
     if (props.initOnEditMode) {
-      editorState.html = props.initOnEditMode;
+      setEditorState(props.initOnEditMode);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+      setEditorState(props.updateContent);
+  }, [props.updateContent]);
 
   return (
     <div>
@@ -80,10 +83,10 @@ function TextEditorQuill(props) {
           theme={"snow"}
           className="color-primary"
           onChange={(html) => {
-            setEditorState({ html: html });
+            setEditorState(html);
             props.content(DOMPurify.sanitize(html)); //send sanitized html to parent
           }}
-          value={editorState.html}
+          value={editorState}
           modules={modules}
           formats={formats}
           bounds={"#root"}

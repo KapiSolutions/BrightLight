@@ -15,6 +15,7 @@ function BlogItemAdmin(props) {
   const router = useRouter();
   const post = props.post;
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const lang = useDeviceStore((state) => state.lang);
   const { setErrorMsg } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
@@ -83,7 +84,7 @@ function BlogItemAdmin(props) {
           <div>
             {isMobile ? (
               <>
-                <p className="mb-0">{post.title}</p>
+                <p className="mb-0">{post.title[lang]}</p>
                 <i>
                   <small>
                     By: {post.author} - {timeStampToDate(post.date).toLocaleDateString()}
@@ -92,7 +93,7 @@ function BlogItemAdmin(props) {
               </>
             ) : (
               <>
-                <p className="mb-0">{post.title}</p>
+                <p className="mb-0">{post.title[lang]}</p>
                 <small className="text-muted">By: {post.author}</small>
               </>
             )}

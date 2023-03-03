@@ -28,6 +28,7 @@ function BlogTemplate(props) {
 
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
+  const lang = useDeviceStore((state) => state.lang);
   const [showSuccess, setShowSuccess] = useState("");
   const [blogContent_en, setBlogContent_en] = useState("");
   const [finalContent_en, setFinalContent_en] = useState("");
@@ -313,7 +314,10 @@ function BlogTemplate(props) {
       }
 
       //update blog data
-      readyBlog.content = finalContent_en;
+      readyBlog.content = {
+        en: finalContent_en,
+        pl: finalContent_pl
+      };
       readyBlog.mainImg.path = imgUrl;
       readyBlog.contentImages = imgContent;
       return readyBlog;
@@ -350,9 +354,7 @@ function BlogTemplate(props) {
     }
   };
 
-  const translateText = async (inputText, outputText) => {
-    const from = "en";
-    const to = "pl";
+  const translateText = async (inputText, outputText, from, to) => {
     let translatedTxt = "";
     if (inputText != "") {
       try {
@@ -374,9 +376,7 @@ function BlogTemplate(props) {
     }
   };
 
-  const translateContent = async (inputText, outputText) => {
-    const from = "en";
-    const to = "pl";
+  const translateContent = async (inputText, outputText, from, to) => {
     let translatedTxt = "";
     
     if (inputText != "") {
@@ -389,8 +389,7 @@ function BlogTemplate(props) {
         res.data[0].map((text) => {
           translatedTxt += text[0];
         });
-        console.log(translatedTxt)
-        setBlogContent_pl(translatedTxt);
+        outputText(translatedTxt);
         // console.log(translatedTxt);
       } catch (error) {
         console.log(error);
@@ -405,24 +404,8 @@ function BlogTemplate(props) {
           <Link href="/admin/blogs#main">Blog Menagment</Link>
         </small>
         <small>&gt;</small>
-        <small>{postEdit ? postEdit.title : "New Blog"}</small>
+        <small>{postEdit ? postEdit.title[lang] : "New Blog"}</small>
       </section>
-
-      {/* <section className="mt-2 mb-2">
-        <Form className="text-start">
-          <Form.Label style={{ position: "relative", top: "8px" }}>TITLE:</Form.Label>
-          <Form.Control
-            type="text"
-            name="blogTmpTitle"
-            placeholder="Add title"
-            ref={titleRef_en}
-            onChange={() => setShowPreview(false)}
-            defaultValue={postEdit ? postEdit.title : ""}
-            className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
-          />
-          {invalid.title && <small className="text-danger">Please add title.</small>}
-        </Form>
-      </section> */}
 
       {/* Name of the product */}
       <section className="mt-2 mb-2">
@@ -438,7 +421,23 @@ function BlogTemplate(props) {
               defaultValue={postEdit ? postEdit.title.en : ""}
               className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
             />
+            {isMobile && lang == "pl" && (
+              <div style={{ height: "0" }}>
+                <Button
+                  variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+                  size="sm"
+                  className="d-flex align-items-center ms-auto me-0"
+                  style={{ position: "relative", top: "-35px", right: "3px" }}
+                  onClick={() => {
+                    translateText(titleRef_pl.current.value, titleRef_en, "pl", "en");
+                  }}
+                >
+                  <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+                </Button>
+              </div>
+            )}
           </div>
+          
 
           {!isMobile && (
             <div>
@@ -446,7 +445,8 @@ function BlogTemplate(props) {
                 variant={`outline-${theme == "dark" ? "light" : "accent1"}`}
                 className="d-flex align-items-center"
                 onClick={() => {
-                  translateText(titleRef_en.current.value, titleRef_pl);
+                  lang == "en" && translateText(titleRef_en.current.value, titleRef_pl, "en", "pl");
+                  lang == "pl" && translateText(titleRef_en.current.value, titleRef_pl, "pl", "en");
                 }}
               >
                 <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
@@ -465,7 +465,7 @@ function BlogTemplate(props) {
               defaultValue={postEdit ? postEdit.title.pl : ""}
               className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
             />
-            {isMobile && (
+            {isMobile && lang == "en" && (
               <div style={{ height: "0" }}>
                 <Button
                   variant={`outline-${theme == "dark" ? "light" : "dark"}`}
@@ -473,7 +473,7 @@ function BlogTemplate(props) {
                   className="d-flex align-items-center ms-auto me-0"
                   style={{ position: "relative", top: "-35px", right: "3px" }}
                   onClick={() => {
-                    translateText(titleRef_en.current.value, titleRef_pl);
+                    translateText(titleRef_en.current.value, titleRef_pl, "en", "pl");
                   }}
                 >
                   <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
@@ -584,8 +584,25 @@ function BlogTemplate(props) {
         <TextEditorQuill
           content={setBlogContent_en}
           initOnEditMode={postEdit?.content.en}
+          updateContent={blogContent_en}
           placeholder={"Here is place for your blog content..."}
         />
+        {lang == "pl" && (
+          <div style={{ height: "0" }}>
+          <Button
+            variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+            size="sm"
+            className="d-flex align-items-center ms-auto me-0"
+            style={{ position: "relative", top: "-35px", right: "3px" }}
+            onClick={() => {
+              translateContent(blogContent_pl, setBlogContent_en, "pl", "en");
+            }}
+            title="Translate from PL to EN"
+          >
+            <SiGoogletranslate style={{ width: "22px", height: "22px" }} title="Translate from PL to EN"/>
+          </Button>
+        </div>
+        )}
       </div>
       {invalid.content && (
         <div className="text-start mt-0">
@@ -597,23 +614,27 @@ function BlogTemplate(props) {
       <div className={`border rounded w-100 ${invalid.content && "border-danger border-2"}`} name="blogTmpContent">
         <TextEditorQuill
           content={setBlogContent_pl}
-          // initOnEditMode={postEdit?.content.pl}
-          initOnEditMode={blogContent_pl}
+          initOnEditMode={postEdit?.content.pl}
+          updateContent={blogContent_pl}
           placeholder={"Dodaj treść swojego bloga..."}
         />
-        <div style={{ height: "0" }}>
+        {lang == "en" && (
+          <div style={{ height: "0" }}>
           <Button
             variant={`outline-${theme == "dark" ? "light" : "dark"}`}
             size="sm"
             className="d-flex align-items-center ms-auto me-0"
             style={{ position: "relative", top: "-35px", right: "3px" }}
             onClick={() => {
-              translateContent(blogContent_en, setBlogContent_pl);
+              translateContent(blogContent_en, setBlogContent_pl, "en", "pl");
             }}
+            title="Translate from EN to PL"
           >
-            <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+            <SiGoogletranslate style={{ width: "22px", height: "22px" }} title="Translate from EN to PL"/>
           </Button>
         </div>
+        )}
+        
       </div>
       {invalid.content && (
         <div className="text-start mt-0">

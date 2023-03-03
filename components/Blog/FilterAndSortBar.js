@@ -6,6 +6,7 @@ import { BsFilterRight } from "react-icons/bs";
 
 function FilterAndSortBar(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const lang = useDeviceStore((state) => state.lang);
   const [showOptions, setShowOptions] = useState(false);
   const [sortOption, setSortOption] = useState("1");
   const sortItem = {
@@ -55,7 +56,7 @@ function FilterAndSortBar(props) {
           }
         });
         //If tag not founded then search for key words in titles
-        if (!itemFounded && (item.title.includes(input) || item.title.toLowerCase().includes(input))) {
+        if (!itemFounded && (item.title[lang].includes(input) || item.title[lang].toLowerCase().includes(input))) {
           tmpItems.push(item);
           itemFounded = true;
         }
