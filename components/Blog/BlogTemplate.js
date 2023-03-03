@@ -15,20 +15,24 @@ import BlogPost from "./BlogPost";
 import { v4 as uuidv4 } from "uuid";
 import { createDocFirestore, getDocById, updateDocFields } from "../../firebase/Firestore";
 import SuccessModal from "../Modals/SuccessModal";
+import { SiGoogletranslate } from "react-icons/si";
 
 function BlogTemplate(props) {
   const postEdit = props.post;
-  const titleRef = useRef();
+  const titleRef_en = useRef();
+  const titleRef_pl = useRef();
   const authorRef = useRef();
   const dateRef = useRef();
   const mainImgSourceRef = useRef();
   const router = useRouter();
 
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const themeState = useDeviceStore((state) => state.themeState);
+  const theme = useDeviceStore((state) => state.themeState);
   const [showSuccess, setShowSuccess] = useState("");
-  const [blogContent, setBlogContent] = useState("");
-  const [finalContent, setFinalContent] = useState("");
+  const [blogContent_en, setBlogContent_en] = useState("");
+  const [finalContent_en, setFinalContent_en] = useState("");
+  const [blogContent_pl, setBlogContent_pl] = useState("");
+  const [finalContent_pl, setFinalContent_pl] = useState("");
   const [imgBase64, setImgBase64] = useState({ loaded: false, path: placeholder("pinkPX") }); //used only for preview
   const [imgFile, setImgFile] = useState(null); //image wich will be uploaded to storage
   const [editNewImage, setEditNewImage] = useState(false);
@@ -43,7 +47,10 @@ function BlogTemplate(props) {
   const initPost = {
     id: "",
     author: "",
-    content: "",
+    content: {
+      en: "",
+      pl: "",
+    },
     date: "",
     mainImg: {
       path: "",
@@ -52,26 +59,30 @@ function BlogTemplate(props) {
     },
     contentImages: [],
     tags: [],
-    title: "",
+    title: {
+      en: "",
+      pl: "",
+    },
     comments: [],
     likes: [],
   };
   const [post, updatePost] = useReducer((state, updates) => ({ ...state, ...updates }), initPost);
   const mainPicHeight = "200px";
-  const themeDarkInput = themeState == "dark" ? "bg-accent6 text-light" : "";
+  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
 
   //Update Blog content on evry editor state change
   useEffect(() => {
     setShowPreview(false);
     updateInvalid({ content: false });
-  }, [blogContent]);
+  }, [blogContent_en]);
 
   //Create string form tags array when edit mode is enabled
   useEffect(() => {
     if (postEdit) {
       setImgBase64({ loaded: true, path: postEdit.mainImg.path }); //set url instead of base64
       updateInvalid({ mainImg: false }); //main img setted
-      setBlogContent(postEdit.content);
+      setBlogContent_en(postEdit.content.en);
+      setBlogContent_pl(postEdit.content.pl);
       setTagsString(postEdit.tags.join(" "));
       setTags([...postEdit.tags]);
     }
@@ -95,7 +106,7 @@ function BlogTemplate(props) {
     imgToBase64(files);
     setImgFile(files[0]);
     setEditNewImage(true);
-  }
+  };
 
   //Convert eg. main image to to base64 to display it on the client without uploading files to the firebase storage
   const imgToBase64 = (files) => {
@@ -146,13 +157,21 @@ function BlogTemplate(props) {
       document.getElementsByName("blogTmpDate")[0].scrollIntoView({ block: "center", inline: "nearest" });
     }
     // check title field
-    if (titleRef.current?.value != "") {
+    if (titleRef_en.current?.value != "") {
       updateInvalid({ title: false }); //ok
     } else {
       dataOK = false;
       updateInvalid({ title: true }); //invalid
       document.getElementsByName("blogTmpTitle")[0].focus();
       document.getElementsByName("blogTmpTitle")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    }
+    if (titleRef_pl.current?.value != "") {
+      updateInvalid({ title: false }); //ok
+    } else {
+      dataOK = false;
+      updateInvalid({ title: true }); //invalid
+      document.getElementsByName("blogTmpTitlePL")[0].focus();
+      document.getElementsByName("blogTmpTitlePL")[0].scrollIntoView({ block: "center", inline: "nearest" });
     }
     // check author field
     if (authorRef.current?.value != "") {
@@ -173,11 +192,19 @@ function BlogTemplate(props) {
       document.getElementsByName("blogTmpImg")[0].scrollIntoView({ block: "center", inline: "nearest" });
     }
     // check if blog content is added
-    if (blogContent == "" || blogContent == "<p><br></p>") {
+    if (blogContent_en == "" || blogContent_en == "<p><br></p>") {
       dataOK = false;
       updateInvalid({ content: true }); //invalid
       document.getElementsByName("blogTmpContent")[0].focus();
       document.getElementsByName("blogTmpContent")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    } else {
+      updateInvalid({ content: false }); //ok
+    }
+    if (blogContent_pl == "" || blogContent_pl == "<p><br></p>") {
+      dataOK = false;
+      updateInvalid({ content: true }); //invalid
+      document.getElementsByName("blogTmpContentPL")[0].focus();
+      document.getElementsByName("blogTmpContentPL")[0].scrollIntoView({ block: "center", inline: "nearest" });
     } else {
       updateInvalid({ content: false }); //ok
     }
@@ -186,7 +213,10 @@ function BlogTemplate(props) {
       updatePost({
         id: `${postEdit ? postEdit.id : uid}`,
         author: authorRef.current?.value,
-        content: blogContent,
+        content: {
+          en: blogContent_en,
+          pl: blogContent_pl,
+        },
         date: date,
         mainImg: {
           path: imgBase64.path,
@@ -194,21 +224,24 @@ function BlogTemplate(props) {
           style: mainPicStyle,
         },
         tags: tags,
-        title: titleRef.current?.value,
+        title: {
+          en: titleRef_en.current?.value,
+          pl: titleRef_pl.current?.value,
+        },
         comments: postEdit ? [...postEdit.comments] : [],
         likes: postEdit ? [...postEdit.likes] : [],
       });
 
       //prepare html and images for the submit action
-      await convertHtml();
+      setFinalContent_en(await convertHtml(blogContent_en));
+      setFinalContent_pl(await convertHtml(blogContent_pl));
       setShowPreview(!showPreview);
     }
   };
 
   //Get all the img elements and replace with {{{}}} handleBar variables,
   //to not store base64 images in the firestore but img files in storage
-  const convertHtml = async () => {
-    let tmpContent = blogContent; //here will be stored the final html content
+  const convertHtml = async (tmpContent) => {
     const imgCount = [...tmpContent.matchAll("<img")]; //Count how many images are added to the blog content
     let imgList = [];
 
@@ -235,7 +268,7 @@ function BlogTemplate(props) {
       })
     );
     setContentImages(imgList);
-    setFinalContent(tmpContent);
+    return tmpContent;
   };
 
   // convert base64 to the file format
@@ -280,7 +313,7 @@ function BlogTemplate(props) {
       }
 
       //update blog data
-      readyBlog.content = finalContent;
+      readyBlog.content = finalContent_en;
       readyBlog.mainImg.path = imgUrl;
       readyBlog.contentImages = imgContent;
       return readyBlog;
@@ -317,6 +350,54 @@ function BlogTemplate(props) {
     }
   };
 
+  const translateText = async (inputText, outputText) => {
+    const from = "en";
+    const to = "pl";
+    let translatedTxt = "";
+    if (inputText != "") {
+      try {
+        const res = await axios.get(
+          `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURI(
+            inputText
+          )}`
+        );
+        res.data[0].map((text) => {
+          translatedTxt += text[0];
+        });
+        outputText.current.value = translatedTxt;
+        // console.log(translatedTxt);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      outputText.current.value = "";
+    }
+  };
+
+  const translateContent = async (inputText, outputText) => {
+    const from = "en";
+    const to = "pl";
+    let translatedTxt = "";
+    
+    if (inputText != "") {
+      try {
+        const res = await axios.get(
+          `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURI(
+            inputText
+          )}`
+        );
+        res.data[0].map((text) => {
+          translatedTxt += text[0];
+        });
+        console.log(translatedTxt)
+        setBlogContent_pl(translatedTxt);
+        // console.log(translatedTxt);
+      } catch (error) {
+        console.log(error);
+      }
+    } 
+  };
+
   return (
     <>
       <section className="d-flex gap-1">
@@ -327,20 +408,86 @@ function BlogTemplate(props) {
         <small>{postEdit ? postEdit.title : "New Blog"}</small>
       </section>
 
-      <section className="mt-2 mb-2">
+      {/* <section className="mt-2 mb-2">
         <Form className="text-start">
           <Form.Label style={{ position: "relative", top: "8px" }}>TITLE:</Form.Label>
           <Form.Control
             type="text"
             name="blogTmpTitle"
             placeholder="Add title"
-            ref={titleRef}
+            ref={titleRef_en}
             onChange={() => setShowPreview(false)}
             defaultValue={postEdit ? postEdit.title : ""}
             className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
           />
           {invalid.title && <small className="text-danger">Please add title.</small>}
         </Form>
+      </section> */}
+
+      {/* Name of the product */}
+      <section className="mt-2 mb-2">
+        <Form className={`d-flex text-start align-items-end ${isMobile && "flex-wrap"}`}>
+          <div className={`w-100 ${!isMobile && "me-2"}`}>
+            <Form.Label style={{ position: "relative", top: "8px" }}>Title:</Form.Label>
+            <Form.Control
+              type="text"
+              name="blogTmpTitle"
+              placeholder="Add title"
+              ref={titleRef_en}
+              onChange={() => setShowPreview(false)}
+              defaultValue={postEdit ? postEdit.title.en : ""}
+              className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
+            />
+          </div>
+
+          {!isMobile && (
+            <div>
+              <Button
+                variant={`outline-${theme == "dark" ? "light" : "accent1"}`}
+                className="d-flex align-items-center"
+                onClick={() => {
+                  translateText(titleRef_en.current.value, titleRef_pl);
+                }}
+              >
+                <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+              </Button>
+            </div>
+          )}
+
+          <div className={`w-100 ${!isMobile && "ms-2"}`}>
+            <Form.Label style={{ position: "relative", top: "8px" }}>Tytuł:</Form.Label>
+            <Form.Control
+              type="text"
+              name="blogTmpTitlePL"
+              placeholder="Dodaj nazwę"
+              ref={titleRef_pl}
+              onChange={() => setShowPreview(false)}
+              defaultValue={postEdit ? postEdit.title.pl : ""}
+              className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
+            />
+            {isMobile && (
+              <div style={{ height: "0" }}>
+                <Button
+                  variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+                  size="sm"
+                  className="d-flex align-items-center ms-auto me-0"
+                  style={{ position: "relative", top: "-35px", right: "3px" }}
+                  onClick={() => {
+                    translateText(titleRef_en.current.value, titleRef_pl);
+                  }}
+                >
+                  <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+                </Button>
+              </div>
+            )}
+          </div>
+        </Form>
+        {invalid.title && <small className="text-danger">Please add title.</small>}
+        {isMobile && (
+          <div className="mt-3 pt-1">
+            <hr />
+          </div>
+        )}
       </section>
       {/* Main picture & DropZone */}
       <div
@@ -431,13 +578,42 @@ function BlogTemplate(props) {
           </Form.Select>
         </Form>
       )}
-      {/* Text Editor */}
-      <div className={`mt-2 border rounded w-100 ${invalid.content && "border-danger border-2"}`} name="blogTmpContent">
+      {/* Content EN */}
+      <p className="mt-2 mb-0 text-start">Content:</p>
+      <div className={`border rounded w-100 ${invalid.content && "border-danger border-2"}`} name="blogTmpContent">
         <TextEditorQuill
-          content={setBlogContent}
-          initOnEditMode={postEdit?.content}
+          content={setBlogContent_en}
+          initOnEditMode={postEdit?.content.en}
           placeholder={"Here is place for your blog content..."}
         />
+      </div>
+      {invalid.content && (
+        <div className="text-start mt-0">
+          <small className="text-danger">Please add some content.</small>
+        </div>
+      )}
+      {/* Content PL */}
+      <p className="mt-2 mb-0 text-start">Treść:</p>
+      <div className={`border rounded w-100 ${invalid.content && "border-danger border-2"}`} name="blogTmpContent">
+        <TextEditorQuill
+          content={setBlogContent_pl}
+          // initOnEditMode={postEdit?.content.pl}
+          initOnEditMode={blogContent_pl}
+          placeholder={"Dodaj treść swojego bloga..."}
+        />
+        <div style={{ height: "0" }}>
+          <Button
+            variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+            size="sm"
+            className="d-flex align-items-center ms-auto me-0"
+            style={{ position: "relative", top: "-35px", right: "3px" }}
+            onClick={() => {
+              translateContent(blogContent_en, setBlogContent_pl);
+            }}
+          >
+            <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+          </Button>
+        </div>
       </div>
       {invalid.content && (
         <div className="text-start mt-0">
@@ -448,7 +624,7 @@ function BlogTemplate(props) {
       {/* Tag menager */}
       <section className="mt-2 mb-2">
         <Form className="text-start">
-          <Form.Label style={{ position: "relative", top: "8px" }}>TAGS:</Form.Label>
+          <Form.Label style={{ position: "relative", top: "8px" }}>Tags:</Form.Label>
           <Form.Control
             type="text"
             placeholder="Eg: tag1 tag2"
@@ -460,7 +636,7 @@ function BlogTemplate(props) {
         <div className="d-flex flex-wrap gap-2 text-start mt-2">
           {tags.length > 0 &&
             tags.map((tag, idx) => (
-              <Badge key={idx} bg={themeState == "dark" ? "primary" : "dark"} className="pointer">
+              <Badge key={idx} bg={theme == "dark" ? "primary" : "dark"} className="pointer">
                 #{tag}
               </Badge>
             ))}
