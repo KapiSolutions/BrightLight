@@ -25,6 +25,15 @@ function DesktopMenu(props) {
   const revTheme = props.theme === "light" ? "dark" : "light";
   const offCanvBackColor = props.theme === "light" ? "#fcfcfb" : "#11061a";
 
+
+  const { locales, locale: activeLocale } = router
+
+  const otherLocales = (locales || []).filter(
+    (locale) => locale !== activeLocale
+  )
+
+  console.log(locale)
+
   async function handleLogout() {
     setError("");
     try {
