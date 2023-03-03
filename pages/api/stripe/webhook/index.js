@@ -68,6 +68,7 @@ export default async function handler(req, res) {
           paymentID: event.data.object.payment_intent,
           paymentMethod: data.paymentMethod,
           amountPaid: data.totalPrice,
+          language: data.language,
           timePayment: data.timePayment.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
         };
         //Send confirmation email about the succeeded payment

@@ -4,11 +4,11 @@ import { google } from "googleapis";
 import path from "path";
 import { promises as fs } from "fs";
 //email templates:
-import orderConfirmation from "./en/orderConfirmation";
-import paymentConfirmation from "./en/paymentConfirmation";
-import orderFinished from "./en/orderFinished";
-import unpaidNotification from "./en/unpaidNotification";
-import orderCancelled from "./en/orderCancelled";
+import orderConfirmation from "./orderConfirmation";
+import paymentConfirmation from "./paymentConfirmation";
+import orderFinished from "./orderFinished";
+import unpaidNotification from "./unpaidNotification";
+import orderCancelled from "./orderCancelled";
 
 export default async function sendEmail(emailType, data, language) {
   await new Promise(async (resolve, reject) => {
@@ -49,7 +49,7 @@ export default async function sendEmail(emailType, data, language) {
       }
 
       //Read html file and replace variables with the values
-      const filePath = path.join(process.cwd(), `utils/emails/${language}/${emailType}/index.html`);
+      const filePath = path.join(process.cwd(), `utils/emails/${emailType}/${language}/index.html`);
       const fileContents = await fs.readFile(filePath, "utf8");
       const template = handlebars.compile(fileContents.toString());
       const htmlToSend = template(replacements);

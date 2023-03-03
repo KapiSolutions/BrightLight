@@ -42,7 +42,7 @@
 
     .Wrapper {
       display: grid;
-      grid-template-rows: max-content max-content auto auto auto;
+      grid-template-rows: max-content max-content auto auto;
       grid-template-columns: 100%;
       min-width: 250px;
       max-width: 600px;
@@ -81,32 +81,10 @@
       grid-row: 2;
     }
 
-    /* Payment Section */
-    .PaymentSection {
-      grid-column: 1;
-      grid-row: 3;
-    }
-
-    .PaymentInfoItem {
-      display: inline-block;
-      background: rgba(255, 181, 216, 0.08);
-      border: 1px solid rgba(0, 0, 0, 0.1);
-      border-radius: 8px;
-      width: 25%;
-      min-width: max-content;
-      margin: 5px;
-      padding: 5px
-    }
-
-    .PaymentInfoItem>p {
-      margin: 5px;
-      text-transform: uppercase;
-    }
-
     /* Order Section */
     .OrderSection {
       grid-column: 1;
-      grid-row: 4;
+      grid-row: 3;
     }
 
     .OrderItem {
@@ -139,7 +117,7 @@
     /* Footer Section */
     .FooterSection {
       grid-column: 1;
-      grid-row: 5;
+      grid-row: 4;
       text-align: center;
     }
 
@@ -182,10 +160,6 @@
         width: 130px;
       }
 
-      .PaymentInfoItem {
-        width: 80%;
-      }
-
       .FooterIcon {
         width: 32px;
       }
@@ -200,52 +174,30 @@
     <header class="HeaderSection">
       <img class="HeaderLogo" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Femails%2FLogo.png?alt=media&token=0bb13cb4-b9ad-4bb5-ab1c-bcd297ab2e03" alt="Bright Light Gypsy Logo" />
       <h2>Hi {{userName}}!</h2>
-      <h1><strong>Successful payment!</strong></h1>
+      <h1><strong>Your order is placed!</strong></h1>
     </header>
 
     <!-- Message -->
     <section class="MessageSection">
       <p>
-        Thank you for your order!
+        You will get all your questions answered within 48 hours of successful payment.
       </p>
       <p>
-        You will receive all the answers within 48h from now.
+        Payment confirmation will be sent in the separate e-mail.
       </p>
       <p>
         You can check your order status <a href="https://brightlightgypsy.pl/user/orders#main"><strong>here.</strong></a>
       </p>
-
-    </section>
-
-    <section class="PaymentSection">
-      <h1><strong>Payment Details</strong></h1>
-      <center>
-
-        <div class="PaymentInfoItem">
-          <p><small>Amount paid</small></p>
-          <p><strong>{{amountPaid}},00 PLN</strong></p>
-        </div>
-        <div class="PaymentInfoItem">
-          <p><small>Date paid</small></p>
-          <p><strong>{{timePayment}}</strong></p>
-        </div>
-        <div class="PaymentInfoItem">
-          <p><small>Payment method</small></p>
-          <p><strong>{{paymentMethod}}</strong></p>
-        </div>
-        <p style="text-transform: uppercase;"><small>Payment id:<br>{{paymentID}}</small></p>
-      </center>
     </section>
 
     <!-- Order details -->
     <section class="OrderSection">
       <h1><strong>Order Details</strong></h1>
       <p>
-          Order number: {{orderID}}
+          Order number: <strong>{{orderID}}</strong>
           <br>
-          Order date: {{timeCreate}}
+          Order date: <strong>{{timeCreate}}</strong>
       </p>
-
       <!-- <div class="OrderItem">
         <img class="OrderImg" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Fcards%2Flovers.png?alt=media&token=d911cee3-3c3f-439a-a80f-07dc14defbc6" alt="Item icon" />
         <p class="OrderItemName">Affiliate Compatibility</p>
@@ -254,7 +206,7 @@
       {{{orderItems}}}
 
       <div style="float:right">
-        <p><strong>Total: {{totalPrice}},00 PLN</strong></p>
+        <p><strong>Total: {{totalPrice}} <span style="text-transform: uppercase">{{currency}}</span></strong></p>
       </div>
     </section>
 

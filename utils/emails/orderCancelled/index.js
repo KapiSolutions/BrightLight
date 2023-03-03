@@ -1,7 +1,7 @@
 export default function orderCancelled(data) {
   const emailData_occ = {
     emailTo: data.userEmail,
-    emailSubject: `Order cancelled (${data.orderID})`,
+    emailSubject: `${data.language == "en" ? "Order cancelled":"Zamówienie anulowane"} (${data.orderID})`,
     userName: data.userName,
   };
   const replacements_occ = {

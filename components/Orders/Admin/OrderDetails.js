@@ -57,7 +57,7 @@ function OrderDetails(props) {
         totalPrice: tmpOrder.totalPrice,
         currency: tmpOrder.currency,
         items: tmpOrder.items,
-        language: lang,
+        language: tmpOrder.language,
       });
       await sendEmail(emailData);
       setShowSuccess("Order successfully Completed!");

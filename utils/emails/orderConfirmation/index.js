@@ -7,14 +7,14 @@ export default function orderConfirmation(data) {
           <div class="OrderItem">
             <img class="OrderImg" src="${item.image}" alt="Item icon" />
             <p class="OrderItemName">${item.name}</p>
-            <p class="OrderItemPrice">${item.price},00 PLN</p>
+            <p class="OrderItemPrice">${item.price} <span style="text-transform: uppercase">${data.currency}</span></p>
           </div>
           `;
   });
 
   const emailData_oc = {
     emailTo: data.userEmail,
-    emailSubject: `Order confirmation (${data.orderID})`,
+    emailSubject: `${data.language == "en" ? "Order confirmation":"Potwierdzenie zamówienia"} (${data.orderID})`,
     userName: data.userName,
   };
   const replacements_oc = {
@@ -23,6 +23,7 @@ export default function orderConfirmation(data) {
     orderDate: data.orderDate,
     orderItems: items,
     totalPrice: data.totalPrice,
+    currency: data.currency,
     timeCreate: data.timeCreate
   };
 

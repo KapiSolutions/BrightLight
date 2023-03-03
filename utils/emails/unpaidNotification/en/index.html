@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
-  <title>Order Confirmed</title>
+  <title>Waiting for the payment</title>
   <style>
     body {
       margin: 0;
@@ -174,19 +174,19 @@
     <header class="HeaderSection">
       <img class="HeaderLogo" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Femails%2FLogo.png?alt=media&token=0bb13cb4-b9ad-4bb5-ab1c-bcd297ab2e03" alt="Bright Light Gypsy Logo" />
       <h2>Hi {{userName}}!</h2>
-      <h1><strong>Your order is placed!</strong></h1>
+      <h1><strong>Your order is still unpaid!</strong></h1>
     </header>
 
     <!-- Message -->
     <section class="MessageSection">
       <p>
-        You will get all your questions answered within 48 hours of successful payment.
+        It's been 48 hours since placing the order and your payment is still missing.
       </p>
       <p>
-        Payment confirmation will be sent in the separate e-mail.
+        Please make payment as soon as possible otherwise the order will be deleted.
       </p>
       <p>
-        You can check your order status <a href="https://brightlightgypsy.pl/user/orders#main"><strong>here.</strong></a>
+        You can pay and check your order status <a href="https://brightlightgypsy.pl/user/orders#main"><strong>here.</strong></a>
       </p>
     </section>
 
@@ -206,7 +206,7 @@
       {{{orderItems}}}
 
       <div style="float:right">
-        <p><strong>Total: {{totalPrice}},00 PLN</strong></p>
+        <p><strong>Total: {{totalPrice}} <span style="text-transform: uppercase">{{currency}}</span></strong></p>
       </div>
     </section>
 

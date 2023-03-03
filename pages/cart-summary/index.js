@@ -79,7 +79,7 @@ function CartSummaryPage() {
       const cartItems = await Promise.all(
         authUserFirestore?.cart.map(async (_, idx) => ({
           name: authUserFirestore?.cart[idx].name[lang],
-          price: authUserFirestore?.cart[idx].price[currency],
+          price: authUserFirestore?.cart[idx].price[currency].amount,
           currency: currency,
           image: await getFileUrlStorage(
             `images/products/${authUserFirestore?.cart[idx].product_id}`,
@@ -101,7 +101,7 @@ function CartSummaryPage() {
           stripeCart: stripeCart,
           localeLanguage: localeLanguage,
           localeTimeZone: localeTimeZone,
-          language: lang,
+          language: order.language,
           timeCreate: order.timeCreate.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
         },
       };

@@ -50,7 +50,7 @@ function Order(props) {
     try {
       await deleteDocInCollection("orders", order.id);
       //send email to the client due to order cancellation
-      await sendEmail({ orderID: order.id, userName: order.userName, userEmail: order.userEmail });
+      await sendEmail({ orderID: order.id, userName: order.userName, userEmail: order.userEmail, language: order.language});
       setShowConfirmModal({ msg: "", itemID: "" });
       props.refresh(); //refresh the order list
     } catch (error) {
@@ -85,6 +85,7 @@ function Order(props) {
           items.push(...items, {
             name: item.name[lang],
             price: item.price[order.currency].amount,
+            currency: order.currency,
             image: await getFileUrlStorage(`images/products/${item.product_id}`, item.image.name),
           });
         })
@@ -96,6 +97,7 @@ function Order(props) {
         userEmail: order.userEmail,
         totalPrice: order.totalPrice,
         currency: order.currency,
+        language: lang,
         items: items,
         timeCreate: timeStampToDate(order.timeCreate).toLocaleDateString(),
       };

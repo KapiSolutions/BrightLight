@@ -5,16 +5,16 @@ export default function unpaidNotification(data) {
       items +
       `
           <div class="OrderItem">
-            <img class="OrderImg" src="${item.image}" alt="Item icon" />
+            <img class="OrderImg" src="${item.image}" alt="${item.name} - Bright Light Gypsy tarot" />
             <p class="OrderItemName">${item.name}</p>
-            <p class="OrderItemPrice">${item.price},00 PLN</p>
+            <p class="OrderItemPrice">${item.price} <span style="text-transform: uppercase">${item.currency}</span></p>
           </div>
           `;
   });
 
   const emailData_un = {
     emailTo: data.userEmail,
-    emailSubject: `Missing payment (${data.orderID})`,
+    emailSubject: `${data.language == "en" ? "Missing payment":"Brakująca płatność"} (${data.orderID})`,
     userName: data.userName,
   };
   const replacements_un = {
@@ -22,6 +22,7 @@ export default function unpaidNotification(data) {
     orderID: data.orderID,
     orderItems: items,
     totalPrice: data.totalPrice,
+    currency: data.currency,
     timeCreate: data.timeCreate
   };
 

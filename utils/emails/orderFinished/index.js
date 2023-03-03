@@ -6,23 +6,23 @@ export default function orderFinished(data) {
       `
       <div class="OrderItem">
       <div class="OrderHeader">
-        <img class="OrderImg" src="${item.image}" alt="Item icon" />
-        <p class="OrderItemName"><strong>${item.name}</strong></p>
-        <p class="OrderItemPrice"><strong>${item.price},00 PLN</strong></p>
+        <img class="OrderImg" src="${item.image}" alt="${item.name[data.language]} - Bright Light Gypsy tarot" />
+        <p class="OrderItemName"><strong>${item.name[data.language]}</strong></p>
+        <p class="OrderItemPrice"><strong>${item.price[data.currency].amount} <span style="text-transform: uppercase">${data.currency}</span></strong></p>
       </div>
       <div>
         <hr class="hLine" />
-        <p>Your Cards:</p>
+        <p>${data.language == "en" ? "Your Cards:":"Twoje karty:"}</p>
         <p class="OrderItemText"><small>${item.cards}</small></p>
       </div>
       <div>
         <hr class="hLine" />
-        <p>Your Question:</p>
+        <p>${data.language == "en" ? "Your Question:":"Twoje pytanie:"}</p>
         <p class="OrderItemText"><small>${item.question}</small></p>
       </div>
       <div>
         <hr class="hLine" />
-        <p><strong>Answer:</strong></p>
+        <p><strong>${data.language == "en" ? "Answer:":"Odpowiedź:"}</strong></p>
         <p class="OrderItemText"><small>${item.answer}</small></p>
       </div>
     </div>
@@ -31,7 +31,7 @@ export default function orderFinished(data) {
 
   const emailData_of = {
     emailTo: data.userEmail,
-    emailSubject: `Your order is Ready! (${data.orderID})`,
+    emailSubject: `${data.language == "en" ? "Your order is Ready!":"Zamówienie gotowe!"} (${data.orderID})`,
     userName: data.userName,
   };
   const replacements_of = {
@@ -39,6 +39,7 @@ export default function orderFinished(data) {
     orderID: data.orderID,
     items: items,
     totalPrice: data.totalPrice,
+    currency: data.currency,
   };
 
   return { emailData_of, replacements_of };

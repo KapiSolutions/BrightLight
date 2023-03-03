@@ -5,16 +5,16 @@ export default function orderConfirmation(data) {
         items +
         `
             <div class="OrderItem">
-              <img class="OrderImg" src="${item.image}" alt="Item icon" />
+              <img class="OrderImg" src="${item.image}" alt="${item.name} - Bright Light Gypsy tarot" />
               <p class="OrderItemName">${item.name}</p>
-              <p class="OrderItemPrice">${item.price},00 PLN</p>
+              <p class="OrderItemPrice">${item.price} <span style="text-transform: uppercase">${data.currency}</span></p>
             </div>
             `;
     });
   
     const emailData_pc = {
       emailTo: data.userEmail,
-      emailSubject: `Successful payment! (order: ${data.orderID})`,
+      emailSubject: `${data.language == "en" ? "Successful payment!":"Potwierdzenie płatności"} (zamówienie: ${data.orderID})`,
       userName: data.userName,
     };
     const replacements_pc = {
@@ -23,6 +23,7 @@ export default function orderConfirmation(data) {
       amountPaid: data.amountPaid,
       orderItems: items,
       totalPrice: data.totalPrice,
+      currency: data.currency,
       paymentMethod: data.paymentMethod,
       paymentID: data.paymentID,
       timeCreate: data.timeCreate,

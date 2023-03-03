@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <meta name="supported-color-schemes" content="light dark">
-  <title>Waiting for the payment</title>
+  <title>Oczekiwanie na płatność</title>
   <style>
     body {
       margin: 0;
@@ -173,30 +173,30 @@
     <!-- Header -->
     <header class="HeaderSection">
       <img class="HeaderLogo" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Femails%2FLogo.png?alt=media&token=0bb13cb4-b9ad-4bb5-ab1c-bcd297ab2e03" alt="Bright Light Gypsy Logo" />
-      <h2>Hi {{userName}}!</h2>
-      <h1><strong>Your order is still unpaid!</strong></h1>
+      <h2>Cześć {{userName}}!</h2>
+      <h1><strong>Twoja płatność nadal nie wpłynęła.</strong></h1>
     </header>
 
     <!-- Message -->
     <section class="MessageSection">
       <p>
-        It's been 48 hours since placing the order and your payment is still missing.
+        Minęło 48 godzin od złożenia zamówienia, a Twoja płatność nadal nie została dokonana.
       </p>
       <p>
-        Please make payment as soon as possible otherwise the order will be deleted.
+        Prosimy o jak najszybsze dokonanie płatności, w przeciwnym razie zamówienie zostanie usunięte.
       </p>
       <p>
-        You can pay and check your order status <a href="https://brightlightgypsy.pl/user/orders#main"><strong>here.</strong></a>
+        Możesz zapłacić oraz sprawdzić swoje zamówienie <a href="https://brightlightgypsy.pl/user/orders#main"><strong>tutaj.</strong></a>
       </p>
     </section>
 
     <!-- Order details -->
     <section class="OrderSection">
-      <h1><strong>Order Details</strong></h1>
+      <h1><strong>Szczegóły zamówienia</strong></h1>
       <p>
-          Order number: <strong>{{orderID}}</strong>
+          Numer zamówienia: <strong>{{orderID}}</strong>
           <br>
-          Order date: <strong>{{timeCreate}}</strong>
+          Data zamówienia: <strong>{{timeCreate}}</strong>
       </p>
       <!-- <div class="OrderItem">
         <img class="OrderImg" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Fcards%2Flovers.png?alt=media&token=d911cee3-3c3f-439a-a80f-07dc14defbc6" alt="Item icon" />
@@ -206,7 +206,7 @@
       {{{orderItems}}}
 
       <div style="float:right">
-        <p><strong>Total: {{totalPrice}},00 PLN</strong></p>
+        <p><strong>Razem: {{totalPrice}} <span style="text-transform: uppercase">{{currency}}</span></strong></p>
       </div>
     </section>
 
@@ -216,9 +216,9 @@
       <hr style="opacity: 0.3; width:80%;">
       <br>
       <p>
-        If you have any questions, don&apos;t hesitate to contact me.
+        Zapraszam do kontaktu w przypadku jakichkolwiek pytań lub niejasności.
         <br>
-        You can reply directly to this email.
+        Możesz odpowiedzieć bezpośrednio na tą wiadomość.
       </p>
       <div class="FooterIcons">
         <a href="https://www.instagram.com/">
