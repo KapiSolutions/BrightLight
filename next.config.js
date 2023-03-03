@@ -12,9 +12,11 @@ const nextConfig = {
     ],
   },
   i18n: {
-    locales: ['en', 'pl'],
-    defaultLocale: 'en',
+    locales: ['default', 'en', 'pl'],
+    defaultLocale: 'default',
+    localeDetection: false,
   },
+  trailingSlash: true,
 }
 
 module.exports = nextConfig
