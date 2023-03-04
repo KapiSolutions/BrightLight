@@ -14,6 +14,7 @@ import Cart from "../../../Cart/Cart";
 
 function MobileMenu(props) {
   const router = useRouter();
+  const locale = router.locale;
   const { authUserFirestore, logoutUser, isAdmin } = useAuth();
   const [error, setError] = useState("");
   const [back, setBack] = useState(false);
@@ -56,6 +57,10 @@ function MobileMenu(props) {
     }
   };
 
+  const toggleLanguage = (newLocale) => {
+    const { pathname, asPath, query } = router;
+    router.push({ pathname, query }, asPath, { locale: newLocale });
+  };
   return (
     <>
       <nav>
@@ -207,6 +212,17 @@ function MobileMenu(props) {
 
                 <Nav.Link href="#" onClick={menuClicked}>
                   <ChangeThemeButton text={false} />
+                </Nav.Link>
+                <Nav.Link href="#">
+                  <span
+                    onClick={() => {
+                      toggleLanguage(locale === "en" ? "pl" : "en");
+                    }}
+                    className={`text-uppercase ${styles.hover}`}
+                    style={{whiteSpace: "nowrap"}}
+                  >
+                    {locale === "en" ? "pl" : "eng"}
+                  </span>
                 </Nav.Link>
               </Nav>
             </Navbar.Collapse>

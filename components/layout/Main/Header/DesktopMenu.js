@@ -46,6 +46,10 @@ function DesktopMenu(props) {
       setOnTop(true);
     }
   };
+  const toggleLanguage = (newLocale) => {
+    const { pathname, asPath, query } = router;
+    router.push({ pathname, query }, asPath, { locale: newLocale });
+  };
 
   return (
     <>
@@ -84,7 +88,7 @@ function DesktopMenu(props) {
               <Nav className="ms-auto d-flex align-items-center">
                 {props.navItems.map((item) => (
                   <Link key={item.id} href={item.to} passHref legacyBehavior>
-                    <Nav.Link style={{whiteSpace: "nowrap"}}>{item.text}</Nav.Link>
+                    <Nav.Link style={{ whiteSpace: "nowrap" }}>{item.text}</Nav.Link>
                   </Link>
                 ))}
 
@@ -153,15 +157,12 @@ function DesktopMenu(props) {
                           </Link>
                           <Dropdown.Divider />
 
-                          
                           <Dropdown.Item>
                             <GiWallet className={`${styles.iconsAdmin} color-primary me-1`} title="Finances" />
                             <Link href="/admin/finances#main" passHref legacyBehavior>
                               <span className="color-primary">Finances</span>
                             </Link>
-                            </Dropdown.Item>
-                          
-
+                          </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
                     )}
@@ -186,6 +187,17 @@ function DesktopMenu(props) {
                 )}
                 <Nav.Link href="#">
                   <ChangeThemeButton text={false} />
+                </Nav.Link>
+                <Nav.Link href="#">
+                  <span
+                    onClick={() => {
+                      toggleLanguage(locale === "en" ? "pl" : "en");
+                    }}
+                    className={`text-uppercase ${styles.hover}`}
+                    style={{whiteSpace: "nowrap"}}
+                  >
+                    | {locale === "en" ? "pl" : "en"}
+                  </span>
                 </Nav.Link>
               </Nav>
             </Navbar.Collapse>

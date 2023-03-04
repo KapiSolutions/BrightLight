@@ -27,7 +27,7 @@ function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     handleWindowSizeChange();
-    setCurrency(locale == "en" ? "usd" : "pln")
+    setCurrency(locale == "pl" ? "pln" : "usd")
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
