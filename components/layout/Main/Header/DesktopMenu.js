@@ -17,6 +17,7 @@ import Cart from "../../../Cart/Cart";
 
 function DesktopMenu(props) {
   const router = useRouter();
+  const locale = router.locale;
   const { authUserFirestore, logoutUser, isAdmin } = useAuth();
   const [error, setError] = useState("");
   const [back, setBack] = useState(false);
@@ -24,15 +25,6 @@ function DesktopMenu(props) {
   const [showCart, setShowCart] = useState(undefined);
   const revTheme = props.theme === "light" ? "dark" : "light";
   const offCanvBackColor = props.theme === "light" ? "#fcfcfb" : "#11061a";
-
-
-  const { locales, locale: activeLocale } = router
-
-  const otherLocales = (locales || []).filter(
-    (locale) => locale !== activeLocale
-  )
-
-  console.log(locale)
 
   async function handleLogout() {
     setError("");
@@ -92,7 +84,7 @@ function DesktopMenu(props) {
               <Nav className="ms-auto d-flex align-items-center">
                 {props.navItems.map((item) => (
                   <Link key={item.id} href={item.to} passHref legacyBehavior>
-                    <Nav.Link>{item.text}</Nav.Link>
+                    <Nav.Link style={{whiteSpace: "nowrap"}}>{item.text}</Nav.Link>
                   </Link>
                 ))}
 

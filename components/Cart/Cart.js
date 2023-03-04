@@ -9,7 +9,6 @@ import { useDeviceStore } from "../../stores/deviceStore";
 function Cart(props) {
   const router = useRouter();
   const { authUserFirestore } = useAuth();
-  const lang = useDeviceStore((state) => state.lang);
   const currency = useDeviceStore((state) => state.currency);
   const revTheme = props.theme === "light" ? "dark" : "light";
   const [totalPrice, setTotalPrice] = useState(0);

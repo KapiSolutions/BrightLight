@@ -7,10 +7,12 @@ import { IoIosArrowForward } from "react-icons/io";
 import styles from "../../styles/components/Cart/CartItem.module.scss";
 import { getFileUrlStorage } from "../../firebase/Storage";
 import { useDeviceStore } from "../../stores/deviceStore";
+import { useRouter } from "next/router";
 
 function CartItem(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const { authUserFirestore, updateProfile } = useAuth();
-  const lang = useDeviceStore((state) => state.lang);
   const currency = useDeviceStore((state) => state.currency);
   const [showDetails, setShowDetails] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -73,9 +75,10 @@ const [imgID, setImgID] = useState(Math.random().toString(36).slice(2, 7));
           src="/img/placeholders/cartImage.webp"
           id={`img-${imgID}`}
           alt="Item icon"
+          style={{minHeight: "58px", objectFit: "cover"}}
         />
         <div>
-          <p className={styles.OrderItemName}>{item.name[lang]}</p>
+          <p className={styles.OrderItemName}>{item.name[locale]}</p>
           <p className={styles.OrderItemPrice}>
             <small>{item.price[currency].amount}
             <span className="text-uppercase ms-1">{currency}</span></small>

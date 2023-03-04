@@ -3,7 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge, Form, Button, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { AiOutlineLike, AiFillLike, AiOutlineComment } from "react-icons/ai";
-import { useDeviceStore } from "../../stores/deviceStore";
 import { useAuth } from "../../context/AuthProvider";
 import { getDocById, handleLikeBlog, updateDocFields } from "../../firebase/Firestore";
 import { v4 as uuidv4 } from "uuid";
@@ -20,8 +19,6 @@ function BlogPost(props) {
   const commentRef = useRef();
   //setErrorMsg if contains message then fires a modal with that error - Layout.js and ErrorModal.js
   const { authUserFirestore, setErrorMsg } = useAuth();
-  const isMobile = useDeviceStore((state) => state.isMobile);
-  const lang = useDeviceStore((state) => state.lang);
   const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState([]);
   const [userLiked, setUserLiked] = useState(false);
@@ -36,12 +33,12 @@ function BlogPost(props) {
 
   const convertHtml = async () => {
     let replacements = {};
-    const template = handlebars.compile(post.content[lang]);
+    const template = handlebars.compile(post.content);
     await Promise.all(
       post.contentImages.map(async (img, idx) => {
         const url = await getFileUrlStorage(`images/blog/${post.id}`, img.fileName);
         const prop = img.fileName.slice(0, img.fileName.indexOf(".")); //img.FileName is eg. name.jpg => here take only the name
-        const imgTag = `<img src="${url}" alt="Blog tarot bright light gypsy ${post.title[lang]}" ${img.attributes.imgWidth}>`;
+        const imgTag = `<img src="${url}" alt="Blog tarot bright light gypsy ${post.title}" ${img.attributes.imgWidth}>`;
         replacements = {
           ...replacements,
           [prop]: imgTag,
@@ -139,10 +136,10 @@ function BlogPost(props) {
           <Link href="/blog#main">Blog</Link>
         </small>
         <small>&gt;</small>
-        <small>{post.title[lang]}</small>
+        <small>{post.title}</small>
       </section>
       <div className="text-start">
-        <h1 className="color-primary mb-0"> {post.title[lang]} </h1>
+        <h1 className="color-primary mb-0"> {post.title} </h1>
         <p className="ms-2 text-muted">
           <i>
             By {post.author} -{" "}
@@ -170,7 +167,7 @@ function BlogPost(props) {
 
       {/* Content of the Blog post */}
       {/* when includes images then download them and modify html, if not then display raw content */}
-      <div className={styles.contentWrapper}>{content ? parse(content) : parse(post.content[lang])}</div>
+      <div className={styles.contentWrapper}>{content ? parse(content) : parse(post.content)}</div>
 
       {/* Tags */}
       {post.tags.length > 0 && (

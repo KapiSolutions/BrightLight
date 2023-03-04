@@ -18,6 +18,8 @@ import ProductCard from "../ProductCard";
 import { useAuth } from "../../../context/AuthProvider";
 
 function ProductTemplate(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const prodEdit = props.product;
   const titleRef_en = useRef();
   const descRef_en = useRef();
@@ -29,11 +31,11 @@ function ProductTemplate(props) {
 
   const cardsRef = useRef();
   const categoryRef = useRef();
-  const router = useRouter();
 
   const { setErrorMsg } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
+  const [langPreview, setLangPreview] = useState(locale);
   const [showSuccess, setShowSuccess] = useState("");
   const [imgBase64, setImgBase64] = useState({ loaded: false, path: placeholder("pinkPX") }); //used only for preview
   const [imgFile, setImgFile] = useState(null); //image wich will be uploaded to the storage
@@ -65,6 +67,7 @@ function ProductTemplate(props) {
     active: true,
   };
   const [product, updateProduct] = useReducer((state, updates) => ({ ...state, ...updates }), initProduct);
+  const [previewProduct, setPreviewProduct] = useState(null);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
 
   useEffect(() => {
@@ -152,12 +155,12 @@ function ProductTemplate(props) {
     }
 
     if (dataOK) {
-      updateProduct({
+      const data = {
         id: `${prodEdit ? prodEdit.id : uid}`,
         image: {
           name: "",
-          path: imgBase64.path //used for preview image without uploading to the firestorage
-        }, 
+          path: imgBase64.path, //used for preview image without uploading to the firestorage
+        },
         title: { en: titleRef_en.current?.value, pl: titleRef_pl.current?.value },
         desc: { en: descRef_en.current?.value, pl: descRef_pl.current?.value },
         price: {
@@ -178,7 +181,12 @@ function ProductTemplate(props) {
         category: categoryRef.current?.value,
         createDate: prodEdit ? timeStampToDate(prodEdit.createDate) : new Date(),
         active: true,
-      });
+      };
+      updateProduct({ ...data }); //data for the database
+
+      data.title = data.title[langPreview];
+      data.desc = data.desc[langPreview];
+      setPreviewProduct(data); //data for the preview
 
       setShowPreview(!showPreview);
     }
@@ -189,15 +197,16 @@ function ProductTemplate(props) {
     try {
       let readyProduct = { ...product };
       let imgUrl = "";
-      
+
       //upload main picture to the storage
-      if (editNewImage) { //true when adding new product mode and when admin change the image in editing mode
+      if (editNewImage) {
+        //true when adding new product mode and when admin change the image in editing mode
         imgUrl = await uploadFileToStorage(imgFile, `images/products/${product.id}`);
-        if(prodEdit){
+        if (prodEdit) {
           readyProduct.image.name = imgFile.name;
           readyProduct.image.path = imgUrl;
           await deleteFileInStorage(`images/products/${prodEdit.id}`, prodEdit.image.name); // delete the old image from the storage
-        } 
+        }
       } else {
         imgUrl = prodEdit.image.path;
         readyProduct.image.name = prodEdit.image.name;
@@ -206,18 +215,18 @@ function ProductTemplate(props) {
 
       // Add/Update Stripe products
       if (prodEdit) {
-        const res = await updateStripeProduct("en", "usd" ,imgUrl);
+        const res = await updateStripeProduct("en", "usd", imgUrl);
         res && (readyProduct.price.usd.s_id = res.data.default_price);
 
-        const res_pl = await updateStripeProduct("pl", "pln",imgUrl);
+        const res_pl = await updateStripeProduct("pl", "pln", imgUrl);
         res_pl && (readyProduct.price.pln.s_id = res_pl.data.default_price);
       } else {
         readyProduct.image = imgFile.name; //use file name instead of path for the firestore product data
-        const res = await addStripeProduct("en", "usd",imgUrl);
+        const res = await addStripeProduct("en", "usd", imgUrl);
         if (res.status == 200) {
           readyProduct.price.usd.prod_id = res.data.id;
           readyProduct.price.usd.s_id = res.data.default_price;
-          const res_pl = await addStripeProduct("pl", "pln",imgUrl);
+          const res_pl = await addStripeProduct("pl", "pln", imgUrl);
           if (res_pl.status == 200) {
             readyProduct.price.pln.prod_id = res_pl.data.id;
             readyProduct.price.pln.s_id = res_pl.data.default_price;
@@ -353,9 +362,7 @@ function ProductTemplate(props) {
     setLoadingExc(false);
   };
 
-  const translateText = async (inputText, outputText) => {
-    const from = "en";
-    const to = "pl";
+  const translateText = async (inputText, outputText, from, to) => {
     let translatedTxt = "";
     if (inputText != "") {
       try {
@@ -466,6 +473,21 @@ function ProductTemplate(props) {
                   defaultValue={prodEdit ? prodEdit.title.en : ""}
                   className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
                 />
+                {isMobile && locale == "pl" && (
+                  <div style={{ height: "0" }}>
+                    <Button
+                      variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+                      size="sm"
+                      className="d-flex align-items-center ms-auto me-0"
+                      style={{ position: "relative", top: "-35px", right: "3px" }}
+                      onClick={() => {
+                        translateText(titleRef_pl.current.value, titleRef_en, "pl", "en");
+                      }}
+                    >
+                      <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+                    </Button>
+                  </div>
+                )}
               </div>
 
               {!isMobile && (
@@ -474,7 +496,8 @@ function ProductTemplate(props) {
                     variant={`outline-${theme == "dark" ? "light" : "accent1"}`}
                     className="d-flex align-items-center"
                     onClick={() => {
-                      translateText(titleRef_en.current.value, titleRef_pl);
+                      locale == "en" && translateText(titleRef_en.current.value, titleRef_pl, "en", "pl");
+                      locale == "pl" && translateText(titleRef_pl.current.value, titleRef_en, "pl", "en");
                     }}
                   >
                     <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
@@ -493,7 +516,7 @@ function ProductTemplate(props) {
                   defaultValue={prodEdit ? prodEdit.title.pl : ""}
                   className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
                 />
-                {isMobile && (
+                {isMobile && locale == "en" && (
                   <div style={{ height: "0" }}>
                     <Button
                       variant={`outline-${theme == "dark" ? "light" : "dark"}`}
@@ -501,7 +524,7 @@ function ProductTemplate(props) {
                       className="d-flex align-items-center ms-auto me-0"
                       style={{ position: "relative", top: "-35px", right: "3px" }}
                       onClick={() => {
-                        translateText(titleRef_en.current.value, titleRef_pl);
+                        translateText(titleRef_en.current.value, titleRef_pl, "en", "pl");
                       }}
                     >
                       <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
@@ -533,6 +556,21 @@ function ProductTemplate(props) {
                   defaultValue={prodEdit ? prodEdit.desc.en : ""}
                   className={`${invalid.desc && "border border-danger"} w-100 ${themeDarkInput}`}
                 />
+                {isMobile && locale == "pl" && (
+                  <div style={{ height: "0" }}>
+                    <Button
+                      variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+                      size="sm"
+                      className="d-flex align-items-center ms-auto me-0"
+                      style={{ position: "relative", top: "-35px", right: "3px" }}
+                      onClick={() => {
+                        translateText(descRef_pl.current.value, descRef_en, "pl", "en");
+                      }}
+                    >
+                      <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
+                    </Button>
+                  </div>
+                )}
               </div>
               <div className="mt-4">
                 {!isMobile && (
@@ -540,7 +578,8 @@ function ProductTemplate(props) {
                     variant={`outline-${theme == "dark" ? "light" : "accent1"}`}
                     className="d-flex align-items-center"
                     onClick={() => {
-                      translateText(descRef_en.current.value, descRef_pl);
+                      locale == "en" && translateText(descRef_en.current.value, descRef_pl, "en", "pl");
+                      locale == "pl" && translateText(descRef_pl.current.value, descRef_en, "pl", "en");
                     }}
                   >
                     <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
@@ -559,15 +598,15 @@ function ProductTemplate(props) {
                   defaultValue={prodEdit ? prodEdit.desc.pl : ""}
                   className={`${invalid.desc && "border border-danger"} w-100 ${themeDarkInput}`}
                 />
-                {isMobile && (
+                {isMobile && locale == "en" && (
                   <div style={{ height: "0" }}>
                     <Button
                       variant={`outline-${theme == "dark" ? "light" : "dark"}`}
                       size="sm"
                       className="d-flex align-items-center ms-auto me-0"
-                      style={{ position: "relative", top: "-38px", right: "5px" }}
+                      style={{ position: "relative", top: "-35px", right: "3px" }}
                       onClick={() => {
-                        translateText(descRef_en.current.value, descRef_pl);
+                        translateText(descRef_en.current.value, descRef_pl, "en", "pl");
                       }}
                     >
                       <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
@@ -679,12 +718,22 @@ function ProductTemplate(props) {
 
       <div className="text-end mt-4">
         <Button onClick={handlePreview}>{showPreview ? "Close Preview" : "Preview Product"}</Button>
+        <Button
+          className="ms-1"
+          variant="outline-primary"
+          onClick={() => {
+            setLangPreview(langPreview == "en" ? "pl" : "en");
+            setShowPreview(false);
+          }}
+        >
+          <span className="text-uppercase">{langPreview}</span>
+        </Button>
       </div>
       {showPreview && (
         <div className="mt-4">
           <hr />
           <div className="d-flex justify-content-center text-start">
-            <ProductCard product={product} preview={true} />
+            <ProductCard product={previewProduct} preview={true} />
           </div>
           <hr className="mt-5" />
           <div>

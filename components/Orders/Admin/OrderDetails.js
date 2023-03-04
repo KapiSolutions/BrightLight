@@ -12,7 +12,6 @@ function OrderDetails(props) {
   const order = props.order;
   const { setErrorMsg } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const lang = useDeviceStore((state) => state.lang);
   const [answersQt, setAnswersQt] = useState(Array.from(Array(order.items.length), () => false)); //[false,false...], set tu true when item is answered
   const [readyToFinish, setReadyToFinish] = useState(false);
   const [loading, setLoading] = useState(false);

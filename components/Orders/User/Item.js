@@ -3,11 +3,12 @@ import { Card } from "react-bootstrap";
 import { getFileUrlStorage } from "../../../firebase/Storage";
 import styles from "../../../styles/components/Orders/Item.module.scss";
 import { IoIosArrowForward } from "react-icons/io";
-import { useDeviceStore } from "../../../stores/deviceStore";
+import { useRouter } from "next/router";
 
 function Item(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const [showDetails, setShowDetails] = useState(false);
-  const lang = useDeviceStore((state) => state.lang);
   const item = props.item;
   const order = props.order;
 
@@ -35,9 +36,10 @@ function Item(props) {
           src="/img/placeholders/cartImage.webp"
           id={`${order.id}-${props.idx}`}
           alt="Item icon"
+          style={{minHeight: "58px", objectFit: "cover"}}
         />
         <div className="w-50">
-          <p className={styles.OrderItemName}>{item.name[lang]}</p>
+          <p className={styles.OrderItemName}>{item.name[locale]}</p>
           <p className={styles.OrderItemPrice}>
             <small>
               {item.price[order.currency].amount}

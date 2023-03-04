@@ -29,13 +29,18 @@ export default function Home(props) {
   );
 }
 
-export async function getStaticProps() {
-  const docs = await getDocsFromCollection("products");
+export async function getStaticProps({ locale }) {
+  let docs = await getDocsFromCollection("products");
+
+  docs.map((doc) => {
+    doc.desc = doc.desc[locale];
+    doc.title = doc.title[locale];
+  });
 
   return {
     props: {
       products: JSON.parse(JSON.stringify(docs)),
     },
-    revalidate: 30,
+    revalidate: false, //on demand revalidation
   };
 }

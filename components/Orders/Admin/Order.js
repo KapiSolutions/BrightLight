@@ -17,10 +17,11 @@ import { getFileUrlStorage } from "../../../firebase/Storage";
 import appConfig from "../../../config/appConfig";
 
 function Order(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const order = props.order;
   const config = appConfig();
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const lang = useDeviceStore((state) => state.lang);
   const [tmpOrder, setTmpOrder] = useState(null);
   const { setErrorMsg } = useAuth();
   const [errorEmail, setErrorEmail] = useState(false);
@@ -83,7 +84,7 @@ function Order(props) {
       await Promise.all(
         order.items.map(async (item) => {
           items.push(...items, {
-            name: item.name[lang],
+            name: item.name[locale],
             price: item.price[order.currency].amount,
             currency: order.currency,
             image: await getFileUrlStorage(`images/products/${item.product_id}`, item.image.name),
@@ -97,7 +98,7 @@ function Order(props) {
         userEmail: order.userEmail,
         totalPrice: order.totalPrice,
         currency: order.currency,
-        language: lang,
+        language: order.language,
         items: items,
         timeCreate: timeStampToDate(order.timeCreate).toLocaleDateString(),
       };
@@ -194,7 +195,7 @@ function Order(props) {
                 <p className="mb-0">
                   Tarot
                   <small>
-                    ({order?.items[0].name[lang]}
+                    ({order?.items[0].name[locale]}
                     {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                   </small>
                 </p>
@@ -232,7 +233,7 @@ function Order(props) {
             ) : (
               <>
                 <p className="mb-0">
-                  Tarot ({order?.items[0].name[lang]}
+                  Tarot ({order?.items[0].name[locale]}
                   {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                 </p>
                 <small className="text-muted">{timeStampToDate(order.timeCreate).toLocaleString()}</small>

@@ -3,10 +3,13 @@ import { Form, InputGroup } from "react-bootstrap";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { FiSearch } from "react-icons/fi";
 import { BsFilterRight } from "react-icons/bs";
+import { useRouter } from "next/router";
 
 function FilterAndSortBar(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const lang = useDeviceStore((state) => state.lang);
+
   const currency = useDeviceStore((state) => state.currency);
   const [showOptions, setShowOptions] = useState(false);
   const [sortOption, setSortOption] = useState("1");
@@ -50,7 +53,7 @@ function FilterAndSortBar(props) {
     if (input !== "") {
       props.refArray.map((item) => {
         //Search for key words in titles
-        if (item.title[lang].includes(input) || item.title[lang].toLowerCase().includes(input)) {
+        if (item.title[locale].includes(input) || item.title[locale].toLowerCase().includes(input)) {
           tmpItems.push(item);
           itemFounded = true;
         }

@@ -13,10 +13,10 @@ import placeholder from "../../../utils/placeholder";
 
 function Product(props) {
   const router = useRouter();
+  const locale = router.locale;
   const product = props.product;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
-  const lang = useDeviceStore((state) => state.lang);
   const { setErrorMsg } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
@@ -120,7 +120,7 @@ function Product(props) {
           <div className="d-flex align-items-center me-2" style={{ position: "relative", width: "46px" }}>
             <Image
               src={product.image.path}
-              alt={`${product.title[lang]} - Bright Light Gypsy Tarot`}
+              alt={`${product.title[locale]} - Bright Light Gypsy Tarot`}
               fill
               placeholder="blur"
               blurDataURL={placeholder("dark")}
@@ -132,7 +132,7 @@ function Product(props) {
           <div>
             {isMobile ? (
               <>
-                <p className={`mb-0 ${!product.active && "text-muted"}`}>{product.title[lang]}</p>
+                <p className={`mb-0 ${!product.active && "text-muted"}`}>{product.title[locale]}</p>
                 <i>
                   <small className={!product.active ? "text-muted" : ""}>
                     <span className="me-1">{product.price.usd.amount}</span>
@@ -144,7 +144,7 @@ function Product(props) {
               </>
             ) : (
               <>
-                <p className={`mb-0 ${!product.active && "text-muted"}`}>{product.title[lang]}</p>
+                <p className={`mb-0 ${!product.active && "text-muted"}`}>{product.title[locale]}</p>
                 <small className="text-muted">{timeStampToDate(product.createDate).toLocaleDateString()}</small>
               </>
             )}
@@ -318,7 +318,7 @@ function Product(props) {
                 <strong>Description:</strong>
               </p>
               <p>
-                <small>{product.desc[lang]}</small>
+                <small>{product.desc[locale]}</small>
               </p>
             </div>
           </div>
@@ -338,7 +338,7 @@ function Product(props) {
               <strong>Description:</strong>
             </p>
             <p>
-              <small>{product.desc[lang]}</small>
+              <small>{product.desc[locale]}</small>
             </p>
           </div>
         )}

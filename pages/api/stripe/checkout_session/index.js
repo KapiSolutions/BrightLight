@@ -21,8 +21,8 @@ export default async function handler(req, res) {
       const session = await stripe.checkout.sessions.create({
         line_items: stripeCart,
         mode: "payment",
-        success_url: `${req.headers.origin}/payment/success`,
-        cancel_url: `${req.headers.origin}/payment/cancel`,
+        success_url: `${req.headers.origin}/${data.language}/payment/success`,
+        cancel_url: `${req.headers.origin}/${data.language}/payment/cancel`,
         automatic_tax: { enabled: false },
         // client_reference_id: orderID,
         metadata: { 

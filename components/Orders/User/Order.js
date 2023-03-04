@@ -16,10 +16,10 @@ import appConfig from "../../../config/appConfig";
 
 function Order(props) {
   const router = useRouter();
+  const locale = router.locale;
   const order = props.order;
   const config = appConfig();
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const lang = useDeviceStore((state) => state.lang);
   const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(undefined);
@@ -61,6 +61,7 @@ function Order(props) {
           sendOrderConfirmEmail: false,
           orderID: order.id,
           stripeCart: stripeCart,
+          language: order.language,
           localeLanguage: localeLanguage,
           localeTimeZone: localeTimeZone,
         },
@@ -173,7 +174,7 @@ function Order(props) {
                   Tarot
                   <small>
                     {" "}
-                    ({order?.items[0].name[lang]}
+                    ({order?.items[0].name[locale]}
                     {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                   </small>
                 </p>
@@ -202,7 +203,7 @@ function Order(props) {
             ) : (
               <>
                 <p className="mb-0">
-                  Tarot ({order?.items[0].name[lang]}
+                  Tarot ({order?.items[0].name[locale]}
                   {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
                 </p>
                 <small className="text-muted">{timeStampToDate(order.timeCreate).toLocaleString()}</small>

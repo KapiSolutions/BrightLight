@@ -12,13 +12,13 @@ import cardBackUrl from "../public/img/cards/back.png";
 import cardBackMin from "../public/img/cardBackMin.png";
 import placeholder from "../utils/placeholder";
 import Link from "next/link";
+import { getDocById } from "../firebase/Firestore";
 
 function TarotLotteryDesktop(props) {
   const router = useRouter();
   const product = props.product;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
-  const lang = useDeviceStore((state) => state.lang);
   const currency = useDeviceStore((state) => state.currency);
   const { authUserFirestore, setTempCart, updateProfile, setErrorMsg } = useAuth();
   const [flipCards, setFlipCards] = useState([]);
@@ -177,11 +177,12 @@ function TarotLotteryDesktop(props) {
     setcardsSet(cards);
   }, []);
 
-  function handleSaveAndSignIn() {
+  const handleSaveAndSignIn = async () => {
     const question = document.getElementById("questionField").value;
+    const doc = await getDocById("products", product.id); //get title in both languages
     if (question) {
       const cartItem = {
-        name: product.title,
+        name: doc.title,
         product_id: product.id,
         cards: userCards,
         question: question,
@@ -191,14 +192,15 @@ function TarotLotteryDesktop(props) {
       setTempCart(cartItem);
       router.push("/sign-in");
     }
-  }
-  async function handleBuy() {
+  };
+  const handleBuy = async () => {
     const question = document.getElementById("questionField").value;
+    const doc = await getDocById("products", product.id); //get title in both languages
     if (question) {
       setErrorMsg("");
       setLoadingBuy(true);
       const cartItem = {
-        name: product.title,
+        name: doc.title,
         product_id: product.id,
         cards: userCards,
         question: question,
@@ -215,14 +217,15 @@ function TarotLotteryDesktop(props) {
       }
       setLoadingBuy(false);
     }
-  }
-  async function handleAddToCart() {
+  };
+  const handleAddToCart = async () => {
     setMessage("");
     setLoading(true);
     const question = document.getElementById("questionField").value;
+    const doc = await getDocById("products", product.id); //get title in both languages
     if (question) {
       const cartItem = {
-        name: product.title,
+        name: doc.title,
         product_id: product.id,
         cards: userCards,
         question: question,
@@ -233,13 +236,13 @@ function TarotLotteryDesktop(props) {
       cart.push(cartItem);
       try {
         await updateProfile({ cart: cart });
-        setMessage(`The ${product.title[lang]} tarot successfully added to the cart!`);
+        setMessage(`The ${product.title} tarot successfully added to the cart!`);
       } catch (error) {
         setErrorMsg(error);
       }
     }
     setLoading(false);
-  }
+  };
   function handleSubmit(e) {
     e.preventDefault();
   }
@@ -250,13 +253,12 @@ function TarotLotteryDesktop(props) {
           <Link href="/#main">Home</Link>
         </small>
         <small>&gt;</small>
-        <small>{product.title[lang]}</small>
+        <small>{product.title}</small>
       </section>
       <Row className="d-flex mb-3 text-center">
-        <h1 className="color-primary mb-3"> {product.title[lang]} </h1>
+        <h1 className="color-primary mb-3"> {product.title} </h1>
       </Row>
       <Row className="d-flex mb-4 justify-content-center gap-2">
-        
         {Array.from({ length: product.cardSet }).map((_, idx) => (
           <Col
             key={idx}
@@ -284,7 +286,6 @@ function TarotLotteryDesktop(props) {
       </Row>
 
       <Row className="d-flex justify-content-center">
-
         {flipCards.length === 0 && (
           <p className="color-primary">
             Focus deeply on your question and {window.innerWidth < 768 && "TAP below to"}{" "}
@@ -325,7 +326,7 @@ function TarotLotteryDesktop(props) {
                 id={card}
                 className={`${styles.smallCard} pointer`}
                 onClick={() => setFlipCards([...flipCards, card])}
-                style={{position: "relative"}}
+                style={{ position: "relative" }}
               >
                 <Image src={cardBackMin} placeholder="blur" alt={`back-${card}`} />
               </div>
@@ -370,8 +371,7 @@ function TarotLotteryDesktop(props) {
                       style={{ pointerEvents: "none" }}
                     >
                       <span>
-                        {product.price[currency].amount}{" "}
-                        <span className="text-uppercase">{currency}</span>
+                        {product.price[currency].amount} <span className="text-uppercase">{currency}</span>
                       </span>
                     </Button>
                   </ButtonGroup>

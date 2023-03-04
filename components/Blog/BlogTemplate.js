@@ -18,17 +18,18 @@ import SuccessModal from "../Modals/SuccessModal";
 import { SiGoogletranslate } from "react-icons/si";
 
 function BlogTemplate(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const postEdit = props.post;
   const titleRef_en = useRef();
   const titleRef_pl = useRef();
   const authorRef = useRef();
   const dateRef = useRef();
   const mainImgSourceRef = useRef();
-  const router = useRouter();
 
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
-  const lang = useDeviceStore((state) => state.lang);
+  const [langPreview, setLangPreview] = useState(locale);
   const [showSuccess, setShowSuccess] = useState("");
   const [blogContent_en, setBlogContent_en] = useState("");
   const [finalContent_en, setFinalContent_en] = useState("");
@@ -68,6 +69,7 @@ function BlogTemplate(props) {
     likes: [],
   };
   const [post, updatePost] = useReducer((state, updates) => ({ ...state, ...updates }), initPost);
+  const [previewPost, setPreviewPost] = useState(null);
   const mainPicHeight = "200px";
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
 
@@ -211,7 +213,7 @@ function BlogTemplate(props) {
     }
 
     if (dataOK) {
-      updatePost({
+      const data = {
         id: `${postEdit ? postEdit.id : uid}`,
         author: authorRef.current?.value,
         content: {
@@ -231,7 +233,12 @@ function BlogTemplate(props) {
         },
         comments: postEdit ? [...postEdit.comments] : [],
         likes: postEdit ? [...postEdit.likes] : [],
-      });
+      };
+      updatePost({...data}); //data for the database
+      data.title = data.title[langPreview];
+      data.content = data.content[langPreview];
+      data.contentImages = [];
+      setPreviewPost(data); //data for the preview
 
       //prepare html and images for the submit action
       setFinalContent_en(await convertHtml(blogContent_en));
@@ -316,7 +323,7 @@ function BlogTemplate(props) {
       //update blog data
       readyBlog.content = {
         en: finalContent_en,
-        pl: finalContent_pl
+        pl: finalContent_pl,
       };
       readyBlog.mainImg.path = imgUrl;
       readyBlog.contentImages = imgContent;
@@ -378,7 +385,7 @@ function BlogTemplate(props) {
 
   const translateContent = async (inputText, outputText, from, to) => {
     let translatedTxt = "";
-    
+
     if (inputText != "") {
       try {
         const res = await axios.get(
@@ -394,7 +401,7 @@ function BlogTemplate(props) {
       } catch (error) {
         console.log(error);
       }
-    } 
+    }
   };
 
   return (
@@ -404,7 +411,7 @@ function BlogTemplate(props) {
           <Link href="/admin/blogs#main">Blog Menagment</Link>
         </small>
         <small>&gt;</small>
-        <small>{postEdit ? postEdit.title[lang] : "New Blog"}</small>
+        <small>{postEdit ? postEdit.title[locale] : "New Blog"}</small>
       </section>
 
       {/* Name of the product */}
@@ -421,7 +428,7 @@ function BlogTemplate(props) {
               defaultValue={postEdit ? postEdit.title.en : ""}
               className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
             />
-            {isMobile && lang == "pl" && (
+            {isMobile && locale == "pl" && (
               <div style={{ height: "0" }}>
                 <Button
                   variant={`outline-${theme == "dark" ? "light" : "dark"}`}
@@ -437,7 +444,6 @@ function BlogTemplate(props) {
               </div>
             )}
           </div>
-          
 
           {!isMobile && (
             <div>
@@ -445,8 +451,8 @@ function BlogTemplate(props) {
                 variant={`outline-${theme == "dark" ? "light" : "accent1"}`}
                 className="d-flex align-items-center"
                 onClick={() => {
-                  lang == "en" && translateText(titleRef_en.current.value, titleRef_pl, "en", "pl");
-                  lang == "pl" && translateText(titleRef_en.current.value, titleRef_pl, "pl", "en");
+                  locale == "en" && translateText(titleRef_en.current.value, titleRef_pl, "en", "pl");
+                  locale == "pl" && translateText(titleRef_pl.current.value, titleRef_en, "pl", "en");
                 }}
               >
                 <SiGoogletranslate style={{ width: "22px", height: "22px" }} />
@@ -465,7 +471,7 @@ function BlogTemplate(props) {
               defaultValue={postEdit ? postEdit.title.pl : ""}
               className={`${invalid.title && "border border-danger"} w-100 ${themeDarkInput}`}
             />
-            {isMobile && lang == "en" && (
+            {isMobile && locale == "en" && (
               <div style={{ height: "0" }}>
                 <Button
                   variant={`outline-${theme == "dark" ? "light" : "dark"}`}
@@ -587,21 +593,21 @@ function BlogTemplate(props) {
           updateContent={blogContent_en}
           placeholder={"Here is place for your blog content..."}
         />
-        {lang == "pl" && (
+        {locale == "pl" && (
           <div style={{ height: "0" }}>
-          <Button
-            variant={`outline-${theme == "dark" ? "light" : "dark"}`}
-            size="sm"
-            className="d-flex align-items-center ms-auto me-0"
-            style={{ position: "relative", top: "-35px", right: "3px" }}
-            onClick={() => {
-              translateContent(blogContent_pl, setBlogContent_en, "pl", "en");
-            }}
-            title="Translate from PL to EN"
-          >
-            <SiGoogletranslate style={{ width: "22px", height: "22px" }} title="Translate from PL to EN"/>
-          </Button>
-        </div>
+            <Button
+              variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+              size="sm"
+              className="d-flex align-items-center ms-auto me-0"
+              style={{ position: "relative", top: "-35px", right: "3px" }}
+              onClick={() => {
+                translateContent(blogContent_pl, setBlogContent_en, "pl", "en");
+              }}
+              title="Translate from PL to EN"
+            >
+              <SiGoogletranslate style={{ width: "22px", height: "22px" }} title="Translate from PL to EN" />
+            </Button>
+          </div>
         )}
       </div>
       {invalid.content && (
@@ -618,23 +624,22 @@ function BlogTemplate(props) {
           updateContent={blogContent_pl}
           placeholder={"Dodaj treść swojego bloga..."}
         />
-        {lang == "en" && (
+        {locale == "en" && (
           <div style={{ height: "0" }}>
-          <Button
-            variant={`outline-${theme == "dark" ? "light" : "dark"}`}
-            size="sm"
-            className="d-flex align-items-center ms-auto me-0"
-            style={{ position: "relative", top: "-35px", right: "3px" }}
-            onClick={() => {
-              translateContent(blogContent_en, setBlogContent_pl, "en", "pl");
-            }}
-            title="Translate from EN to PL"
-          >
-            <SiGoogletranslate style={{ width: "22px", height: "22px" }} title="Translate from EN to PL"/>
-          </Button>
-        </div>
+            <Button
+              variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+              size="sm"
+              className="d-flex align-items-center ms-auto me-0"
+              style={{ position: "relative", top: "-35px", right: "3px" }}
+              onClick={() => {
+                translateContent(blogContent_en, setBlogContent_pl, "en", "pl");
+              }}
+              title="Translate from EN to PL"
+            >
+              <SiGoogletranslate style={{ width: "22px", height: "22px" }} title="Translate from EN to PL" />
+            </Button>
+          </div>
         )}
-        
       </div>
       {invalid.content && (
         <div className="text-start mt-0">
@@ -698,11 +703,21 @@ function BlogTemplate(props) {
       </section>
       <div className="text-end">
         <Button onClick={handlePreview}>{showPreview ? "Close Preview" : "Preview Blog"}</Button>
+        <Button
+        className="ms-1"
+        variant="outline-primary"
+          onClick={() => {
+            setLangPreview(langPreview == "en" ? "pl" : "en");
+            setShowPreview(false);
+          }}
+        >
+          <span className="text-uppercase">{langPreview}</span>
+        </Button>
       </div>
       {showPreview && (
         <div className="mt-4">
           <hr />
-          <BlogPost post={post} preview={true} editMode={postEdit ? true : false} />
+          <BlogPost post={previewPost} preview={true} editMode={postEdit ? true : false} />
           <hr className="mt-5" />
           <div>
             <Button

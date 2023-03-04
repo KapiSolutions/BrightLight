@@ -11,7 +11,7 @@ function BlogPage(props) {
   return (
     <>
       <Head>
-        <title>BrightLight | Blog</title>
+        <title>BrightLight | {props.post.title} </title>
       </Head>
       <Container className="color-primary justify-content-center text-start mt-3">
         {props.post ? (
@@ -34,25 +34,30 @@ export default BlogPage;
 
 export async function getStaticProps(context) {
   const pid = context.params.pid;
-  const blogPost = await getDocById("blog", pid);
+  const locale = context.locale;
+  const doc = await getDocById("blog", pid);
+
+  doc.content = doc.content[locale];
+  doc.title = doc.title[locale];
 
   return {
     props: {
-      post: blogPost ? JSON.parse(JSON.stringify(blogPost)) : null,
+      post: doc ? JSON.parse(JSON.stringify(doc)) : null,
     },
-    revalidate: 30, //1 - 1 second
+    revalidate: false, //on demand revalidation
   };
 }
 
-export async function getStaticPaths() {
+export async function getStaticPaths({ locales }) {
   const docs = await getDocsFromCollection("blog", true); //true - get only Id's
   return {
-    paths: docs.map((doc) => {
-      return {
-        params: {
-          pid: doc,
-        },
-      };
+    paths: docs.flatMap((doc) => {
+      return locales.map((locale) => {
+        return {
+          params: { pid: doc },
+          locale: locale,
+        };
+      });
     }),
     fallback: "blocking",
   };

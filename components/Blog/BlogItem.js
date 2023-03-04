@@ -5,20 +5,18 @@ import Link from "next/link";
 import { AiOutlineLike, AiFillLike, AiOutlineComment } from "react-icons/ai";
 import { useAuth } from "../../context/AuthProvider";
 import { getDocById, handleLikeBlog } from "../../firebase/Firestore";
-import { useDeviceStore } from "../../stores/deviceStore";
 const parse = require("html-react-parser");
 
 function BlogItem(props) {
   const router = useRouter();
   const { authUserFirestore, setErrorMsg } = useAuth();
-  const lang = useDeviceStore((state) => state.lang);
   const [loading, setLoading] = useState(false);
   const post = props.blogPost;
   const [likes, setLikes] = useState([]);
   const [comments, setComments] = useState([]);
   const [userLiked, setUserLiked] = useState(false);
   const likesToShow = 6;
-  const blogContent = parse(post.content[lang]);
+  const blogContent = parse(post.content);
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
@@ -60,8 +58,8 @@ function BlogItem(props) {
       <Card className="background border shadow-sm color-primary col-12 col-sm-6 col-md-5 col-lg-4">
         <Card.Img
           id={post.id}
-          alt={`${post.title[lang]} - Bright Light Gypsy tarot`}
-          title={`${post.title[lang]} - Bright Light Gypsy tarot`}
+          alt={`${post.title} - Bright Light Gypsy tarot`}
+          title={`${post.title} - Bright Light Gypsy tarot`}
           variant="top"
           className={`imgOpacity pointer ${loading && "opacity-25"}`}
           style={{ objectFit: post.mainImg.style, height: "200px" }}
@@ -78,7 +76,7 @@ function BlogItem(props) {
         <Card.Body className="text-start">
           <Card.Title className="color-primary">
             <p>
-              <strong>{post.title[lang]}</strong>
+              <strong>{post.title}</strong>
               <br />
               <small>
                 <i>

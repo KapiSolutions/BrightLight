@@ -5,15 +5,16 @@ import styles from "../../../styles/components/Orders/Item.module.scss";
 import { useAuth } from "../../../context/AuthProvider";
 import { IoIosArrowForward } from "react-icons/io";
 import { getDocById, updateDocFields } from "../../../firebase/Firestore";
-import { useDeviceStore } from "../../../stores/deviceStore";
+import { useRouter } from "next/router";
 
 function Item(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const { setErrorMsg } = useAuth();
   const order = props.order;
   const [showDetails, setShowDetails] = useState(false);
   const [loadingAdd, setLoadingAdd] = useState(false);
   const [lockAnswer, setLockAnswer] = useState(false);
-  const lang = useDeviceStore((state) => state.lang);
   const item = props.item;
   const answerRef = useRef();
 
@@ -72,7 +73,7 @@ function Item(props) {
           alt="Item icon"
         />
         <div className="w-50">
-          <p className={styles.OrderItemName}>{item.name[lang]}</p>
+          <p className={styles.OrderItemName}>{item.name[locale]}</p>
           <p className={styles.OrderItemPrice}>
             <small>
               {item.price[order.currency].amount}

@@ -14,11 +14,11 @@ import CartItem from "../../components/Cart/CartItem";
 
 function CartSummaryPage() {
   const router = useRouter();
+  const locale = router.locale;
   const { isAuthenticated, authUserFirestore, setErrorMsg, updateProfile } = useAuth();
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(undefined);
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const lang = useDeviceStore((state) => state.lang);
   const currency = useDeviceStore((state) => state.currency);
   const theme = useDeviceStore((state) => state.themeState);
 
@@ -60,7 +60,7 @@ function CartSummaryPage() {
         authUserFirestore?.cart,
         totalPrice,
         currency,
-        lang,
+        locale,
         comments
       );
     } catch (error) {
@@ -78,7 +78,7 @@ function CartSummaryPage() {
       //prepare cart items data for email notification
       const cartItems = await Promise.all(
         authUserFirestore?.cart.map(async (_, idx) => ({
-          name: authUserFirestore?.cart[idx].name[lang],
+          name: authUserFirestore?.cart[idx].name[locale],
           price: authUserFirestore?.cart[idx].price[currency].amount,
           currency: currency,
           image: await getFileUrlStorage(

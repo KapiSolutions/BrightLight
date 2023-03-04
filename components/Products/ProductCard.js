@@ -8,9 +8,10 @@ import Image from "next/image";
 
 function ProductCard(props) {
   const router = useRouter();
+  const { pathname, asPath, query } = router;
+  const locale = router.locale;
   const product = props.product;
   const preview = props.preview; //true when creating new product or updating existing
-  const lang = useDeviceStore((state) => state.lang);
   const currency = useDeviceStore((state) => state.currency);
   const theme = useDeviceStore((state) => state.themeState);
   const [fullDesc, setfullDesc] = useState(false);
@@ -28,16 +29,16 @@ function ProductCard(props) {
           blurDataURL={placeholder("dark")}
           sizes="(max-width: 768px) 100vw, 33vw"
           className={`imgOpacity pointer ${loading && "opacity-25"}`}
-          alt={`${product.title[lang]} - Bright Light Gypsy Tarot`}
-          title={`${product.title[lang]} - Bright Light Gypsy Tarot`}
+          alt={`${product.title} - Bright Light Gypsy Tarot`}
+          title={`${product.title} - Bright Light Gypsy Tarot`}
           style={{ objectFit: "cover" }}
           onClick={() => {
             if (!loading) {
               router.push({
                 pathname: "/product/[pid]",
                 query: { pid: product.id },
-                hash: "main",
-              });
+                hash: "main"
+              },); 
             }
             setLoading(true);
           }}
@@ -45,21 +46,22 @@ function ProductCard(props) {
       </div>
       <Card.Body>
         <Card.Title className="color-primary">
-          <strong>{product.title.en}</strong>
+          <strong>{product.title}</strong>
         </Card.Title>
         <Card.Text
           id={`text-${product.id}`}
           className={`${styles.cardText} color-primary pointer`}
           onClick={() => setfullDesc(!fullDesc)}
         >
-          {fullDesc ? product.desc[lang] : `${product.desc[lang].substring(0, truncLength)}`}
-          {!fullDesc && product.desc[lang].length > truncLength && "..."}
+          {fullDesc ? product.desc : `${product.desc.substring(0, truncLength)}`}
+          {!fullDesc && product.desc.length > truncLength && "..."}
         </Card.Text>
-        
       </Card.Body>
-      <Card.Footer className={`d-flex align-items-center justify-content-between ${theme === "dark" && "border-top border-dark"}`}>
+      <Card.Footer
+        className={`d-flex align-items-center justify-content-between ${theme === "dark" && "border-top border-dark"}`}
+      >
         <span className="text-muted">
-          {product.price[currency].amount.replace('.', ',')}
+          {product.price[currency].amount.replace(".", ",")}
           <span className="text-uppercase ms-1">{currency}</span>
         </span>
         <Button
