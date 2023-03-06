@@ -2,17 +2,21 @@ import React from "react";
 import Head from "next/head";
 import { Container, Row, Col } from "react-bootstrap";
 import ProductCard from "../components/Products/ProductCard";
+import AdBanner from "../components/AdBanner";
 import { getDocsFromCollection } from "../firebase/Firestore";
+import Script from "next/script";
 
 export default function Home(props) {
   const locale = props.locale;
   const t = {
     en: {
+      title: "Home",
       h1: "Your Cards",
       choose: "Choose one or more to get what you need.",
       findIt: "Find it out!",
     },
     pl: {
+      title: "Strona Główna",
       h1: "Twoje karty",
       choose: "Wybierz jedną lub kilka by dowiedzieć się tego czego potrzebujesz.",
       findIt: "Poznaj ją teraz!",
@@ -21,8 +25,15 @@ export default function Home(props) {
   return (
     <>
       <Head>
-        <title>BrightLight | Home</title>
+        <title>BrightLight | {t[locale].title}</title>
       </Head>
+
+      <Script
+        async
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID}`}
+        strategy="lazyOnload"
+        crossorigin="anonymous"
+      />
 
       <Container className="d-flex mt-5 flex-column align-items-center justify-content-center">
         <Row className="d-flex mb-2 text-center">
@@ -37,6 +48,9 @@ export default function Home(props) {
             </Col>
           ))}
         </Row>
+        <section>
+          <AdBanner />
+        </section>
       </Container>
     </>
   );
