@@ -5,6 +5,19 @@ import styles from '../../../styles/layout/main/Footer.module.scss'
 import { RiInstagramFill } from "react-icons/ri";
 
 function Footer(props) {
+  const locale = props.locale;
+  const t = {
+    en: {
+      cookies: "Cookies Policy",
+      service: "Terms of service",
+      privacy: "Privacy Policy",
+    },
+    pl: {
+      cookies: "Polityka Cookies",
+      service: "Regulamin",
+      privacy: "Polityka prywatności",
+    },
+  };
   return (
     <footer>
       <div className='mt-5 backgroundFooter'>
@@ -39,20 +52,20 @@ function Footer(props) {
               <Navbar variant={props.theme} className="justify-content-center">
                 <Nav>
                   <Link href='/cookies-policy#main' passHref legacyBehavior>
-                    <Nav.Link>Cookies Policy</Nav.Link>
+                    <Nav.Link>{t[locale].cookies}</Nav.Link>
                   </Link>
                   <Link href='/terms-of-service#main' passHref legacyBehavior>
-                    <Nav.Link>Terms of service</Nav.Link>
+                    <Nav.Link>{t[locale].service}</Nav.Link>
                   </Link>
                   <Link href='/privacy-policy#main' passHref legacyBehavior>
-                    <Nav.Link>Privacy Policy</Nav.Link>
+                    <Nav.Link>{t[locale].privacy}</Nav.Link>
                   </Link>
                 </Nav>
               </Navbar>
 
             </div>
             <div className={styles.signature}>
-              <p>©2022 Kapisolutions</p>
+              <p>©2022 - {new Date().getFullYear()} Kapisolutions</p>
             </div>
           </div>
         </Container>

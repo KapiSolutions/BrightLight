@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../../../../styles/layout/main/Navbar.module.scss";
@@ -9,12 +9,13 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { FiLogOut } from "react-icons/fi";
 import { RiAlertFill } from "react-icons/ri";
 import { BsCart4 } from "react-icons/bs";
-import { GiFox, GiUnicorn, GiTurd, GiSparkSpirit, GiSharpCrown, GiWallet, GiTwoCoins } from "react-icons/gi";
+import { GiSparkSpirit, GiWallet } from "react-icons/gi";
 import Cart from "../../../Cart/Cart";
+import ChangeLocale from "../../../ChangeLocale";
 
 function MobileMenu(props) {
   const router = useRouter();
-  const locale = router.locale;
+  const locale = props.locale;
   const { authUserFirestore, logoutUser, isAdmin } = useAuth();
   const [error, setError] = useState("");
   const [back, setBack] = useState(false);
@@ -57,9 +58,33 @@ function MobileMenu(props) {
     }
   };
 
-  const toggleLanguage = (newLocale) => {
-    const { pathname, asPath, query } = router;
-    router.push({ pathname, query }, asPath, { locale: newLocale });
+  const t = {
+    en: {
+      profile: "Profile",
+      myOrders: "My Orders",
+      dailyHoroscope: "Daily Horoscope",
+      logOut: "Log Out",
+      products: "Products",
+      blogPosts: "Blog Posts",
+      users: "Menage Users",
+      menageOrders: "Menage Orders",
+      finances: "Finances",
+      signIn: "Sign In",
+      cart: "Shopping Cart",
+    },
+    pl: {
+      profile: "Profil",
+      myOrders: "Zamówienia",
+      dailyHoroscope: "Codzienny Horoskop",
+      logOut: "Wyloguj",
+      products: "Produkty",
+      blogPosts: "Blog",
+      users: "Użytkownicy",
+      menageOrders: "Zamówienia",
+      finances: "Finanse",
+      signIn: "Zaloguj",
+      cart: "Koszyk",
+    },
   };
   return (
     <>
@@ -109,38 +134,41 @@ function MobileMenu(props) {
                                 <strong>Admin:</strong>
                               </p>
                               <Link href="/admin/products#main" passHref legacyBehavior>
-                                <Nav.Link className={`text-${revTheme}`}>Products</Nav.Link>
+                                <Nav.Link className={`text-${revTheme}`}>{t[locale].products}</Nav.Link>
                               </Link>
                               <Link href="/admin/blogs#main" passHref legacyBehavior>
-                                <Nav.Link className={`text-${revTheme}`}>Blog posts</Nav.Link>
+                                <Nav.Link className={`text-${revTheme}`}>{t[locale].blogPosts}</Nav.Link>
                               </Link>
                               <Link href="/admin/users#main" passHref legacyBehavior>
-                                <Nav.Link className={`text-${revTheme}`}>Menage Users</Nav.Link>
+                                <Nav.Link className={`text-${revTheme}`}>{t[locale].users}</Nav.Link>
                               </Link>
 
                               <Link href="/admin/orders#main" passHref legacyBehavior>
-                                <Nav.Link className={`text-${revTheme}`}>Menage Orders</Nav.Link>
+                                <Nav.Link className={`text-${revTheme}`}>{t[locale].menageOrders}</Nav.Link>
                               </Link>
                               <div className="d-flex align-items-center">
-                                <GiWallet className={`${styles.iconsAdmin} text-${revTheme} color-primary me-1`} title="Finances" />
+                                <GiWallet
+                                  className={`${styles.iconsAdmin} text-${revTheme} color-primary me-1`}
+                                  title="Finances"
+                                />
                                 <Link href="/admin/finances#main" passHref legacyBehavior>
-                                  <Nav.Link className={`text-${revTheme}`}>Finances</Nav.Link>
+                                  <Nav.Link className={`text-${revTheme}`}>{t[locale].finances}</Nav.Link>
                                 </Link>
                               </div>
                             </section>
-                            <hr className={`text-${revTheme}`}/>
+                            <hr className={`text-${revTheme}`} />
                           </>
                         )}
 
                         <Link href="/user/profile" scroll={false} passHref legacyBehavior>
-                          <Nav.Link className={`text-${revTheme}`}>Profile</Nav.Link>
+                          <Nav.Link className={`text-${revTheme}`}>{t[locale].profile}</Nav.Link>
                         </Link>
                         <Link href="/user/orders" scroll={false} passHref legacyBehavior>
-                          <Nav.Link className={`text-${revTheme}`}>My orders</Nav.Link>
+                          <Nav.Link className={`text-${revTheme}`}>{t[locale].myOrders}</Nav.Link>
                         </Link>
                         <Link href="/user/horoscope" scroll={false} passHref legacyBehavior>
                           <Nav.Link className={`text-${revTheme}`}>
-                            Daily Horoscope
+                            {t[locale].dailyHoroscope}
                             <small className="ms-1">
                               <Badge bg="danger">NEW!</Badge>
                             </small>
@@ -152,7 +180,7 @@ function MobileMenu(props) {
                           className={`text-${props.theme === "light" ? "dark" : "light"}`}
                         >
                           <FiLogOut className={`${styles.icons} color-primary me-1`} title="Log Out" />
-                          Log Out
+                          {t[locale].logOut}
                         </Nav.Link>
                       </Nav>
                     </Offcanvas.Body>
@@ -181,7 +209,7 @@ function MobileMenu(props) {
                     <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
                       <Offcanvas.Title id="cart-nav-offcanvas">
                         <BsCart4 className={`${styles.mobileIcons} text-${revTheme} mb-2`} />
-                        <a className={`text-${revTheme}`}> Shopping cart</a>
+                        <a className={`text-${revTheme}`}> {t[locale].cart}</a>
                       </Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
@@ -205,7 +233,7 @@ function MobileMenu(props) {
                 ) : (
                   <Link href="/sign-in" passHref legacyBehavior>
                     <Nav.Link onClick={menuClicked} className={back && "mt-1"}>
-                      Sign In
+                      {t[locale].signIn}
                     </Nav.Link>
                   </Link>
                 )}
@@ -213,16 +241,8 @@ function MobileMenu(props) {
                 <Nav.Link href="#" onClick={menuClicked}>
                   <ChangeThemeButton text={false} />
                 </Nav.Link>
-                <Nav.Link href="#">
-                  <span
-                    onClick={() => {
-                      toggleLanguage(locale === "en" ? "pl" : "en");
-                    }}
-                    className={`text-uppercase ${styles.hover}`}
-                    style={{whiteSpace: "nowrap"}}
-                  >
-                    {locale === "en" ? "pl" : "eng"}
-                  </span>
+                <Nav.Link href="#" className={styles.hover}>
+                  <ChangeLocale />
                 </Nav.Link>
               </Nav>
             </Navbar.Collapse>

@@ -5,6 +5,19 @@ import ProductCard from "../components/Products/ProductCard";
 import { getDocsFromCollection } from "../firebase/Firestore";
 
 export default function Home(props) {
+  const locale = props.locale;
+  const t = {
+    en: {
+      h1: "Your Cards",
+      choose: "Choose one or more to get what you need.",
+      findIt: "Find it out!",
+    },
+    pl: {
+      h1: "Twoje karty",
+      choose: "Wybierz jedną lub kilka by dowiedzieć się tego czego potrzebujesz.",
+      findIt: "Poznaj ją teraz!",
+    },
+  };
   return (
     <>
       <Head>
@@ -13,8 +26,8 @@ export default function Home(props) {
 
       <Container className="d-flex mt-5 flex-column align-items-center justify-content-center">
         <Row className="d-flex mb-2 text-center">
-          <h1 className="color-primary">Your Cards</h1>
-          <p className="color-primary small">Choose one or more to get what you need.</p>
+          <h1 className="color-primary">{t[locale].h1}</h1>
+          <p className="color-primary small">{t[locale].choose}</p>
         </Row>
 
         <Row sm={2} md={2} lg={3} className="g-4 justify-content-center">
@@ -40,6 +53,7 @@ export async function getStaticProps({ locale }) {
   return {
     props: {
       products: JSON.parse(JSON.stringify(docs)),
+      locale: locale,
     },
     revalidate: false, //on demand revalidation
   };

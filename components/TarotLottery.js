@@ -13,9 +13,11 @@ import cardBackMin from "../public/img/cardBackMin.png";
 import placeholder from "../utils/placeholder";
 import Link from "next/link";
 import { getDocById } from "../firebase/Firestore";
+import tarotCards from "../utils/tarotCards";
 
 function TarotLotteryDesktop(props) {
   const router = useRouter();
+  const locale = props.locale;
   const product = props.product;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
@@ -28,91 +30,42 @@ function TarotLotteryDesktop(props) {
   const [loading, setLoading] = useState(false);
   const [loadingBuy, setLoadingBuy] = useState(false);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
-
   const cardsUrl = "/img/cards/";
-  const cardNames = [
-    "fool",
-    "magician",
-    "high-priestess",
-    "empress",
-    "empreror",
-    "hierophant",
-    "lovers",
-    "chariot",
-    "strength",
-    "hermit",
-    "wheel-of-fortune",
-    "justice",
-    "hanged-man",
-    "death",
-    "temperance",
-    "devil",
-    "tower",
-    "star",
-    "moon",
-    "sun",
-    "judgement",
-    "world",
-    "ace-of-wands",
-    "two-of-wands",
-    "three-of-wands",
-    "four-of-wands",
-    "five-of-wands",
-    "six-of-wands",
-    "seven-of-wands",
-    "eight-of-wands",
-    "nine-of-wands",
-    "ten-of-wands",
-    "princess-of-wands",
-    "knight-of-wands",
-    "queen-of-wands",
-    "king-of-wands",
-    "ace-of-cups",
-    "two-of-cups",
-    "three-of-cups",
-    "four-of-cups",
-    "five-of-cups",
-    "six-of-cups",
-    "seven-of-cups",
-    "eight-of-cups",
-    "nine-of-cups",
-    "ten-of-cups",
-    "princess-of-cups",
-    "knight-of-cups",
-    "queen-of-cups",
-    "king-of-cups",
-    "ace-of-swords",
-    "two-of-swords",
-    "three-of-swords",
-    "four-of-swords",
-    "five-of-swords",
-    "six-of-swords",
-    "seven-of-swords",
-    "eight-of-swords",
-    "nine-of-swords",
-    "ten-of-swords",
-    "princess-of-swords",
-    "knight-of-swords",
-    "queen-of-swords",
-    "king-of-swords",
-    "ace-of-pentacles",
-    "two-of-pentacles",
-    "three-of-pentacles",
-    "four-of-pentacles",
-    "five-of-pentacles",
-    "six-of-pentacles",
-    "seven-of-pentacles",
-    "eight-of-pentacles",
-    "nine-of-pentacles",
-    "ten-of-pentacles",
-    "princess-of-pentacles",
-    "knight-of-pentacles",
-    "queen-of-pentacles",
-    "king-of-pentacles",
-  ];
-
+  const cardNames = tarotCards();
   let cardStyleBack = {};
   let cardStyleFront = {};
+
+  const t = {
+    en: {
+      home: "Home",
+      lastOne: "And the last one.",
+      okay: "Okay!",
+      msgInterpretation:
+        "Now, if you are curious about what your cards say, you can get your own private interpretation!",
+      txtAreaLabel: "Please describe your Question in detail.",
+      loading: "Loading...",
+      buy: "Buy now",
+      addToCart: "Add to cart",
+      save: "Save & Sign In",
+      msgUnregistered: "Only registered users can ask for the private interpretation.",
+      msgSuccessCart: `The ${product.title} tarot successfully added to the cart!`,
+      back: "Back",
+    },
+    pl: {
+      home: "Strona główna",
+      lastOne: "I ostatnia.",
+      okay: "Super!",
+      msgInterpretation: "Jesteś ciekawy co mówią Twoje karty? Otrzymaj prywatną interpetację!",
+      txtAreaLabel: "Opisz dokładnie swoje pytanie.",
+      loading: "Ładuję..",
+      buy: "Kup teraz",
+      addToCart: "Dodaj do koszyka",
+      save: "Zapisz i Zaloguj się",
+      msgUnregistered: "Tylko zarejestrowani użytkownicy mogą dostać prywatną interpretację.",
+      msgSuccessCart: `Tarot "${product.title}" pomyślnie dodany do koszyka!`,
+      back: "Wróć",
+    },
+  };
 
   if (product.cardSet < 10) {
     cardStyleBack = {
@@ -144,9 +97,9 @@ function TarotLotteryDesktop(props) {
     if (flipCards.length > 0) {
       const img = document.getElementById(`product-card-${flipCards.length - 1}`);
       const cardNo = flipCards[flipCards.length - 1];
-      const cardName = cardNames[cardNo];
+      const cardName = cardNames.en[cardNo];
       img.setAttribute("src", `${cardsUrl}/${cardName}.png`);
-      setUserCards((prev) => [...prev, cardName]);
+      setUserCards((prev) => [...prev, cardNames[locale][cardNo]]);
 
       if (!isMobile) {
         document.getElementById(cardNo).style.display = "none";
@@ -236,7 +189,7 @@ function TarotLotteryDesktop(props) {
       cart.push(cartItem);
       try {
         await updateProfile({ cart: cart });
-        setMessage(`The ${product.title} tarot successfully added to the cart!`);
+        setMessage(t[locale].msgSuccessCart);
       } catch (error) {
         setErrorMsg(error);
       }
@@ -246,11 +199,12 @@ function TarotLotteryDesktop(props) {
   function handleSubmit(e) {
     e.preventDefault();
   }
+
   return (
     <>
       <section className="d-flex gap-1 mb-2">
         <small>
-          <Link href="/#main">Home</Link>
+          <Link href="/#main">{t[locale].home}</Link>
         </small>
         <small>&gt;</small>
         <small>{product.title}</small>
@@ -288,18 +242,32 @@ function TarotLotteryDesktop(props) {
       <Row className="d-flex justify-content-center">
         {flipCards.length === 0 && (
           <p className="color-primary">
-            Focus deeply on your question and {window.innerWidth < 768 && "TAP below to"}{" "}
-            <strong>choose {product.cardSet} cards</strong>
+            {locale === "pl" ? (
+              <>
+                Zastanów się głęboko nad swoim pytaniem i{" "}
+                {window.innerWidth < 768 ? "KLIKNIJ niżej aby wybrać" : "wybierz"}{" "}
+                <strong>{product.cardSet} karty.</strong>
+              </>
+            ) : (
+              <>
+                Focus deeply on your question and {window.innerWidth < 768 && "TAP below to"}{" "}
+                <strong>choose {product.cardSet} cards</strong>
+              </>
+            )}
           </p>
         )}
         {flipCards.length > 0 && flipCards.length < product.cardSet - 1 && (
           <p className="color-primary">
-            <strong>Okay, {product.cardSet - flipCards.length} more left..</strong>
+            {locale === "pl" ? (
+              <strong>Dobrze, jeszcze {product.cardSet - flipCards.length} karty..</strong>
+            ) : (
+              <strong>Okay, {product.cardSet - flipCards.length} more left..</strong>
+            )}
           </p>
         )}
         {flipCards.length == product.cardSet - 1 && (
           <p className="color-primary">
-            <strong>And the last one.</strong>
+            <strong>{t[locale].lastOne}</strong>
           </p>
         )}
         {window.innerWidth < 768 ? (
@@ -336,16 +304,13 @@ function TarotLotteryDesktop(props) {
 
         {flipCards.length == product.cardSet && !message && (
           <div>
-            <h4 className="mt-0 color-primary">Okay!</h4>
-            <p className="color-primary">
-              Now, if you are curious about what your cards say, you can get your own private interpretation!
-            </p>
+            <h4 className="mt-0 color-primary">{t[locale].okay}</h4>
+            <p className="color-primary">{t[locale].msgInterpretation}</p>
             <Form className="mt-4 m-auto color-primary" style={{ maxWidth: "500px" }} onSubmit={handleSubmit}>
-              <FloatingLabel label="Your Question..">
+              <FloatingLabel label={t[locale].txtAreaLabel}>
                 <Form.Control
                   as="textarea"
                   id="questionField"
-                  placeholder="Leave a comment here"
                   className={themeDarkInput}
                   style={{ minHeight: "150px" }}
                   required
@@ -358,10 +323,10 @@ function TarotLotteryDesktop(props) {
                       {loadingBuy ? (
                         <>
                           <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                          <span>Loading...</span>
+                          <span>{t[locale].loading}</span>
                         </>
                       ) : (
-                        <span> Buy now </span>
+                        <span>{t[locale].buy}</span>
                       )}
                     </Button>
                     <Button
@@ -386,20 +351,20 @@ function TarotLotteryDesktop(props) {
                     {loading ? (
                       <>
                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                        <span>Loading...</span>
+                        <span>{t[locale].loading}</span>
                       </>
                     ) : (
-                      <span> Add to cart </span>
+                      <span>{t[locale].addToCart}</span>
                     )}
                   </Button>
                 </>
               ) : (
                 <>
                   <Button className="btn-lg mt-4" type="submit" onClick={handleSaveAndSignIn}>
-                    Save & Sign In
+                    {t[locale].save}
                   </Button>
                   <br />
-                  <small className="color-primary">Only registered users can ask for the private interpretation.</small>
+                  <small className="color-primary">{t[locale].msgUnregistered}</small>
                 </>
               )}
             </Form>
@@ -418,7 +383,7 @@ function TarotLotteryDesktop(props) {
                 router.push("/#main");
               }}
             >
-              Back
+              {t[locale].back}
             </Button>
           </section>
         )}

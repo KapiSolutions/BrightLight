@@ -14,10 +14,11 @@ import { GiSparkSpirit, GiWallet } from "react-icons/gi";
 // GiSwordsEmblem GiTiara GiTurd GiTwoCoins GiUnicorn GiWallet GiAnarchy GiArcingBolt GiBleedingHeart
 // GiBulb GiBurningEmbers GiCardQueenHearts GiCowled GiCrownedHeart GiFireBottle GiFox GiSittingDog
 import Cart from "../../../Cart/Cart";
+import ChangeLocale from "../../../ChangeLocale";
 
 function DesktopMenu(props) {
   const router = useRouter();
-  const locale = router.locale;
+  const locale = props.locale;
   const { authUserFirestore, logoutUser, isAdmin } = useAuth();
   const [error, setError] = useState("");
   const [back, setBack] = useState(false);
@@ -46,10 +47,35 @@ function DesktopMenu(props) {
       setOnTop(true);
     }
   };
-  const toggleLanguage = (newLocale) => {
-    const { pathname, asPath, query } = router;
-    router.push({ pathname, query }, asPath, { locale: newLocale });
-  };
+
+  const t = {
+    en: {
+      profile: "Profile",
+      myOrders: "My Orders",
+      dailyHoroscope: "Daily Horoscope",
+      logOut: "Log Out",
+      products: "Products",
+      blogPosts: "Blog Posts",
+      users: "Menage Users",
+      menageOrders: "Menage Orders",
+      finances: "Finances",
+      signIn: "Sign In",
+      cart: "Shopping Cart",
+    },
+    pl: {
+      profile: "Profil",
+      myOrders: "Zamówienia",
+      dailyHoroscope: "Codzienny Horoskop",
+      logOut: "Wyloguj",
+      products: "Produkty",
+      blogPosts: "Blog",
+      users: "Użytkownicy",
+      menageOrders: "Zamówienia",
+      finances: "Finanse",
+      signIn: "Zaloguj",
+      cart: "Koszyk"
+    }
+  }
 
   return (
     <>
@@ -108,14 +134,14 @@ function DesktopMenu(props) {
 
                       <Dropdown.Menu variant={props.theme} className="background mt-2">
                         <Link href="/user/profile#main" passHref legacyBehavior>
-                          <Dropdown.Item>Profile</Dropdown.Item>
+                          <Dropdown.Item>{t[locale].profile}</Dropdown.Item>
                         </Link>
                         <Link href="/user/orders#main" passHref legacyBehavior>
-                          <Dropdown.Item>My orders</Dropdown.Item>
+                          <Dropdown.Item>{t[locale].myOrders}</Dropdown.Item>
                         </Link>
                         <Link href="/user/horoscope#main" passHref legacyBehavior>
                           <Dropdown.Item>
-                            Daily Horoscope
+                          {t[locale].dailyHoroscope}
                             <small className="ms-1">
                               <Badge bg="danger">NEW!</Badge>
                             </small>
@@ -124,7 +150,7 @@ function DesktopMenu(props) {
                         <Dropdown.Divider />
                         <Dropdown.Item onClick={handleLogout}>
                           <FiLogOut className={`${styles.icons} color-primary me-1`} title="Log Out" />
-                          Log Out
+                          {t[locale].logOut}
                         </Dropdown.Item>
                       </Dropdown.Menu>
                     </Dropdown>
@@ -143,24 +169,24 @@ function DesktopMenu(props) {
                         </Dropdown.Toggle>
                         <Dropdown.Menu variant={props.theme} className="background mt-2">
                           <Link href="/admin/products#main" passHref legacyBehavior>
-                            <Dropdown.Item>Products</Dropdown.Item>
+                            <Dropdown.Item>{t[locale].products}</Dropdown.Item>
                           </Link>
                           <Link href="/admin/blogs#main" passHref legacyBehavior>
-                            <Dropdown.Item>Blog posts</Dropdown.Item>
+                            <Dropdown.Item>{t[locale].blogPosts}</Dropdown.Item>
                           </Link>
                           <Link href="/admin/users#main" passHref legacyBehavior>
-                            <Dropdown.Item>Menage Users</Dropdown.Item>
+                            <Dropdown.Item>{t[locale].users}</Dropdown.Item>
                           </Link>
                           <Dropdown.Divider />
                           <Link href="/admin/orders#main" passHref legacyBehavior>
-                            <Dropdown.Item>Menage Orders</Dropdown.Item>
+                            <Dropdown.Item>{t[locale].menageOrders}</Dropdown.Item>
                           </Link>
                           <Dropdown.Divider />
 
                           <Dropdown.Item>
                             <GiWallet className={`${styles.iconsAdmin} color-primary me-1`} title="Finances" />
                             <Link href="/admin/finances#main" passHref legacyBehavior>
-                              <span className="color-primary">Finances</span>
+                              <span className="color-primary">{t[locale].finances}</span>
                             </Link>
                           </Dropdown.Item>
                         </Dropdown.Menu>
@@ -182,22 +208,14 @@ function DesktopMenu(props) {
                   </Container>
                 ) : (
                   <Link href="/sign-in" passHref legacyBehavior>
-                    <Nav.Link>Sign In</Nav.Link>
+                    <Nav.Link>{t[locale].signIn}</Nav.Link>
                   </Link>
                 )}
                 <Nav.Link href="#">
                   <ChangeThemeButton text={false} />
                 </Nav.Link>
-                <Nav.Link href="#">
-                  <span
-                    onClick={() => {
-                      toggleLanguage(locale === "en" ? "pl" : "en");
-                    }}
-                    className={`text-uppercase ${styles.hover}`}
-                    style={{whiteSpace: "nowrap"}}
-                  >
-                    | {locale === "en" ? "pl" : "en"}
-                  </span>
+                <Nav.Link href="#" className={styles.hover}>
+                  <ChangeLocale />
                 </Nav.Link>
               </Nav>
             </Navbar.Collapse>
@@ -214,7 +232,7 @@ function DesktopMenu(props) {
         <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
           <Offcanvas.Title className={`text-${revTheme}`}>
             <BsCart4 className={`${styles.mobileIcons} color-primary mb-2`} />
-            <a className={`text-${revTheme}`}> Shopping cart</a>
+            <a className={`text-${revTheme}`}> {t[locale].cart}</a>
           </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body className={`text-${revTheme}`}>

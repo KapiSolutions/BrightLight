@@ -8,6 +8,7 @@ import { useDeviceStore } from "../../stores/deviceStore";
 
 function Cart(props) {
   const router = useRouter();
+  const locale = router.locale;
   const { authUserFirestore } = useAuth();
   const currency = useDeviceStore((state) => state.currency);
   const revTheme = props.theme === "light" ? "dark" : "light";
@@ -21,6 +22,18 @@ function Cart(props) {
     setTotalPrice(total);
   }, [authUserFirestore.cart, currency]);
 
+  const t = {
+    en: {
+      totalPrice: "Total Price:",
+      summary: "Summary",
+      emptyCart: "The cart is empty.."
+    },
+    pl: {
+      totalPrice: "Razem:",
+      summary: "Podsumowanie",
+      emptyCart: "Koszyk jest pusty.."
+    }
+  }
   return (
     <>
       {authUserFirestore.cart.length > 0 ? (
@@ -29,7 +42,7 @@ function Cart(props) {
             <CartItem key={idx} idx={idx} theme={props.theme} />
           ))}
           <p className={`text-${props.theme === "light" ? "dark" : "light"} text-end`}>
-            Total Price: {totalPrice}
+          {t[locale].totalPrice} {totalPrice}
             <span className="text-uppercase ms-1">{currency}</span>
           </p>
           <hr className={`text-${revTheme}`} />
@@ -47,12 +60,12 @@ function Cart(props) {
                 title="Summary"
                 style={{ width: "23px", height: "23px" }}
               />
-              Summary
+              {t[locale].summary}
             </Button>
           </div>
         </>
       ) : (
-        <p className="color-primary">The cart is empty..</p>
+        <p className="color-primary">{t[locale].emptyCart}</p>
       )}
     </>
   );

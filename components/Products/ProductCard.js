@@ -8,7 +8,6 @@ import Image from "next/image";
 
 function ProductCard(props) {
   const router = useRouter();
-  const { pathname, asPath, query } = router;
   const locale = router.locale;
   const product = props.product;
   const preview = props.preview; //true when creating new product or updating existing
@@ -17,6 +16,17 @@ function ProductCard(props) {
   const [fullDesc, setfullDesc] = useState(false);
   const [loading, setLoading] = useState(false);
   const truncLength = 60;
+
+  const t = {
+    en: {
+      button: "Get it!",
+      loading: "Loading...",
+    },
+    pl: {
+      button: "Wybieram!",
+      loading: "Ładuję.."
+    },
+  };
 
   return (
     <Card style={{ width: "18rem" }} className="background border shadow-sm">
@@ -81,10 +91,10 @@ function ProductCard(props) {
           {loading ? (
             <>
               <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-              <span> Loading...</span>
+              <span> {t[locale].loading}</span>
             </>
           ) : (
-            <span> Get it! </span>
+            <span> {t[locale].button} </span>
           )}
         </Button>
       </Card.Footer>

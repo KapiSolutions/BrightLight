@@ -3,7 +3,6 @@ import Head from "next/head";
 import Image from "next/image";
 import { Container } from "react-bootstrap";
 import { useDeviceStore } from "../../stores/deviceStore";
-import useLocalStorageState from "use-local-storage-state";
 import styles from "../../styles/pages/About.module.scss";
 import { SiHellofresh } from "react-icons/si";
 import avatarPath from "../../public/img/about/avatar.png";
@@ -11,17 +10,37 @@ import diamondPath from "../../public/img/about/diamond.png";
 import tarotPath from "../../public/img/about/tarot-cards.png";
 import japanPath from "../../public/img/about/japan-sticker.png";
 
-function AboutPage() {
+function AboutPage(props) {
+  const locale = props.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
+
+  const t = {
+    en: {
+      title: "About Me",
+      firstSection: "I'm a tarotist with several years of experience. Since I was a child, I have also had visions and highly developed intuition. My other passion is music, especially singing.",
+      secondSection: "Tarot cards allow you to indicate the probable course of life. Let us remember that as a result of introducing certain changes in our life, we can change the predicted future.",
+      thirdSection: "Therefore, in addition to learning about the upcoming future and other people's intentions, it is also worth asking them for advice.",
+      titleJapan: "Japan Dream",
+      japanSection: "One of my biggest dreams is to travel to Japan. Discovering beautiful nature and local culture."
+    },
+    pl: {
+      title: "O mnie",
+      firstSection: "Jestem tarotystą z kilkuletnim doświadczeniem. Od dziecka miewam też wizje i wysoko rozwiniętą intuicję. Moją drugą pasją jest muzyka, a szczególnie śpiew.",
+      secondSection: "Karty tarota pozwalają wskazać prawdopodobny bieg życia. Pamiętajmy, że w wyniku wprowadzenia pewnych zmian w naszym życiu możemy zmienić przewidywaną przyszłość.",
+      thirdSection: "Dlatego oprócz poznawania nadchodzącej przyszłości i intencji innych ludzi, warto też zapytać ich o radę.",
+      titleJapan: "Sen o Japonii",
+      japanSection: "Jednym z moich największych marzeń jest podróż do Japonii. Odkrywanie pięknej przyrody i lokalnej kultury."
+    },
+  };
   return (
     <>
       <Head>
-        <title>BrightLight | About</title>
+        <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary">
         {!isMobile &&<div style={{height: "80px"}}>
-        <h1 className="mt-0 color-primary text-center">About Me</h1>
+        <h1 className="mt-0 color-primary text-center">{t[locale].title}</h1>
         <SiHellofresh style={{width: "25px", height: "25px", position: "relative", top: "-90px", left: "120px"}}/>
         </div> }
       
@@ -29,11 +48,10 @@ function AboutPage() {
           <div className={`text-${isMobile ? "center" : "end"} col-md-3 col-sm-12 m-auto`}>
             <Image src={avatarPath} width="170" height="170" alt="Avatar"/>
           </div>
-          {isMobile && <h1 className="mt-0 color-primary text-center">About Me</h1>}
+          {isMobile && <h1 className="mt-0 color-primary text-center">{t[locale].title}</h1>}
           <div className={`col-md-7 col-sm-12 align-self-center ${!isMobile && "pe-5"}`}>
             <p className={`text-${isMobile ? "center" : "start"}`}>
-              I&apos;m a tarotist with several years of experience. Since I was a child, I have also had visions and
-              highly developed intuition. My other passion is music, especially singing. &#10084;
+            {t[locale].firstSection} &#10084;
             </p>
           </div>
         </section>
@@ -47,8 +65,7 @@ function AboutPage() {
             className={`d-${isMobile ? "none" : "block"} ${!isMobile && "ps-5"} col-md-7 col-sm-12 align-self-center`}
           >
             <p className={`text-${isMobile ? "center" : "end"}`}>
-              Tarot cards allow you to indicate the probable course of life. Let us remember that as a result of
-              introducing certain changes in our life, we can change the predicted future.
+            {t[locale].secondSection}
             </p>
           </div>
           <div className={`text-${isMobile ? "center" : "center"} col-md-4 col-sm-12 m-auto`}>
@@ -56,8 +73,7 @@ function AboutPage() {
           </div>
           <div className={`d-${isMobile ? "block" : "none"} col-md-8 col-sm-12 align-self-center`}>
             <p className={`text-${isMobile ? "center" : "end"}`}>
-              Tarot cards allow you to indicate the probable course of life. Let us remember that as a result of
-              introducing certain changes in our life, we can change the predicted future.
+            {t[locale].secondSection}
             </p>
           </div>
         </section>
@@ -68,8 +84,7 @@ function AboutPage() {
           </div>
           <div className={`col-md-7 col-sm-12 align-self-center ${!isMobile && "pe-5"}`}>
             <p className={`text-${isMobile ? "center" : "start"}`}>
-              Therefore, in addition to learning about the upcoming future and other people&apos;s intentions, it is
-              also worth asking them for advice.
+            {t[locale].thirdSection}
             </p>
           </div>
         </section>
@@ -77,9 +92,9 @@ function AboutPage() {
         <section className="mt-5">
           <div className={`${styles.japanBackLight} rounded pt-4 pb-1 mb-3`}>
             <Image src={japanPath} width="170" height="159" alt="Japan sticker"/>
-            <h2 className="mt-0 text-dark">Japan Dream</h2>
+            <h2 className="mt-0 text-dark">{t[locale].titleJapan}</h2>
           </div>
-          <p>One of my biggest dreams is to travel to Japan. Discovering beautiful nature and local culture.</p>
+          <p>{t[locale].japanSection}</p>
           <p>(...)</p>
         </section>
       </Container>
@@ -88,3 +103,12 @@ function AboutPage() {
 }
 
 export default AboutPage;
+
+export async function getStaticProps({ locale }) {
+  return {
+    props: {
+      locale: locale,
+    },
+    revalidate: false, 
+  };
+}
