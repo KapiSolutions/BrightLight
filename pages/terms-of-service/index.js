@@ -3,9 +3,6 @@ import Head from "next/head";
 import { Container } from "react-bootstrap";
 import path from "path";
 import { promises as fs } from "fs";
-
-// import rawPL from "../../public/regulations/therms-of-service/pl/index.txt"
-// import rawEN from "../../public/regulations/therms-of-service/en/index.txt"
 const parse = require("html-react-parser");
 import DOMPurify from "dompurify";
 
@@ -38,14 +35,19 @@ function TermsOfService(props) {
 export default TermsOfService;
 
 export async function getStaticProps({ locale }) {
-  const filePath = path.join(process.cwd(), `public/regulations/therms-of-service/${locale}/index.txt`);
-  const text = await fs.readFile(filePath, "utf8");
+let filePath = "";
+let text = "";
 
-  return {
-    props: {
-      text: text,
-      locale: locale,
-    },
-    revalidate: false, //on demand revalidation
-  };
+  if (locale != "default") {
+    filePath = path.join(process.cwd(), `public/regulations/therms-of-service/${locale}/index.txt`);
+    text = await fs.readFile(filePath, "utf8");
+  } 
+    return {
+      props: {
+        text: text,
+        locale: locale,
+      },
+      revalidate: false, //on demand revalidation
+    };
+  
 }
