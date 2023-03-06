@@ -18,19 +18,26 @@ function AboutPage(props) {
   const t = {
     en: {
       title: "About Me",
-      firstSection: "I'm a tarotist with several years of experience. Since I was a child, I have also had visions and highly developed intuition. My other passion is music, especially singing.",
-      secondSection: "Tarot cards allow you to indicate the probable course of life. Let us remember that as a result of introducing certain changes in our life, we can change the predicted future.",
-      thirdSection: "Therefore, in addition to learning about the upcoming future and other people's intentions, it is also worth asking them for advice.",
+      firstSection:
+        "I'm a tarotist with several years of experience. Since I was a child, I have also had visions and highly developed intuition. My other passion is music, especially singing.",
+      secondSection:
+        "Tarot cards allow you to indicate the probable course of life. Let us remember that as a result of introducing certain changes in our life, we can change the predicted future.",
+      thirdSection:
+        "Therefore, in addition to learning about the upcoming future and other people's intentions, it is also worth asking them for advice.",
       titleJapan: "Japan Dream",
-      japanSection: "One of my biggest dreams is to travel to Japan. Discovering beautiful nature and local culture."
+      japanSection: "One of my biggest dreams is to travel to Japan. Discovering beautiful nature and local culture.",
     },
     pl: {
       title: "O mnie",
-      firstSection: "Jestem tarotystą z kilkuletnim doświadczeniem. Od dziecka miewam też wizje i wysoko rozwiniętą intuicję. Moją drugą pasją jest muzyka, a szczególnie śpiew.",
-      secondSection: "Karty tarota pozwalają wskazać prawdopodobny bieg życia. Pamiętajmy, że w wyniku wprowadzenia pewnych zmian w naszym życiu możemy zmienić przewidywaną przyszłość.",
-      thirdSection: "Dlatego oprócz poznawania nadchodzącej przyszłości i intencji innych ludzi, warto też zapytać ich o radę.",
+      firstSection:
+        "Jestem tarocistką z kilkuletnim doświadczeniem. Od dziecka miewam też wizje i wysoko rozwiniętą intuicję. Moją drugą pasją jest muzyka, a szczególnie śpiew.",
+      secondSection:
+        "Karty tarota pozwalają wskazać prawdopodobny bieg życia. Pamiętajmy, że w wyniku wprowadzenia pewnych zmian w naszym życiu, możemy zmienić przewidywaną przyszłość.",
+      thirdSection:
+        "Dlatego oprócz poznawania nadchodzącej przyszłości i intencji innych ludzi, warto też zapytać kart o radę.",
       titleJapan: "Sen o Japonii",
-      japanSection: "Jednym z moich największych marzeń jest podróż do Japonii. Odkrywanie pięknej przyrody i lokalnej kultury."
+      japanSection:
+        "Jednym z moich największych marzeń jest podróż do Japonii. Odkrywanie pięknej przyrody i lokalnej kultury.",
     },
   };
   return (
@@ -39,20 +46,24 @@ function AboutPage(props) {
         <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary">
-        {!isMobile &&<div style={{height: "80px"}}>
-        <h1 className="mt-0 color-primary text-center">{t[locale].title}</h1>
-        <SiHellofresh style={{width: "25px", height: "25px", position: "relative", top: "-90px", left: "120px"}}/>
-        </div> }
-      
-        <section className="d-flex flex-wrap justify-content-center mb-3 p-2">
-          <div className={`text-${isMobile ? "center" : "end"} col-md-3 col-sm-12 m-auto`}>
-            <Image src={avatarPath} width="170" height="170" alt="Avatar"/>
+        {!isMobile && (
+          <div style={{ height: "80px" }}>
+            <h1 className="mt-0 color-primary text-center">{t[locale].title}</h1>
+            <SiHellofresh
+              style={{ width: "25px", height: "25px", position: "relative", top: "-90px", left: "120px" }}
+            />
           </div>
-          {isMobile && <h1 className="mt-0 color-primary text-center">{t[locale].title}</h1>}
+        )}
+
+        {isMobile && <h1 className="mt-0 color-primary text-center">{t[locale].title}</h1>}
+
+        <section className="d-flex flex-wrap justify-content-center mb-3 p-2">
+          <div className={`text-${isMobile ? "center mb-4" : "end"} col-md-3 col-sm-12 m-auto`}>
+            <Image src={avatarPath} width="170" height="170" alt="Avatar" />
+          </div>
+
           <div className={`col-md-7 col-sm-12 align-self-center ${!isMobile && "pe-5"}`}>
-            <p className={`text-${isMobile ? "center" : "start"}`}>
-            {t[locale].firstSection} &#10084;
-            </p>
+            <p className={`text-${isMobile ? "center" : "start"}`}>{t[locale].firstSection} &#10084;</p>
           </div>
         </section>
 
@@ -64,34 +75,28 @@ function AboutPage(props) {
           <div
             className={`d-${isMobile ? "none" : "block"} ${!isMobile && "ps-5"} col-md-7 col-sm-12 align-self-center`}
           >
-            <p className={`text-${isMobile ? "center" : "end"}`}>
-            {t[locale].secondSection}
-            </p>
+            <p className={`text-${isMobile ? "center" : "end"}`}>{t[locale].secondSection}</p>
           </div>
           <div className={`text-${isMobile ? "center" : "center"} col-md-4 col-sm-12 m-auto`}>
-            <Image src={tarotPath} width="170" height="139" alt="Tarot cards roses"/>
+            <Image src={tarotPath} width="170" height="139" alt="Tarot cards roses" />
           </div>
           <div className={`d-${isMobile ? "block" : "none"} col-md-8 col-sm-12 align-self-center`}>
-            <p className={`text-${isMobile ? "center" : "end"}`}>
-            {t[locale].secondSection}
-            </p>
+            <p className={`text-${isMobile ? "center" : "end"}`}>{t[locale].secondSection}</p>
           </div>
         </section>
 
         <section className="d-flex flex-wrap mb-2 p-2">
           <div className={`text-${isMobile ? "center" : "end"} col-md-3 col-sm-12 m-auto`}>
-            <Image src={diamondPath} width="170" height="172" alt="Diamond flower"/>
+            <Image src={diamondPath} width="170" height="172" alt="Diamond flower" />
           </div>
           <div className={`col-md-7 col-sm-12 align-self-center ${!isMobile && "pe-5"}`}>
-            <p className={`text-${isMobile ? "center" : "start"}`}>
-            {t[locale].thirdSection}
-            </p>
+            <p className={`text-${isMobile ? "center" : "start"}`}>{t[locale].thirdSection}</p>
           </div>
         </section>
-        <hr className="color-primary w-50 m-auto mt-4 mb-5"/>
+        <hr className="color-primary w-50 m-auto mt-4 mb-5" />
         <section className="mt-5">
           <div className={`${styles.japanBackLight} rounded pt-4 pb-1 mb-3`}>
-            <Image src={japanPath} width="170" height="159" alt="Japan sticker"/>
+            <Image src={japanPath} width="170" height="159" alt="Japan sticker" />
             <h2 className="mt-0 text-dark">{t[locale].titleJapan}</h2>
           </div>
           <p>{t[locale].japanSection}</p>
@@ -109,6 +114,6 @@ export async function getStaticProps({ locale }) {
     props: {
       locale: locale,
     },
-    revalidate: false, 
+    revalidate: false,
   };
 }
