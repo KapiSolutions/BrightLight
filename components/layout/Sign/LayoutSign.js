@@ -4,16 +4,12 @@ import Head from "next/head";
 import { IoReturnDownBack } from "react-icons/io5";
 import { SSRProvider } from "react-bootstrap";
 import styles from "../../../styles/layout/sign/Sign.module.scss";
-import useLocalStorageState from "use-local-storage-state";
 import { useDeviceStore } from "../../../stores/deviceStore";
 
 function LayoutSign({ children }) {
   const router = useRouter();
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const [theme, setTheme] = useLocalStorageState("theme", {
-    ssr: true,
-    defaultValue: "light",
-  });
+  const theme = useDeviceStore((state) => state.themeState);
 
   return (
     <>
