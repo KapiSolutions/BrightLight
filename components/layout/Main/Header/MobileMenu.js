@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../../../../styles/layout/main/Navbar.module.scss";
-import { Navbar, Nav, Container, Alert, Offcanvas, Badge } from "react-bootstrap";
+import { Navbar, Nav, Container, Alert, Offcanvas, Badge, Button } from "react-bootstrap";
 import ChangeThemeButton from "../../../ChangeThemeButton";
 import { useAuth } from "../../../../context/AuthProvider";
 import { FaRegUserCircle } from "react-icons/fa";
@@ -222,7 +222,7 @@ function MobileMenu(props) {
 
             <Navbar.Toggle aria-controls="top-navbar" onClick={menuClicked} />
             <Navbar.Collapse id="top-navbar">
-              <Nav className="ms-auto">
+              <Nav className="ms-auto mt-3 mb-2">
                 {props.navItems.map((item) => (
                   <Link key={item.id} href={item.to} passHref legacyBehavior>
                     <Nav.Link onClick={menuClicked}>{item.text}</Nav.Link>
@@ -233,17 +233,20 @@ function MobileMenu(props) {
                 ) : (
                   <Link href="/sign-in" passHref legacyBehavior>
                     <Nav.Link onClick={menuClicked} className={back && "mt-1"}>
+                    <Button size="md" className="ps-2 pt-1 pe-2 pb-1">
                       {t[locale].signIn}
+                    </Button>
                     </Nav.Link>
                   </Link>
                 )}
-
-                <Nav.Link href="#" onClick={menuClicked}>
-                  <ChangeThemeButton text={false} />
-                </Nav.Link>
-                <Nav.Link href="#" className={styles.hover}>
-                  <ChangeLocale />
-                </Nav.Link>
+                <div className="d-flex align-items-center mt-2 gap-5 justify-content-center">
+                  <Nav.Link href="#" onClick={menuClicked}>
+                    <ChangeThemeButton text={false} />
+                  </Nav.Link>
+                  <Nav.Link href="#" onClick={menuClicked} className={styles.hover}>
+                    <ChangeLocale />
+                  </Nav.Link>
+                </div>
               </Nav>
             </Navbar.Collapse>
           </Container>
