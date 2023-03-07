@@ -445,12 +445,14 @@ elektronicznej na adres:    <a href="mailto:brightlightgypsy@gmail.com">brightli
     wniosku o rozpatrzenie sprawy przez sąd polubowny (wniosek można pobrać na
     stronie internetowej
     <a href="http://www.uokik.gov.pl/download.php?plik=6223">
-        http://www.uokik.gov.pl/download.php?plik=6223
+        uokik.gov.pl/download.php?plik=6223
     </a>
     ). Wykaz Stałych Polubownych Sądów Konsumenckich działających przy
     Wojewódzkich Inspektoratach Inspekcji Handlowej dostępny jest na stronie
-    internetowej: http://www.uokik.gov.pl/wazne_adresy.php#faq596. Konsument
-    może skorzystać także z bezpłatnej pomocy powiatowego (miejskiego)
+    internetowej: 
+    <a href="http://www.uokik.gov.pl/wazne_adresy.php#faq596">
+        uokik.gov.pl/wazne_adresy.php#faq596
+    </a>. Konsument może skorzystać także z bezpłatnej pomocy powiatowego (miejskiego)
     rzecznika konsumentów lub organizacji społecznej, do której zadań
     statutowych należy ochrona konsumentów. Pozasądowe dochodzenie roszczeń po
     zakończeniu postępowania reklamacyjnego jest bezpłatne.

@@ -436,13 +436,13 @@ address:    <a href="mailto:brightlightgypsy@gmail.com">brightlightgypsy@gmail.c
     court after the complaint procedure is completed (the application can be
     downloaded from the website
     <a href="http://www.uokik.gov.pl/download.php?plik=6223">
-        http://www.uokik.gov.pl/download.php?plik=6223
+        uokik.gov.pl/download.php?plik=6223
     </a>
     ). The list of Permanent Consumer Arbitration Courts operating at the
     Provincial Inspectorates of the Trade Inspection is available on the
     website:
     <a href="http://www.uokik.gov.pl/wazne_adresy.php#faq596">
-        http://www.uokik.gov.pl/wazne_adresy.php#faq596
+        uokik.gov.pl/wazne_adresy.php#faq596
     </a>
     . The consumer may also use the free assistance of the poviat (municipal)
     consumer ombudsman or social organization whose statutory tasks include
