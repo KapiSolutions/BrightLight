@@ -2,11 +2,67 @@
     <strong>§ 1</strong>
 </p>
 <p align="center">
+    <strong>DEFINITIONS CONTAINED IN THE REGULATIONS</strong>
+</p>
+<p>
+    1. <strong>ORDER FORM</strong> - a form available on the website
+    <a href="https://www.brightlightgypsy.pl">
+        https://www.brightlightgypsy.pl
+    </a>
+    enabling the submission of an Order.
+</p>
+<p>
+    2. <strong>CUSTOMER</strong> - a Service Recipient who intends to conclude
+    or has concluded a Sales Agreement with the Seller.
+</p>
+<p>
+    3. <strong>CONSUMER</strong> - a natural person who performs a legal
+    transaction with the entrepreneur not directly related to his business or
+    professional activity.
+</p>
+<p>
+    4. <strong>REGULATIONS</strong> - these Regulations of the Store.
+</p>
+<p>
+    5. <strong>STORE</strong> - The Service Provider's online store operating
+    at
+    <a href="https://www.brightlightgypsy.pl">
+        https://www.brightlightgypsy.pl
+    </a>
+    .
+</p>
+<p>
+    6. <strong>SELLER, SERVICE PROVIDER</strong> - Agnieszka Wąsik, 32-600
+    Oświęcim, ul. Krasickiego 48A, Poland.
+</p>
+<p>
+    7. <strong>SALES AGREEMENT</strong> - Service Sales Agreement concluded
+    between the Customer and the Seller via the Store.
+</p>
+<p>
+    8. <strong>ORDER</strong> - Customer's declaration of intent constituting
+    an offer to conclude a Product Sales Agreement with the Seller.
+</p>
+<p>
+    9. <strong>PRICE</strong> - the value expressed in monetary units that the
+    Customer is obliged to pay to the Seller for the Service.
+</p>
+<p>
+    10. <strong>SERVICE</strong> - tarot reading, an intangible thing provided
+    on the basis of the Sales Agreement between the Customer and the Seller.
+    Please remember that Tarot is not an oracle. Tarot is a signpost, it shows
+    the best solution, a path worth following to achieve goals, it shows the
+    source of the problem, it suggests what to pay attention to, it warns
+    against threats and adverse influences.
+</p>
+<p align="center">
+    <strong>§ 2</strong>
+</p>
+<p align="center">
     <strong>GENERAL PROVISIONS</strong>
 </p>
 <p>
-    1. The https://www.brightlightgypsy.pl store operates on the terms set out
-    in these Regulations.
+    1. The Store operates on the terms set out in these Regulations.
 </p>
 <p>
     2. The Regulations define the conditions for concluding and terminating
@@ -18,8 +74,7 @@
 </p>
 <p>
     3. Each Service Recipient, upon taking steps to use the Electronic Services
-    of the Store https://www.brightlightgypsy.pl, is obliged to comply with the
-    provisions of these Regulations.
+    of the Store is obliged to comply with the provisions of these Regulations.
 </p>
 <p>
     4. In matters not covered by these Regulations, the following provisions
@@ -40,67 +95,16 @@
     law.
 </p>
 <p align="center">
-    <strong>§ 2</strong>
-</p>
-<p align="center">
-    <strong>DEFINITIONS CONTAINED IN THE REGULATIONS</strong>
-</p>
-<p>
-    1. <strong>ORDER FORM</strong> - a form available on the website
-    https://www.brightlightgypsy.pl enabling the submission of an Order.
-</p>
-<p>
-    2. <strong>CUSTOMER</strong> - a Service Recipient who intends to conclude
-    or has concluded a Sales Agreement with the Seller.
-</p>
-<p>
-    3. <strong>CONSUMER</strong> - a natural person who performs a legal
-    transaction with the entrepreneur not directly related to his business or
-    professional activity.
-</p>
-<p>
-    4. <strong>REGULATIONS</strong> - these Regulations of the Store.
-</p>
-<p>
-    5. <strong>STORE</strong> - The Service Provider's online store operating
-    at https://www.brightlightgypsy.pl.
-</p>
-<p>
-    6. <strong>SELLER, SERVICE PROVIDER</strong> - Agnieszka Wąsik, 32-600
-    Oświęcim, ul. Krasickiego 48A.
-</p>
-<p>
-    7. <strong>SALES AGREEMENT</strong> - Product Sales Agreement concluded
-    between the Customer and the Seller via the Store.
-</p>
-<p>
-    8. <strong>ORDER</strong> - Customer's declaration of intent constituting
-    an offer to conclude a Product Sales Agreement with the Seller.
-</p>
-<p>
-    9. <strong>PRICE</strong> - the value expressed in monetary units that the
-    Customer is obliged to pay to the Seller for the Product.
-</p>
-<p>
-    10. <strong>SERVICE</strong> - tarot reading, an intangible thing provided
-    on the basis of the Sales Agreement between the Customer and the Seller.
-    Please remember that Tarot is not an oracle. Tarot is a signpost, it shows
-    the best solution, a path worth following to achieve goals, it shows the
-    source of the problem, it suggests what to pay attention to, it warns
-    against threats and adverse influences.
-</p>
-<p align="center">
     <strong>§ 3</strong>
 </p>
 <p align="center">
     <strong>INFORMATION ON THE SERVICES AND THEIR ORDERING</strong>
 </p>
 <p>
-    1. The shop https://www.brightlightgypsy.pl delivers the Services via the
-    Internet.
+    1. The Shop delivers the Services via the Internet.
 </p>
 <p>
-    2. The services offered through the Store concern esoteric advice and tarot
+    2. The Services offered through the Store concern esoteric advice and tarot
     divination.
 </p>
 <p>
@@ -131,7 +135,10 @@
 </p>
 <p>
     6. Orders can be placed via the website using the Order Form
-    https://www.brightlightgypsy.pl - 24 hours a day throughout the year.
+    <a href="https://www.brightlightgypsy.pl">
+        https://www.brightlightgypsy.pl
+    </a>
+    - 24 hours a day throughout the year.
 </p>
 <p>
     7. The condition for placing an Order in the Store by the Customer is to
@@ -195,8 +202,8 @@
 <p>
     2. In the case of payment via an electronic payment system, the Customer
     makes the payment before starting the execution of the Order. The
-    electronic payment system allows you to make payments using a credit card,
-    BLIK system or a quick transfer from selected banks.
+    electronic payment system allows you to make payments using a Credit Card,
+    BLIK system or a quick transfer from the selected banks.
 </p>
 <p>
     3. The Customer is obliged to pay the price under the Sales Agreement
@@ -213,7 +220,7 @@
     <strong>COST, DATE AND METHODS OF DELIVERY OF THE SERVICE</strong>
 </p>
 <p>
-    1. Delivery costs The Service is free of charge.
+    1. Delivery costs of The Service is free of charge.
 </p>
 <p>
     2. The Service delivery time is 48 hours from the moment of receiving the
@@ -240,7 +247,8 @@
 <p>
     3. Notifications of non-compliance of the Service with the contract and the
     submission of a relevant request can be made via e-mail to the following
-    address: brightlightgypsy@gmail.com.
+address:    <a href="mailto:brightlightgypsy@gmail.com">brightlightgypsy@gmail.com</a>
+    .
 </p>
 <p>
     4. In the above e-mail message, please provide as much information and
@@ -320,27 +328,27 @@
     used by the Service Provider:
 </p>
 <p>
-    4. computer (or mobile device) with Internet access,
+    • computer (or mobile device) with Internet access,
 </p>
 <p>
-    5. access to e-mail,
+    • access to e-mail,
 </p>
 <p>
-    6. web browser,
+    • web browser,
 </p>
 <p>
-    7. enabling Cookies and Javascript in the web browser.
+    • enabling Cookies and Javascript in the web browser.
 </p>
 <p>
-    8. The Service Recipient is obliged to use the Store in a manner consistent
+    4. The Service Recipient is obliged to use the Store in a manner consistent
     with the law and decency, taking into account respect for personal rights
     and intellectual property rights of third parties.
 </p>
 <p>
-    9. The Customer is obliged to enter data consistent with the facts.
+    5. The Customer is obliged to enter data consistent with the facts.
 </p>
 <p>
-    10. The Service Recipient is prohibited from providing illegal content.
+    6. The Service Recipient is prohibited from providing illegal content.
 </p>
 <p align="center">
     <strong>§ 11</strong>
@@ -351,7 +359,8 @@
 <p>
     1. Complaints related to the provision of Electronic Services via the Store
     may be submitted by the Service Recipient via e-mail to the following
-    address: brightlightgypsy@gmail.com.
+address:    <a href="mailto:brightlightgypsy@gmail.com">brightlightgypsy@gmail.com</a>
+    .
 </p>
 <p>
     2. In the e-mail above, please provide as much information and
@@ -371,6 +380,27 @@
 </p>
 <p align="center">
     <strong>§ 12</strong>
+</p>
+<p align="center">
+    <strong>AMENDMENTS TO TERMS</strong>
+</p>
+<p>
+    1. The Service Provider reserves the right to change the above regulations at any time, by posting the amended terms on this
+    site. It is your responsibility to review these Terms periodically.
+</p>
+<p>
+    2. Your continued use of the Platform following the posting of revised
+    Terms means that you accept and agree to the changes. You are expected to
+    check this page frequently so you are aware of any changes, as they are
+    binding on you.
+</p>
+<p>
+    3. By continuing to access or use our Service after any revisions become
+    effective, you agree to be bound by the revised terms. If you do not agree
+    to the new terms, you are no longer authorized to use Service.
+</p>
+<p align="center">
+    <strong>§ 13</strong>
 </p>
 <p align="center">
     <strong>FINAL PROVISIONS</strong>
@@ -404,11 +434,17 @@
     dispute resolution, in particular by submitting an application for
     mediation or an application for consideration of the case by an arbitration
     court after the complaint procedure is completed (the application can be
-    downloaded from the website http://www.uokik.
-    gov.pl/download.php?plik=6223). The list of Permanent Consumer Arbitration
-    Courts operating at the Provincial Inspectorates of the Trade Inspection is
-    available on the website: http://www.uokik.gov.pl/wazne_adresy.php#faq596.
-    The consumer may also use the free assistance of the poviat (municipal)
+    downloaded from the website
+    <a href="http://www.uokik.gov.pl/download.php?plik=6223">
+        http://www.uokik.gov.pl/download.php?plik=6223
+    </a>
+    ). The list of Permanent Consumer Arbitration Courts operating at the
+    Provincial Inspectorates of the Trade Inspection is available on the
+    website:
+    <a href="http://www.uokik.gov.pl/wazne_adresy.php#faq596">
+        http://www.uokik.gov.pl/wazne_adresy.php#faq596
+    </a>
+    . The consumer may also use the free assistance of the poviat (municipal)
     consumer ombudsman or social organization whose statutory tasks include
     consumer protection. Out-of-court pursuit of claims after the end of the
     complaint procedure is free of charge.
@@ -416,5 +452,9 @@
 <p>
     6. In order to resolve the dispute amicably, the consumer may, in
     particular, submit a complaint via the ODR (Online Dispute Resolution)
-    internet platform, available at: http://ec.europa.eu/consumers/odr/.
+    internet platform, available at:
+    <a href="http://ec.europa.eu/consumers/odr/">
+        http://ec.europa.eu/consumers/odr/
+    </a>
+    .
 </p>
