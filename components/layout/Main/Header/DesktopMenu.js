@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "../../../../styles/layout/main/Navbar.module.scss";
-import { Navbar, Nav, Container, Dropdown, Alert, Badge, Offcanvas } from "react-bootstrap";
+import { Navbar, Nav, Container, Dropdown, Alert, Badge, Offcanvas, Button } from "react-bootstrap";
 import ChangeThemeButton from "../../../ChangeThemeButton";
 import { useAuth } from "../../../../context/AuthProvider";
 import { FaRegUserCircle } from "react-icons/fa";
@@ -73,9 +73,9 @@ function DesktopMenu(props) {
       menageOrders: "Zamówienia",
       finances: "Finanse",
       signIn: "Zaloguj",
-      cart: "Koszyk"
-    }
-  }
+      cart: "Koszyk",
+    },
+  };
 
   return (
     <>
@@ -141,7 +141,7 @@ function DesktopMenu(props) {
                         </Link>
                         <Link href="/user/horoscope#main" passHref legacyBehavior>
                           <Dropdown.Item>
-                          {t[locale].dailyHoroscope}
+                            {t[locale].dailyHoroscope}
                             <small className="ms-1">
                               <Badge bg="danger">NEW!</Badge>
                             </small>
@@ -208,7 +208,9 @@ function DesktopMenu(props) {
                   </Container>
                 ) : (
                   <Link href="/sign-in" passHref legacyBehavior>
-                    <Nav.Link>{t[locale].signIn}</Nav.Link>
+                    <Button size={back ? (onTop ? "md" : "sm") : "md"} className="ms-2 me-2 ps-2 pt-1 pe-2 pb-1">
+                      {t[locale].signIn}
+                    </Button>
                   </Link>
                 )}
                 <Nav.Link href="#">
