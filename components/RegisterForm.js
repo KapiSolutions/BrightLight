@@ -8,8 +8,8 @@ import { useAuth } from "../context/AuthProvider";
 
 function RegisterForm() {
   const router = useRouter();
+  const locale = router.locale;
   const nameRef = useRef();
-  // const bdateRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
   const { registerUser, loginWithGoogle, loginWithFacebook, loginWithTwitter } = useAuth();
@@ -49,11 +49,45 @@ function RegisterForm() {
     setInputType(inputType === "text" ? "password" : "text");
   };
 
+  const t = {
+    en: {
+      h1: "Let's Start!",
+      paragraph: "Sign up with",
+      or: "Or",
+      name: "Name",
+      email: "E-mail address",
+      pass: "Password",
+      button: "Register Account",
+      loading: "Loading...",
+      by: "By creating an account, you accept our",
+      and: "and Our",
+      terms: "Terms of Service",
+      privacy: "Privacy Policy.",
+      account: "Already have an account?",
+      sign: "Sign In!",
+    },
+    pl: {
+      h1: "Zaczynamy!",
+      paragraph: "Utwórz konto poprzez",
+      or: "Lub",
+      name: "Imię",
+      email: "Adres e-mail",
+      pass: "Hasło",
+      button: "Utwórz konto",
+      loading: "Ładowanie...",
+      by: "Utworzenie konta jest jednoznaczne z Twoją akceptacją",
+      and: "i naszej",
+      terms: "Regulaminu",
+      privacy: "Politykę Prywatności.",
+      account: "Masz już konto?",
+      sign: "Zaloguj się!",
+    },
+  };
   return (
     <Container className="d-flex justify-content-center color-primary">
       <section className="w-100" style={{ maxWidth: "400px" }}>
-        <h1 className="text-center mt-2 mb-3">Let&apos;s Start!</h1>
-        <p className="text-center mb-3">Sign up with</p>
+        <h1 className="text-center mt-2 mb-3">{t[locale].h1}</h1>
+        <p className="text-center mb-3">{t[locale].paragraph}</p>
         <div className="d-flex justify-content-evenly align-content-center mb-4 ">
           <FaFacebookF className="pointer zoom" onClick={loginWithFacebook} />
           <FaGoogle className="pointer zoom" onClick={loginWithGoogle} />
@@ -62,7 +96,7 @@ function RegisterForm() {
 
         <div className="hrDivider text-center">
           <hr className="background" />
-          <p className="color-primary background">Or</p>
+          <p className="color-primary background">{t[locale].or}</p>
         </div>
         {error && (
           <Alert variant="danger">
@@ -72,28 +106,17 @@ function RegisterForm() {
           </Alert>
         )}
         <Form onSubmit={handleSubmit}>
-          <FloatingLabel controlId="registerName" label="Name" className="mb-3 text-dark">
-            <Form.Control type="text" placeholder="Name" ref={nameRef} required />
+          <FloatingLabel controlId="registerName" label={t[locale].name} className="mb-3 text-dark">
+            <Form.Control type="text" placeholder={t[locale].name} ref={nameRef} required />
           </FloatingLabel>
 
-          {/* <FloatingLabel controlId="registerBirthDate" label="Birth date" className="mb-3 text-dark">
-            <Form.Control
-              type="date"
-              placeholder="Birth date"
-              ref={bdateRef}
-              min="1920-01-01"
-              max={new Date().toLocaleDateString("en-ca")}
-              required
-            />
-          </FloatingLabel> */}
-
-          <FloatingLabel controlId="registerEmail" label="Email address" className="mb-3 text-dark">
-            <Form.Control type="email" placeholder="Email address" ref={emailRef} required />
+          <FloatingLabel controlId="registerEmail" label={t[locale].email} className="mb-3 text-dark">
+            <Form.Control type="email" placeholder={t[locale].email} ref={emailRef} required />
           </FloatingLabel>
 
           <div className="d-flex w-100">
-            <FloatingLabel controlId="registerPassword" label="Password" className="w-100 text-dark">
-              <Form.Control type={inputType} placeholder="Password" ref={passwordRef} required />
+            <FloatingLabel controlId="registerPassword" label={t[locale].pass} className="w-100 text-dark">
+              <Form.Control type={inputType} placeholder={t[locale].pass} ref={passwordRef} required />
             </FloatingLabel>
             <InputGroup.Text className="pointer border" onClick={showHidePass}>
               {inputType === "password" ? (
@@ -108,10 +131,10 @@ function RegisterForm() {
             {loading ? (
               <>
                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                <span>Loading...</span>
+                <span> {t[locale].loading}</span>
               </>
             ) : (
-              <span> Register </span>
+              <span> {t[locale].button} </span>
             )}
           </Button>
         </Form>
@@ -119,15 +142,18 @@ function RegisterForm() {
         <div className="w-100 text-center mt-1">
           <p>
             <small>
-              By creating an account, you accept our <Link href="/terms-of-service#main" passHref className="color-secondary"><u>Terms of service </u></Link> 
-              and our <Link
-              href="/privacy-policy#main"
-              passHref
-              className="color-secondary underline"><u>Privacy Policy</u></Link>.
+              {t[locale].by}{" "}
+              <Link href="/terms-of-service#main" passHref className="color-secondary">
+                <u>{t[locale].terms} </u>
+              </Link>
+              {t[locale].and}{" "}
+              <Link href="/privacy-policy#main" passHref className="color-secondary underline">
+                <u>{t[locale].privacy}</u>
+              </Link>
             </small>
           </p>
-          Already have an account?
-          <Link href="/sign-in"> Sign In!</Link>
+          {t[locale].account}
+          <Link href="/sign-in"> {t[locale].sign}</Link>
         </div>
       </section>
     </Container>

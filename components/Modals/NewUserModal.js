@@ -7,6 +7,7 @@ import styles from "../../styles/components/MsgModals.module.scss";
 
 function NewUserModal(props) {
   const router = useRouter();
+  const locale = props.locale;
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
@@ -16,27 +17,43 @@ function NewUserModal(props) {
   const [days, setDays] = useState(0);
   const [year, setYear] = useState(0);
   const years = new Date().getFullYear();
-  const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
+  const months = {
+    en: [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ],
+    pl: [
+      "Styczeń",
+      "Luty",
+      "Marzec",
+      "Kwiecień",
+      "Maj",
+      "Czerwiec",
+      "Lipiec",
+      "Sierpień",
+      "Wrzesień",
+      "Październik",
+      "Listopad",
+      "Grudzień",
+    ],
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
     setMessage("");
     setLoading(true);
-    let _month = months.indexOf(month) + 1;
+    let _month = months.en.indexOf(month) + 1;
     _month = _month < 10 ? "0" + _month.toString() : _month.toString();
     const _day = day < 10 ? "0" + day.toString() : day.toString();
     const fullDate = `${year.toString()}-${_month}-${_day}`;
@@ -74,7 +91,26 @@ function NewUserModal(props) {
     }
   }, [year, month]);
 
-  
+  const t = {
+    en: {
+      h1: "WHAT'S YOUR BIRTH DATE?",
+      year: "Year",
+      month: "Month",
+      day: "Day",
+      loading: "Loading...",
+      button: "Save",
+      info: "Date of birth is needed for the correct interpretation of the tarots and also for the compilation of an individual horoscope.",
+    },
+    pl: {
+      h1: "PODAJ SWOJĄ DATĘ URODZIN",
+      year: "Rok",
+      month: "Miesiąc",
+      day: "Dzień",
+      loading: "Ładuję...",
+      button: "Zapisz",
+      info: "Data urodzenia jest potrzebna do prawidłowej interpretacji kart tarota, a także do generowania indywidualnego horoskopu.",
+    },
+  };
   return (
     <Modal
       show={show}
@@ -94,13 +130,13 @@ function NewUserModal(props) {
           <div className={`${styles.newUserBackground} text-light`}>
             <Modal.Header className={`border-0 justify-content-center `}>
               <h1 className="fs-2 mt-2 mb-2">
-                <strong>WHAT&apos;S YOUR BIRTH DATE?</strong>
+                <strong>{t[locale].h1}</strong>
               </h1>
             </Modal.Header>
             <Modal.Body>
               <Form onSubmit={handleSubmit}>
                 <Stack className="justify-content-center mb-5" direction="horizontal" gap={2}>
-                  <FloatingLabel controlId="SelectYear" label="Year" className="text-dark shadow">
+                  <FloatingLabel controlId="SelectYear" label={t[locale].year} className="text-dark shadow">
                     <Form.Select aria-label="SelectYear" onChange={(e) => setYear(e.target.value)} required>
                       <option></option>
                       {Array.from({ length: 100 }).map((_, idx) => (
@@ -111,18 +147,18 @@ function NewUserModal(props) {
                     </Form.Select>
                   </FloatingLabel>
 
-                  <FloatingLabel controlId="SelectMonth" label="Month" className="text-dark shadow">
+                  <FloatingLabel controlId="SelectMonth" label={t[locale].month} className="text-dark shadow">
                     <Form.Select aria-label="SelectMonth" onChange={(e) => setMonth(e.target.value)} required>
                       <option></option>
-                      {Array.from({ length: months.length }).map((_, idx) => (
-                        <option key={idx} value={months[idx]}>
-                          {months[idx]}
+                      {months.en.map((month, idx) => (
+                        <option key={idx} value={month}>
+                          {months[locale][idx]}
                         </option>
                       ))}
                     </Form.Select>
                   </FloatingLabel>
 
-                  <FloatingLabel controlId="SelectDay" label="Day" className="text-dark shadow">
+                  <FloatingLabel controlId="SelectDay" label={t[locale].day} className="text-dark shadow">
                     <Form.Select aria-label="SelectDay" onChange={(e) => setDay(e.target.value)} required>
                       <option></option>
                       {Array.from({ length: days }).map((_, idx) => (
@@ -138,23 +174,19 @@ function NewUserModal(props) {
                   {loading ? (
                     <>
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                      <span>Loading...</span>
+                      <span>{t[locale].loading}</span>
                     </>
                   ) : (
-                    <span>Save</span>
+                    <span>{t[locale].button}</span>
                   )}
                 </Button>
               </Form>
             </Modal.Body>
           </div>
-          
+
           <Modal.Footer className="text-start ">
-            <small>
-              Date of birth is needed for the correct interpretation of the tarots and also for the compilation of an
-              individual horoscope.
-            </small>
+            <small>{t[locale].info}</small>
           </Modal.Footer>
-         
         </>
       )}
       {(message || error) && (

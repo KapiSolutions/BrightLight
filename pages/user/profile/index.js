@@ -10,6 +10,7 @@ function UserProfilePage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated } = useAuth();
   const router = useRouter();
+  const locale = router.locale;
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   };
@@ -27,13 +28,24 @@ function UserProfilePage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const t = {
+    en: {
+      title: "Profile",
+      h1: "User Profile",
+    },
+    pl: {
+      title: "Profil",
+      h1: "Twój Profil",
+    },
+  };
   return (
     <>
       <Head>
-        <title>BrightLight | Profile</title>
+        <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5" id="up-ctx">
-        <h1 className="color-primary">User Profile</h1>
+        <h1 className="color-primary">{t[locale].h1}</h1>
         <UserProfile />
       </Container>
     </>

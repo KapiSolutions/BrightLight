@@ -17,16 +17,17 @@ function LayoutSign({ children }) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <SSRProvider>
-        <div className={theme}>
-          <div className={styles.container}>
-            {isMobile && (
-              <div className={`${styles.backButton} pointer background`} onClick={() => router.back()}>
-                <IoReturnDownBack style={{ width: "40px", height: "40px" }} className="color-primary" />
-              </div>
-            )}
+        <div
+          className={`${theme} d-flex align-items-center justify-content-center`}
+          style={{ height: "100vh", width: "100vw" }}
+        >
+          {isMobile && (
+            <div className={`${styles.backButton} pointer background`} onClick={() => router.back()}>
+              <IoReturnDownBack style={{ width: "40px", height: "40px" }} className="color-primary" />
+            </div>
+          )}
 
-            {children}
-          </div>
+          {children}
         </div>
       </SSRProvider>
     </>

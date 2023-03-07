@@ -6,8 +6,11 @@ import { RiAlertFill } from "react-icons/ri";
 import { FcGoogle } from "react-icons/fc";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { useAuth } from "../../context/AuthProvider";
+import { useRouter } from "next/router";
 
 function ReAuthModal(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const [show, setShow] = useState(false);
   const emailRef = useRef();
   const passRef = useRef();
@@ -19,6 +22,47 @@ function ReAuthModal(props) {
   const { authUserFirestore, reauthenticateUser, deleteAccount, updateProfile } = useAuth();
   const provider = authUserFirestore?.signProvider;
   const email = authUserFirestore?.email;
+
+  const t = {
+    en: {
+      authorization: "Authorization required",
+      email: "E-mail address",
+      pass: "Password",
+      button: "Authorize",
+      loading: "Loading...",
+      google: "Authenticate with Google",
+      facebook: "Authenticate with Facebook",
+      twitter: "Authenticate with Twitter",
+      created: "Account created with",
+      provider: "Provider",
+      delete: "Delete account",
+      save: "Save changes",
+      successAuth: "Successfully authenticated!",
+      failAuth: "Authentication failure: ",
+      failDelete: "Failed to delete account: ",
+      successChange: "Data changed successfully!",
+      failChange: "Failed to change data: ",
+    },
+    pl: {
+      authorization: "Wymagana autoryzacja",
+      email: "Adres e-mail",
+      pass: "Hasło",
+      button: "Uwierzytelnij",
+      loading: "Ładowanie...",
+      google: "Autoryzacja poprzez Google",
+      facebook: "Autoryzacja poprzez Facebook'a",
+      twitter: "Autoryzacja poprzez Twitter'a",
+      created: "Konto utworzone poprzez",
+      provider: "",
+      delete: "Usuń konto",
+      save: "Zapisz zmiany",
+      successAuth: "Pomyślnie uwierzytelniono!",
+      failAuth: "Błąd uwierzytelnienia: ",
+      failDelete: "Błąd usuwania konta: ",
+      successChange: "Dane pomyślnie zmienione!",
+      failChange: "Błąd aktualizacji danych: ",
+    },
+  };
 
   useEffect(() => {
     if (props.show) {
@@ -43,10 +87,10 @@ function ReAuthModal(props) {
       }
 
       setLoading(false);
-      return setMessage("Successfully authenticated!");
+      return setMessage(t[locale].successAuth);
     } catch (error) {
       setLoading(false);
-      return setError("Authenticatio failure: " + error.message);
+      return setError(t[locale].failAuth + error.message);
     }
   }
   async function handleDeleteAccount(e) {
@@ -58,7 +102,7 @@ function ReAuthModal(props) {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      return setError("Failed to delete account: " + error.message);
+      return setError(t[locale].failDelete + error.message);
     }
   }
   async function handleDataChanges(e) {
@@ -72,11 +116,11 @@ function ReAuthModal(props) {
 
       setLoading(false);
       props.callback("done");
-      return setMessageOp("Data changed successfully!");
+      return setMessageOp(t[locale].successChange);
     } catch (error) {
       setLoading(false);
       props.callback(error.message);
-      return setError("Failed to change data: " + error.message);
+      return setError(t[locale].failChange + error.message);
     }
   }
 
@@ -85,13 +129,14 @@ function ReAuthModal(props) {
     // e.stopPropagation();
     setInputType(inputType === "text" ? "password" : "text");
   };
+
   return (
     <>
       <Modal
         show={show}
         onHide={() => {
           setShow(false);
-          (!messageOp && provider == "emailAndPassword") && props.callback("abort");
+          !messageOp && provider == "emailAndPassword" && props.callback("abort");
         }}
         animation={true}
         centered
@@ -112,7 +157,7 @@ function ReAuthModal(props) {
               </>
             ) : (
               <>
-                <GrSecure className="mb-1" /> Authorization required
+                <GrSecure className="mb-1" /> {t[locale].authorization}
               </>
             )}
           </Modal.Title>
@@ -134,12 +179,19 @@ function ReAuthModal(props) {
           <Modal.Body>
             {provider == "emailAndPassword" ? (
               <Form onSubmit={handleReauthenticate}>
-                <FloatingLabel controlId="userEmail" label="Email address" className="text-dark mb-2">
-                  <Form.Control type="email" placeholder="Email address" ref={emailRef} defaultValue={email} disabled required />
+                <FloatingLabel controlId="userEmail" label={t[locale].email} className="text-dark mb-2">
+                  <Form.Control
+                    type="email"
+                    placeholder={t[locale].email}
+                    ref={emailRef}
+                    defaultValue={email}
+                    disabled
+                    required
+                  />
                 </FloatingLabel>
                 <div className="d-flex w-100">
-                  <FloatingLabel controlId="loginPassword" label="Password" className="w-100 text-dark">
-                    <Form.Control type={inputType} placeholder="Password" ref={passRef} required />
+                  <FloatingLabel controlId="loginPassword" label={t[locale].pass} className="w-100 text-dark">
+                    <Form.Control type={inputType} placeholder={t[locale].pass} ref={passRef} required />
                   </FloatingLabel>
                   <InputGroup.Text className="pointer border" onClick={showHidePass}>
                     {inputType === "password" ? (
@@ -154,10 +206,10 @@ function ReAuthModal(props) {
                   {loading ? (
                     <>
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                      <span>Loading...</span>
+                      <span> {t[locale].loading}</span>
                     </>
                   ) : (
-                    <span> Authorize </span>
+                    <span> {t[locale].button} </span>
                   )}
                 </Button>
               </Form>
@@ -181,12 +233,12 @@ function ReAuthModal(props) {
                             className="me-3"
                             variant="accent2"
                           />
-                          <span> Loading...</span>
+                          <span> {t[locale].loading}</span>
                         </section>
                       ) : (
                         <>
-                          <FcGoogle style={{ width: "35px", height: "35px" }} className="me-2" /> Authenticate with
-                          Google
+                          <FcGoogle style={{ width: "35px", height: "35px" }} className="me-2" />
+                          {t[locale].google}
                         </>
                       )}
                     </Button>
@@ -210,13 +262,13 @@ function ReAuthModal(props) {
                             className="me-3"
                           />
                           <span>
-                            <strong> Loading...</strong>
+                            <strong> {t[locale].loading}</strong>
                           </span>
                         </section>
                       ) : (
                         <>
                           <FaFacebookSquare style={{ width: "35px", height: "35px" }} className="me-2" />
-                          <strong> Authenticate with Facebook</strong>
+                          <strong>{t[locale].facebook}</strong>
                         </>
                       )}
                     </Button>
@@ -240,20 +292,20 @@ function ReAuthModal(props) {
                             className="me-3"
                           />
                           <span>
-                            <strong> Loading...</strong>
+                            <strong> {t[locale].loading}</strong>
                           </span>
                         </section>
                       ) : (
                         <>
                           <GrTwitter style={{ width: "35px", height: "35px" }} className="me-2" />
-                          <strong> Authenticate with Twitter</strong>
+                          <strong> {t[locale].twitter}</strong>
                         </>
                       )}
                     </Button>
                   </>
                 )}
                 <p>
-                  <small>Account created with {provider} Provider.</small>
+                  <small>{t[locale].created} {provider} {t[locale].provider}.</small>
                 </p>
               </>
             )}
@@ -278,10 +330,10 @@ function ReAuthModal(props) {
               {loading ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                  <span>Loading...</span>
+                  <span> {t[locale].loading}</span>
                 </>
               ) : (
-                <span> {show == "delete" ? "Delete Account" : "Save changes"} </span>
+                <span> {show == "delete" ? t[locale].delete : t[locale].save} </span>
               )}
             </Button>
           </Modal.Footer>

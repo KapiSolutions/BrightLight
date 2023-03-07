@@ -5,8 +5,11 @@ import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { AiTwotoneDelete } from "react-icons/ai";
 import { useAuth } from "../context/AuthProvider";
 import ReAuthModal from "./Modals/ReAuthModal";
+import { useRouter } from "next/router";
 
 function UserProfile() {
+  const router = useRouter();
+  const locale = router.locale;
   const emailRef = useRef();
   const lastNameRef = useRef();
   const nameRef = useRef();
@@ -21,6 +24,53 @@ function UserProfile() {
   const [showModal, setShowModal] = useState("");
   const [updateData, setUpdateData] = useState({});
   const { authUserFirestore, updateProfile, resetPassword } = useAuth();
+
+  const t = {
+    en: {
+      name: "Name",
+      lastName: "Last Name",
+      age: "Birth Date",
+      email: "E-mail address",
+      pass: "Password",
+      button: "Sign In",
+      loading: "Loading...",
+      emailAuth: "Email changes requires authorization.",
+      created: "Account created with",
+      provider: "Provider",
+      changesForbidden: "Email and password changes not available.",
+      authorize: "Authorize",
+      save: "Save changes",
+      reset: "Reset password",
+      delete: "Delete Account",
+      success: "The changes have been made successfully.",
+      noChanges: "No changes to be made.",
+      failed: "Operation failed: ",
+      checkEmail: "Check your email/spam for further instructions.",
+      abort: "Aborted operation.",
+    },
+    pl: {
+      name: "Imię",
+      lastName: "Nazwisko",
+      age: "Data urodzenia",
+      email: "Adres e-mail",
+      pass: "Hasło",
+      button: "Zaloguj",
+      loading: "Ładowanie...",
+      emailAuth: "Zmiana adresu email wymaga autoryzacji.",
+      created: "Konto utworzone poprzez",
+      provider: "",
+      changesForbidden: "Zmiana adresu email oraz hasła niedostępna.",
+      authorize: "Uwierzytelnij",
+      save: "Zapisz zmiany",
+      reset: "Zresetuj hasło",
+      delete: "Usuń konto",
+      success: "Zamiany wprowadzono pomyślnie.",
+      noChanges: "Brak zmian do wprowadzenia",
+      failed: "Błąd: ",
+      checkEmail: "Sprawdź swoją skrzynkę e-mail/spam, aby uzyskać dalsze instrukcje.",
+      abort: "Anulowano operację.",
+    },
+  };
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -43,16 +93,16 @@ function UserProfile() {
           await updateProfile(update);
           setLoading(false);
           setDataChanged(false);
-          return setMessage("The changes have been made successfully.");
+          return setMessage(t[locale].success);
         }
       } else {
         setLoading(false);
         setDataChanged(false);
-        return setWarning("No changes to be made.");
+        return setWarning(t[locale].noChanges);
       }
     } catch (error) {
       setLoading(false);
-      return setError("Operation failed: " + error.message);
+      return setError(t[locale].failed + error.message);
     }
   }
   async function handleResetPassword(e) {
@@ -65,22 +115,22 @@ function UserProfile() {
 
       await resetPassword(authUserFirestore.email);
       setLoadingPassReset(false);
-      return setMessage("Check your email/spam for further instructions.");
+      return setMessage(t[locale].checkEmail);
     } catch (error) {
       setLoadingPassReset(false);
-      return setError("Operation failed: " + error.message);
+      return setError(t[locale].failed + error.message);
     }
   }
   function handleModalCallback(call) {
     if (call == "done" && emailChanged) {
-      setMessage("The changes have been made successfully.");
+      setMessage(t[locale].success);
       setDataChanged(false);
       setEmailChanged(false);
       setLoading(false);
     } else if (call == "abort" && emailChanged) {
       setLoading(false);
     } else {
-      setError(call);
+      setError(call == "abort" ? t[locale].abort : call);
       setLoading(false);
     }
   }
@@ -95,10 +145,13 @@ function UserProfile() {
     <>
       <Container style={{ maxWidth: "450px" }}>
         {error && (
-          <Alert variant="danger">
-            <RiAlertFill className="me-2 mb-1 iconSizeAlert" />
-            <strong>Ups! </strong>
-            {error}
+          <Alert variant="danger" className="d-flex align-items-center justify-content-between">
+            <span>
+              <RiAlertFill className="me-2 mb-1 iconSizeAlert" />
+              <strong>Ups! </strong>
+              {error}
+            </span>
+            <span className="fs-5 pointer Hover" onClick={()=>setError("")}>X</span>
           </Alert>
         )}
         {message && (
@@ -117,30 +170,30 @@ function UserProfile() {
         )}
 
         <Form onSubmit={handleSubmit}>
-          <FloatingLabel controlId="userName" label="Name" className="mb-3 text-dark">
+          <FloatingLabel controlId="userName" label={t[locale].name} className="mb-3 text-dark">
             <Form.Control
               type="text"
-              placeholder="Name"
+              placeholder={t[locale].name}
               ref={nameRef}
               defaultValue={authUserFirestore?.name}
               onChange={() => setDataChanged(true)}
               required
             />
           </FloatingLabel>
-          <FloatingLabel controlId="userLastName" label="Last name" className="mb-3 text-dark">
+          <FloatingLabel controlId="userLastName" label={t[locale].lastName} className="mb-3 text-dark">
             <Form.Control
               type="text"
-              placeholder="Last name"
+              placeholder={t[locale].lastName}
               ref={lastNameRef}
               defaultValue={authUserFirestore?.lastName}
               onChange={() => setDataChanged(true)}
               required
             />
           </FloatingLabel>
-          <FloatingLabel controlId="userAge" label="Age" className="mb-3 text-dark">
+          <FloatingLabel controlId="userAge" label={t[locale].age} className="mb-3 text-dark">
             <Form.Control
               type="date"
-              placeholder="Age"
+              placeholder={t[locale].age}
               ref={ageRef}
               defaultValue={authUserFirestore?.age}
               min="1920-01-01"
@@ -149,10 +202,10 @@ function UserProfile() {
               required
             />
           </FloatingLabel>
-          <FloatingLabel controlId="userEmail" label="Email address" className="text-dark mb-2">
+          <FloatingLabel controlId="userEmail" label={t[locale].email} className="text-dark mb-2">
             <Form.Control
               type="email"
-              placeholder="Email address"
+              placeholder={t[locale].email}
               ref={emailRef}
               defaultValue={authUserFirestore?.email}
               onChange={() => {
@@ -166,17 +219,19 @@ function UserProfile() {
           {emailChanged && (
             <section className="float-start text-start">
               <p className="color-primary mb-0">
-                <small>Email changes requires authorization.</small>
+                <small>{t[locale].emailAuth}</small>
               </p>
             </section>
           )}
           {authUserFirestore?.signProvider != "emailAndPassword" && (
             <section className="float-start text-start">
               <p className="color-primary mb-0">
-                <small>Account created with {authUserFirestore?.signProvider} Provider.</small>
+                <small>
+                  {t[locale].created} {authUserFirestore?.signProvider} {t[locale].provider}.
+                </small>
               </p>
               <p className="color-primary mt-0 mb-0">
-                <small> &#9708; Email and password changes not available.</small>
+                <small> &#9708; {t[locale].changesForbidden}</small>
               </p>
             </section>
           )}
@@ -185,10 +240,10 @@ function UserProfile() {
             {loading ? (
               <>
                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                <span>Loading...</span>
+                <span> {t[locale].loading}</span>
               </>
             ) : (
-              <span>{emailChanged ? "Authorize" : "Save changes"} </span>
+              <span>{emailChanged ? t[locale].authorize : t[locale].save} </span>
             )}
           </Button>
         </Form>
@@ -204,10 +259,10 @@ function UserProfile() {
             {loadingPassReset ? (
               <>
                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                <span>Loading...</span>
+                <span> {t[locale].loading}</span>
               </>
             ) : (
-              <span> Reset Password </span>
+              <span> {t[locale].reset} </span>
             )}
           </Button>
         )}
@@ -218,7 +273,7 @@ function UserProfile() {
             setShowModal("delete");
           }}
         >
-          <AiTwotoneDelete className="mb-1" /> Delete Account
+          <AiTwotoneDelete className="mb-1" /> {t[locale].delete}
         </Button>
       </Container>
 
