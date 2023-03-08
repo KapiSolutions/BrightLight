@@ -3,12 +3,58 @@ import { Form, InputGroup } from "react-bootstrap";
 import { useDeviceStore } from "../../stores/deviceStore";
 import { FiSearch } from "react-icons/fi";
 import { BsFilterRight } from "react-icons/bs";
+import { useRouter } from "next/router";
 
 function FilterAndSortBar(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [showOptions, setShowOptions] = useState(false);
   const [sortOption, setSortOption] = useState("1");
   const [filterOption, setFilterOption] = useState("1");
+
+  const t = {
+    en: {
+      find: "Find order",
+      findBy: "Find order by ID",
+      filter: "Filter by Date",
+      filter1: "All Dates",
+      filter2: "Last 30 days",
+      filter3: "Last 60 days",
+      filter4: "Last 120 days",
+      filter5: "Last Year",
+      filterType: "Filter by Status",
+      filterType1: "All",
+      filterType2: "Unpaid",
+      filterType3: "In realiation",
+      filterType4: "Done",
+      sort: "Sort orders",
+      date: "Date",
+      price: "Price",
+      show: "Show",
+      orderDontExist: "Order not found",
+    },
+    pl: {
+      find: "Znajdź zamówienie",
+      findBy: "Wpisz numer zamówienia",
+      filter: "Filtruj po dacie",
+      filter1: "Wszystko",
+      filter2: "Ostatnie 30 dni",
+      filter3: "Ostatnie 60 dni",
+      filter4: "Ostatnie 120 dni",
+      filter5: "Ostatni rok",
+      filterType: "Filtruj po statusie",
+      filterType1: "Wszystko",
+      filterType2: "Nieopłacone",
+      filterType3: "W realizacji",
+      filterType4: "Gotowe",
+      sort: "Sortuj",
+      date: "Data",
+      price: "Cena",
+      show: "Pokaż",
+      orderDontExist: "Brak takiego zamówienia.",
+    },
+  };
 
   const sortItem = {
     border: "1px solid rgba(133, 133, 133, 0.389)",
@@ -82,7 +128,7 @@ function FilterAndSortBar(props) {
       });
       if (!itemFounded) {
         props.outputArray([]);
-        props.msg("Order does not exist.");
+        props.msg(t[locale].orderDontExist);
       }
     } else {
       props.outputArray([...props.refArray]);
@@ -238,6 +284,7 @@ function FilterAndSortBar(props) {
     return filteredOrders;
   };
 
+  
   return (
     <>
       <section className={`text-center ${isMobile ? "" : "mt-2"}`}>
@@ -254,12 +301,12 @@ function FilterAndSortBar(props) {
               <Form.Group className="col-5">
                 <Form.Label className="mb-0">
                   <small>
-                    <strong>Find order</strong>
+                    <strong>{t[locale].find}</strong>
                   </small>
                 </Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Find order by id"
+                  placeholder={t[locale].findBy}
                   id={`find${props.id}`}
                   style={{ paddingLeft: "40px" }}
                 />
@@ -269,15 +316,15 @@ function FilterAndSortBar(props) {
               <Form.Group className="col-2" onChange={filterByDate}>
                 <Form.Label className="mb-0">
                   <small>
-                    <strong>Filter by date</strong>
+                    <strong>{t[locale].filter}</strong>
                   </small>
                 </Form.Label>
                 <Form.Select type="text" id={`filterByDate${props.id}`}>
-                  <option value="1">All dates</option>
-                  <option value="2">Last 30 days</option>
-                  <option value="3">Last 60 days</option>
-                  <option value="4">Last 120 days</option>
-                  <option value="5">Last Year</option>
+                  <option value="1">{t[locale].filter1}</option>
+                  <option value="2">{t[locale].filter2}</option>
+                  <option value="3">{t[locale].filter3}</option>
+                  <option value="4">{t[locale].filter4}</option>
+                  <option value="5">{t[locale].filter5}</option>
                 </Form.Select>
               </Form.Group>
 
@@ -285,14 +332,14 @@ function FilterAndSortBar(props) {
               <Form.Group className="col-2" onChange={filterByType}>
                 <Form.Label className="mb-0">
                   <small>
-                    <strong>Filter by type</strong>
+                    <strong>{t[locale].filterType}</strong>
                   </small>
                 </Form.Label>
                 <Form.Select type="text" id={`filterByType${props.id}`}>
-                  <option value="All orders">All orders</option>
-                  <option value="Unpaid">Unpaid</option>
-                  <option value="In realization">In realization</option>
-                  <option value="Done">Done</option>
+                  <option value="All orders">{t[locale].filterType1}</option>
+                  <option value="Unpaid">{t[locale].filterType2}</option>
+                  <option value="In realization">{t[locale].filterType3}</option>
+                  <option value="Done">{t[locale].filterType4}</option>
                 </Form.Select>
               </Form.Group>
 
@@ -300,14 +347,14 @@ function FilterAndSortBar(props) {
               <Form.Group className="col-2" onChange={sortBy}>
                 <Form.Label className="mb-0">
                   <small>
-                    <strong>Sort orders</strong>
+                    <strong>{t[locale].sort}</strong>
                   </small>
                 </Form.Label>
                 <Form.Select type="text" id={`sortBy${props.id}`}>
-                  <option value="1">Date &#8600;</option>
-                  <option value="2">Date &#8599;</option>
-                  <option value="3">Total price &#8600;</option>
-                  <option value="4">Total price &#8599;</option>
+                  <option value="1">{t[locale].date} &#8600;</option>
+                  <option value="2">{t[locale].date} &#8599;</option>
+                  <option value="3">{t[locale].price} &#8600;</option>
+                  <option value="4">{t[locale].price} &#8599;</option>
                 </Form.Select>
               </Form.Group>
             </Form>
@@ -325,11 +372,11 @@ function FilterAndSortBar(props) {
             <Form className="text-start d-flex" onSubmit={findBy}>
               <Form.Control
                 type="text"
-                placeholder="Find order by id"
+                placeholder={t[locale].findBy}
                 id={`find${props.id}Mobile`}
                 style={{ paddingLeft: "40px" }}
                 className="w-100"
-                title="Find order"
+                title={t[locale].findBy}
               />
               <InputGroup.Text
                 className="pointer border"
@@ -343,7 +390,7 @@ function FilterAndSortBar(props) {
             {showOptions && (
               <section className="d-block mt-3 color-primary" style={{ maxWidth: "100%" }}>
                 <div className="d-flex align-items-center mb-2 text-nowrap">
-                  <div>Sort by:</div>
+                  <div>{t[locale].sort}</div>
                   <div
                     id={`sortBy${props.id}Mobile`}
                     className="d-flex overflow-auto ms-2 noScrollBar"
@@ -355,7 +402,7 @@ function FilterAndSortBar(props) {
                         sortBy(e, "1");
                       }}
                     >
-                      Date &#8600;
+                      {t[locale].date} &#8600;
                     </div>
                     <div
                       className={`rounded m-1 p-2 pointer ${sortItem}`}
@@ -363,7 +410,7 @@ function FilterAndSortBar(props) {
                         sortBy(e, "2");
                       }}
                     >
-                      Date &#8599;
+                      {t[locale].date} &#8599;
                     </div>
                     <div
                       className={`rounded m-1 p-2 pointer ${sortItem}`}
@@ -371,7 +418,7 @@ function FilterAndSortBar(props) {
                         sortBy(e, "3");
                       }}
                     >
-                      Price &#8600;
+                      {t[locale].price} &#8600;
                     </div>
                     <div
                       className={`rounded m-1 p-2 pointer ${sortItem}`}
@@ -379,13 +426,13 @@ function FilterAndSortBar(props) {
                         sortBy(e, "4");
                       }}
                     >
-                      Price &#8599;
+                      {t[locale].price} &#8599;
                     </div>
                   </div>
                 </div>
 
                 <div className="d-flex align-items-center mb-2 text-nowrap">
-                  <div>Show:</div>
+                  <div>{t[locale].show}:</div>
                   <div
                     id={`filterByType${props.id}Mobile`}
                     className="d-flex overflow-auto ms-2 noScrollBar"
@@ -397,7 +444,7 @@ function FilterAndSortBar(props) {
                         filterByType(e, "All orders");
                       }}
                     >
-                      All
+                      {t[locale].filterType1}
                     </div>
                     <div
                       className={`rounded m-1 p-2 pointer ${sortItem}`}
@@ -405,7 +452,7 @@ function FilterAndSortBar(props) {
                         filterByType(e, "Unpaid");
                       }}
                     >
-                      Unpaid
+                      {t[locale].filterType2}
                     </div>
                     <div
                       className={`rounded m-1 p-2 pointer ${sortItem}`}
@@ -413,7 +460,7 @@ function FilterAndSortBar(props) {
                         filterByType(e, "In realization");
                       }}
                     >
-                      In realization
+                      {t[locale].filterType3}
                     </div>
                     <div
                       className={`rounded m-1 p-2 pointer ${sortItem}`}
@@ -421,7 +468,7 @@ function FilterAndSortBar(props) {
                         filterByType(e, "Done");
                       }}
                     >
-                      Done
+                      {t[locale].filterType4}
                     </div>
                   </div>
                 </div>

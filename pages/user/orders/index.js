@@ -9,12 +9,36 @@ import FilterAndSortBar from "../../../components/Orders/FilterAndSortBar_Orders
 
 function UserOrdersPage() {
   const router = useRouter();
+  const locale = router.locale;
   const [orders, setOrders] = useState([]);
   const [message, setMessage] = useState("");
   const [resetFilterBar, setResetFilterBar] = useState(false);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, authUserFirestore, userOrders, updateUserData } = useAuth();
   const idForSortingBar = "UserOrders";
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      isMobile && scroll();
+      authUserFirestore && updateUserData(authUserFirestore?.id, null, true); //update only orders
+    } else {
+      router.replace("/sign-in");
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const t = {
+    en: {
+      title: "My orders",
+      noOrders: "No orders yet.",
+    },
+    pl: {
+      title: "Moje zamówienia",
+      noOrders: "Brak zamówień.",
+
+    },
+  };
 
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -34,26 +58,17 @@ function UserOrdersPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userOrders]);
   
-  useEffect(() => {
-    if (isAuthenticated()) {
-      isMobile && scroll();
-      authUserFirestore && updateUserData(authUserFirestore?.id, null, true); //update only orders
-    } else {
-      router.replace("/sign-in");
-      return;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
 
   return (
     <>
       <Head>
-        <title>BrightLight | My orders</title>
+        <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5" id="uo-ctx">
-        <h1 className="color-primary">My orders</h1>
+        <h1 className="color-primary">{t[locale].title}</h1>
         {userOrders?.length == 0 ? (
-          <p className="color-primary">No orders yet.</p>
+          <p className="color-primary">{t[locale].noOrders}</p>
         ) : (
           <>
             <section className={`text-center  ${isMobile ? "" : "mt-2"}`}>

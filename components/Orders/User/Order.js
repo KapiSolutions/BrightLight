@@ -29,6 +29,55 @@ function Order(props) {
   const [paymentDisabled, setPaymentDisabled] = useState(false);
   //paymentDisabled: user have an extra [x] hours for payment after getting an notification, after that time the payment isn't available -> admin can safely delete the order
 
+  const t = {
+    en: {
+      sthWrong: "Something went wrong, please try again later.",
+      order: "Order",
+      status: "Status",
+      total: "Total",
+      action: "Action",
+      unpaid: "Unpaid",
+      inRealization: "In Realization",
+      done: "Done",
+      extraTime: "Extra Time: ",
+      timesUp: "Time's Up:",
+      deadline: "Deadline: ",
+      hurryUp: "Hurry Up! ",
+      finishIn: "Finish in: ",
+      paymentExpired: "Payment time has expired!",
+      tryDelete: "You are trying to cancel your order, after which all your tarot cards will be lost. Confirm or return to orders.",
+      pay: "Pay now",
+      loading: "Loading...",
+      cancel: "Cancel",
+      hide: "Hide details",
+      show: "Show details",
+      more: "more..",
+    },
+    pl: {
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
+      order: "Zamówienie",
+      status: "Status",
+      total: "Razem",
+      action: "Opcje",
+      unpaid: "Nieopłacone",
+      inRealization: "W realizacji",
+      done: "Gotowe",
+      extraTime: "Dodatkowy czas: ",
+      timesUp: "Po czasie:",
+      deadline: "Pozostało: ",
+      hurryUp: "Szybko! ",
+      finishIn: "Zakończ w: ",
+      paymentExpired: "Czas na płatność upłynął!",
+      tryDelete: "Próbujesz anulować zamówienie, co spowoduje utratę kart i zadanego pytania. Potwierdź lub wróć do zamówień.",
+      pay: "Zapłać",
+      loading: "Ładuję...",
+      cancel: "Anuluj",
+      hide: "Ukryj szczegóły",
+      show: "Pokaż szczegóły",
+      more: "wiecej..",
+    },
+  };
+
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
@@ -79,12 +128,12 @@ function Order(props) {
       const { error } = await stripe.redirectToCheckout({ sessionId: checkoutSession.data.id });
       console.warn(error.message);
       if (error) {
-        setErrorMsg("Something went wrong, please try again later.");
+        setErrorMsg(t[locale].sthWrong);
       }
       setLoading(undefined);
     } catch (error) {
       console.log(error);
-      setErrorMsg("Something went wrong, please try again later.");
+      setErrorMsg(t[locale].sthWrong);
       setLoading(undefined);
       return;
     }
@@ -96,7 +145,7 @@ function Order(props) {
       setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
       setShowConfirmModal({ msg: "", itemID: "" });
-      setErrorMsg("Something went wrong, please try again later.");
+      setErrorMsg(t[locale].sthWrong);
     }
   }
 
@@ -144,16 +193,16 @@ function Order(props) {
             <>
               <div className="d-flex text-start w-100">
                 <div className="col-5">
-                  <strong>Order</strong>
+                  <strong>{t[locale].order}</strong>
                 </div>
                 <div className="col-3">
-                  <strong>Status</strong>
+                  <strong>{t[locale].status}</strong>
                 </div>
                 <div className="col-2">
-                  <strong>Total</strong>
+                  <strong>{t[locale].total}</strong>
                 </div>
                 <div className="col-2">
-                  <strong>Action</strong>
+                  <strong>{t[locale].action}</strong>
                 </div>
               </div>
             </>
@@ -175,20 +224,23 @@ function Order(props) {
                   <small>
                     {" "}
                     ({order?.items[0].name[locale]}
-                    {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
+                    {order?.items.length > 1 && `, +${order?.items.length - 1} ${t[locale].more}`})
                   </small>
                 </p>
                 {order.status != "Done" ? (
                   <div className="d-flex align-items-center">
                     <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
-                      {order.status}
+                      <span className="text-uppercase">
+                        {order.status === "Unpaid" && t[locale].unpaid}
+                        {order.status === "In realization" && t[locale].inRealization}
+                      </span>
                     </Badge>
-                    {!order.paid && paymentDisabled && <small className="ms-1">Payment time has expired!</small>}
+                    {!order.paid && paymentDisabled && <small className="ms-1">{t[locale].paymentExpired}</small>}
                     {!order.paid && !paymentDisabled && (
                       <div className="ms-2">
                         <span className={timeOver ? "text-danger" : ""}>
                           <small className="me-1">
-                            {timeOver ? (notificationSended ? "Extra time: " : "Time's up: ") : "Deadline: "}
+                            {timeOver ? (notificationSended ? t[locale].extraTime : t[locale].timesUp) : t[locale].deadline}
                             <strong>{remainingTime()}H</strong>
                           </small>
                           <BsClockHistory />
@@ -197,7 +249,9 @@ function Order(props) {
                     )}
                   </div>
                 ) : (
-                  <Badge bg="success">{order.status}!</Badge>
+                  <Badge bg="success">
+                    <span className="text-uppercase">{t[locale].done}!</span>
+                  </Badge>
                 )}
               </>
             ) : (
@@ -218,24 +272,27 @@ function Order(props) {
               {order.status != "Done" ? (
                 <>
                   <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
-                    {order.status}
+                    <span className="text-uppercase">
+                      {order.status === "Unpaid" && t[locale].unpaid}
+                      {order.status === "In realization" && t[locale].inRealization}
+                    </span>
                   </Badge>
                   {!order.paid && (
                     <div className="ms-1">
                       {paymentDisabled ? (
-                        <small className="me-2">Payment time has expired!</small>
+                        <small className="me-2">{t[locale].paymentExpired}</small>
                       ) : (
                         <span className={timeOver ? "text-danger" : ""}>
                           <small className="me-1">
                             {order.paid
                               ? timeOver
-                                ? "Hurry up! "
-                                : "Finish in: "
+                                ? t[locale].hurryUp
+                                : t[locale].finishIn
                               : timeOver
                               ? notificationSended
-                                ? "Extra time: "
-                                : "Time's up: "
-                              : "Deadline: "}
+                                ? t[locale].extraTime
+                                : t[locale].timesUp
+                              : t[locale].deadline}
                             <strong>{remainingTime()}H</strong>
                           </small>
                           <BsClockHistory />
@@ -245,7 +302,9 @@ function Order(props) {
                   )}
                 </>
               ) : (
-                <Badge bg="success">{order.status}!</Badge>
+                <Badge bg="success">
+                  <span className="text-uppercase">{t[locale].done}!</span>
+                </Badge>
               )}
             </div>
             <div className="col-2">
@@ -254,7 +313,7 @@ function Order(props) {
             </div>
             <div className="col-2">
               <span className="pointer Hover" onClick={showDetailsFunc}>
-                {showDetails ? "Hide details" : "Show details"}
+                {showDetails ? t[locale].hide : t[locale].show}
               </span>
               {!order.paid && !paymentDisabled && (
                 <div className="d-flex flex-wrap mt-2 gap-3">
@@ -263,19 +322,19 @@ function Order(props) {
                     size="sm"
                     onClick={() => {
                       setShowConfirmModal({
-                        msg: "You are trying to cancel your order, after which all your tarot cards will be lost. Confirm or return to orders.",
+                        msg: t[locale].tryDelete,
                         itemID: "",
                       });
                     }}
                   >
-                    Cancel
+                    {t[locale].cancel}
                   </Button>
 
                   <Button variant="primary" className="text-light" size="sm" onClick={handlePayment} disabled={loading}>
                     {loading ? (
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                     ) : (
-                      "Pay now"
+                      t[locale].pay
                     )}
                   </Button>
                 </div>
@@ -302,23 +361,23 @@ function Order(props) {
                     size="sm"
                     onClick={() => {
                       setShowConfirmModal({
-                        msg: "You are trying to cancel your order, after which all your tarot cards will be lost. Confirm or return to orders.",
+                        msg: t[locale].tryDelete,
                         itemID: "",
                       });
                     }}
                   >
-                    Cancel
+                    {t[locale].cancel}
                   </Button>
                   <Button variant="primary" className="text-light" size="sm" onClick={handlePayment} disabled={loading}>
                     {loading ? (
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                     ) : (
-                      "Pay now"
+                      t[locale].pay
                     )}
                   </Button>
                 </div>
                 <span>
-                  Total: {order.totalPrice}
+                {t[locale].total}: {order.totalPrice}
                   <span className="text-uppercase ms-1">{order.currency}</span>
                 </span>
               </div>
@@ -329,7 +388,7 @@ function Order(props) {
             {isMobile && (
               <div className="text-center mt-4 mb-4">
                 <Button variant="outline-accent4" className="pointer" onClick={showDetailsFunc}>
-                  Hide details
+                {t[locale].hide}
                 </Button>
               </div>
             )}

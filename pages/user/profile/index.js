@@ -36,7 +36,7 @@ function UserProfilePage() {
     },
     pl: {
       title: "Profil",
-      h1: "Twój Profil",
+      h1: "Mój Profil",
     },
   };
   return (

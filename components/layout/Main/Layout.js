@@ -25,8 +25,8 @@ function Layout({ children }) {
       <SSRProvider>
         <div className={theme}>
           <div className={styles.container}>
-            <NewUserModal locale={locale} msg={successMsg} resetMsg={setSuccessMsg} user={authUserFirestore} update={updateProfile} />
-            <DeleteUserModal locale={locale} msg={successMsg} resetMsg={setSuccessMsg} />
+            <NewUserModal msg={successMsg} resetMsg={setSuccessMsg} user={authUserFirestore} update={updateProfile} />
+            <DeleteUserModal msg={successMsg} resetMsg={setSuccessMsg} />
             <ErrorModal locale={locale} msg={errorMsg} closeModal={setErrorMsg} />
 
             <Header locale={locale} className={styles.header} theme={theme} />

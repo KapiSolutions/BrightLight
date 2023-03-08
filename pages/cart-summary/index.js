@@ -37,11 +37,72 @@ function CartSummaryPage() {
     authUserFirestore?.cart.forEach((item) => {
       total = total + parseFloat(item.price[currency].amount);
     });
-    setTotalPrice(total);
+    setTotalPrice(total.toFixed(2));
 
     total == 0 && !loading && router.replace("/");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUserFirestore?.cart, currency]);
+
+  const t = {
+    en: {
+      home: "Home",
+      summary: "Summary",
+      payment: "Payment",
+      done: "Done!",
+      personalData: "Personal data:",
+      name: "Name",
+      age: "Birth Date",
+      email: "E-mail address",
+      pop1: "The date of birth is very important in tarot. It helps to get answers in the most accurate way.",
+      pop2: "You will receive all the answers to the given email address. They will also be available",
+      here: "here.",
+      cartItems: "Cart items:",
+      comments: "Comments to order:",
+      yourComments: "Your comments...",
+      when: "When and How?",
+      receive: "You will receive all the answers to the given email address.",
+      answers: "Answers will be also available",
+      everything: "Everything will be ready within 48 hours of successful payment :)",
+      accept: "I accept the",
+      terms: "Terms of service",
+      declare: "and I declare that I am over 18 years old.",
+      total: "Total Price:",
+      loading: "Loading...",
+      buy: "Buy And Pay",
+      sthWrong: "Something went wrong, please try again later.",
+      redirectingFail:
+        "Order placed but something went wrong with redirecting to the payment. Try again within 48 hours, after that time the order will be canceled.",
+    },
+    pl: {
+      home: "Strona Główna",
+      summary: "Podsumowanie koszyka",
+      payment: "Płatność",
+      done: "Koniec!",
+      personalData: "Twoje dane:",
+      name: "Imię",
+      age: "Data urodzenia",
+      email: "Adres e-mail",
+      pop1: "Data urodzenia jest bardzo ważna w tarocie. Pomaga uzyskać odpowiedzi w najdokładniejszy sposób.",
+      pop2: "Wszystkie odpowiedzi otrzymasz na podany adres e-mail. Będą również dostępne",
+      here: "tutaj.",
+      cartItems: "Produkty:",
+      comments: "Uwagi do zamówienia:",
+      yourComments: "Twoje uwagi...",
+      when: "Kiedy i jak?",
+      receive: "Wszystkie odpowiedzi otrzymasz na podany adres e-mail.",
+      answers: "Odpowiedzi będą dostępne również",
+      everything: "Wszystko będzie gotowe w ciągu 48 godzin od pomyślnej płatności :)",
+      accept: "Akceptuje",
+      terms: "Regulamin",
+      declare: "i oświadczam, że mam skończone 18lat.",
+      total: "Razem:",
+      loading: "Ładuję...",
+      buy: "Kupuje i Płacę",
+      sthWrong: "Coś poszło nie tak. Spróbuj ponownie później.",
+      redirectingFail:
+        "Zamówienie złożone, ale coś poszło nie tak z przekierowaniem do płatności. Spróbuj ponownie w ciągu 48 godzin, po tym czasie zamówienie zostanie anulowane.",
+    },
+  };
 
   async function handleCheckout(e) {
     e.preventDefault();
@@ -64,7 +125,7 @@ function CartSummaryPage() {
         comments
       );
     } catch (error) {
-      setErrorMsg("Something went wrong, please try again later.");
+      setErrorMsg(t[locale].sthWrong);
       setLoading(undefined);
       return;
     }
@@ -124,17 +185,13 @@ function CartSummaryPage() {
       setLoading(undefined);
       if (error) {
         setLoading(undefined);
-        setErrorMsg(
-          "Order placed but something went wrong with redirecting to the payment. Try again within 48 hours, after that time the order will be canceled."
-        );
+        setErrorMsg(t[locale].redirectingFail);
         router.replace("/user/orders#main");
       }
     } catch (error) {
       console.log(error);
       setLoading(undefined);
-      setErrorMsg(
-        "Order placed but something went wrong with redirecting to the payment. Try again within 48 hours, after that time the order will be canceled."
-      );
+      setErrorMsg(t[locale].redirectingFail);
 
       router.replace("/user/orders#main");
       return;
@@ -144,25 +201,27 @@ function CartSummaryPage() {
   return (
     <Container className="mt-2 color-primary">
       <section className="d-flex gap-1">
-        <small>Cart</small>
+        <small>
+          <Link href="/#main">{t[locale].home}</Link>
+        </small>
         <small>&gt;</small>
-        <small>Summary</small>
+        <small>{t[locale].summary}</small>
         <small>&gt;</small>
-        <small className="text-muted">Payment</small>
+        <small className="text-muted">{t[locale].payment}</small>
         <small>&gt;</small>
-        <small className="text-muted">Done!</small>
+        <small className="text-muted">{t[locale].done}</small>
       </section>
       <div className="d-flex flex-wrap">
         <div className="col-sm-12 col-md-7">
           <section>
             <Form className="mt-4 color-primary">
               <small>
-                <strong>Personal data:</strong>
+                <strong>{t[locale].personalData}</strong>
               </small>
-              <FloatingLabel controlId="Name" label="Your name" className="mb-3 text-dark">
+              <FloatingLabel controlId="Name" label={t[locale].name} className="mb-3 text-dark">
                 <Form.Control type="text" defaultValue={authUserFirestore?.name} disabled required />
               </FloatingLabel>
-              <FloatingLabel controlId="Bdate" label="Your birth date" className="mb-3 text-dark">
+              <FloatingLabel controlId="Bdate" label={t[locale].age} className="mb-3 text-dark">
                 <Form.Control type="date" defaultValue={authUserFirestore?.age} disabled required />
                 <div className="d-flex justify-content-end">
                   <OverlayTrigger
@@ -170,10 +229,7 @@ function CartSummaryPage() {
                     placement="left"
                     overlay={
                       <Popover id="popover-basic">
-                        <Popover.Body>
-                          The date of birth is very important in tarot. It helps to get answers in the most accurate
-                          way.
-                        </Popover.Body>
+                        <Popover.Body>{t[locale].pop1}</Popover.Body>
                       </Popover>
                     }
                   >
@@ -183,7 +239,7 @@ function CartSummaryPage() {
                   </OverlayTrigger>
                 </div>
               </FloatingLabel>
-              <FloatingLabel controlId="Email" label="Your email address" className="mb-3 text-dark">
+              <FloatingLabel controlId="Email" label={t[locale].email} className="mb-3 text-dark">
                 <Form.Control type="email" defaultValue={authUserFirestore?.email} disabled required />
                 <div className="d-flex justify-content-end">
                   <OverlayTrigger
@@ -192,9 +248,9 @@ function CartSummaryPage() {
                     overlay={
                       <Popover id="popover-basic">
                         <Popover.Body>
-                          You will receive all the answers to the given email address. They will also be available{" "}
+                          {t[locale].pop2}{" "}
                           <Link href="/user/orders#main" passHref className="pointer">
-                            here.
+                            {t[locale].here}
                           </Link>
                         </Popover.Body>
                       </Popover>
@@ -212,7 +268,7 @@ function CartSummaryPage() {
           <section className="mt-4">
             <p className="text-start justify-self-start mb-0">
               <small>
-                <strong>Cart items:</strong>
+                <strong>{t[locale].cartItems}</strong>
               </small>
             </p>
             {Array.from({ length: authUserFirestore?.cart.length }).map((_, idx) => (
@@ -224,13 +280,13 @@ function CartSummaryPage() {
           <section className="text-center mt-4">
             <p className="text-start justify-self-start mb-0">
               <small>
-                <strong>Comments to order:</strong>
+                <strong>{t[locale].comments}</strong>
               </small>
             </p>
             <Form.Control
               as="textarea"
               id="commentsField"
-              placeholder="Your comments..."
+              placeholder={t[locale].yourComments}
               style={{ minHeight: "80px" }}
             />
           </section>
@@ -238,12 +294,12 @@ function CartSummaryPage() {
           {/* Where and How section */}
           <section className="mt-4 mb-4" style={{ maxHeight: "200px" }}>
             <small>
-              <strong>When and How?</strong>
+              <strong>{t[locale].when}</strong>
             </small>
             <div className={`rounded p-2 ${theme == "light" ? "border" : "border border-dark"}`}>
               <p className="m-0">
                 <small>
-                  You will receive all the answers to the given email address.
+                  {t[locale].receive}
                   {isMobile ? (
                     " "
                   ) : (
@@ -251,14 +307,14 @@ function CartSummaryPage() {
                       <br />
                     </>
                   )}
-                  Answers will be also available{" "}
+                  {t[locale].answers}{" "}
                   <Link href="/user/orders#main" passHref className="pointer">
-                    here.
+                    {t[locale].here}
                   </Link>
                 </small>
               </p>
               <p className="mb-0 mt-2 w-75">
-                <small>Everything will be ready within 48 hours of successful payment :)</small>
+                <small>{t[locale].everything}</small>
               </p>
             </div>
             <div
@@ -295,31 +351,31 @@ function CartSummaryPage() {
                   <Form.Check.Input type="checkbox" required />
                   <Form.Check.Label>
                     <sup>
-                      I accept the{" "}
+                      {t[locale].accept}{" "}
                       <Link
                         href="/terms-of-service#main"
                         passHref
                         className="text-decoration-underline text-primary pointer"
                       >
-                        Terms of service
+                        {t[locale].terms}
                       </Link>{" "}
-                      and I declare that I am over 18 years old.
+                      {t[locale].declare}
                     </sup>
                   </Form.Check.Label>
                 </Form.Check>
               </div>
               <h5 className="color-primary mt-4">
-                Total Price: {totalPrice}
+                {t[locale].total} {totalPrice}
                 <span className="text-uppercase ms-1">{currency}</span>
               </h5>
               <Button type="submit" className="mt-2" disabled={loading}>
                 {loading ? (
                   <>
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                    <span>Loading...</span>
+                    <span>{t[locale].loading}</span>
                   </>
                 ) : (
-                  <span> Buy and Pay </span>
+                  <span>{t[locale].buy}</span>
                 )}
               </Button>
               <section className="d-flex justify-content-center gap-1 mt-3 ">

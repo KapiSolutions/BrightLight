@@ -7,7 +7,7 @@ import styles from "../../styles/components/MsgModals.module.scss";
 
 function NewUserModal(props) {
   const router = useRouter();
-  const locale = props.locale;
+  const locale = router.locale;
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");

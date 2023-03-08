@@ -12,6 +12,19 @@ function Item(props) {
   const item = props.item;
   const order = props.order;
 
+  const t = {
+    en: {
+      cards: "Your cards:",
+      question: "Your Question:",
+      answer: "Answer:",
+    },
+    pl: {
+      cards: "Twoje karty:",
+      question: "Twoje pytanie:",
+      answer: "Odpowiedź:",
+    },
+  };
+
   // Get url's for the item images
   useEffect(() => {
     getFileUrlStorage(`images/products/${item.product_id}`, item.image.name)
@@ -65,7 +78,7 @@ function Item(props) {
           </div>
 
           <div>
-            <p className="mb-0">Your cards:</p>
+            <p className="mb-0">{t[locale].cards}</p>
             <div className="ms-2">
               <small>
                 {item.cards.map((card, idx) => (
@@ -82,7 +95,7 @@ function Item(props) {
           </div>
 
           <div>
-            <p className="mb-0">Your Question:</p>
+            <p className="mb-0">{t[locale].question}</p>
             <div className="ms-2">
               <p>
                 <small>{item.question}</small>
@@ -96,7 +109,7 @@ function Item(props) {
               </div>
               <div>
                 <p className="mb-0">
-                  <strong>Answer:</strong>
+                  <strong>{t[locale].answer}</strong>
                 </p>
                 <div className="ms-2">
                   <p>

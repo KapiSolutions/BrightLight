@@ -4,8 +4,11 @@ import { Container } from "react-bootstrap";
 import Horoscope from "../../../components/Horoscope";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { useAuth } from "../../../context/AuthProvider";
+import { useRouter } from "next/router";
 
 function HoroscopePage() {
+  const router = useRouter();
+  const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated } = useAuth();
   const sleep = (milliseconds) => {
@@ -25,13 +28,24 @@ function HoroscopePage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const t = {
+    en: {
+      title: "Horoscope",
+
+    },
+    pl: {
+      title: "Horoskop",
+
+    },
+  };
   return (
     <>
       <Head>
-        <title>BrightLight | Daily horoscope</title>
+        <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5" id="uh-ctx">
-        <h1 className="color-primary">Horoscope</h1>
+        <h1 className="color-primary">{t[locale].title}</h1>
         <Horoscope />
       </Container>
     </>
