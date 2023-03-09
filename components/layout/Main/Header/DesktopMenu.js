@@ -55,9 +55,10 @@ function DesktopMenu(props) {
       dailyHoroscope: "Daily Horoscope",
       logOut: "Log Out",
       products: "Products",
-      blogPosts: "Blog Posts",
+      blogPosts: "Blog",
       users: "Menage Users",
       menageOrders: "Menage Orders",
+      regulations: "Legal Terms",
       finances: "Finances",
       signIn: "Sign In",
       cart: "Shopping Cart",
@@ -71,6 +72,7 @@ function DesktopMenu(props) {
       blogPosts: "Blog",
       users: "Użytkownicy",
       menageOrders: "Zamówienia",
+      regulations: "Regulaminy",
       finances: "Finanse",
       signIn: "Zaloguj",
       cart: "Koszyk",
@@ -168,11 +170,14 @@ function DesktopMenu(props) {
                           <GiSparkSpirit className={`${styles.icons} color-primary `} />
                         </Dropdown.Toggle>
                         <Dropdown.Menu variant={props.theme} className="background mt-2">
+                          <Link href="/admin/blogs#main" passHref legacyBehavior>
+                            <Dropdown.Item>{t[locale].blogPosts}</Dropdown.Item>
+                          </Link>
                           <Link href="/admin/products#main" passHref legacyBehavior>
                             <Dropdown.Item>{t[locale].products}</Dropdown.Item>
                           </Link>
-                          <Link href="/admin/blogs#main" passHref legacyBehavior>
-                            <Dropdown.Item>{t[locale].blogPosts}</Dropdown.Item>
+                          <Link href="/admin/regulations#main" passHref legacyBehavior>
+                            <Dropdown.Item>{t[locale].regulations}</Dropdown.Item>
                           </Link>
                           <Link href="/admin/users#main" passHref legacyBehavior>
                             <Dropdown.Item>{t[locale].users}</Dropdown.Item>

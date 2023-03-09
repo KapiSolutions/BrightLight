@@ -65,12 +65,14 @@ function MobileMenu(props) {
       dailyHoroscope: "Daily Horoscope",
       logOut: "Log Out",
       products: "Products",
-      blogPosts: "Blog Posts",
+      blogPosts: "Blog",
       users: "Menage Users",
       menageOrders: "Menage Orders",
+      regulations: "Legal Terms",
       finances: "Finances",
       signIn: "Sign In",
       cart: "Shopping Cart",
+      admin: "Admin Panel",
     },
     pl: {
       profile: "Profil",
@@ -81,9 +83,11 @@ function MobileMenu(props) {
       blogPosts: "Blog",
       users: "Użytkownicy",
       menageOrders: "Zamówienia",
+      regulations: "Regulaminy",
       finances: "Finanse",
       signIn: "Zaloguj",
       cart: "Koszyk",
+      admin: "Panel Administratora",
     },
   };
   return (
@@ -129,15 +133,18 @@ function MobileMenu(props) {
                       <Nav className="ms-auto">
                         {isAdmin && (
                           <>
-                            <section className={`ms-2 mb-3 ${styles.adminBack}`}>
+                            <section className={`ms-0 mb-3 ${styles.adminBack}`}>
                               <p className={`text-${revTheme} text-uppercase mb-2`}>
-                                <strong>Admin:</strong>
+                                <strong>{t[locale].admin}</strong>
                               </p>
+                              <Link href="/admin/blogs#main" passHref legacyBehavior>
+                                <Nav.Link className={`text-${revTheme}`}>{t[locale].blogPosts}</Nav.Link>
+                              </Link>
                               <Link href="/admin/products#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>{t[locale].products}</Nav.Link>
                               </Link>
-                              <Link href="/admin/blogs#main" passHref legacyBehavior>
-                                <Nav.Link className={`text-${revTheme}`}>{t[locale].blogPosts}</Nav.Link>
+                              <Link href="/admin/regulations#main" passHref legacyBehavior>
+                                <Nav.Link className={`text-${revTheme}`}>{t[locale].regulations}</Nav.Link>
                               </Link>
                               <Link href="/admin/users#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>{t[locale].users}</Nav.Link>
@@ -179,7 +186,7 @@ function MobileMenu(props) {
                           onClick={handleLogout}
                           className={`text-${props.theme === "light" ? "dark" : "light"}`}
                         >
-                          <FiLogOut className={`${styles.icons} color-primary me-1`} title="Log Out" />
+                          <FiLogOut className={`${styles.icons} color-primary me-1`} title={t[locale].logOut} />
                           {t[locale].logOut}
                         </Nav.Link>
                       </Nav>
