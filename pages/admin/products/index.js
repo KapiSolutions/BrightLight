@@ -133,6 +133,6 @@ export async function getStaticProps() {
     props: {
       products: JSON.parse(JSON.stringify(docs)),
     },
-    revalidate: 30, //1 - 1 second
+    revalidate: false, //1 - 1 second
   };
 }

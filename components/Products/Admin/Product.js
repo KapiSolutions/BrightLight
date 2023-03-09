@@ -141,7 +141,8 @@ function Product(props) {
     try {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
-        paths: ["/admin/products", "/"],
+        paths: ["/"],
+        // paths: ["/","/admin/products"],
       };
       await updateDocFields("products", product.id, { active: !product.active });
       await axios.post("/api/revalidate", revalidateData);
