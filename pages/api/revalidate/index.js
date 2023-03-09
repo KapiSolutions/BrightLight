@@ -20,7 +20,6 @@ export default async function revalidate(req, res) {
 
       return res.status(200).json({ revalidated: true });
     } catch (error) {
-      console.error(error);
       return res.status(500).send("Error revalidating");
     }
   } else {
