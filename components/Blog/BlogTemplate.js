@@ -73,6 +73,79 @@ function BlogTemplate(props) {
   const mainPicHeight = "200px";
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
 
+  const t = {
+    en: {
+      home: "Home",
+      blogMenagement: "Blog Menagement",
+      newBlog: "New Blog",
+      successEdited: "Blog post edited successfuly!",
+      successCreated: "Blog post created successfuly!",
+      tags: "Tags:",
+      author: "Author:",
+      date: "Date:",
+      today: "Today:",
+      mainImage: "Main Picture",
+      addImage: "Please upload main image.",
+      addTitle: "Please add a title.",
+      addContent: "Please add blog content.",
+      addAuthor: "Please add author.",
+      addDate: "Please add date.",
+      selectAnother: "Select another",
+      selectOrDrop: "Select or Drop another file",
+      dragAndDrop: "Drag 'n' drop some files here",
+      orSelect: "or click to select files",
+      source: "Source:",
+      optional: "(Optional)",
+      imgStyle: "Image style:",
+      cover: "Cover",
+      fill: "Fill",
+      contain: "Contain",
+      none: "None",
+      scaleDown: "Scale Down",
+      saveChanges: "Save Changes!",
+      createBlog: "Create Blog!",
+      preview: "Preview Blog",
+      closePreview: "Close Preview",
+      loading: "Loading...",
+      back: "Back",
+    },
+    pl: {
+      home: "Strona Główna",
+      blogMenagement: "Zarządzanie Blogiem",
+      newBlog: "Nowy Wpis",
+      successEdited: "Wpis pomyślnie zaktualizowany!",
+      successCreated: "Wpis pomyślnie dodany!",
+      tags: "Tagi:",
+      author: "Autor:",
+      date: "Data:",
+      today: "Dziś:",
+      mainImage: "Zdjęcie główne",
+      addImage: "Proszę dodać zdjęcie główne.",
+      addTitle: "Proszę dodać tytuł bloga.",
+      addContent: "Proszę dodać treść bloga.",
+      addAuthor: "Proszę dodać autora.",
+      addDate: "Proszę dodać datę.",
+      selectAnother: "Wybierz inne",
+      selectOrDrop: "Wybierz plik lub upuść tutaj",
+      dragAndDrop: "Upuść plik tutaj,",
+      orSelect: "lub kliknij, aby wybrać.",
+      source: "Źródło:",
+      optional: "(Opcjonalnie)",
+      imgStyle: "Styl obrazu:",
+      cover: "Przykryj",
+      fill: "Wypełnij",
+      contain: "Zawrzyj",
+      none: "Brak",
+      scaleDown: "Pomniejsz",
+      saveChanges: "Zapisz zmiany!",
+      createBlog: "Dodaj Wpis!",
+      preview: "Podgląd Wpisu",
+      closePreview: "Zamknij podgląd",
+      loading: "Ładuję...",
+      back: "Wróć",
+    },
+  };
+
   //Update Blog content on evry editor state change
   useEffect(() => {
     setShowPreview(false);
@@ -234,7 +307,7 @@ function BlogTemplate(props) {
         comments: postEdit ? [...postEdit.comments] : [],
         likes: postEdit ? [...postEdit.likes] : [],
       };
-      updatePost({...data}); //data for the database
+      updatePost({ ...data }); //data for the database
       data.title = data.title[langPreview];
       data.content = data.content[langPreview];
       data.contentImages = [];
@@ -353,7 +426,7 @@ function BlogTemplate(props) {
       }
 
       await axios.post("/api/revalidate", revalidateData);
-      setShowSuccess(postEdit ? "Blog post edited successfuly!" : "Blog post created successfuly!");
+      setShowSuccess(postEdit ? t[locale].successEdited : t[locale].successCreated);
       setLoading(false);
     } catch (error) {
       console.log(error);
@@ -408,10 +481,14 @@ function BlogTemplate(props) {
     <>
       <section className="d-flex gap-1">
         <small>
-          <Link href="/admin/blogs#main">Blog Menagment</Link>
+          <Link href="/">{t[locale].home}</Link>
         </small>
         <small>&gt;</small>
-        <small>{postEdit ? postEdit.title[locale] : "New Blog"}</small>
+        <small>
+          <Link href="/admin/blogs#main">{t[locale].blogMenagement}</Link>
+        </small>
+        <small>&gt;</small>
+        <small>{postEdit ? postEdit.title[locale] : t[locale].newBlog}</small>
       </section>
 
       {/* Name of the product */}
@@ -488,7 +565,7 @@ function BlogTemplate(props) {
             )}
           </div>
         </Form>
-        {invalid.title && <small className="text-danger">Please add title.</small>}
+        {invalid.title && <small className="text-danger">{t[locale].addTitle}</small>}
         {isMobile && (
           <div className="mt-3 pt-1">
             <hr />
@@ -515,21 +592,21 @@ function BlogTemplate(props) {
                     <>
                       {isMobile ? (
                         <p className="border rounded p-1 me-2 text-light">
-                          <small>Select another</small>
+                          <small>{t[locale].selectAnother}</small>
                         </p>
                       ) : (
                         <p className={`${styles.pSelect} border rounded p-1 me-2 text-light`}>
-                          <small>Select or Drop another file</small>
+                          <small>{t[locale].selectOrDrop}</small>
                         </p>
                       )}
                     </>
                   ) : (
                     <>
-                      <p className="text-muted text-uppercase">Main Picture</p>
+                      <p className="text-muted text-uppercase">{t[locale].mainImage}</p>
                       <p className="mb-2">
-                        Drag &#39;n&#39; drop some files here
+                        {t[locale].dragAndDrop}
                         <br />
-                        or click to select files
+                        {t[locale].orSelect}
                       </p>
                       <BsCloudUpload style={{ width: "25px", height: "25px" }} />
                     </>
@@ -548,26 +625,26 @@ function BlogTemplate(props) {
       </div>
       {invalid.mainImg && (
         <div className="text-start mt-0">
-          <small className="text-danger">Please upload main picture.</small>
+          <small className="text-danger">{t[locale].addImage}</small>
         </div>
       )}
       {/* Main image options */}
       {imgBase64.loaded && (
         <Form className="d-flex flex-nowrap align-items-center justify-content-end mb-2">
           <Form.Label className="me-2 mt-1">
-            <small>Source:</small>
+            <small>{t[locale].source}</small>
           </Form.Label>
           <Form.Control
             type="text"
             size="sm"
-            placeholder="(optional)"
+            placeholder={t[locale].optional}
             ref={mainImgSourceRef}
             defaultValue={postEdit ? postEdit.mainImg.source : ""}
             onChange={() => setShowPreview(false)}
             className={`w-75 me-2 ${themeDarkInput}`}
           />
           <Form.Label className="me-2 mt-1">
-            <small style={{ whiteSpace: "nowrap" }}>Image style:</small>
+            <small style={{ whiteSpace: "nowrap" }}>{t[locale].imgStyle}</small>
           </Form.Label>
           <Form.Select
             type="text"
@@ -576,11 +653,11 @@ function BlogTemplate(props) {
             onChange={changeMainPicStyle}
             className={`w-25 ${themeDarkInput}`}
           >
-            <option value="cover">Cover</option>
-            <option value="fill">Fill</option>
-            <option value="contain">Contain</option>
-            <option value="none">None</option>
-            <option value="scale-down">Scale down</option>
+            <option value="cover">{t[locale].cover}</option>
+            <option value="fill">{t[locale].fill}</option>
+            <option value="contain">{t[locale].contain}</option>
+            <option value="none">{t[locale].none}</option>
+            <option value="scale-down">{t[locale].scaleDown}</option>
           </Form.Select>
         </Form>
       )}
@@ -612,12 +689,12 @@ function BlogTemplate(props) {
       </div>
       {invalid.content && (
         <div className="text-start mt-0">
-          <small className="text-danger">Please add some content.</small>
+          <small className="text-danger">{t[locale].addContent}</small>
         </div>
       )}
       {/* Content PL */}
       <p className="mt-2 mb-0 text-start">Treść:</p>
-      <div className={`border rounded w-100 ${invalid.content && "border-danger border-2"}`} name="blogTmpContent">
+      <div className={`border rounded w-100 ${invalid.content && "border-danger border-2"}`} name="blogTmpContentPL">
         <TextEditorQuill
           content={setBlogContent_pl}
           initOnEditMode={postEdit?.content.pl}
@@ -643,14 +720,14 @@ function BlogTemplate(props) {
       </div>
       {invalid.content && (
         <div className="text-start mt-0">
-          <small className="text-danger">Please add some content.</small>
+          <small className="text-danger">{t[locale].addContent}</small>
         </div>
       )}
 
       {/* Tag menager */}
       <section className="mt-2 mb-2">
         <Form className="text-start">
-          <Form.Label style={{ position: "relative", top: "8px" }}>Tags:</Form.Label>
+          <Form.Label style={{ position: "relative", top: "8px" }}>{t[locale].tags}</Form.Label>
           <Form.Control
             type="text"
             placeholder="Eg: tag1 tag2"
@@ -673,7 +750,7 @@ function BlogTemplate(props) {
       <section className="mt-2 mb-2">
         <Form className="d-flex flex-wrap gap-2 text-start">
           <div className={`d-block ${isMobile && "w-100"}`}>
-            <Form.Label style={{ position: "relative", top: "8px" }}>Author:</Form.Label>
+            <Form.Label style={{ position: "relative", top: "8px" }}>{t[locale].author}</Form.Label>
             <Form.Control
               type="text"
               name="blogTmpAuthor"
@@ -682,10 +759,10 @@ function BlogTemplate(props) {
               defaultValue={postEdit ? postEdit.author : "BrightLightGypsy"}
               className={`${invalid.author && "border border-danger"} ${themeDarkInput}`}
             />
-            {invalid.author && <small className="text-danger">Incorrect value.</small>}
+            {invalid.author && <small className="text-danger">{t[locale].addAuthor}</small>}
           </div>
           <div className={`d-block ${isMobile && "w-100"}`}>
-            <Form.Label style={{ position: "relative", top: "8px" }}>Date:</Form.Label>
+            <Form.Label style={{ position: "relative", top: "8px" }}>{t[locale].date}</Form.Label>
             <Form.Control
               type="text"
               name="blogTmpDate"
@@ -696,16 +773,18 @@ function BlogTemplate(props) {
               }
               className={`${invalid.date && "border border-danger"} ${themeDarkInput}`}
             />
-            {invalid.date && <small className="text-danger">Incorrect value.</small>}
-            <small className="text-muted ms-1">Today: {new Date().toLocaleDateString()}</small>
+            {invalid.date && <small className="text-danger">{t[locale].addDate}</small>}
+            <small className="text-muted ms-1">
+              {t[locale].today} {new Date().toLocaleDateString()}
+            </small>
           </div>
         </Form>
       </section>
       <div className="text-end">
-        <Button onClick={handlePreview}>{showPreview ? "Close Preview" : "Preview Blog"}</Button>
+        <Button onClick={handlePreview}>{showPreview ? t[locale].closePreview : t[locale].preview}</Button>
         <Button
-        className="ms-1"
-        variant="outline-primary"
+          className="ms-1"
+          variant="outline-primary"
           onClick={() => {
             setLangPreview(langPreview == "en" ? "pl" : "en");
             setShowPreview(false);
@@ -729,10 +808,10 @@ function BlogTemplate(props) {
               {loading ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                  <span> Loading...</span>
+                  <span> {t[locale].loading}</span>
                 </>
               ) : (
-                <span className="text-uppercase">{postEdit ? "Save changes!" : "Create this Blog!"}</span>
+                <span className="text-uppercase">{postEdit ? t[locale].saveChanges : t[locale].createBlog}</span>
               )}
             </Button>
           </div>
@@ -741,7 +820,7 @@ function BlogTemplate(props) {
       {showSuccess && (
         <SuccessModal
           msg={showSuccess}
-          btn={"Back"}
+          btn={t[locale].back}
           closeFunc={() => {
             router.push("/admin/blogs#main");
             setShowSuccess("");

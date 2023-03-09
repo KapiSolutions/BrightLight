@@ -6,16 +6,26 @@ import { getDocsFromCollection } from "../../firebase/Firestore";
 import FilterAndSortBar from "../../components/Blog/FilterAndSortBar";
 
 function BlogPage(props) {
+  const locale = props.locale;
   const [posts, setPosts] = useState([]);
   const [message, setMessage] = useState("");
   const idForSortingBar = "BlogUser";
+
+  const t = {
+    en: {
+      title: "Blog",
+    },
+    pl: {
+      title: "Blog",
+    },
+  };
   return (
     <>
       <Head>
-        <title>BrightLight | Blog</title>
+        <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="text-center mt-5 color-primary">
-        <h1 className="mb-0"> BLOG </h1>
+        <h1 className="mb-0 text-uppercase"> {t[locale].title} </h1>
         <div className="mb-4">
         <FilterAndSortBar
           id={idForSortingBar}
@@ -51,6 +61,7 @@ export async function getStaticProps({ locale }) {
   return {
     props: {
       blogPosts: JSON.parse(JSON.stringify(docs)),
+      locale: locale,
     },
     revalidate: false, //on demand revalidation
   };

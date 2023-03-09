@@ -9,6 +9,7 @@ const parse = require("html-react-parser");
 
 function BlogItem(props) {
   const router = useRouter();
+  const locale = router.locale;
   const { authUserFirestore, setErrorMsg } = useAuth();
   const [loading, setLoading] = useState(false);
   const post = props.blogPost;
@@ -53,6 +54,18 @@ function BlogItem(props) {
     }
   };
 
+  const t = {
+    en: {
+      by: "By ",
+      loading: "Loading...",
+      button: "Read more",
+    },
+    pl: {
+      by: "",
+      loading: "Ładuję...",
+      button: "Czytaj więcej",
+    },
+  };
   return (
     <>
       <Card className="background border shadow-sm color-primary col-12 col-sm-6 col-md-5 col-lg-4">
@@ -80,7 +93,7 @@ function BlogItem(props) {
               <br />
               <small>
                 <i>
-                  By {post.author} - {timeStampToDate(post.date).toLocaleDateString()}
+                  {t[locale].by}{post.author} - {timeStampToDate(post.date).toLocaleDateString()}
                 </i>
               </small>
             </p>
@@ -160,10 +173,10 @@ function BlogItem(props) {
             {loading ? (
               <>
                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                <span> Loading...</span>
+                <span> {t[locale].loading}</span>
               </>
             ) : (
-              <span> Read More </span>
+              <span> {t[locale].button} </span>
             )}
           </Button>
         </Card.Footer>

@@ -23,6 +23,31 @@ function BlogItemAdmin(props) {
   const [showDetails, setShowDetails] = useState(false);
   const cardsIcon = "/img/cards-light.png";
 
+  const t = {
+    en: {
+      sthWrong: "Something went wrong, please try again later.",
+      title: "Blog title",
+      createDate: "Creation date",
+      reactions: "Reactions",
+      action: "Action",
+      by: "By:",
+      edit: "Edit",
+      delete: "Delete",
+      tryDelete: "You are trying to delete your Blog Post. This action is irreversible. Please confirm.",
+    },
+    pl: {
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
+      title: "Tytuł Bloga",
+      createDate: "Data dodania",
+      reactions: "Reakcje",
+      action: "Opcje",
+      by: "Autor:",
+      edit: "Edytuj",
+      delete: "Usuń",
+      tryDelete: "Próbujesz usunąć swój wpis. Ta czynność jest nieodwracalna. Proszę potwierdzić.",
+    },
+  };
+
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
@@ -41,7 +66,7 @@ function BlogItemAdmin(props) {
       setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
       setShowConfirmModal({ msg: "", itemID: "" });
-      setErrorMsg("Something went wrong, please try again later.");
+      setErrorMsg(t[locale].sthWrong);
       console.log(error);
     }
   }
@@ -57,16 +82,16 @@ function BlogItemAdmin(props) {
             <>
               <div className="d-flex text-start w-100">
                 <div className="col-4">
-                  <strong>Blog title</strong>
+                  <strong>{t[locale].title}</strong>
                 </div>
                 <div className="col-3">
-                  <strong>Creation Date</strong>
+                  <strong>{t[locale].createDate}</strong>
                 </div>
                 <div className="col-3">
-                  <strong>Reactions</strong>
+                  <strong>{t[locale].reactions}</strong>
                 </div>
                 <div className="col-2">
-                  <strong>Action</strong>
+                  <strong>{t[locale].action}</strong>
                 </div>
               </div>
             </>
@@ -76,7 +101,7 @@ function BlogItemAdmin(props) {
       )}
 
       <div className="d-flex align-items-center text-start w-100 flex-wrap">
-        <div className="col-10 col-md-4 d-flex pointer" onClick={showDetailsFunc}>
+        <div className="col-10 col-md-4 d-flex pointer" onClick={() => isMobile && showDetailsFunc()}>
           <div className="d-flex align-items-center">
             {/* <SiMicrodotblog style={{width: "25px", height: "25px"}}/> */}
             <Image src={cardsIcon} width="58" height="58" alt="tarot cards" />
@@ -87,7 +112,7 @@ function BlogItemAdmin(props) {
                 <p className="mb-0">{post.title[locale]}</p>
                 <i>
                   <small>
-                    By: {post.author} - {timeStampToDate(post.date).toLocaleDateString()}
+                  {t[locale].by} {post.author} - {timeStampToDate(post.date).toLocaleDateString()}
                   </small>
                 </i>
               </>
@@ -134,7 +159,7 @@ function BlogItemAdmin(props) {
                   {loadingEdit ? (
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                   ) : (
-                    "Edit"
+                    t[locale].edit
                   )}
                 </Button>
                 <Button
@@ -143,7 +168,7 @@ function BlogItemAdmin(props) {
                   size="sm"
                   onClick={() => {
                     setShowConfirmModal({
-                      msg: "You are trying to delete your Blog Post. This action is irreversible. Confirm or return to orders.",
+                      msg: t[locale].tryDelete,
                       itemID: "",
                     });
                   }}
@@ -152,7 +177,7 @@ function BlogItemAdmin(props) {
                   {loadingDel ? (
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                   ) : (
-                    "Delete"
+                    t[locale].delete
                   )}
                 </Button>
               </div>

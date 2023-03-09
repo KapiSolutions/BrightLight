@@ -15,6 +15,37 @@ function FilterAndSortBar(props) {
     border: "1px solid rgba(133, 133, 133, 0.389)",
   };
 
+  const t = {
+    en: {
+      find: "Find blog post",
+      findBy: "Find post by title or tag",
+      filter: "Filter by Date",
+      filter1: "All Dates",
+      filter2: "Last 30 days",
+      filter3: "Last 60 days",
+      filter4: "Last 120 days",
+      filter5: "Last Year",
+      sort: "Sort orders",
+      date: "Date",
+      show: "Show",
+      noPost: "Blog post not found.",
+    },
+    pl: {
+      find: "Znajdź wpis",
+      findBy: "Wyszukaj po nazwie lub tagach",
+      filter: "Filtruj po dacie",
+      filter1: "Wszystko",
+      filter2: "Ostatnie 30 dni",
+      filter3: "Ostatnie 60 dni",
+      filter4: "Ostatnie 120 dni",
+      filter5: "Ostatni rok",
+      sort: "Sortuj",
+      date: "Data",
+      show: "Pokaż",
+      noPost: "Nie ma takiego wpisu.",
+    },
+  };
+
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
@@ -67,7 +98,7 @@ function FilterAndSortBar(props) {
         props.outputArray(tmpItems);
       } else {
         props.outputArray([]);
-        props.msg("Blog post does not exist.");
+        props.msg(t[locale].noPost);
       }
     } else {
       props.outputArray([...props.refArray]);
@@ -172,12 +203,12 @@ function FilterAndSortBar(props) {
               <Form.Group className="col-6">
                 <Form.Label className="mb-0">
                   <small>
-                    <strong>Find blog</strong>
+                    <strong>{t[locale].find}</strong>
                   </small>
                 </Form.Label>
                 <Form.Control
                   type="text"
-                  placeholder="Find blog by key words"
+                  placeholder={t[locale].findBy}
                   id={`find${props.id}`}
                   style={{ paddingLeft: "40px" }}
                 />
@@ -187,15 +218,15 @@ function FilterAndSortBar(props) {
               <Form.Group className="col-3" onChange={filterByDate}>
                 <Form.Label className="mb-0">
                   <small>
-                    <strong>Filter by date</strong>
+                    <strong>{t[locale].filter}</strong>
                   </small>
                 </Form.Label>
                 <Form.Select type="text" id={`filterByDate${props.id}`}>
-                  <option value="1">All dates</option>
-                  <option value="2">Last 30 days</option>
-                  <option value="3">Last 60 days</option>
-                  <option value="4">Last 120 days</option>
-                  <option value="5">Last Year</option>
+                <option value="1">{t[locale].filter1}</option>
+                  <option value="2">{t[locale].filter2}</option>
+                  <option value="3">{t[locale].filter3}</option>
+                  <option value="4">{t[locale].filter4}</option>
+                  <option value="5">{t[locale].filter5}</option>
                 </Form.Select>
               </Form.Group>
 
@@ -203,12 +234,12 @@ function FilterAndSortBar(props) {
               <Form.Group className="col-2" onChange={sortBy}>
                 <Form.Label className="mb-0">
                   <small>
-                    <strong>Sort blog posts</strong>
+                    <strong>{t[locale].sort}</strong>
                   </small>
                 </Form.Label>
                 <Form.Select type="text" id={`sortBy${props.id}`}>
-                  <option value="1">Date &#8600;</option>
-                  <option value="2">Date &#8599;</option>
+                  <option value="1">{t[locale].date} &#8600;</option>
+                  <option value="2">{t[locale].date} &#8599;</option>
                 </Form.Select>
               </Form.Group>
             </Form>
@@ -226,11 +257,11 @@ function FilterAndSortBar(props) {
             <Form className="text-start d-flex" onSubmit={findBy}>
               <Form.Control
                 type="text"
-                placeholder="Find blog by key words"
+                placeholder={t[locale].findBy}
                 id={`find${props.id}Mobile`}
                 style={{ paddingLeft: "40px" }}
                 className="w-100"
-                title="Filter"
+                title="Find Blog"
               />
               <InputGroup.Text
                 className="pointer border"
@@ -244,7 +275,7 @@ function FilterAndSortBar(props) {
             {showOptions && (
               <section className="d-block mt-3 color-primary" style={{ maxWidth: "100%" }}>
                 <div className="d-flex align-items-center mb-2 text-nowrap">
-                  <div>Sort by:</div>
+                  <div>{t[locale].sort}</div>
                   <div
                     id={`sortBy${props.id}Mobile`}
                     className="d-flex overflow-auto ms-2 noScrollBar"
@@ -256,7 +287,7 @@ function FilterAndSortBar(props) {
                         sortBy(e, "1");
                       }}
                     >
-                      Date &#8600;
+                      {t[locale].date} &#8600;
                     </div>
                     <div
                       className={`rounded m-1 p-2 pointer ${sortItem}`}
@@ -264,7 +295,7 @@ function FilterAndSortBar(props) {
                         sortBy(e, "2");
                       }}
                     >
-                      Date &#8599;
+                      {t[locale].date} &#8599;
                     </div>
                   </div>
                 </div>

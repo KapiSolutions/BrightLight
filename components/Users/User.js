@@ -8,15 +8,57 @@ import { deleteDocInCollection, queryByFirestore } from "../../firebase/Firestor
 import { useDeviceStore } from "../../stores/deviceStore";
 import ConfirmActionModal from "../Modals/ConfirmActionModal";
 import OrderItem from "./OrderItem";
+import { useRouter } from "next/router";
 
 function User(props) {
+  const router = useRouter();
+  const locale = router.locale;
+  const user = props.user;
   const { setErrorMsg } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [loadingDel, setLoadingDel] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [userOrders, setUserOrders] = useState([]);
-  const user = props.user;
+
+  const t = {
+    en: {
+      sthWrong: "Something went wrong, please try again later.",
+      loading: "Loading...",
+      name: "User Name",
+      email: "User Email",
+      provider: "Provider",
+      actions: "Actions",
+      showLess: "Show Less",
+      showMore: "Show More",
+      delete: "Delete",
+      tryDelete: "You are trying to delete this user. This action is irreversible. Please confirm.",
+      role: "Role:",
+      user: "User",
+      admin: "Admin",
+      orders: "User orders:",
+      noOrders: "No orders yet.",
+      emailAndPassword: "Email and password",
+    },
+    pl: {
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
+      loading: "Ładuję..",
+      name: "Nazwa użytkownika",
+      email: "Adres E-mail",
+      provider: "Poprzez",
+      actions: "Opcje",
+      showLess: "Zwiń",
+      showMore: "Rozwiń",
+      delete: "Usuń",
+      tryDelete: "Próbujesz usunąć tego użytkownika. Ta czynność jest nieodwracalna. Proszę potwierdzić.",
+      role: "Typ:",
+      user: "Użytkownik",
+      admin: "Administrator",
+      orders: "Zamówienia:",
+      noOrders: "Brak zamówień.",
+      emailAndPassword: "E-mail i hasło",
+    },
+  };
 
   const showDetailsFunc = () => {
     setShowDetails(!showDetails);
@@ -33,7 +75,7 @@ function User(props) {
       setUserOrders(orders ? orders : []);
     } catch (error) {
       console.log(error);
-      setErrorMsg("Something went wrong, please try again later.");
+      setErrorMsg(t[locale].sthWrong);
     }
   };
 
@@ -44,19 +86,19 @@ function User(props) {
       type: "delete",
     };
     try {
-      const res = await axios.post("/api/admin/users/", payload);
+      const res = await axios.post("/api/admin/users", payload);
       if (res.status === 200) {
         await deleteDocInCollection("users", user.id);
         setShowConfirmModal({ msg: "", itemID: "" });
       } else {
         setShowConfirmModal({ msg: "", itemID: "" });
-        setErrorMsg("Something went wrong, please try again later.");
+        setErrorMsg(t[locale].sthWrong);
       }
       props.refresh(); //refresh the user list
     } catch (error) {
       console.log(error);
       setShowConfirmModal({ msg: "", itemID: "" });
-      setErrorMsg("Something went wrong, please try again later.");
+      setErrorMsg(t[locale].sthWrong);
     }
   }
   return (
@@ -67,16 +109,16 @@ function User(props) {
             <>
               <div className="d-flex text-start w-100">
                 <div className="col-3">
-                  <strong>User Name</strong>
+                  <strong>{t[locale].name}</strong>
                 </div>
                 <div className="col-5">
-                  <strong>User Email</strong>
+                  <strong>{t[locale].email}</strong>
                 </div>
                 <div className="col-2">
-                  <strong>Provider</strong>
+                  <strong>{t[locale].provider}</strong>
                 </div>
                 <div className="col-2">
-                  <strong>Actions</strong>
+                  <strong>{t[locale].actions}</strong>
                 </div>
               </div>
             </>
@@ -94,7 +136,7 @@ function User(props) {
               <FaUserSecret style={{ width: "25px", height: "25px" }} />
             )}
           </div>
-          <div className="d-flex flex-column">
+          <div className="d-flex flex-column pointer" onClick={() => setShowDetails(!showDetails)}>
             {isMobile ? (
               <>
                 <p className="mb-0">{user.name}</p>
@@ -113,14 +155,16 @@ function User(props) {
 
         {!isMobile && (
           <>
-            <div className="col-5 text-uppercase">
+            <div className="col-5 text-uppercase pointer" onClick={() => setShowDetails(!showDetails)}>
               <small>{user.email}</small>
             </div>
-            <div className="col-2">{user.signProvider}</div>
+            <div className="col-2 pointer" onClick={() => setShowDetails(!showDetails)} >
+              {user.signProvider === "emailAndPassword" ? t[locale].emailAndPassword : user.signProvider}
+            </div>
             <div className="col-2">
-              <div className="d-flex gap-2 align-items-center justify-content-end">
+              <div className="d-flex gap-2 align-items-center justify-content-start">
                 <Button variant="outline-primary" size="sm" onClick={showDetailsFunc}>
-                  Show {showDetails ? "less" : "more"}
+                  {showDetails ? t[locale].showLess : t[locale].showMore}
                 </Button>
                 <Button
                   variant="primary"
@@ -128,7 +172,7 @@ function User(props) {
                   size="sm"
                   onClick={() => {
                     setShowConfirmModal({
-                      msg: "You are trying to delete this user. This action is irreversible. Please confirm.",
+                      msg: t[locale].tryDelete,
                       itemID: "",
                     });
                   }}
@@ -137,7 +181,7 @@ function User(props) {
                   {loadingDel ? (
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                   ) : (
-                    "Delete"
+                    t[locale].delete
                   )}
                 </Button>
               </div>
@@ -149,7 +193,7 @@ function User(props) {
                 <div>
                   <p>
                     <small className="text-uppercase">
-                      <strong>Role:</strong> {user.role == "user" ? "User" : "Admin"}
+                      <strong>{t[locale].role}</strong> {user.role == "user" ? t[locale].user : t[locale].admin}
                     </small>
                     <br />
 
@@ -164,7 +208,7 @@ function User(props) {
                 <div>
                   <p className="text-uppercase">
                     <small>
-                      <strong>User orders:</strong>
+                      <strong>{t[locale].orders}</strong>
                     </small>
                   </p>
                   <div className="d-flex flex-row flex-wrap">
@@ -174,7 +218,7 @@ function User(props) {
                       </div>
                     ))}
                   </div>
-                  {userOrders.length == 0 && <p>No orders yet.</p>}
+                  {userOrders.length == 0 && <p>{t[locale].noOrders}</p>}
                 </div>
               </div>
             )}
@@ -194,11 +238,11 @@ function User(props) {
                 <div>
                   <p>
                     <small className="text-uppercase">
-                      <strong>Role:</strong> {user.role == "user" ? "User" : "Admin"}
+                      <strong>{t[locale].role}</strong> {user.role == "user" ? "User" : "Admin"}
                     </small>
                     <br />
                     <small className="text-uppercase">
-                      <strong>Provider:</strong> {user.signProvider}
+                      <strong>{t[locale].provider}</strong> {user.signProvider}
                     </small>
                     <br />
                     <small className="text-uppercase">
@@ -212,14 +256,14 @@ function User(props) {
                 <div>
                   <p className="text-uppercase">
                     <small>
-                      <strong>User orders:</strong>
+                      <strong>{t[locale].orders}</strong>
                     </small>
                   </p>
                   {userOrders.map((order, idx) => (
                     <OrderItem key={idx} order={order} />
                   ))}
 
-                  {userOrders.length == 0 && <p>No orders yet.</p>}
+                  {userOrders.length == 0 && <p>{t[locale].noOrders}</p>}
                 </div>
                 <div className="w-100 text-end">
                   <Button
@@ -228,7 +272,7 @@ function User(props) {
                     size="sm"
                     onClick={() => {
                       setShowConfirmModal({
-                        msg: "You are trying to delete the user. This action is irreversible. Please confirm.",
+                        msg: t[locale].tryDelete,
                         itemID: "",
                       });
                     }}
@@ -237,7 +281,7 @@ function User(props) {
                     {loadingDel ? (
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                     ) : (
-                      "Delete User"
+                      t[locale].delete
                     )}
                   </Button>
                 </div>

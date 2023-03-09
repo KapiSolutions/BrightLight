@@ -12,8 +12,11 @@ const parse = require("html-react-parser");
 import DOMPurify from "dompurify";
 import handlebars from "handlebars/dist/handlebars.min.js"; // instead of: import handlebars from "handlebars"; - the second causes errors wtf
 import { getFileUrlStorage } from "../../firebase/Storage";
+import { useRouter } from "next/router";
 
 function BlogPost(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const post = props.post;
   const previewMode = props.preview ? true : false;
   const commentRef = useRef();
@@ -38,7 +41,7 @@ function BlogPost(props) {
       post.contentImages.map(async (img, idx) => {
         const url = await getFileUrlStorage(`images/blog/${post.id}`, img.fileName);
         const prop = img.fileName.slice(0, img.fileName.indexOf(".")); //img.FileName is eg. name.jpg => here take only the name
-        const imgTag = `<img src="${url}" alt="Blog tarot bright light gypsy ${post.title}" ${img.attributes.imgWidth}>`;
+        const imgTag = `<img src="${url}" alt="${post.title} - ${t[locale].alt}" ${img.attributes.imgWidth}>`;
         replacements = {
           ...replacements,
           [prop]: imgTag,
@@ -129,9 +132,45 @@ function BlogPost(props) {
     }
   };
 
+  const t = {
+    en: {
+      alt: "tarot online, Bright Light",
+      home: "Home",
+      by: "By ",
+      source: "Source:",
+      tags: "Tags:",
+      you: "You",
+      writeComment: "Write a comment!",
+      tryDetele: "You are trying to delete your comment. Please confirm.",
+      yourComment: "Your comment...",
+      pleaseSignIn: "Please sign in first to write a comment.",
+      loading: "Loading...",
+      send: "Send",
+      signIn: "Sign in",
+    },
+    pl: {
+      alt: "tarot online, Bright Light",
+      home: "Strona Główna",
+      by: "Autor: ",
+      source: "Źródło:",
+      tags: "Tagi:",
+      you: "Ty",
+      writeComment: "Dodaj komentarz!",
+      tryDetele: "Próbujesz usunąć swój komentarz. Proszę potwierdzić.",
+      yourComment: "Napisz coś..",
+      pleaseSignIn: "Zaloguj się, aby móc napisać komentarz.",
+      loading: "Ładuję...",
+      send: "Dodaj",
+      signIn: "Zaloguj",
+    },
+  };
   return (
     <>
       <section className="d-flex gap-1">
+        <small>
+          <Link href="/">{t[locale].home}</Link>
+        </small>
+        <small>&gt;</small>
         <small>
           <Link href="/blog#main">Blog</Link>
         </small>
@@ -142,7 +181,7 @@ function BlogPost(props) {
         <h1 className="color-primary mb-0"> {post.title} </h1>
         <p className="ms-2 text-muted">
           <i>
-            By {post.author} -{" "}
+            {t[locale].by} {post.author} -{" "}
             {previewMode ? post.date.toLocaleDateString() : timeStampToDate(post.date).toLocaleDateString()}
           </i>
         </p>
@@ -159,7 +198,7 @@ function BlogPost(props) {
         <p className="text-start mb-0">
           <small>
             <i>
-              Source: <Link href={post.mainImg.source}> {post.mainImg.source} </Link>
+              {t[locale].source} <Link href={post.mainImg.source}> {post.mainImg.source} </Link>
             </i>
           </small>
         </p>
@@ -172,7 +211,7 @@ function BlogPost(props) {
       {/* Tags */}
       {post.tags.length > 0 && (
         <section className="text-start mt-2">
-          <p className="mb-0">Tags:</p>
+          <p className="mb-0">{t[locale].tags}</p>
           <div className="d-inline-flex gap-2 flex-wrap">
             {post.tags.map((tag, idx) => (
               <Badge key={tag + idx} bg="dark" className="pointer">
@@ -209,7 +248,8 @@ function BlogPost(props) {
                       {idx < likesToShow && (
                         <p className="m-1 text-start">
                           <strong>
-                            {likes[idx].userName} {authUserFirestore?.id == likes[idx].userID && <small>(You)</small>}
+                            {likes[idx].userName}{" "}
+                            {authUserFirestore?.id == likes[idx].userID && <small>({t[locale].you})</small>}
                           </strong>
                         </p>
                       )}
@@ -230,12 +270,12 @@ function BlogPost(props) {
         </div>
         {previewMode ? (
           <div className="text-end">
-            <span className="pointer color-primary"> Write a Comment! &#10084;</span>
+            <span className="pointer color-primary"> {t[locale].writeComment} &#10084;</span>
           </div>
         ) : (
           <div className="text-end">
             <Link href="#postCom" passHref>
-              <span className="pointer color-primary"> Write a Comment! &#10084;</span>
+              <span className="pointer color-primary"> {t[locale].writeComment} &#10084;</span>
             </Link>
           </div>
         )}
@@ -258,7 +298,7 @@ function BlogPost(props) {
                       className="pointer"
                       onClick={() =>
                         setShowConfirmModal({
-                          msg: "You are trying to delete your comment. Please confirm.",
+                          msg: t[locale].tryDelete,
                           itemID: comment.id,
                         })
                       }
@@ -276,12 +316,12 @@ function BlogPost(props) {
           ))}
           {/* Write Comment section */}
           <div id="postCom">
-            <h4 className="mt-3">Write a Comment</h4>
+            <h4 className="mt-3">{t[locale].writeComment}</h4>
             <Form onSubmit={handleSubmit}>
               <Form.Control
                 as="textarea"
                 id="commentsField"
-                placeholder={authUserFirestore ? "Your Comment..." : "Please sign in first to write a comment."}
+                placeholder={authUserFirestore ? t[locale].yourComment : t[locale].pleaseSignIn}
                 style={{ minHeight: "80px" }}
                 ref={commentRef}
                 disabled={!authUserFirestore}
@@ -293,15 +333,15 @@ function BlogPost(props) {
                     {loading ? (
                       <>
                         <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                        <span>Loading...</span>
+                        <span>{t[locale].loading}</span>
                       </>
                     ) : (
-                      <span> Send </span>
+                      <span>{t[locale].send}</span>
                     )}
                   </Button>
                 ) : (
                   <Link href="/sign-in" passHref>
-                    <Button>Sign In</Button>
+                    <Button>{t[locale].signIn}</Button>
                   </Link>
                 )}
               </div>

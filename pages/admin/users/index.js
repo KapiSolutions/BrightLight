@@ -8,9 +8,10 @@ import { getDocsFromCollection } from "../../../firebase/Firestore";
 import User from "../../../components/Users/User";
 
 function UserProfilePage() {
+  const router = useRouter();
+  const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, isAdmin } = useAuth();
-  const router = useRouter();
   const [users, setUsers] = useState([]);
 
   const sleep = (milliseconds) => {
@@ -42,13 +43,24 @@ function UserProfilePage() {
     setUsers(docs);
   };
 
+  const t = {
+    en: {
+      title: "Admin - Users",
+      h1: "Menage Users"
+
+    },
+    pl: {
+      title: "Admin - Użytkownicy",
+      h1: "Panel Użytkowników"
+    },
+  };
   return (
     <>
       <Head>
-        <title>BrightLight | Admin - Users</title>
+        <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="au-ctx">
-        <h1>Menage Users</h1>
+        <h1>{t[locale].h1}</h1>
 
         {users.map((user, idx) => (
           <User key={idx} idx={idx} user={user} refresh={getUserList}/>

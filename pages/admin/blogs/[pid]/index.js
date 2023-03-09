@@ -9,10 +9,11 @@ import { getDocById, getDocsFromCollection } from "../../../../firebase/Firestor
 import { VscBracketError } from "react-icons/vsc";
 
 function AdminEditBlogPage(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const themeState = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
-  const router = useRouter();
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   };
@@ -36,21 +37,36 @@ function AdminEditBlogPage(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const t = {
+    en: {
+      title: "Admin - Edit Blog",
+      h1: "Edit Blog",
+      noBlog: "Blog does not exist.",
+      button: "Go back",
+    },
+    pl: {
+      title: "Admin - Edytuj Wpis",
+      h1: "Edytuj Wpis",
+      noBlog: "Wpis nie istnieje.",
+      button: "Wróć",
+    },
+  };
+
   return (
     <>
       <Head>
-        <title>BrightLight | Admin - Edit Blog</title>
+        <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="abe-ctx">
-        <h1>Edit Blog</h1>
+        <h1>{t[locale].h1}</h1>
         {props.post ? (
           <BlogTemplate post={props.post} />
         ) : (
           <div className="text-center">
             <VscBracketError style={{ width: "40px", height: "40px" }} className="mb-3" />
-            <h4 className="mt-0 mb-4">Blog does not exist.</h4>
+            <h4 className="mt-0 mb-4">{t[locale].noBlog}</h4>
             <Button variant="outline-primary" onClick={() => router.replace("/admin/blogs#main")}>
-              Go Back
+              {t[locale].button}
             </Button>
           </div>
         )}

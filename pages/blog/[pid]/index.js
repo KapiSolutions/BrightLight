@@ -8,6 +8,18 @@ import { VscBracketError } from "react-icons/vsc";
 
 function BlogPage(props) {
   const router = useRouter();
+  const locale = props.locale;
+  const t = {
+    en: {
+      noBlog: "Blog does not exist.",
+      button: "Back",
+    },
+    pl: {
+      noBlog: "Blog",
+      button: "Wróć",
+    },
+  };
+
   return (
     <>
       <Head>
@@ -19,9 +31,9 @@ function BlogPage(props) {
         ) : (
           <div className="text-center mt-5">
             <VscBracketError style={{ width: "40px", height: "40px" }} className="mb-3" />
-            <h4 className="mt-0 mb-4">Blog does not exist.</h4>
+            <h4 className="mt-0 mb-4">{t[locale].noBlog}</h4>
             <Button variant="outline-primary" onClick={() => router.replace("/blog#main")}>
-              Blogs page
+            {t[locale].button}
             </Button>
           </div>
         )}
@@ -43,6 +55,7 @@ export async function getStaticProps(context) {
   return {
     props: {
       post: doc ? JSON.parse(JSON.stringify(doc)) : null,
+      locale: locale,
     },
     revalidate: false, //on demand revalidation
   };

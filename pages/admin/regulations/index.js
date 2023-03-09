@@ -5,7 +5,7 @@ import { Container } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
 
-function FinancesPage() {
+function RegulationsPage() {
   const router = useRouter();
   const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -15,7 +15,7 @@ function FinancesPage() {
   };
   async function scroll() {
     await sleep(300);
-    document.getElementById("af-ctx").scrollIntoView();
+    document.getElementById("ar-ctx").scrollIntoView();
   }
 
   useEffect(() => {
@@ -35,12 +35,12 @@ function FinancesPage() {
 
   const t = {
     en: {
-      title: "Admin - Finances",
-      h1: "Finances",
+      title: "Admin - Regulations",
+      h1: "Regulations",
     },
     pl: {
-      title: "Admin - Finanse",
-      h1: "Finanse",
+      title: "Admin - Regulaminy",
+      h1: "Regulaminy",
     },
   };
   return (
@@ -48,11 +48,11 @@ function FinancesPage() {
       <Head>
         <title>BrightLight | {t[locale].title}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5 color-primary" id="af-ctx">
+      <Container className="justify-content-center text-center mt-5 color-primary" id="ar-ctx">
         <h1>{t[locale].h1}</h1>
       </Container>
     </>
   );
 }
 
-export default FinancesPage;
+export default RegulationsPage;
