@@ -10,10 +10,11 @@ import FilterAndSortBar from "../../../components/Products/Admin/FilterAndSortBa
 import { getDocsFromCollection } from "../../../firebase/Firestore";
 
 function AdminProductsPage(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
-  const router = useRouter();
   const [products, setProducts] = useState([]);
   const [refProducts, setRefProducts] = useState(props.products);
   const [message, setMessage] = useState("");
@@ -61,13 +62,30 @@ function AdminProductsPage(props) {
         setLoadingRfs(false);
       }
     };
+
+    const t = {
+      en: {
+        title: "Admin - Products",
+        h1: "Product Menagment",
+        loading: "Loading",
+        newProduct: "Create new Product!",
+        refresh: "Refresh Product List",
+      },
+      pl: {
+        title: "Admin - Produkty",
+        h1: "Panel Produktów",
+        loading: "Ładuję",
+        newProduct: "Dodaj nowy Produkt!",
+        refresh: "Odśwież listę produktów",
+      },
+    };
   return (
     <>
       <Head>
-        <title>BrightLight | Admin - Products</title>
+        <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="ap-ctx">
-        <h1>Product Menagment</h1>
+        <h1>{t[locale].h1}</h1>
         <div className="d-flex justify-content-end gap-2 text-end mt-4">
           <Button
             size="md"
@@ -81,10 +99,10 @@ function AdminProductsPage(props) {
           >
             {loadingNew ? (
               <span>
-                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Loading
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> {t[locale].loading}
               </span>
             ) : (
-              "Create New Product!"
+              t[locale].newProduct
             )}
           </Button>
           <Button
@@ -92,7 +110,7 @@ function AdminProductsPage(props) {
             size="md"
             onClick={refreshProductList}
             disabled={loadingRfs}
-            title="Refresh list"
+            title={t[locale].refresh}
           >
             {loadingRfs ? (
               <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />

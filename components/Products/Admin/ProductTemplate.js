@@ -70,6 +70,79 @@ function ProductTemplate(props) {
   const [previewProduct, setPreviewProduct] = useState(null);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
 
+  const t = {
+    en: {
+      home: "Home",
+      productsMenagement: "Products Menagment",
+      newProduct: "New Product",
+      loading: "Loading...",
+      mainPicture: "Main Picture",
+      selectAnother: "Select another",
+      selectOrDrop: "Select or Drop another file",
+      dragAndDrop: "Drag 'n' drop some files here",
+      orSelect: "or click to select files",
+      cards: "Cards quantity:",
+      category: "Category:",
+      price: "Price:",
+      preview: "Preview Product",
+      closePreview: "Close Preview",
+      love: "Love",
+      success: "Success",
+      celticCross: "Celtic cross",
+      spiritual: "Spiritual",
+      careerPath: "Career Path",
+      threeCard: "Three Card",
+      createProduct: "Create This Product!",
+      saveChanges: "Save Changes!",
+      uploadPicture: "Please upload main picture.",
+      addTitle: "Please add name of the product.",
+      addDesc: "Please add the description.",
+      addCards: "Add quantity of cards.",
+      addPrice: "Please add the price.",
+      converting: "Converting...",
+      convertTitle: "Convert price to the choosen currency",
+      modalButton: "Close",
+      sthWrong: "Something went wrong, please try again later.",
+      successEdited: "Product edited successfuly!",
+      successAdded: "Product created successfuly!",
+    },
+    pl: {
+      home: "Strona Główna",
+      productsMenagement: "Panel Produktów",
+      newProduct: "Nowy Produkt",
+      loading: "Ładuję..",
+      mainPicture: "Zdjęcie Główne",
+      selectAnother: "Wybierz inne",
+      selectOrDrop: "Wybierz plik lub upuść tutaj",
+      dragAndDrop: "Upuść plik tutaj,",
+      orSelect: "lub kliknij, aby wybrać.",
+      cards: "Ilość kart:",
+      category: "Kategoria:",
+      price: "Cena:",
+      preview: "Podgląd Produktu",
+      closePreview: "Zamknij podgląd",
+      love: "Miłość",
+      success: "Sukces",
+      celticCross: "Krzyż celtycki",
+      spiritual: "Duchowość",
+      careerPath: "Kariera",
+      threeCard: "3 karty",
+      createProduct: "Dodaj ten Produkt!",
+      saveChanges: "Zapisz zmiany!",
+      uploadPicture: "Proszę dodać zdjęcie produktu.",
+      addTitle: "Proszę dodać nazwę produktu.",
+      addDesc: "Proszę dodać opis produktu.",
+      addCards: "Dodaj ilość kart.",
+      addPrice: "Dodaj cenę produktu.",
+      converting: "Konwertuję...",
+      convertTitle: "Przelicz cenę zgodnie z kursem USD/PLN",
+      modalButton: "Zamknij",
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
+      successEdited: "Produkt pomyślnie zaktualizowany!",
+      successAdded: "Produkt pomyślnie dodany!",
+    },
+  };
+
   useEffect(() => {
     if (prodEdit) {
       getFileUrlStorage(`images/products/${prodEdit.id}`, prodEdit.image.name)
@@ -323,11 +396,11 @@ function ProductTemplate(props) {
       }
 
       await axios.post("/api/revalidate", revalidateData);
-      setShowSuccess(prodEdit ? "Product edited successfuly!" : "Product created successfuly!");
+      setShowSuccess(prodEdit ? t[locale].successEdited : t[locale].successAdded);
       setLoading(false);
     } catch (error) {
       console.log(error);
-      setErrorMsg("Something went wrong, please try again later.");
+      setErrorMsg(t[locale].sthWrong);
       setLoading(false);
     }
   };
@@ -378,6 +451,7 @@ function ProductTemplate(props) {
         // console.log(translatedTxt);
       } catch (error) {
         console.log(error);
+        setErrorMsg(t[locale].sthWrong);
       }
     } else {
       outputText.current.value = "";
@@ -388,16 +462,20 @@ function ProductTemplate(props) {
     <>
       <section className="d-flex gap-1 mb-2">
         <small>
-          <Link href="/admin/products#main">Products Menagment</Link>
+          <Link href="/">{t[locale].home}</Link>
         </small>
         <small>&gt;</small>
-        <small>{prodEdit ? prodEdit.id : "New Product"}</small>
+        <small>
+          <Link href="/admin/products#main">{t[locale].productsMenagement}</Link>
+        </small>
+        <small>&gt;</small>
+        <small>{prodEdit ? prodEdit.id : t[locale].newProduct}</small>
       </section>
 
       <div className={`d-flex align-items-center ${isMobile && "flex-wrap"}`}>
         {/* Main picture & DropZone */}
         <div className={`col-12 col-md-3 ${!isMobile && "pe-3"}`}>
-          <p className="text-start mb-0">Main picture:</p>
+          <p className="text-start mb-0">{t[locale].mainPicture}:</p>
           <div
             name="ProdAdminTmpImg"
             className={`border  rounded ${invalid.image && "border-danger"}`}
@@ -419,21 +497,21 @@ function ProductTemplate(props) {
                         <>
                           {isMobile ? (
                             <p className="border rounded p-1 me-1 text-light">
-                              <small>Select another</small>
+                              <small>{t[locale].selectAnother}</small>
                             </p>
                           ) : (
                             <p className={`${styles.pSelect} border rounded p-1 me-2 text-light`}>
-                              <small>Select or Drop another file</small>
+                              <small>{t[locale].selectOrDrop}</small>
                             </p>
                           )}
                         </>
                       ) : (
                         <>
-                          <p className="text-muted text-uppercase">Main Picture</p>
+                          <p className="text-muted text-uppercase">{t[locale].mainPicture}</p>
                           <p className="mb-2">
-                            Drag &#39;n&#39; drop some files here
+                            {t[locale].dragAndDrop}
                             <br />
-                            or click to select files
+                            {t[locale].orSelect}
                           </p>
                           <BsCloudUpload style={{ width: "25px", height: "25px" }} />
                         </>
@@ -453,7 +531,7 @@ function ProductTemplate(props) {
           </div>
           {invalid.image && (
             <div className="text-start mt-0">
-              <small className="text-danger">Please upload main picture.</small>
+              <small className="text-danger">{t[locale].uploadPicture}</small>
             </div>
           )}
         </div>
@@ -533,7 +611,7 @@ function ProductTemplate(props) {
                 )}
               </div>
             </Form>
-            {invalid.title && <small className="text-danger">Please add title.</small>}
+            {invalid.title && <small className="text-danger">{t[locale].addTitle}</small>}
             {isMobile && (
               <div className="mt-3 pt-1">
                 <hr />
@@ -615,7 +693,7 @@ function ProductTemplate(props) {
                 )}
               </div>
             </Form>
-            {invalid.desc && <small className="text-danger">Please add the description.</small>}
+            {invalid.desc && <small className="text-danger">{t[locale].addDesc}</small>}
           </section>
         </div>
       </div>
@@ -625,44 +703,42 @@ function ProductTemplate(props) {
         <Form className="text-start d-flex gap-md-2 flex-wrap align-items-top justify-content-center">
           {/* Cards */}
           <div className={`col-md-2 col-6 ${isMobile && "pe-2"}`}>
-            <Form.Label style={{ position: "relative", top: "8px" }}>Cards quantity:</Form.Label>
+            <Form.Label style={{ position: "relative", top: "8px" }}>{t[locale].cards}</Form.Label>
             <Form.Control
               type="number"
               min="0"
+              max="16"
               step="any"
               name="ProdAdminTmpCards"
-              placeholder="Add some text..."
               ref={cardsRef}
               onChange={() => setShowPreview(false)}
               defaultValue={prodEdit ? prodEdit.cardSet : 0}
               className={`${invalid.cardSet && "border border-danger"} ${themeDarkInput}`}
             />
-            {invalid.cardSet && <small className="text-danger">Add quantity of cards.</small>}
+            {invalid.cardSet && <small className="text-danger">{t[locale].addCards}</small>}
           </div>
           {/* Category */}
           <div className="col-md-2 col-6">
-            <Form.Label style={{ position: "relative", top: "8px" }}>Category:</Form.Label>
+            <Form.Label style={{ position: "relative", top: "8px" }}>{t[locale].category}</Form.Label>
             <Form.Select
               type="text"
               name="ProdAdminTmpCategory"
-              placeholder="Add some text..."
               ref={categoryRef}
               onChange={() => setShowPreview(false)}
               defaultValue={prodEdit ? prodEdit.category : 0}
               className={themeDarkInput}
             >
-              <option value="love">Love</option>
-              <option value="success">Success</option>
-              <option value="celtic-cross">Celtic cross</option>
-              <option value="spiritual">Spiritual</option>
-              <option value="career-path">Career path</option>
-              <option value="three-card">Three card</option>
+              <option value="love">{t[locale].love}</option>
+              <option value="success">{t[locale].success}</option>
+              <option value="celtic-cross">{t[locale].celticCross}</option>
+              <option value="spiritual">{t[locale].spiritual}</option>
+              <option value="career-path">{t[locale].careerPath}</option>
+              <option value="three-card">{t[locale].threeCard}</option>
             </Form.Select>
-            {invalid.cardSet && <small className="text-danger">Add quantity of cards.</small>}
           </div>
           {/* Prices */}
           <div className="col-md-4 col-12" name="ProdAdminTmpPrice">
-            <Form.Label style={{ position: "relative", top: "8px" }}>Price:</Form.Label>
+            <Form.Label style={{ position: "relative", top: "8px" }}>{t[locale].price}</Form.Label>
             <div className="d-flex gap-1">
               <Form.Control
                 type="number"
@@ -689,7 +765,7 @@ function ProductTemplate(props) {
                 PLN
               </span>
             </div>
-            {invalid.price && <small className="text-danger">Please add the price.</small>}
+            {invalid.price && <small className="text-danger">{t[locale].addPrice}</small>}
           </div>
           <div
             className={`col-md-2 col-12 d-flex  
@@ -700,11 +776,12 @@ function ProductTemplate(props) {
               variant={`outline-${theme == "dark" ? "light" : "dark"}`}
               onClick={exchangeAmount}
               disabled={loadingExc}
+              title={t[locale].convertTitle}
             >
               {loadingExc ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                  <span> Converting...</span>
+                  <span> {t[locale].converting}</span>
                 </>
               ) : (
                 <>
@@ -717,7 +794,7 @@ function ProductTemplate(props) {
       </section>
 
       <div className="text-end mt-4">
-        <Button onClick={handlePreview}>{showPreview ? "Close Preview" : "Preview Product"}</Button>
+        <Button onClick={handlePreview}>{showPreview ? t[locale].closePreview : t[locale].preview}</Button>
         <Button
           className="ms-1"
           variant="outline-primary"
@@ -746,10 +823,10 @@ function ProductTemplate(props) {
               {loading ? (
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                  <span> Loading...</span>
+                  <span> {t[locale].loading}</span>
                 </>
               ) : (
-                <span className="text-uppercase">{prodEdit ? "Save changes!" : "Create this Product!"}</span>
+                <span className="text-uppercase">{prodEdit ? t[locale].saveChanges : t[locale].createProduct}</span>
               )}
             </Button>
           </div>
@@ -758,7 +835,7 @@ function ProductTemplate(props) {
       {showSuccess && (
         <SuccessModal
           msg={showSuccess}
-          btn={"Back"}
+          btn={t[locale].modalButton}
           closeFunc={() => {
             router.push("/admin/products#main");
             setShowSuccess("");
