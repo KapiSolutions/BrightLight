@@ -141,7 +141,7 @@ function Product(props) {
     try {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
-        paths: ["/"],
+        paths: ["/","/admin/products"],
         // paths: ["/","/admin/products"],
       };
       await updateDocFields("products", product.id, { active: !product.active });

@@ -12,7 +12,8 @@ export default async function revalidate(req, res) {
       // e.g. for "/blog/[slug]" this should be "/blog/post-1"
       await Promise.all(
         paths.map(async (path) => {
-          // await res.revalidate(path);
+          await res.revalidate(path);
+          console.log(path);
           await res.revalidate("/pl" + path);
           await res.revalidate("/en" + path);
         })
