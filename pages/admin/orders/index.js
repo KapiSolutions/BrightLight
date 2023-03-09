@@ -11,6 +11,7 @@ import { FiRefreshCcw } from "react-icons/fi";
 
 function UserProfilePage() {
   const router = useRouter();
+  const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
@@ -57,15 +58,32 @@ function UserProfilePage() {
     }
   };
 
+  const t = {
+    en: {
+      title: "Admin - Orders",
+      h1: "Orders Menagment",
+      noOrders: "No orders yet.",
+      refresh: "Refresh List",
+      loading: "Loading",
+    },
+    pl: {
+      title: "Admin - Zamówienia",
+      h1: "Panel Zamówień",
+      noOrders: "Brak zamówień.",
+      refresh: "Odśwież",
+      loading: "Ładuję",
+    },
+  };
+
   return (
     <>
       <Head>
-        <title>BrightLight | Admin - Orders</title>
+        <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="ao-ctx">
-        <h1>Orders Menagment</h1>
+        <h1>{t[locale].h1}</h1>
         {ordersRef?.length == 0 ? (
-          <p className="color-primary">No orders yet.</p>
+          <p className="color-primary">{t[locale].noOrders}</p>
         ) : (
           <>
             <div className="text-end">
@@ -74,17 +92,17 @@ function UserProfilePage() {
                 size="md"
                 onClick={refreshOrderList}
                 disabled={loadingRfs}
-                title="Refresh list"
+                title={t[locale].refresh}
                 className={isMobile ? "w-100" : ""}
               >
                 {loadingRfs ? (
-                  <>
-                    Loading <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                  </>
+                  <span>
+                    {t[locale].loading} <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  </span>
                 ) : (
-                  <>
-                    Refresh List <FiRefreshCcw style={{ width: "20px", height: "20px" }} />
-                  </>
+                  <span>
+                   {t[locale].refresh} <FiRefreshCcw style={{ width: "20px", height: "20px" }} />
+                  </span>
                 )}
               </Button>
             </div>

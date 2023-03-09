@@ -33,6 +33,71 @@ function Order(props) {
   const [paymentDisabled, setPaymentDisabled] = useState(false);
   //paymentDisabled: user have an extra [x] hours for payment after getting an notification, after that time the payment isn't available -> admin can safely delete the order
 
+  const t = {
+    en: {
+      sthWrong: "Something went wrong, please try again later.",
+      deleteError: "Order deleted but an error occurred during sending an email to the client.",
+      emailError: "An error occurred during sending an email to the client.",
+      order: "Order",
+      status: "Status",
+      total: "Total",
+      action: "Action",
+      deleteOrder: "Delete the order.",
+      safeDelete: "You can safely delete an Order",
+      unpaid: "Unpaid",
+      inRealization: "In Realization",
+      done: "Done",
+      extraTime: "Extra Time: ",
+      timesUp: "Time's Up:",
+      deadline: "Deadline: ",
+      hurryUp: "Hurry Up! ",
+      finishIn: "Finish in: ",
+      tryDelete: "You are trying to delete this order. Please confirm.",
+      delete: "Delete",
+      sendNotificationButton: "Send notification",
+      sendNotification: "Send email notification to the client.",
+      sending: "Sending",
+      sended: "Sended",
+      notificationSended: "Notification sended",
+      more: "more..",
+      cancel: "Cancel",
+      hide: "Hide details",
+      show: "Show details",
+      loading: "Loading...",
+    },
+    pl: {
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
+      deleteError: "Zamówienie zostało usunięte, ale wystąpił błąd podczas wysyłania wiadomości e-mail do klienta.",
+      emailError: "Wystąpił błąd podczas wysyłania wiadomości e-mail do klienta.",
+      order: "Zamówienie",
+      status: "Status",
+      total: "Razem",
+      action: "Opcje",
+      deleteOrder: "Usuń zamówienie.",
+      safeDelete: "Możesz bezpiecznie usunąć zamówienie",
+      unpaid: "Nieopłacone",
+      inRealization: "W realizacji",
+      done: "Gotowe",
+      extraTime: "Dodatkowy czas: ",
+      timesUp: "Po czasie:",
+      deadline: "Pozostało: ",
+      hurryUp: "Szybko! ",
+      finishIn: "Zakończ w: ",
+      tryDelete: "Próbujesz anulować zamówienie. Potwierdź.",
+      delete: "Usuń",
+      sendNotificationButton: "Wyślij powiadomienie",
+      sendNotification: "Wyślij powiadomienie do klienta.",
+      sending: "Wysyłanie",
+      sended: "Wysłano",
+      notificationSended: "Powiadomienie wysłane",
+      more: "wiecej..",
+      cancel: "Anuluj",
+      hide: "Ukryj szczegóły",
+      show: "Pokaż szczegóły",
+      loading: "Ładuję...",
+    },
+  };
+
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
@@ -51,13 +116,18 @@ function Order(props) {
     try {
       await deleteDocInCollection("orders", order.id);
       //send email to the client due to order cancellation
-      await sendEmail({ orderID: order.id, userName: order.userName, userEmail: order.userEmail, language: order.language});
+      await sendEmail({
+        orderID: order.id,
+        userName: order.userName,
+        userEmail: order.userEmail,
+        language: order.language,
+      });
       setShowConfirmModal({ msg: "", itemID: "" });
       props.refresh(); //refresh the order list
     } catch (error) {
       console.log(error);
       setShowConfirmModal({ msg: "", itemID: "" });
-      setErrorMsg("Something went wrong, please try again later.");
+      setErrorMsg(t[locale].sthWrong);
     }
   }
 
@@ -73,7 +143,7 @@ function Order(props) {
     } catch (error) {
       console.log(error);
       setErrorEmail(true);
-      setErrorMsg("Order deleted but an error occurred during sending an email to the client.");
+      setErrorMsg(t[locale].deleteError);
     }
   };
 
@@ -115,7 +185,7 @@ function Order(props) {
       setNotificationSended(true);
     } catch (error) {
       console.log(error);
-      setErrorMsg("An error occurred during sending an email to the client.");
+      setErrorMsg(t[locale].emailError);
     }
     setLoading(false);
   };
@@ -166,16 +236,16 @@ function Order(props) {
             <>
               <div className="d-flex text-start w-100">
                 <div className="col-5">
-                  <strong>Order</strong>
+                  <strong>{t[locale].order}</strong>
                 </div>
                 <div className="col-3">
-                  <strong>Status</strong>
+                  <strong>{t[locale].status}</strong>
                 </div>
                 <div className="col-2">
-                  <strong>Total</strong>
+                  <strong>{t[locale].total}</strong>
                 </div>
                 <div className="col-2">
-                  <strong>Action</strong>
+                  <strong>{t[locale].action}</strong>
                 </div>
               </div>
             </>
@@ -196,29 +266,30 @@ function Order(props) {
                   Tarot
                   <small>
                     ({order?.items[0].name[locale]}
-                    {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
+                    {order?.items.length > 1 && `, +${order?.items.length - 1} ${t[locale].more}`})
                   </small>
                 </p>
                 {order.status != "Done" ? (
                   <div className="d-flex align-items-center">
                     <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
-                      {order.status}
+                      {order.status === "Unpaid" && t[locale].unpaid}
+                      {order.status === "In realization" && t[locale].inRealization}
                     </Badge>
                     <div className="ms-2">
                       {paymentDisabled ? (
-                        <small className="me-2 text-success text-uppercase">Delete the order.</small>
+                        <small className="me-2 text-success text-uppercase">{t[locale].deleteOrder}</small>
                       ) : (
                         <span className={timeOver ? "text-danger" : ""}>
                           <small className="me-1">
                             {order.paid
                               ? timeOver
-                                ? "Hurry up! "
-                                : "Finish in: "
+                                ? t[locale].hurryUp
+                                : t[locale].finishIn
                               : timeOver
                               ? notificationSended
-                                ? "Extra time: "
-                                : "Time's up: "
-                              : "Deadline: "}
+                                ? t[locale].extraTime
+                                : t[locale].timesUp
+                              : t[locale].deadline}
                             <strong>{remainingTime()}H</strong>
                           </small>
                           <BsClockHistory />
@@ -227,14 +298,14 @@ function Order(props) {
                     </div>
                   </div>
                 ) : (
-                  <Badge bg="success">{order.status}!</Badge>
+                  <Badge bg="success">{t[locale].done}!</Badge>
                 )}
               </>
             ) : (
               <>
                 <p className="mb-0">
                   Tarot ({order?.items[0].name[locale]}
-                  {order?.items.length > 1 && `, +${order?.items.length - 1} more..`})
+                  {order?.items.length > 1 && `, +${order?.items.length - 1} ${t[locale].more}`})
                 </p>
                 <small className="text-muted">{timeStampToDate(order.timeCreate).toLocaleString()}</small>
               </>
@@ -248,24 +319,25 @@ function Order(props) {
               {order.status != "Done" ? (
                 <div>
                   <Badge bg={order.paid ? "warning" : "primary"} className={order.paid ? "text-dark" : ""}>
-                    {order.status}
+                    {order.status === "Unpaid" && t[locale].unpaid}
+                    {order.status === "In realization" && t[locale].inRealization}
                   </Badge>
                   <div className="ms-1">
                     <span className={timeOver ? "text-danger" : ""}>
                       {paymentDisabled ? (
-                        <small className="me-2 text-success">You can delete the order.</small>
+                        <small className="me-2 text-success">{t[locale].safeDelete}</small>
                       ) : (
                         <>
                           <small className="me-1">
                             {order.paid
                               ? timeOver
-                                ? "Hurry up! "
-                                : "Finish in: "
+                                ? t[locale].hurryUp
+                                : t[locale].finishIn
                               : timeOver
                               ? notificationSended
-                                ? "Extra time: "
-                                : "Time's up: "
-                              : "Deadline: "}
+                                ? t[locale].extraTime
+                                : t[locale].timesUp
+                              : t[locale].deadline}
                             <strong>{remainingTime()}H</strong>
                           </small>
                           <BsClockHistory />
@@ -275,7 +347,7 @@ function Order(props) {
                   </div>
                 </div>
               ) : (
-                <Badge bg="success">{order.status}!</Badge>
+                <Badge bg="success">{t[locale].done}!</Badge>
               )}
             </div>
             <div className="col-2">
@@ -284,35 +356,35 @@ function Order(props) {
             </div>
             <div className="col-2">
               <span className="pointer Hover" onClick={showDetailsFunc}>
-                {showDetails ? "Hide details" : "Show details"}
+                {showDetails ? t[locale].hide : t[locale].show}
               </span>
 
               {timeOver && !order.paid && (
                 <div className="d-flex align-items-center mt-2 gap-3">
                   <Button
                     variant={`outline-${paymentDisabled ? "success" : "primary"}`}
-                    title={paymentDisabled ? "You can safely delete an Order" : "Delete an Order"}
+                    title={paymentDisabled ? t[locale].safeDelete : t[locale].deleteOrder}
                     size="sm"
                     onClick={() => {
                       setShowConfirmModal({
-                        msg: "You are trying to delete this order. Please confirm.",
+                        msg: t[locale].tryDelete,
                         itemID: "",
                       });
                     }}
                   >
-                    Delete
+                    {t[locale].delete}
                   </Button>
                   <Button
                     variant={notificationSended ? "success" : "primary"}
                     className="text-light"
                     size="sm"
                     disabled={loading || notificationSended || order.notificationTime}
-                    title="Send email notification to the client."
+                    title={t[locale].sendNotification}
                     onClick={sendNotification}
                   >
                     {notificationSended || order.notificationTime ? (
                       <div className="d-flex align-items-center">
-                        Sended
+                        {t[locale].sended}
                         <IoCheckmarkDone />
                       </div>
                     ) : (
@@ -351,12 +423,12 @@ function Order(props) {
                   size="sm"
                   onClick={() => {
                     setShowConfirmModal({
-                      msg: "You are trying to delete this order. Please confirm.",
+                      msg: t[locale].tryDelete,
                       itemID: "",
                     });
                   }}
                 >
-                  Delete Order
+                  {t[locale].deleteOrder}
                 </Button>
                 <Button
                   variant={notificationSended ? "success" : "primary"}
@@ -367,18 +439,18 @@ function Order(props) {
                 >
                   {notificationSended || order.notificationTime ? (
                     <div className="d-flex gap-1 align-items-center">
-                      Notification sended
+                      {t[locale].notificationSended}
                       <IoCheckmarkDone />
                     </div>
                   ) : (
                     <>
                       {loading ? (
                         <span>
-                          Sending <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                          {t[locale].sending} <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                         </span>
                       ) : (
                         <span>
-                          Send notification <MdOutlineNotificationsActive />
+                          {t[locale].sendNotificationButton} <MdOutlineNotificationsActive />
                         </span>
                       )}
                     </>
@@ -389,6 +461,13 @@ function Order(props) {
 
             {/* Order Details */}
             <OrderDetails order={order} isMobile={isMobile} refresh={props.refresh} />
+            {isMobile && (
+              <div className="text-center mt-4 mb-4">
+                <Button variant="outline-accent4" className="pointer" onClick={showDetailsFunc}>
+                {t[locale].hide}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>

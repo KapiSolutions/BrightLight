@@ -7,8 +7,11 @@ import Item from "./Item";
 import { getFileUrlStorage } from "../../../firebase/Storage";
 import axios from "axios";
 import SuccessModal from "../../Modals/SuccessModal";
+import { useRouter } from "next/router";
 
 function OrderDetails(props) {
+  const router = useRouter();
+  const locale = router.locale;
   const order = props.order;
   const { setErrorMsg } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -19,6 +22,66 @@ function OrderDetails(props) {
   const [showSuccess, setShowSuccess] = useState("");
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  };
+
+  const t = {
+    en: {
+      sthWrong: "Something went wrong, please try again later.",
+      finishedWithoutEmail: "Order finished but an error occurred during sending an email to the client.",
+      orderCompleted: "Order successfully Completed!",
+      completed: "Completed!",
+      status: "Status",
+      unpaid: "Unpaid",
+      inRealization: "In Realization",
+      done: "Done",
+      orderDate: "Order Date",
+      orderID: "Order ID",
+      paymentDate: "Date",
+      paymentDateLong: "Payment Date",
+      paymentID: "Payment ID",
+      amount: "Amount",
+      method: "Method",
+      amountLong: "Amount Paid",
+      methodLong: "Payment Method",
+      client: "Client",
+      clientID: "Client ID",
+      comments: "Client comments:",
+      orderItems: "Order Items:",
+      total: "Total:",
+      great: "Great! Let's..",
+      processing: "Processing...",
+      finishOrder: "Finish The Order!",
+      modalButton: "Great!",
+    },
+    pl: {
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
+      finishedWithoutEmail:
+        "Zamówienie zrealizowane, ale wystąpił błąd podczas wysyłania wiadomości e-mail do klienta.",
+      orderCompleted: "Zamówienie pomyślnie zakończone!",
+      completed: "Ukończono!",
+      status: "Status",
+      unpaid: "Nieopłacone",
+      inRealization: "W realizacji",
+      done: "Gotowe",
+      orderDate: "Data zamówienia",
+      orderID: "Nr zamówienia",
+      paymentDate: "Data",
+      paymentDateLong: "Data płatności",
+      paymentID: "Nr płatności",
+      amount: "Zapłacono",
+      method: "Metoda",
+      amountLong: "Zapłacono",
+      methodLong: "Metoda płatności",
+      client: "Klient",
+      clientID: "Identyfikator Klienta",
+      comments: "Uwagi do zamówienia:",
+      orderItems: "Produkty:",
+      total: "Razem:",
+      great: "Yeah! Teraz..",
+      processing: "Ładuję...",
+      finishOrder: "Ukończ Zamówienie!",
+      modalButton: "Super!",
+    },
   };
 
   const answersQtFunc = (idx) => {
@@ -59,12 +122,12 @@ function OrderDetails(props) {
         language: tmpOrder.language,
       });
       await sendEmail(emailData);
-      setShowSuccess("Order successfully Completed!");
+      setShowSuccess(t[locale].orderCompleted);
       //refresh the order list:
       props.refresh();
     } catch (error) {
       console.log(error);
-      setErrorMsg("Something went wrong, please try again later.");
+      setErrorMsg(t[locale].sthWrong);
     }
     setLoading(false);
   };
@@ -87,7 +150,7 @@ function OrderDetails(props) {
     } catch (e) {
       console.log(e);
       setErrorEmail(true);
-      setErrorMsg("Order finished but an error occurred during sending an email to the client.");
+      setErrorMsg(t[locale].finishedWithoutEmail);
     }
   };
 
@@ -109,7 +172,7 @@ function OrderDetails(props) {
     } catch (error) {
       console.log(e);
       setErrorEmail(true);
-      setErrorMsg("Order finished but an error occurred during sending an email to the client.");
+      setErrorMsg(t[locale].finishedWithoutEmail);
     }
   };
 
@@ -119,7 +182,7 @@ function OrderDetails(props) {
         {order.status == "Done" && (
           <div>
             <p>
-              <strong>Completed:</strong> <u>{timeStampToDate(order.timeFinish).toLocaleString()}</u>
+              <strong>{t[locale].completed}</strong> <u>{timeStampToDate(order.timeFinish).toLocaleString()}</u>
             </p>
             <div className="w-100 opacity-50">
               <hr />
@@ -131,19 +194,23 @@ function OrderDetails(props) {
         <div className="d-flex gap-4">
           <span>
             <small>
-              <strong>Status</strong>
-              <p style={{ whiteSpace: "nowrap" }}>{order.status}</p>
+              <strong>{t[locale].status}</strong>
+              <p style={{ whiteSpace: "nowrap" }}>
+                {order.status === "Unpaid" && t[locale].unpaid}
+                {order.status === "In realization" && t[locale].inRealization}
+                {order.status === "Done" && t[locale].done}
+              </p>
             </small>
           </span>
           <span>
             <small>
-              <strong>Order Date</strong>
+              <strong>{t[locale].orderDate}</strong>
               <p>{timeStampToDate(order.timeCreate).toLocaleString()}</p>
             </small>
           </span>
           <span>
             <small>
-              <strong>Order ID</strong>
+              <strong>{t[locale].orderID}</strong>
               <p>{order.id}</p>
             </small>
           </span>
@@ -158,7 +225,7 @@ function OrderDetails(props) {
             <div className={`d-flex gap-${isMobile ? "3" : "4"}`}>
               <span>
                 <small>
-                  <strong>{isMobile ? "Amount" : "Amount Paid"}</strong>{" "}
+                  <strong>{isMobile ? t[locale].amount : t[locale].amountLong}</strong>{" "}
                   <p>
                     {order.totalPrice}
                     <span className="text-uppercase ms-1">{order.currency}</span>
@@ -167,18 +234,18 @@ function OrderDetails(props) {
               </span>
               <span>
                 <small>
-                  <strong>{isMobile ? "Method" : "Payment Method"}</strong>
+                  <strong>{isMobile ? t[locale].method : t[locale].methodLong}</strong>
                   <p className="text-uppercase">{order.paymentMethod}</p>
                 </small>
               </span>
               <span>
                 <small>
-                  <strong>Payment Date</strong> <p>{timeStampToDate(order.timePayment).toLocaleString()}</p>
+                  <strong>{t[locale].paymentDate}</strong> <p>{timeStampToDate(order.timePayment).toLocaleString()}</p>
                 </small>
               </span>
               <span>
                 <small>
-                  <strong>Payment ID</strong>
+                  <strong>{t[locale].paymentID}</strong>
                   <p style={{ maxWidth: `${isMobile ? "100px" : "200px"}`, overflowWrap: "break-word" }}>
                     {order.paymentID}
                   </p>
@@ -196,7 +263,7 @@ function OrderDetails(props) {
         <div className="d-flex gap-3">
           <span>
             <small>
-              <strong>Client</strong> <p>{order.userName}</p>
+              <strong>{t[locale].client}</strong> <p>{order.userName}</p>
             </small>
           </span>
           <span>
@@ -209,7 +276,7 @@ function OrderDetails(props) {
           </span>
           <span>
             <small>
-              <strong>Client ID</strong>{" "}
+              <strong>{t[locale].clientID}</strong>{" "}
               <p style={{ maxWidth: `${isMobile ? "120px" : "300px"}`, overflowWrap: "break-word" }}>{order.userID}</p>
             </small>
           </span>
@@ -219,7 +286,7 @@ function OrderDetails(props) {
         {order.userComments && (
           <>
             <p className="mb-0 mt-2">
-              <strong>Client comments:</strong>
+              <strong>{t[locale].comments}</strong>
             </p>
             <div className="border rounded p-2">
               <p>
@@ -232,14 +299,13 @@ function OrderDetails(props) {
         {/* Order items */}
         <div className="mt-3">
           <p>
-            <strong>Order items:</strong>
+            <strong>{t[locale].orderItems}</strong>
           </p>
           {order.items.map((item, idx) => (
             <Item key={idx} idx={idx} item={item} order={order} answersQt={answersQtFunc} />
           ))}
           <p className="text-end mt-3">
-            Total:
-            {order.totalPrice}
+            {t[locale].total} {order.totalPrice}
             <span className="text-uppercase ms-1">{order.currency}</span>
           </p>
         </div>
@@ -248,22 +314,22 @@ function OrderDetails(props) {
         {order.status == "Done" ? (
           <div className="text-end">
             <p className="fs-5">
-              <strong>Completed!</strong>
+              <strong>{t[locale].completed}</strong>
             </p>
           </div>
         ) : (
           <>
             {readyToFinish && (
               <div className="d-flex gap-3 justify-content-end align-items-center">
-                <span className="fs-5">Great! Let&apos;s.. </span>
+                <span className="fs-5">{t[locale].great} </span>
                 <Button variant="primary" onClick={finishOrder} disabled={loading}>
                   {loading ? (
                     <>
                       <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                      <span> Processing...</span>
+                      <span> {t[locale].processing}</span>
                     </>
                   ) : (
-                    <span> Finish The Order! </span>
+                    <span> {t[locale].finishOrder} </span>
                   )}
                 </Button>
               </div>
@@ -275,7 +341,7 @@ function OrderDetails(props) {
       {showSuccess && (
         <SuccessModal
           msg={showSuccess}
-          btn={"Great!"}
+          btn={t[locale].modalButton}
           closeFunc={() => {
             setShowSuccess("");
           }}

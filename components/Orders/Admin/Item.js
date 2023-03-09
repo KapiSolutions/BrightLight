@@ -18,6 +18,29 @@ function Item(props) {
   const item = props.item;
   const answerRef = useRef();
 
+  const t = {
+    en: {
+      cards: "Cards:",
+      question: "Question:",
+      answer: "Answer:",
+      yourAnswer: "Your answer...",
+      sthWrong: "Something went wrong, please try again later.",
+      adding: "Adding...",
+      addAnswer: "Add Answer!",
+      editAnswer: "Edit Answer",
+    },
+    pl: {
+      cards: "Karty:",
+      question: "Pytanie:",
+      answer: "Odpowiedź:",
+      yourAnswer: "Twoja odpowiedź...",
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później",
+      adding: "Dodawanie...",
+      addAnswer: "Dodaj odpowiedź!",
+      editAnswer: "Edytuj odpowiedź",
+    },
+  };
+
   useEffect(() => {
     if (item.answer) {
       setLockAnswer(true);
@@ -58,7 +81,7 @@ function Item(props) {
       setLockAnswer(true);
     } catch (err) {
       console.log(err);
-      setErrorMsg("Something went wrong, please try again later.");
+      setErrorMsg(t[locale].sthWrong);
     }
 
     setLoadingAdd(false);
@@ -99,7 +122,7 @@ function Item(props) {
           </div>
 
           <div>
-            <p className="mb-0">Cards:</p>
+            <p className="mb-0">{t[locale].cards}</p>
             <div className="ms-2">
               <small>
                 {item.cards.map((card, idx) => (
@@ -116,7 +139,7 @@ function Item(props) {
           </div>
 
           <div>
-            <p className="mb-0">Question:</p>
+            <p className="mb-0">{t[locale].question}</p>
             <div className="ms-2">
               <p>
                 <small>{item.question}</small>
@@ -129,14 +152,14 @@ function Item(props) {
           </div>
           <div>
             <p className="mb-0">
-              <strong>Answer:</strong>
+              <strong>{t[locale].answer}</strong>
             </p>
             <div className="ms-2">
               <Form onSubmit={addAnswer}>
                 <Form.Control
                   as="textarea"
                   id="adminOrderItemField"
-                  placeholder="Your answer..."
+                  placeholder={t[locale].yourAnswer}
                   style={{ minHeight: "80px" }}
                   className={`${lockAnswer && "border border-success"} ${order.status == "Done" && "mb-2"}`}
                   ref={answerRef}
@@ -152,10 +175,10 @@ function Item(props) {
                           {loadingAdd ? (
                             <>
                               <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                              <span> Adding...</span>
+                              <span> {t[locale].adding}</span>
                             </>
                           ) : (
-                            <span> Add Answer! </span>
+                            <span> {t[locale].addAnswer} </span>
                           )}
                         </Button>
                       </div>
@@ -173,7 +196,7 @@ function Item(props) {
                           setLockAnswer(false);
                         }}
                       >
-                        Edit Answer
+                        {t[locale].editAnswer}
                       </Button>
                     </div>
                   )}
