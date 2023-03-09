@@ -31,9 +31,10 @@ export default async function handler(req, res) {
               default_price: price.id,
             });
             //Archive the old price(there is no way to change the price amount, currency etc.)
-            price = await stripe.prices.update(oldPrice, {
-              active: false,
-            });
+            //? Dont archive the old price (to leave the old price in the user cart after changing the default product price.)
+            // price = await stripe.prices.update(oldPrice, {
+            //   active: false,
+            // });
           } else {
             product = await stripe.products.update(data.id, data.prod);
           }
