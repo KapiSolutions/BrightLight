@@ -8,14 +8,14 @@
     <strong>Cel zbierania plików cookies</strong>
 </p>
 <p>
-1. W celu świadczenia usług na najwyższym poziomie stosujemy    <strong>pliki cookies</strong>. Korzystanie z naszej witryny oznacza, że
+1. W celu świadczenia usług na najwyższym poziomie stosujemy <strong>pliki cookies</strong>. Korzystanie z naszej witryny oznacza, że
     będą one zamieszczane w Państwa urządzeniu. W każdym momencie można dokonać
     zmiany ustawień Państwa przeglądarki. Dodatkowo, korzystanie z naszej
-witryny oznacza akceptację przez Państwa<a href="brightlightgypsy.pl/terms-of-service">Regulaminu</a> oraz    <a href="brightlightgypsy.pl/privacy-policy">Polityki Prywatności</a>
+witryny oznacza akceptację przez Państwa <a href="https://brightlightgypsy.pl/terms-of-service">Regulaminu</a> oraz <a href="brightlightgypsy.pl/privacy-policy">Polityki Prywatności</a>
 </p>
 <p>
-Dla Państwa wygody serwis    <a href="http://www.brightlightgypsy.pl">brightlightgypsy.pl</a> używa
-plików cookies po to,    <strong>by dostosować serwis do potrzeb użytkowników</strong>, a także w
+Dla Państwa wygody serwis <a href="https://brightlightgypsy.pl">brightlightgypsy.pl</a> używa
+plików cookies po to, <strong>by dostosować serwis do potrzeb użytkowników</strong>, a także w
     celach statystycznych.
 </p>
 <p>
@@ -28,7 +28,7 @@ plików cookies po to,    <strong>by dostosować serwis do potrzeb użytkownikó
     żadnych danych osobowych.
 </p>
 <p>
-    2. Serwis <a href="http://www.brightlightgypsy.pl">brightlightgypsy.pl</a>
+    2. Serwis <a href="https://brightlightgypsy.pl">brightlightgypsy.pl</a>
     stosuje dwa typy plików cookies:
 </p>
 <p>

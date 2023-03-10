@@ -11,10 +11,10 @@
     1. In order to provide services at the highest level, we use cookies. Using
     our website means that they will be placed on your device. You can change
     your browser settings at any time. In addition, the use of our website
-means your acceptance of the<a href="brightlightgypsy.pl/terms-of-service">Terms of Service</a> and the    <a href="brightlightgypsy.pl/privacy-policy">Privacy Policy.</a>
+means your acceptance of the <a href="https://brightlightgypsy.pl/terms-of-service">Terms of Service</a> and the <a href="brightlightgypsy.pl/privacy-policy">Privacy Policy.</a>
 </p>
 <p>
-For your convenience, the    <a href="brightlightgypsy.pl">brightlightgypsy.pl</a> website uses cookies
+For your convenience, the <a href="https://brightlightgypsy.pl">brightlightgypsy.pl</a> website uses cookies
     to adapt the website to the needs of users, as well as for statistical
     purposes.
 </p>
@@ -24,7 +24,7 @@ For your convenience, the    <a href="brightlightgypsy.pl">brightlightgypsy.pl</
     not contain any personal information.
 </p>
 <p>
-    2. The <a>brightlightgypsy.pl</a> website uses two types of cookies:
+    2. The <a href="https://brightlightgypsy.pl">brightlightgypsy.pl</a> website uses two types of cookies:
 </p>
 <p>
     a) Performance cookies (collecting information on how visitors use the
