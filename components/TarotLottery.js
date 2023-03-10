@@ -42,6 +42,8 @@ function TarotLotteryDesktop(props) {
       okay: "Okay!",
       msgInterpretation:
         "Now, if you are curious about what your cards say, you can get your own private interpretation!",
+      msgInterpretationOneCard:
+        "Now, if you are curious about what your card says, you can get your own private interpretation!",
       txtAreaLabel: "Please describe your Question in detail.",
       loading: "Loading...",
       buy: "Buy now",
@@ -56,6 +58,7 @@ function TarotLotteryDesktop(props) {
       lastOne: "I ostatnia.",
       okay: "Super!",
       msgInterpretation: "Jesteś ciekawy co mówią Twoje karty? Otrzymaj prywatną interpetację!",
+      msgInterpretationOneCard: "Jesteś ciekawy co mówi Twoja karta? Otrzymaj prywatną interpetację!",
       txtAreaLabel: "Opisz dokładnie swoje pytanie.",
       loading: "Ładuję..",
       buy: "Kup teraz",
@@ -246,7 +249,9 @@ function TarotLotteryDesktop(props) {
               <>
                 Zastanów się głęboko nad swoim pytaniem i{" "}
                 {window.innerWidth < 768 ? "KLIKNIJ niżej aby wybrać" : "wybierz"}{" "}
-                <strong>{product.cardSet} karty.</strong>
+                <strong>
+                  {product.cardSet} {product.cardSet == "1" ? "kartę." : product.cardSet < 5 ? "karty." : "kart."}
+                </strong>
               </>
             ) : (
               <>
@@ -259,13 +264,16 @@ function TarotLotteryDesktop(props) {
         {flipCards.length > 0 && flipCards.length < product.cardSet - 1 && (
           <p className="color-primary">
             {locale === "pl" ? (
-              <strong>Dobrze, jeszcze {product.cardSet - flipCards.length} karty..</strong>
+              <strong>
+                Dobrze, jeszcze {product.cardSet - flipCards.length}{" "}
+                {product.cardSet - flipCards.length < 5 ? "karty." : "kart."}..
+              </strong>
             ) : (
               <strong>Okay, {product.cardSet - flipCards.length} more left..</strong>
             )}
           </p>
         )}
-        {flipCards.length == product.cardSet - 1 && (
+        {flipCards.length == product.cardSet - 1 && product.cardSet != "1" && (
           <p className="color-primary">
             <strong>{t[locale].lastOne}</strong>
           </p>
@@ -305,7 +313,7 @@ function TarotLotteryDesktop(props) {
         {flipCards.length == product.cardSet && !message && (
           <div>
             <h4 className="mt-0 color-primary">{t[locale].okay}</h4>
-            <p className="color-primary">{t[locale].msgInterpretation}</p>
+            <p className="color-primary">{product.cardSet == "1" ? t[locale].msgInterpretationOneCard : t[locale].msgInterpretation}</p>
             <Form className="mt-4 m-auto color-primary" style={{ maxWidth: "500px" }} onSubmit={handleSubmit}>
               <FloatingLabel label={t[locale].txtAreaLabel}>
                 <Form.Control
