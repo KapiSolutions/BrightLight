@@ -1,0 +1,217 @@
+<p>
+    Effective date: 01/03/2023
+</p>
+<p align="center">
+    <strong>§ 1</strong>
+</p>
+<p align="center">
+    <strong>General provisions</strong>
+</p>
+<p>
+    1. The privacy policy defines how Users' personal data is collected,
+processed and stored, necessary to provide services electronically via the    <a href="https://www.brightlightgypsy.pl/">brightlightgypsy.pl</a> website
+    (hereinafter: the Website).
+</p>
+<p>
+    2. The website collects only personal data necessary to provide and develop
+    the services offered on it.
+</p>
+<p>
+    3. Personal data collected via the Website are processed in accordance with
+    Regulation (EU) 2016/679 of the European Parliament and of the Council of
+    27 April 2016 on the protection of individuals with regard to the
+    processing of personal data and on the free movement of such data, and
+    repealing Directive 95/46/EC (General Data Protection Regulation,
+    hereinafter referred to as GDPR) and the Personal Data Protection Act of
+    May 10, 2018.
+</p>
+<p align="center">
+    <strong>§ 2</strong>
+</p>
+<p align="center">
+    <strong>Data Administrator</strong>
+</p>
+<p>
+    1. The administrator of personal data collected through the Website is
+    Agnieszka Wąsik, address: 32-600 Oświęcim, ul. Krasickiego 48A, Poland,
+e-mail address:    <a href="mailto:brightlightgypsy@gmail.com">brightlightgypsy@gmail.com</a>
+    (hereinafter: Administrator).
+</p>
+<p align="center">
+    <strong>§ 3</strong>
+</p>
+<p align="center">
+    <strong>Purpose of collecting personal data</strong>
+</p>
+<p>
+    1. Personal data is used to:
+</p>
+<p>
+    • account registration and verification of the User's identity,
+</p>
+<p>
+    • enable logging into the Website,
+</p>
+<p>
+    • performance of the contract for services and e-services,
+</p>
+<p>
+    • communication with the User,
+</p>
+<p>
+    • running a comments system,
+</p>
+<p>
+    • providing community services,
+</p>
+<p>
+    • promotion of the Administrator's offer,
+</p>
+<p>
+    • marketing, remarketing, affiliation,
+</p>
+<p>
+    • personalization of the Website for Users,
+</p>
+<p>
+    • analytical and statistical activities,
+</p>
+<p>
+    • debt collection,
+</p>
+<p>
+    • establishing and pursuing claims or defending against them.
+</p>
+<p>
+    2. Providing data is voluntary, but necessary to conclude a contract or use
+    other functionalities of the Website.
+</p>
+<p align="center">
+    <strong>§ 4</strong>
+</p>
+<p align="center">
+    <strong>Type of personal data processed</strong>
+</p>
+<p>
+    The Administrator may process the User's personal data: name and surname,
+    date of birth, e-mail address.
+</p>
+<p align="center">
+    <strong>§ 5</strong>
+</p>
+<p align="center">
+    <strong>The period of personal data processing</strong>
+</p>
+<p>
+    Users' personal data will be processed for the period of:
+</p>
+<p>
+    • when the basis for data processing is the performance of the contract -
+    until the statute of limitations for claims after its performance,
+</p>
+<p>
+    • when the basis for data processing is consent - until the consent is
+    revoked, and after the consent is revoked, until the limitation period for
+    claims.
+</p>
+<p>
+    In both cases, the limitation period is 6 years, and for claims for
+    periodic benefits and claims related to running a business - 3 years
+    (unless a special provision provides otherwise).
+</p>
+<p align="center">
+    <strong>§ 6</strong>
+</p>
+<p align="center">
+    <strong>Sharing personal data</strong>
+</p>
+<p>
+    1. Users' personal data may be transferred to: entities related to the
+    Administrator, its subcontractors, entities cooperating with the
+    Administrator, e.g. companies servicing e-payments, companies providing
+    courier/postal services, law firms.
+</p>
+<p>
+    2. Users' personal data will not be transferred outside the European
+    Economic Area (EEA).
+</p>
+<p align="center">
+    <strong>§ 7</strong>
+</p>
+<p align="center">
+    <strong>User Rights</strong>
+</p>
+<p>
+    1. The Website User has the right to: access their personal data, rectify,
+    delete, limit processing, transfer, object to processing, withdraw consent
+    at any time (which does not affect the lawfulness of processing based on
+    consent before withdrawing).
+</p>
+<p>
+    2. A notification about the User's withdrawal from the rights resulting
+from the above-mentioned rights should be sent to the address    <a href="mailto:brightlightgypsy@gmail.com">brightlightgypsy@gmail.com</a>.
+</p>
+<p>
+    3. The administrator fulfills or refuses to fulfill the request immediately
+    - within a maximum of one month from its receipt.
+</p>
+<p>
+    4. The User has the right to submit a complaint to the President of the
+    Office for Personal Data Protection if he/she considers that the processing
+    violates his/her rights and freedoms (GDPR).
+</p>
+<p align="center">
+    <strong>§ 8</strong>
+</p>
+<p align="center">
+    <strong>Cookies</strong>
+</p>
+<p>
+    1. The website collects information using cookies - session, permanent and
+    third-party cookies.
+</p>
+<p>
+    2. Collecting cookies supports the correct provision of services on the
+    Website and serves statistical purposes.
+</p>
+<p>
+    3. The user can specify the scope of cookie files access to his device in
+    the browser settings.
+</p>
+<p>
+    4. A detailed description of the use of cookies by the Website is available
+in the    <a href="https://www.brightlightgypsy.pl/cookies-policy">Cookies Policy</a>
+    .
+</p>
+<p align="center">
+    <strong>§ 9</strong>
+</p>
+<p align="center">
+    <strong>Automated decision making and profiling</strong>
+</p>
+<p>
+    1. Users' data may not be processed in an automated manner so that any
+    decisions could be made against them as a result.
+</p>
+<p>
+    2. Users' data may be profiled in order to adjust the content and
+    personalize the offer after their consent.
+</p>
+<p align="center">
+    <strong>§ 10</strong>
+</p>
+<p align="center">
+    <strong>Final Provisions</strong>
+</p>
+<p>
+    1. The Administrator has the right to make changes to the Privacy Policy,
+    but the Users' rights will not be limited.
+</p>
+<p>
+    2. Information about the introduced changes will appear in the form of a
+    message available on the Website.
+</p>
+<p>
+    3. In matters not covered by this Privacy Policy, the provisions of the
+    GDPR and the provisions of Polish law shall apply.
+</p>
