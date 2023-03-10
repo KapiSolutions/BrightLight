@@ -45,7 +45,7 @@ plików cookies po to, <strong>by dostosować serwis do potrzeb użytkowników</
     gov.pl. Dokładny sposób działania i politykę prywatności Google Analytics
     można znaleźć pod adresem:
     <a href="https://marketingplatform.google.com/about/analytics/terms/pl/">
-        https://marketingplatform.google.com/about/analytics/terms/pl/
+        https://marketingplatform.google.com
     </a>
     ,
     <a href="https://policies.google.com/privacy">

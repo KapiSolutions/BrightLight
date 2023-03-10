@@ -39,7 +39,7 @@ For your convenience, the <a href="https://brightlightgypsy.pl">brightlightgypsy
     gov.pl website. The exact operation and privacy policy of Google Analytics
     can be found at:
     <a href="https://marketingplatform.google.com/about/analytics/terms/pl/">
-        https://marketingplatform.google.com/about/analytics/terms/pl/
+        https://marketingplatform.google.com
     </a>
     ,
     <a href="https://policies.google.com/privacy">
