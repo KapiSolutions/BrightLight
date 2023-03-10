@@ -10,6 +10,7 @@ import DeleteUserModal from "../../Modals/DeleteUserModal";
 import ErrorModal from "../../Modals/ErrorModal";
 import { useRouter } from "next/router";
 import { useDeviceStore } from "../../../stores/deviceStore";
+import CoockieModal from "../../Modals/CookieModal";
 
 function Layout({ children }) {
   const router = useRouter();
@@ -28,6 +29,7 @@ function Layout({ children }) {
             <NewUserModal msg={successMsg} resetMsg={setSuccessMsg} user={authUserFirestore} update={updateProfile} />
             <DeleteUserModal msg={successMsg} resetMsg={setSuccessMsg} />
             <ErrorModal locale={locale} msg={errorMsg} closeModal={setErrorMsg} />
+            <CoockieModal locale={locale} />
 
             <Header locale={locale} className={styles.header} theme={theme} />
             <main name="main" className={`${styles.main} `}>
