@@ -1,0 +1,141 @@
+<p>
+    Effective date: 01/03/2023
+</p>
+<p align="center">
+    <strong>§ 1</strong>
+</p>
+<p align="center">
+    <strong>Purpose of collecting cookies</strong>
+</p>
+<p>
+    1. In order to provide services at the highest level, we use cookies. Using
+    our website means that they will be placed on your device. You can change
+    your browser settings at any time. In addition, the use of our website
+means your acceptance of the<a href="brightlightgypsy.pl/terms-of-service">Terms of Service</a> and the    <a href="brightlightgypsy.pl/privacy-policy">Privacy Policy.</a>
+</p>
+<p>
+For your convenience, the    <a href="brightlightgypsy.pl">brightlightgypsy.pl</a> website uses cookies
+    to adapt the website to the needs of users, as well as for statistical
+    purposes.
+</p>
+<p>
+    Cookie files (so-called cookies) are small text files sent by the visited
+    website to the Internet user's device (computer, smartphone, etc.). They do
+    not contain any personal information.
+</p>
+<p>
+    2. The <a>brightlightgypsy.pl</a> website uses two types of cookies:
+</p>
+<p>
+    a) Performance cookies (collecting information on how visitors use the
+    website, e.g. most visited pages or error messages, etc.),
+</p>
+<p>
+    b) Functional (saving user settings, e.g. language, consents, etc.), such
+    as:
+</p>
+<p>
+    • google-analytics.com cookies – they are used to keep statistics for the
+    gov.pl website. The exact operation and privacy policy of Google Analytics
+    can be found at:
+    <a href="https://marketingplatform.google.com/about/analytics/terms/pl/">
+        https://marketingplatform.google.com/about/analytics/terms/pl/
+    </a>
+    ,
+    <a href="https://policies.google.com/privacy">
+        https://policies.google.com/privacy
+    </a>
+    ,
+</p>
+<p>
+    • adsense.google.com cookies – they are used to display advertisements in
+    accordance with the user's preferences. The exact operation and privacy
+    policy of Google AdSense can be found at:
+    <a href="https://policies.google.com/privacy">
+        https://policies.google.com/privacy
+    </a>
+    ,
+</p>
+<p>
+    • session cookies - these are temporary information stored in the browser's
+    memory until the end of the session, i.e. its closure.
+</p>
+<p align="center">
+    <strong>§ 2</strong>
+</p>
+<p align="center">
+    <strong>Cookie settings</strong>
+</p>
+<p>
+    1. In most web browsers, you can: delete cookies from your computer's hard
+    drive (from the browser settings), block all sent cookies or set a warning
+    before saving them on the disk.
+</p>
+<p>
+    Please note that changes to the settings of these files by limiting their
+    use may affect some of the functionalities available on websites that use
+    them, e.g. by preventing you from logging into your e-mail account.
+    <strong>
+        If you do not change these settings, you accept the use of cookies.
+    </strong>
+</p>
+<p>
+    2. Below we indicate how to change cookie settings in the most popular
+    search engines:
+</p>
+<p>
+    <strong>Google Chrome</strong>
+</p>
+<p>
+    Menu &gt; Settings &gt; Show advanced settings &gt; Privacy &gt; Content
+    settings &gt; Cookies - select the appropriate option.
+</p>
+<p>
+    <strong>Internet Explorer</strong>
+</p>
+<p>
+    Menu &gt; Tools &gt; Internet options &gt; Privacy - select the appropriate
+    option.
+</p>
+<p>
+    <strong>Mozilla Firefox</strong>
+</p>
+<p>
+    Menu &gt; Options &gt; Privacy &gt; History - select the appropriate
+    option.
+</p>
+<p>
+    <strong>Opera</strong>
+</p>
+<p>
+    Menu &gt; Preferences &gt; Advanced &gt; Cookies - select the appropriate
+    option.
+</p>
+<p>
+    <strong>Safari</strong>
+</p>
+<p>
+    Menu &gt; Preferences &gt; Privacy &gt; Cookies - select the appropriate
+    option.
+</p>
+<p align="center">
+    <strong>§ 3</strong>
+</p>
+<p align="center">
+    <strong>Amendments To Terms</strong>
+</p>
+<p>
+    1. We may amend Terms at any time by posting the amended terms on this
+    site. It is your responsibility to review these Terms periodically.
+</p>
+<p>
+    2. Your continued use of the Platform following the posting of revised
+    Terms means that you accept and agree to the changes. You are expected to
+    check this page frequently so you are aware of any changes, as they are
+    binding on you.
+</p>
+<p>
+    3. By continuing to access or use our Service after any revisions become
+    effective, you agree to be bound by the revised terms. If you do not agree
+    to the new terms, you are no longer authorized to use Service.
+</p>
