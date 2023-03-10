@@ -15,6 +15,7 @@ import { GiSparkSpirit, GiWallet } from "react-icons/gi";
 // GiBulb GiBurningEmbers GiCardQueenHearts GiCowled GiCrownedHeart GiFireBottle GiFox GiSittingDog
 import Cart from "../../../Cart/Cart";
 import ChangeLocale from "../../../ChangeLocale";
+import ChangeCurrency from "../../../ChangeCurrency";
 
 function DesktopMenu(props) {
   const router = useRouter();
@@ -224,6 +225,9 @@ function DesktopMenu(props) {
                 <Nav.Link href="#" className={styles.hover}>
                   <ChangeLocale />
                 </Nav.Link>
+                <div>
+                  <ChangeCurrency />
+                </div>
               </Nav>
             </Navbar.Collapse>
           </Container>
