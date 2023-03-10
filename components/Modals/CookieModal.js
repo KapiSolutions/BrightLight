@@ -5,17 +5,20 @@ import { Button, Modal } from "react-bootstrap";
 import styles from "../../styles/components/CookieModal.module.scss";
 import cookie from "../../public/img/cookies/cookie.webp";
 import { useDeviceStore } from "../../stores/deviceStore";
+import Cookies from "js-cookie";
 
-function CookieModal(props) {
+function CookieModal() {
   const router = useRouter();
   const locale = router.locale;
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(false);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const footerHeight = "60px";
 
-  // useEffect(() => {
-  //   props.msg ? setShow(true) : setShow(false);
-  // }, [props.msg]);
+  useEffect(() => {
+    if(router.route != "/cookies-policy"){
+      !Cookies.get("allow-cookies") && setShow(true);
+    }
+  }, [router]);
 
   const t = {
     en: {
@@ -46,7 +49,7 @@ function CookieModal(props) {
     >
       <Modal.Body className="rounded-0 text-center">
         <div className="text-center" style={{ position: "relative", height: isMobile ? "150px" : "200px" }}>
-          <Image src={cookie} alt="coockie" fill style={{objectFit:"contain"}}/>
+          <Image src={cookie} alt="coockie" fill style={{ objectFit: "contain" }} />
         </div>
         <p className="mt-1 fs-4">
           <strong>{t[locale].cookies}</strong>
@@ -59,6 +62,7 @@ function CookieModal(props) {
           style={{ height: footerHeight, width: "50%", borderRadius: "0px 0px 0px 20px" }}
           variant="outline-secondary"
           onClick={() => {
+            router.push("/cookies-policy#main");
             setShow(false);
           }}
         >
@@ -69,6 +73,7 @@ function CookieModal(props) {
           style={{ height: footerHeight, width: "50%", borderRadius: "0px 0px 20px 0px" }}
           variant="secondary"
           onClick={() => {
+            Cookies.set("allow-cookies", true, { expires: 365, sameSite: "strict" });
             setShow(false);
           }}
         >
