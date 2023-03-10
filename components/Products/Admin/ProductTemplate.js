@@ -270,20 +270,23 @@ function ProductTemplate(props) {
     try {
       let readyProduct = { ...product };
       let imgUrl = "";
-
       //upload main picture to the storage
       if (editNewImage) {
         //true when adding new product mode and when admin change the image in editing mode
         imgUrl = await uploadFileToStorage(imgFile, `images/products/${product.id}`);
+        readyProduct.image = {
+          name: imgFile.name,
+          path: imgUrl,
+        };
         if (prodEdit) {
-          readyProduct.image.name = imgFile.name;
-          readyProduct.image.path = imgUrl;
           await deleteFileInStorage(`images/products/${prodEdit.id}`, prodEdit.image.name); // delete the old image from the storage
         }
       } else {
         imgUrl = prodEdit.image.path;
-        readyProduct.image.name = prodEdit.image.name;
-        readyProduct.image.path = prodEdit.image.path;
+        readyProduct.image = {
+          name: prodEdit.image.name,
+          path: prodEdit.image.path,
+        };
       }
 
       // Add/Update Stripe products
@@ -294,7 +297,6 @@ function ProductTemplate(props) {
         const res_pl = await updateStripeProduct("pl", "pln", imgUrl);
         res_pl && (readyProduct.price.pln.s_id = res_pl.data.default_price);
       } else {
-        readyProduct.image = imgFile.name; //use file name instead of path for the firestore product data
         const res = await addStripeProduct("en", "usd", imgUrl);
         if (res.status == 200) {
           readyProduct.price.usd.prod_id = res.data.id;
