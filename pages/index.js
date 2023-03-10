@@ -44,11 +44,14 @@ export default function Home(props) {
         </Row>
 
         <Row sm={2} md={2} lg={3} className="g-4 justify-content-center">
-          {props.products.map((product) => (
-            <Col key={product.id} className="d-flex justify-content-center">
-              <ProductCard product={product} preview={false} />
-            </Col>
-          ))}
+          {props.products.map(
+            (product) =>
+              product.active && (
+                <Col key={product.id} className="d-flex justify-content-center">
+                  <ProductCard product={product} preview={false} />
+                </Col>
+              )
+          )}
         </Row>
         <section>
           <AdBanner />
