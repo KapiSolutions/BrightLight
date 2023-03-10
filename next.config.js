@@ -16,7 +16,7 @@ const nextConfig = {
     defaultLocale: 'default',
     localeDetection: false,
   },
-  trailingSlash: true,
+  trailingSlash: false,
 }
 
 module.exports = nextConfig
