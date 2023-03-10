@@ -23,7 +23,7 @@ function CookiesPolicyPage(props) {
       <Head>
         <title>BrightLight | {t[locale].title}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5">
+      <Container className="justify-content-center text-center mt-5" style={{maxWidth: "100vw"}}>
         <h1 className="color-primary">{t[locale].title}</h1>
         <section className="text-start ps-1 pe-1">{parse(DOMPurify.sanitize(props.text))}</section>
       </Container>
