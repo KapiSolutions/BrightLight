@@ -83,10 +83,10 @@ function User(props) {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
       data: { uid: user.id },
-      type: "delete",
+      type: "delete-user",
     };
     try {
-      const res = await axios.post("/api/admin/users", payload);
+      const res = await axios.post("/api/admin/firebase", payload);
       if (res.status === 200) {
         await deleteDocInCollection("users", user.id);
         setShowConfirmModal({ msg: "", itemID: "" });
