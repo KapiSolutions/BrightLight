@@ -45,14 +45,18 @@ function AuthProvider({ children }) {
   const TwitterProvider = new TwitterAuthProvider();
 
   async function registerUser(email, password, name) {
-    return createUserWithEmailAndPassword(auth, email, password).then(async (res) => {
-      setAuthUserFirestore(
-        await createUserFirestore(res.user.uid, name, "", email, "", "emailAndPassword", tempCart ? [tempCart] : [])
-      );
+    try {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      const userData = await createUserFirestore(res.user.uid, name, "", email, "", "emailAndPassword", tempCart ? [tempCart] : [])
+      setAuthUserFirestore(userData);
       tempCart && setTempCart(null);
       router.push("/");
       setSuccessMsg("newUser");
-    });
+      return;
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   }
   async function loginUser(email, password) {
     return signInWithEmailAndPassword(auth, email, password).then(async (res) => {
@@ -233,15 +237,14 @@ function AuthProvider({ children }) {
 
   async function updateUserData(uid, userData, onlyOrders) {
     if (!onlyOrders) {
-      if(userData){
+      if (userData) {
         setAuthUserFirestore(userData);
-      }else {
+      } else {
         setAuthUserFirestore(await getUserDataFirestore(uid));
       }
     }
     const orders = await queryByFirestore("orders", "userID", "==", uid);
     orders.length > 0 && setUserOrders(orders);
-
   }
   function clearUserData() {
     setAuthUserFirestore(null);
@@ -255,7 +258,7 @@ function AuthProvider({ children }) {
         if (!authUserFirestore) {
           await updateUserData(user.uid, null, false); //after logging in load all the user data
         }
-      }else{
+      } else {
         clearUserData(); //after logging out clear all the user data
       }
       setLoading(false);
@@ -263,12 +266,12 @@ function AuthProvider({ children }) {
     return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
-//check if user has Admin role
+
+  //check if user has Admin role
   useEffect(() => {
     setAdmin(authUserFirestore?.role === process.env.NEXT_PUBLIC_ADMIN_KEY);
-  }, [authUserFirestore?.role])
-  
+  }, [authUserFirestore?.role]);
+
   const value = {
     authUserCredential,
     authUserFirestore,

@@ -7,19 +7,24 @@ service cloud.firestore {
       allow update: if isAdmin(); 
       allow delete: if isAdmin(); 
     }
-    match /orders/{productId}{
+
+    match /orders/{orderId}{
       allow read: if true; //Allow everyone
       allow create: if true;
       allow update: if true;
       allow delete: if true;
     }
-    match /users/{productId}{
-      allow read: if true; //Allow everyone
-      allow create: if true;
-      allow update: if true;
-      allow delete: if true; 
+    
+    match /users/{userId}{
+      allow read: if isAdmin() || isOwner(resource.data); 
+      allow create: if isOwner(request.resource.data);
+      allow update: if isOwner(request.resource.data) 
+                    && isOwner(resource.data) 
+                    && allowedFields(["age","cart", "email", "lastName", "name"]);
+      allow delete: if isOwner(resource.data); 
     }
-    match /blog/{productId}{
+
+    match /blog/{postId}{
       allow read: if true; //Allow everyone
       allow create: if isAdmin(); 
       allow update: if isAdmin() || (isSignedIn() && allowedFields(["likes","comments"]));  

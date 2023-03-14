@@ -25,17 +25,6 @@ const createDocFirestore = async (collection, docID, data) => {
   }
 };
 
-const getUserDataFirestore = async (uid) => {
-  const docRef = doc(db, "users", uid);
-  const docSnap = await getDoc(docRef);
-
-  if (docSnap.exists()) {
-    return docSnap.data();
-  } else {
-    return null;
-  }
-};
-
 const createUserFirestore = async (uid, name, lastName, email, age, provider, cart) => {
   const userData = {
     id: uid,
@@ -53,6 +42,22 @@ const createUserFirestore = async (uid, name, lastName, email, age, provider, ca
   } catch (err) {
     console.error("createUserFirestore Err: ", err);
     throw err;
+  }
+};
+
+const getUserDataFirestore = async (uid) => {
+  const docRef = doc(db, "users", uid);
+  try {
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return docSnap.data();
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log("getUserDataFirestore error: ", error);
+    // appears just after registration of the user
+    // throw error;
   }
 };
 
@@ -99,6 +104,7 @@ const updateDocFields = async (collection, uid, update) => {
     const docSnap = await getDoc(docRef);
     return docSnap.data();
   } catch (err) {
+    console.error("updateDocFields error: ", err);
     throw err;
   }
 };
@@ -107,17 +113,18 @@ const getDocsFromCollection = async (collectionName, onlyIds = false) => {
   try {
     const docs = [];
     const querySnapshot = await getDocs(collection(db, collectionName));
-    if(onlyIds){
+    if (onlyIds) {
       querySnapshot.forEach((doc) => {
         docs.push(doc.data().id);
       });
-    }else{
+    } else {
       querySnapshot.forEach((doc) => {
         docs.push(doc.data());
       });
     }
     return docs;
   } catch (err) {
+    console.error("getDocsFromCollection error: ", err);
     throw err;
   }
 };
@@ -135,13 +142,18 @@ const getDocById = async (collection, uid) => {
 
 const queryByFirestore = async (collName, state, condition, value) => {
   const dbRef = collection(db, collName);
-  const q = query(dbRef, where(state, condition, value));
-  const querySnapshot = await getDocs(q);
-  const docs = [];
-  querySnapshot.forEach((doc) => {
-    docs.push(doc.data());
-  });
-  return docs.length > 0 ? docs : false;
+  try {
+    const q = query(dbRef, where(state, condition, value));
+    const querySnapshot = await getDocs(q);
+    const docs = [];
+    querySnapshot.forEach((doc) => {
+      docs.push(doc.data());
+    });
+    return docs.length > 0 ? docs : false;
+  } catch (error) {
+    console.error("queryByFirestore error: ", err);
+    throw err;
+  }
 };
 
 const handleLikeBlog = async (action, blogID, userID, userName) => {
@@ -175,6 +187,7 @@ const handleLikeBlog = async (action, blogID, userID, userName) => {
       return likeExist ? true : false;
     }
   } catch (err) {
+    console.error("handleLikeBlog error: ", err);
     throw err;
   }
 };
