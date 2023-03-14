@@ -8,6 +8,8 @@ import AuthProvider from "../context/AuthProvider";
 import { useDeviceStore } from "../stores/deviceStore";
 import { useRouter } from "next/router";
 import { GoogleAnalytics } from "nextjs-google-analytics";
+import LogRocket from "logrocket";
+import setupLogRocketReact from "logrocket-react";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -29,6 +31,11 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     handleWindowSizeChange();
     setCurrency(locale == "pl" ? "pln" : "usd");
+    // only initialize when in the browser
+    if (typeof window !== "undefined") {
+      LogRocket.init(process.env.NEXT_PUBLIC_LOGROCKET_KEY);
+      setupLogRocketReact(LogRocket);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

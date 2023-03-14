@@ -24,6 +24,8 @@
     "handlebars": "^4.7.7",
     "html-react-parser": "^3.0.7",
     "js-cookie": "^3.0.1",
+    "logrocket": "^3.0.1",
+    "logrocket-react": "^5.0.1",
     "micro": "^9.4.1",
     "micro-cors": "^0.1.1",
     "next": "^13.2.3",
