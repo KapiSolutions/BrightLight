@@ -141,7 +141,7 @@ function BlogPost(props) {
       tags: "Tags:",
       you: "You",
       writeComment: "Write a comment!",
-      tryDetele: "You are trying to delete your comment. Please confirm.",
+      tryDelete: "You are trying to delete your comment. Please confirm.",
       yourComment: "Your comment...",
       pleaseSignIn: "Please sign in first to write a comment.",
       loading: "Loading...",
@@ -156,7 +156,7 @@ function BlogPost(props) {
       tags: "Tagi:",
       you: "Ty",
       writeComment: "Dodaj komentarz!",
-      tryDetele: "Próbujesz usunąć swój komentarz. Proszę potwierdzić.",
+      tryDelete: "Próbujesz usunąć swój komentarz. Proszę potwierdzić.",
       yourComment: "Napisz coś..",
       pleaseSignIn: "Zaloguj się, aby móc napisać komentarz.",
       loading: "Ładuję...",
@@ -296,12 +296,12 @@ function BlogPost(props) {
                       size="sm"
                       variant="primary"
                       className="pointer"
-                      onClick={() =>
+                      onClick={() => {
                         setShowConfirmModal({
                           msg: t[locale].tryDelete,
                           itemID: comment.id,
-                        })
-                      }
+                        });
+                      }}
                     >
                       <strong>X</strong>
                     </Button>

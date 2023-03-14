@@ -1,10 +1,48 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read: if true
-      allow write: if true
+    match /products/{productId}{
+      allow read: if true //Allow everyone
+      allow create: if isAdmin(); 
+      allow update: if isAdmin(); 
+      allow delete: if isAdmin(); 
     }
+    match /orders/{productId}{
+      allow read: if true; //Allow everyone
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
+    }
+    match /users/{productId}{
+      allow read: if true; //Allow everyone
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true; 
+    }
+    match /blog/{productId}{
+      allow read: if true; //Allow everyone
+      allow create: if isAdmin(); 
+      allow update: if isAdmin() || (isSignedIn() && allowedFields(["likes","comments"]));  
+      allow delete: if isAdmin(); 
+    }
+
+  // FUNCTIONS
+    // Check if user has admin role
+    function isAdmin() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "0efdb2ea-fc6f-4787-ab53-a0077c035d1c"
+    }
+    // Check if user is owner of the doc
+    function isOwner(data) {
+      return request.auth.uid == data.id;
+    }
+    // Check if user is signed in
+    function isSignedIn() {
+        return request.auth != null;
+      }
+      // Allow only certain fields to be changed
+    function allowedFields(fields) {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(fields);
+      }
   }
 }
 
