@@ -83,7 +83,6 @@ function BlogPost(props) {
         setLikes(data[1].sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
         data[0] ? setUserLiked(true) : setUserLiked(false);
       } else {
-        // show popup with sign in info
         setErrorMsg("sign");
       }
     }
@@ -111,6 +110,8 @@ function BlogPost(props) {
       commentRef.current.value = "";
       setLoading(false);
     } catch (error) {
+      console.log(error);
+      setErrorMsg(t[locale].sthWrong);
       setLoading(false);
     }
   }
@@ -129,6 +130,7 @@ function BlogPost(props) {
       setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
       console.log(error);
+      setErrorMsg(t[locale].sthWrong);
     }
   };
 
@@ -140,6 +142,7 @@ function BlogPost(props) {
       source: "Source:",
       tags: "Tags:",
       you: "You",
+      sthWrong: "Something went wrong, please try again later.",
       writeComment: "Write a comment!",
       tryDelete: "You are trying to delete your comment. Please confirm.",
       yourComment: "Your comment...",
@@ -155,6 +158,7 @@ function BlogPost(props) {
       source: "Źródło:",
       tags: "Tagi:",
       you: "Ty",
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później",
       writeComment: "Dodaj komentarz!",
       tryDelete: "Próbujesz usunąć swój komentarz. Proszę potwierdzić.",
       yourComment: "Napisz coś..",
