@@ -83,7 +83,7 @@ function User(props) {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
       data: { uid: user.id },
-      type: "delete-user",
+      mode: "delete-user",
     };
     try {
       const res = await axios.post("/api/admin/firebase", payload);

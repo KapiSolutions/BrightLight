@@ -3,14 +3,14 @@ import admin from "firebase-admin";
 
 export default async function orderFinishEmail(req, res) {
   const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_KEY);
+  const { secret, data, mode } = req.body;
+
+  // Check the secret key first
+  if (secret !== process.env.NEXT_PUBLIC_API_KEY) {
+    return res.status(401).end("Invalid token");
+  }
+
   if (req.method === "POST") {
-    const { secret, data, type } = req.body;
-
-    // Check the secret key first
-    if (secret !== process.env.NEXT_PUBLIC_API_KEY) {
-      return res.status(401).end("Invalid token");
-    }
-
     //Initialize app only when not already initialized
     try {
       if (admin.apps.length === 0) {
@@ -25,7 +25,7 @@ export default async function orderFinishEmail(req, res) {
     const db = admin.firestore();
 
     // Handle Firebase Api requests
-    switch (type) {
+    switch (mode) {
       case "delete-user":
         try {
           await auth.deleteUser(data.uid);
