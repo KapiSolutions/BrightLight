@@ -117,17 +117,17 @@ function Order(props) {
       };
 
       //start checkoutSession
-      const checkoutSession = await axios.post("/api/stripe/checkout_session", payload);
-      if (checkoutSession.statusCode === 500) {
-        console.error(checkoutSession.message);
+      const res = await axios.post("/api/stripe/checkout_session", payload);
+      if (res.status === 500) {
+        console.error(res.message);
         return;
       }
-      router.push(checkoutSession.data.url);
       // Redirect to checkout
       const stripe = await getStripe();
-      const { error } = await stripe.redirectToCheckout({ sessionId: checkoutSession.data.id });
-      console.warn(error.message);
+      router.push(res.data.url);
+      const { error } = await stripe.redirectToCheckout({ sessionId: res.data.id });
       if (error) {
+        console.error(error.message);
         setErrorMsg(t[locale].sthWrong);
       }
       setLoading(undefined);

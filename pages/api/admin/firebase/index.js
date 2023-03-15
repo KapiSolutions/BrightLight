@@ -37,10 +37,10 @@ export default async function orderFinishEmail(req, res) {
       case "create-doc":
         try {
           await db
-            .collection("test")
-            .doc("/" + data.id + "/")
-            .create({ id: data.id, test1: data.item });
-          res.status(200).end("OK");
+            .collection(data.collection)
+            .doc("/" + data.insert.id + "/")
+            .create({...data.insert, timeCreate: data.insert.timeCreate ? new Date(data.insert.timeCreate) : new Date()});
+          res.status(200).send("Document created!");
         } catch (e) {
           res.status(500).send(e);
         }

@@ -249,7 +249,7 @@ function AuthProvider({ children }) {
       }
     }
     const orders = await queryByFirestore("orders", "userID", "==", uid);
-    orders.length > 0 && setUserOrders(orders);
+    orders.length > 0 ? setUserOrders(orders) : setUserOrders([]);
   }
   function clearUserData() {
     setAuthUserFirestore(null);

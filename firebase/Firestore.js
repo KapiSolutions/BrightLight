@@ -9,9 +9,7 @@ import {
   collection,
   query,
   where,
-  serverTimestamp,
 } from "firebase/firestore";
-import { v4 as uuidv4 } from "uuid";
 
 const createDocFirestore = async (collection, docID, data) => {
   const docRef = doc(db, collection, docID);
@@ -54,37 +52,8 @@ const getUserDataFirestore = async (uid) => {
     } else {
       return null;
     }
-  } catch (error) {
-    console.log("getUserDataFirestore error: ", error);
-    // appears just after registration of the user
-    // throw error;
-  }
-};
-
-const createOrderFirestore = async (uid, name, age, email, cart, totalPrice, currency, lang, comments) => {
-  const orderID = uuidv4().slice(0, 13);
-  const docRef = doc(db, "orders", orderID);
-  const orderData = {
-    id: orderID,
-    userID: uid,
-    userName: name,
-    userAge: age,
-    userEmail: email,
-    items: cart,
-    status: "Unpaid",
-    paid: false,
-    totalPrice: totalPrice,
-    currency: currency,
-    language: lang,
-    timeCreate: serverTimestamp(),
-    userComments: comments,
-  };
-  try {
-    await setDoc(docRef, orderData);
-    const docSnap = await getDoc(docRef);
-    return docSnap.data();
   } catch (err) {
-    console.error("createOrderFirestore Err: ", err);
+    console.log("getUserDataFirestore error: ", err);
     throw err;
   }
 };
@@ -150,7 +119,7 @@ const queryByFirestore = async (collName, state, condition, value) => {
       docs.push(doc.data());
     });
     return docs.length > 0 ? docs : false;
-  } catch (error) {
+  } catch (err) {
     console.error("queryByFirestore error: ", err);
     throw err;
   }
@@ -201,6 +170,5 @@ export {
   updateDocFields,
   getDocsFromCollection,
   getDocById,
-  createOrderFirestore,
   handleLikeBlog,
 };

@@ -8,9 +8,9 @@ import { useAuth } from "../../context/AuthProvider";
 import { OverlayTrigger, Popover, FloatingLabel, Form, Button, Container, Spinner } from "react-bootstrap";
 import { BsInfoCircle } from "react-icons/bs";
 import { useDeviceStore } from "../../stores/deviceStore";
-import { createOrderFirestore } from "../../firebase/Firestore";
 import { getFileUrlStorage } from "../../firebase/Storage";
 import CartItem from "../../components/Cart/CartItem";
+import { v4 as uuidv4 } from "uuid";
 
 function CartSummaryPage() {
   const router = useRouter();
@@ -107,45 +107,64 @@ function CartSummaryPage() {
   async function handleCheckout(e) {
     e.preventDefault();
     setLoading(true);
-    let order = null;
     const localeLanguage = window.navigator.userLanguage || window.navigator.language; //to display the date in the email in the client's language format
     const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
     const comments = document.getElementById("commentsField").value;
-    //create order
+    const orderID = uuidv4().slice(0, 13);
+    const order = {
+      id: orderID,
+      userID: authUserFirestore?.id,
+      userName: authUserFirestore?.name,
+      userAge: authUserFirestore?.age,
+      userEmail: authUserFirestore?.email,
+      items: authUserFirestore?.cart,
+      status: "Unpaid",
+      paid: false,
+      totalPrice: totalPrice,
+      currency: currency,
+      language: locale,
+      userComments: comments,
+      timeCreate: new Date(),
+      //timeCreate will be added on the server side
+    };
+    //CREATE ORDER IN THE FIRESTORE
     try {
-      order = await createOrderFirestore(
-        authUserFirestore?.id,
-        authUserFirestore?.name,
-        authUserFirestore?.age,
-        authUserFirestore?.email,
-        authUserFirestore?.cart,
-        totalPrice,
-        currency,
-        locale,
-        comments
-      );
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        mode: "create-doc",
+        data: {
+          collection: "orders",
+          insert: order,
+        },
+      };
+      await axios.post("/api/admin/firebase/", payload);
+      //Clean the cart
+      // await updateProfile({ cart: [] });
     } catch (error) {
-      setErrorMsg(t[locale].sthWrong);
+      setErrorMsg(t[locale].sthWrong + " (" + error.response.statusText +")");
       setLoading(undefined);
       return;
     }
 
+    // !Delete setLoading after test: 
+    setLoading(undefined);
+    // !
+
+    if(false){
+    //START STRIPE CHECKOUT SESSION
     try {
       //prepare stripe product data
-      const stripeCart = authUserFirestore?.cart.map((_, idx) => ({
-        price: authUserFirestore?.cart[idx].price[currency].s_id,
+      const stripeCart = order.items.map((item) => ({
+        price: item.price[currency].s_id,
         quantity: 1,
       }));
       //prepare cart items data for email notification
       const cartItems = await Promise.all(
-        authUserFirestore?.cart.map(async (_, idx) => ({
-          name: authUserFirestore?.cart[idx].name[locale],
-          price: authUserFirestore?.cart[idx].price[currency].amount,
+        order.items.map(async (item) => ({
+          name: item.name[locale],
+          price: item.price[currency].amount,
           currency: currency,
-          image: await getFileUrlStorage(
-            `images/products/${authUserFirestore?.cart[idx].product_id}`,
-            authUserFirestore?.cart[idx].image.name
-          ),
+          image: await getFileUrlStorage(`images/products/${item.product_id}`, item.image.name),
         }))
       );
 
@@ -163,39 +182,34 @@ function CartSummaryPage() {
           localeLanguage: localeLanguage,
           localeTimeZone: localeTimeZone,
           language: order.language,
-          timeCreate: order.timeCreate.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
+          timeCreate: order.timeCreate.toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
         },
       };
-
-      //clean cart
-      await updateProfile({ cart: [] });
-
-      //start checkoutSession
-      const checkoutSession = await axios.post("/api/stripe/checkout_session", payload);
-      if (checkoutSession.statusCode === 500) {
-        console.error(checkoutSession.message);
+      //Start checkoutSession
+      const res = await axios.post("/api/stripe/checkout_session", payload);
+      if (res.status === 500) {
+        console.error(res.message);
         return;
       }
-      router.push(checkoutSession.data.url);
       // Redirect to checkout
       const stripe = await getStripe();
-      const { error } = await stripe.redirectToCheckout({ sessionId: checkoutSession.data.id });
-      console.warn(error.message);
-
-      setLoading(undefined);
+      router.push(res.data.url);
+      const { error } = await stripe.redirectToCheckout({ sessionId: res.data.id });
+      
       if (error) {
-        setLoading(undefined);
+        console.error(error.message);
         setErrorMsg(t[locale].redirectingFail);
         router.replace("/user/orders#main");
       }
+      setLoading(undefined);
     } catch (error) {
       console.log(error);
       setLoading(undefined);
       setErrorMsg(t[locale].redirectingFail);
-
       router.replace("/user/orders#main");
       return;
     }
+  }
   }
 
   return (
