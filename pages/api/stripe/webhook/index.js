@@ -1,8 +1,7 @@
 import Stripe from "stripe";
 import { buffer } from "micro";
-import { updateDocFields } from "../../../../firebase/Firestore";
-import { serverTimestamp } from "firebase/firestore";
 import sendEmail from "../../../../utils/emails/sendEmail";
+import { db } from "../../../../config/firebaseAdmin";
 import { getFileUrlStorage } from "../../../../firebase/Storage";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -39,21 +38,27 @@ export default async function handler(req, res) {
         //Get the payment method from the payment intent
         const paymentIntent = await stripe.paymentIntents.retrieve(event.data.object.payment_intent);
         const paymentMethod = paymentIntent.payment_method_types[0];
+
         //Update the order with payment details
-        const data = await updateDocFields("orders", event.data.object.metadata.orderID, {
+        await db.collection("orders").doc(event.data.object.metadata.orderID).update({
           paid: true,
           status: "In realization",
-          timePayment: serverTimestamp(),
+          timePayment: new Date(),
           paymentMethod: paymentMethod,
           paymentID: event.data.object.payment_intent,
         });
 
+        // Get all details of the order
+        const response = await db.collection("orders").doc(event.data.object.metadata.orderID).get();
+        const data = response.data();
+
+        // Prepare order items for the email confirmation
         const cartItems = await Promise.all(
-          data.items.map(async (_, idx) => ({
-            name: data.items[idx].name[data.language],
-            price: data.items[idx].price[data.currency].amount,
+          data.items.map(async (item) => ({
+            name: item.name[data.language],
+            price: item.price[data.currency].amount,
             currency: data.currency,
-            image: await getFileUrlStorage(`images/products/${data.items[idx].product_id}`, data.items[idx].image.name),
+            image: await getFileUrlStorage(`images/products/${item.product_id}`, item.image.name),
           }))
         );
 

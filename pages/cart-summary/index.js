@@ -139,7 +139,7 @@ function CartSummaryPage() {
       };
       await axios.post("/api/admin/firebase/", payload);
       //Clean the cart
-      // await updateProfile({ cart: [] });
+      await updateProfile({ cart: [] });
     } catch (error) {
       setErrorMsg(t[locale].sthWrong + " (" + error.response.statusText +")");
       setLoading(undefined);
@@ -147,10 +147,10 @@ function CartSummaryPage() {
     }
 
     // !Delete setLoading after test: 
-    setLoading(undefined);
+    // setLoading(undefined);
     // !
 
-    if(false){
+    if(true){
     //START STRIPE CHECKOUT SESSION
     try {
       //prepare stripe product data

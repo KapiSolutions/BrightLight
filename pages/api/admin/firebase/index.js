@@ -23,8 +23,20 @@ export default async function orderFinishEmail(req, res) {
           await db
             .collection(data.collection)
             .doc("/" + data.insert.id + "/")
-            .create({...data.insert, timeCreate: data.insert.timeCreate ? new Date(data.insert.timeCreate) : new Date()});
+            .create({
+              ...data.insert,
+              timeCreate: data.insert.timeCreate ? new Date(data.insert.timeCreate) : new Date(),
+            });
           res.status(200).send("Document created!");
+        } catch (e) {
+          res.status(500).send(e);
+        }
+        break;
+      case "get-doc":
+        try {
+          const response = await db.collection(data.collection).doc(data.id).get();
+          const document = response.data();
+          res.status(200).send(document);
         } catch (e) {
           res.status(500).send(e);
         }
