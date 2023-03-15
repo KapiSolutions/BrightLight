@@ -58,6 +58,7 @@ function AuthProvider({ children }) {
       setSuccessMsg("newUser");
       return;
     } catch (error) {
+      setBlock(false);
       console.log(error);
       throw error;
     }
