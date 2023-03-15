@@ -1,8 +1,6 @@
-import admin from "firebase-admin";
-// https://dev.to/vvo/how-to-add-firebase-service-account-json-files-to-vercel-ph5
+import { auth, db } from "../../../../config/firebaseAdmin";
 
 export default async function orderFinishEmail(req, res) {
-  const serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_KEY);
   const { secret, data, mode } = req.body;
 
   // Check the secret key first
@@ -11,20 +9,6 @@ export default async function orderFinishEmail(req, res) {
   }
 
   if (req.method === "POST") {
-    //Initialize app only when not already initialized
-    try {
-      if (admin.apps.length === 0) {
-        admin.initializeApp({
-          credential: admin.credential.cert(serviceAccount),
-        });
-      }
-    } catch (error) {
-      return res.status(500).send(error);
-    }
-    const auth = admin.auth();
-    const db = admin.firestore();
-
-    // Handle Firebase Api requests
     switch (mode) {
       case "delete-user":
         try {
