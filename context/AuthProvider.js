@@ -23,6 +23,7 @@ import {
   TwitterAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import useStateRef from 'react-usestateref'
 
 const AuthContext = React.createContext();
 
@@ -43,13 +44,16 @@ function AuthProvider({ children }) {
   const GoogleProvider = new GoogleAuthProvider();
   const FacebookProvider = new FacebookAuthProvider();
   const TwitterProvider = new TwitterAuthProvider();
+  var [block,setBlock,refBlock]=useStateRef(false);
 
   async function registerUser(email, password, name) {
     try {
+      setBlock(true);
       const res = await createUserWithEmailAndPassword(auth, email, password);
       const userData = await createUserFirestore(res.user.uid, name, "", email, "", "emailAndPassword", tempCart ? [tempCart] : [])
       setAuthUserFirestore(userData);
       tempCart && setTempCart(null);
+      setBlock(false);
       router.push("/");
       setSuccessMsg("newUser");
       return;
@@ -255,8 +259,8 @@ function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setAuthUserCredential(user);
       if (user) {
-        if (!authUserFirestore) {
-          await updateUserData(user.uid, null, false); //after logging in load all the user data
+        if (!authUserFirestore && !refBlock.current) {
+          await updateUserData(user.uid, null, false); //after logging in load all the user data, but block it just after registration
         }
       } else {
         clearUserData(); //after logging out clear all the user data
