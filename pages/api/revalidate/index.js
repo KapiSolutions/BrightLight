@@ -27,8 +27,10 @@ async function revalidate(req, res) {
           await Promise.all(
             paths.map(async (path) => {
               await res.revalidate(path);
-              await res.revalidate("/pl" + path);
-              await res.revalidate("/en" + path);
+              if (process.env.NODE_ENV == "production") {
+                await res.revalidate("/pl" + path);
+                await res.revalidate("/en" + path);
+              }
             })
           );
 
