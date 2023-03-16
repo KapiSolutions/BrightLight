@@ -33,7 +33,7 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; form-action 'self'; style-src 'self'; script-src 'self' https://firestore.googleapis.com https://securetoken.googleapis.com https://google-analytics.com https://ajax.googleapis.com https://googletagmanager.com;",
+              "default-src 'self'; form-action 'self'; style-src 'self'; script-src 'self' 'https://firestore.googleapis.com' 'https://securetoken.googleapis.com' 'https://google-analytics.com' 'https://ajax.googleapis.com' 'https://googletagmanager.com' 'https://identitytoolkit.googleapis.com' 'https://cdn.lr-in-prod.com' 'https://vitals.vercel-insights.com/' ;",
           },
           {
             key: "X-Content-Type-Options",
