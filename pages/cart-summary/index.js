@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 function CartSummaryPage() {
   const router = useRouter();
   const locale = router.locale;
-  const { isAuthenticated, authUserFirestore, setErrorMsg, updateProfile } = useAuth();
+  const { isAuthenticated, authUserFirestore, setErrorMsg, updateProfile, authUserCredential } = useAuth();
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(undefined);
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -137,9 +137,23 @@ function CartSummaryPage() {
           insert: order,
         },
       };
-      await axios.post("/api/admin/firebase/", payload);
+      // *
+      try {
+        const idToken = await authUserCredential.getIdToken(true);
+        console.log(idToken)
+        const payload = {
+          secret: process.env.NEXT_PUBLIC_API_KEY,
+          idToken: idToken,
+        };
+        await axios.post("/api/admin/verify_token/", payload);
+      } catch (error) {
+        console.log(error)
+      }
+      // *
+      
+      // await axios.post("/api/admin/firebase/", payload);
       //Clean the cart
-      await updateProfile({ cart: [] });
+      // await updateProfile({ cart: [] });
     } catch (error) {
       setErrorMsg(t[locale].sthWrong + " (" + error.response.statusText +")");
       setLoading(undefined);
@@ -147,10 +161,10 @@ function CartSummaryPage() {
     }
 
     // !Delete setLoading after test: 
-    // setLoading(undefined);
+    setLoading(undefined);
     // !
 
-    if(true){
+    if(false){
     //START STRIPE CHECKOUT SESSION
     try {
       //prepare stripe product data
