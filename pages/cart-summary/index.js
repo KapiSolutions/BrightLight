@@ -145,7 +145,7 @@ function CartSummaryPage() {
           secret: process.env.NEXT_PUBLIC_API_KEY,
           idToken: idToken,
         };
-        await axios.post("/api/session/verify/", payload);
+        await axios.post("/api/session/start/", payload);
       } catch (error) {
         console.log(error)
       }

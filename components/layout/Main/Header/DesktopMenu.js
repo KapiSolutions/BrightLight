@@ -32,7 +32,6 @@ function DesktopMenu(props) {
     setError("");
     try {
       await logoutUser();
-      router.push("/");
     } catch (error) {
       setError("Failed to log out");
     }
