@@ -1,6 +1,7 @@
 import sendEmail from "../../../../utils/emails/sendEmail";
 import { csrf } from "../../../../config/csrf";
 import { auth } from "../../../../config/firebaseAdmin";
+import verifyRequest from "../../../../utils/verifyRequest";
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 async function checkoutHandler(req, res) {

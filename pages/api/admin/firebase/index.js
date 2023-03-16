@@ -37,13 +37,13 @@ async function firebaseAdmin(req, res) {
           break;
         case "create-doc":
           try {
-            // await db
-            //   .collection(data.collection)
-            //   .doc("/" + data.insert.id + "/")
-            //   .create({
-            //     ...data.insert,
-            //     timeCreate: data.insert.timeCreate ? new Date(data.insert.timeCreate) : new Date(),
-            //   });
+            await db
+              .collection(data.collection)
+              .doc("/" + data.insert.id + "/")
+              .create({
+                ...data.insert,
+                timeCreate: data.insert.timeCreate ? new Date(data.insert.timeCreate) : new Date(),
+              });
             res.status(200).send("Document created!");
           } catch (e) {
             res.status(500).send(e);

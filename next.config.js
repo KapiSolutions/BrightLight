@@ -33,7 +33,7 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; form-action 'self'; style-src 'self'; script-src 'self' google-analytics.com ajax.googleapis.com googletagmanager.com;",
+              "default-src 'self'; form-action 'self'; style-src 'self'; script-src 'self' https://firestore.googleapis.com https://google-analytics.com https://ajax.googleapis.com https://googletagmanager.com;",
           },
           {
             key: "X-Content-Type-Options",

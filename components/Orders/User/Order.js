@@ -20,7 +20,8 @@ function Order(props) {
   const order = props.order;
   const config = appConfig();
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const { setErrorMsg, authUserFirestore, updateUserData } = useAuth();
+  const { setErrorMsg, authUserFirestore, updateUserData, authUserCredential } = useAuth();
+  const [idToken, setIdToken] = useState(undefined);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(undefined);
   const [showDetails, setShowDetails] = useState(false);
@@ -77,9 +78,9 @@ function Order(props) {
       more: "wiecej..",
     },
   };
-
-  const timeStampToDate = (time) => {
-    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  const getToken = async () => {
+    const token = await authUserCredential.getIdToken(true);
+    setIdToken(token.toString());
   };
 
   useEffect(() => {
@@ -89,8 +90,13 @@ function Order(props) {
       setNotificationSended(false);
       setPaymentDisabled(false);
     }
+    getToken();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const timeStampToDate = (time) => {
+    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  };
 
   async function handlePayment() {
     try {
@@ -106,6 +112,7 @@ function Order(props) {
 
       const payload = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
         data: {
           sendOrderConfirmEmail: false,
           orderID: order.id,
@@ -117,7 +124,7 @@ function Order(props) {
       };
 
       //start checkoutSession
-      const res = await axios.post("/api/stripe/checkout_session", payload);
+      const res = await axios.post("/api/stripe/checkout_session/", payload);
       if (res.status === 500) {
         console.error(res.message);
         return;
