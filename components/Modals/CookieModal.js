@@ -5,7 +5,7 @@ import { Button, Modal } from "react-bootstrap";
 import styles from "../../styles/components/CookieModal.module.scss";
 import cookie from "../../public/img/cookies/cookie.webp";
 import { useDeviceStore } from "../../stores/deviceStore";
-import Cookies from "js-cookie";
+import {getCookie, setCookie } from 'cookies-next';
 
 function CookieModal() {
   const router = useRouter();
@@ -13,10 +13,12 @@ function CookieModal() {
   const [show, setShow] = useState(false);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const footerHeight = "60px";
+  // Set session expiration to 120 days.
+  const expiresIn = 60 * 60 * 24 * 120 * 1000;
 
   useEffect(() => {
     if(router.route != "/cookies-policy"){
-      !Cookies.get("allow-cookies") && setShow(true);
+      !getCookie("allow-cookies") && setShow(true);
     }
   }, [router]);
 
@@ -73,7 +75,7 @@ function CookieModal() {
           style={{ height: footerHeight, width: "50%", borderRadius: "0px 0px 20px 0px" }}
           variant="secondary"
           onClick={() => {
-            Cookies.set("allow-cookies", true, { expires: 365, sameSite: "strict" });
+            setCookie("allow-cookies", true, { maxAge: expiresIn, sameSite: "strict" });
             setShow(false);
           }}
         >

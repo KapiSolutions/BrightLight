@@ -1,4 +1,5 @@
 import { auth } from "../../../../config/firebaseAdmin";
+import { getCookies, getCookie, setCookie, deleteCookie } from 'cookies-next';
 
 export default async function verifyToken(req, res) {
   const { secret, idToken } = req.body;
@@ -20,9 +21,10 @@ export default async function verifyToken(req, res) {
       console.log("uid: ", uid);
       // Set the session cookie and cookie policy.
       const sessionCookie = await auth.createSessionCookie(idToken, { expiresIn });
-      const options = { maxAge: expiresIn, httpOnly: true, secure: true };
-      res.cookies("session", sessionCookie, options);
+      const options = { req, res, maxAge: expiresIn, httpOnly: true, secure: true, sameSite: "strict" };
+      setCookie('session', sessionCookie, options);
       res.end(JSON.stringify({ status: "success" }));
+
     } catch (error) {
       console.log("error: ", error);
       res.status(401).send("UNAUTHORIZED REQUEST!");
