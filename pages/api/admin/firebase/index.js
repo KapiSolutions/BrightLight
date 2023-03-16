@@ -20,10 +20,10 @@ async function firebaseAdmin(req, res) {
     const uid = await verifyRequest(auth, secret, idToken, req, res);
     // If verified request then do the rest
     if (uid) {
-      const admin = await adminRoleCheck(uid);
       switch (mode) {
         case "delete-user":
           try {
+            const admin = await adminRoleCheck(uid);
             if (admin) {
               // only Admin can delete users by this method
               await auth.deleteUser(data.uid);
@@ -54,6 +54,19 @@ async function firebaseAdmin(req, res) {
             const response = await db.collection(data.collection).doc(data.id).get();
             const document = response.data();
             res.status(200).send(document);
+          } catch (e) {
+            res.status(500).send(e);
+          }
+          break;
+        case "create-user":
+          try {
+            await db
+              .collection("users")
+              .doc("/" + data.id + "/")
+              .create({ ...data, role: "user", timeCreate: new Date()});
+            const response = await db.collection("users").doc(data.id).get();
+            const document = response.data();
+            res.status(200).json(document);
           } catch (e) {
             res.status(500).send(e);
           }

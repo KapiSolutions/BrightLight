@@ -23,7 +23,7 @@ async function verifyToken(req, res) {
   const adminRoleCheck = async (uid) => {
     const response = await db.collection("users").doc(uid).get();
     const doc = response.data();
-    if (doc.role == process.env.ADMIN_KEY) {
+    if (doc?.role == process.env.ADMIN_KEY) {
       return true;
     } else {
       return false;

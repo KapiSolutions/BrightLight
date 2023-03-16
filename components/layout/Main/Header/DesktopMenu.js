@@ -201,10 +201,10 @@ function DesktopMenu(props) {
                     <Nav.Link onClick={() => setShowCart(true)}>
                       <div className="d-flex align-items-center">
                         <BsCart4 className={`${styles.cartIconDesktop} color-primary  ${styles.hover}`} />
-                        {authUserFirestore.cart.length > 0 && (
+                        {authUserFirestore?.cart?.length > 0 && (
                           <div style={{ position: "relative", top: "10px", left: "-2px", width: "1px" }}>
                             <small>
-                              <Badge bg="danger">{authUserFirestore.cart.length}</Badge>
+                              <Badge bg="danger">{authUserFirestore?.cart.length}</Badge>
                             </small>
                           </div>
                         )}

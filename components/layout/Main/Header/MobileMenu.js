@@ -125,7 +125,7 @@ function MobileMenu(props) {
                   >
                     <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
                       <Offcanvas.Title id="profile-nav-offcanvas">
-                        <a className={`text-${revTheme}`}>Hi {authUserFirestore.name}!</a>
+                        <a className={`text-${revTheme}`}>Hi {authUserFirestore?.name}!</a>
                       </Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
@@ -196,10 +196,10 @@ function MobileMenu(props) {
                 <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 me-3">
                   <Navbar.Toggle aria-controls="cart-nav" onClick={() => setShowCart(true)}>
                     <BsCart4 className={`${styles.mobileIcons} color-primary`} />
-                    {authUserFirestore.cart.length > 0 && (
+                    {authUserFirestore?.cart?.length > 0 && (
                       <div style={{ position: "absolute", top: "25px", left: "36px" }}>
                         <small>
-                          <Badge bg="danger">{authUserFirestore.cart.length}</Badge>
+                          <Badge bg="danger">{authUserFirestore?.cart?.length}</Badge>
                         </small>
                       </div>
                     )}

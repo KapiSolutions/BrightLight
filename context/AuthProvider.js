@@ -47,19 +47,75 @@ function AuthProvider({ children }) {
   const TwitterProvider = new TwitterAuthProvider();
   var [block, setBlock, refBlock] = useStateRef(false);
 
+  const startSession = async (user) => {
+    try {
+      const idToken = await user.getIdToken(true);
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
+      };
+      return await axios.post("/api/session/start/", payload);
+    } catch (error) {
+      console.log(error);
+      setErrorMsg("Unauthorized token.");
+      logoutUser();
+    }
+  };
+  const destroySession = async (user) => {
+    try {
+      const idToken = await user.getIdToken(true);
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
+      };
+      await axios.post("/api/session/destroy/", payload);
+      return;
+    } catch (error) {
+      throw error;
+    }
+  };
+  const createUser = async (user, data) => {
+    try {
+      const idToken = await user.getIdToken(true);
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
+        mode: "create-user",
+        data: data,
+      };
+      return await axios.post("/api/admin/firebase/", payload);
+    } catch (error) {
+      console.log(error);
+      setErrorMsg("Unauthorized token.");
+      logoutUser();
+    }
+  };
+
+  // Check if user exists when loging in/registering account with 3rd party providers
+  const checkIfExist = async (userId) => {
+    try {
+      const data = await getUserDataFirestore(userId, true); // true - dont throw error: when registration using third party provider
+      return data;
+    } catch (error) {
+      return null;
+    }
+  };
+
   async function registerUser(email, password, name) {
     try {
       setBlock(true);
       const res = await createUserWithEmailAndPassword(auth, email, password);
-      const userData = await createUserFirestore(
-        res.user.uid,
-        name,
-        "",
-        email,
-        "",
-        "emailAndPassword",
-        tempCart ? [tempCart] : []
-      );
+      await startSession(res.user);
+      const data = {
+        id: res.user.uid,
+        name: name,
+        lastName: "",
+        age: "",
+        email: email,
+        signProvider: "emailAndPassword",
+        cart: tempCart ? [tempCart] : [],
+      };
+      const userData = await createUser(res.user, data);
       setAuthUserFirestore(userData);
       tempCart && setTempCart(null);
       setBlock(false);
@@ -98,6 +154,7 @@ function AuthProvider({ children }) {
   async function deleteAccount() {
     try {
       await deleteDocInCollection("users", authUserCredential.uid);
+      await destroySession(authUserCredential);
       await deleteUser(authUserCredential);
       router.push("/");
       setSuccessMsg("deleteUser");
@@ -151,12 +208,13 @@ function AuthProvider({ children }) {
 
   async function loginWithGoogle() {
     try {
+      setBlock(true);
       const res = await signInWithPopup(auth, GoogleProvider);
       const uid = res.user.uid;
       const userName = res.user.displayName.split(" ")[0];
       const lastName = res.user.displayName.split(" ")[1];
       const email = res.user.email;
-      const userData = await getUserDataFirestore(uid);
+      const userData = await checkIfExist(uid);
 
       if (userData) {
         if (tempCart) {
@@ -167,9 +225,18 @@ function AuthProvider({ children }) {
         updateUserData(uid, userData, false);
       } else {
         //user doesn't exist -> create new account
-        setAuthUserFirestore(
-          await createUserFirestore(uid, userName, lastName, email, "", "Google", tempCart ? [tempCart] : [])
-        );
+        await startSession(res.user);
+        const data = {
+          id: uid,
+          name: userName,
+          lastName: lastName,
+          age: "",
+          email: email,
+          signProvider: "Google",
+          cart: tempCart ? [tempCart] : [],
+        };
+        const getData = await createUser(res.user, data);
+        setAuthUserFirestore(getData);
         setSuccessMsg("newUser");
       }
       tempCart && setTempCart(null);
@@ -184,16 +251,18 @@ function AuthProvider({ children }) {
       router.push("/");
       setErrorMsg(errorMessage);
     }
+    setBlock(false);
   }
 
   async function loginWithFacebook() {
     try {
+      setBlock(true);
       const res = await signInWithPopup(auth, FacebookProvider);
       const uid = res.user.uid;
       const userName = res.user.displayName.split(" ")[0];
       const lastName = res.user.displayName.split(" ")[1];
       const email = res.user.email;
-      const userData = await getUserDataFirestore(uid);
+      const userData = await checkIfExist(uid);
 
       if (userData) {
         if (tempCart) {
@@ -202,9 +271,18 @@ function AuthProvider({ children }) {
         }
         updateUserData(uid, userData, false);
       } else {
-        setAuthUserFirestore(
-          await createUserFirestore(uid, userName, lastName, email, "", "Facebook", tempCart ? [tempCart] : [])
-        );
+        await startSession(res.user);
+        const data = {
+          id: uid,
+          name: userName,
+          lastName: lastName,
+          age: "",
+          email: email,
+          signProvider: "Facebook",
+          cart: tempCart ? [tempCart] : [],
+        };
+        const getData = await createUser(res.user, data);
+        setAuthUserFirestore(getData);
         setSuccessMsg("newUser");
       }
       tempCart && setTempCart(null);
@@ -219,16 +297,18 @@ function AuthProvider({ children }) {
       router.push("/");
       setErrorMsg(errorMessage);
     }
+    setBlock(false);
   }
 
   async function loginWithTwitter() {
     try {
+      setBlock(true);
       const res = await signInWithPopup(auth, TwitterProvider);
       const uid = res.user.uid;
       const userName = res.user.displayName.split(" ")[0];
       const lastName = res.user.displayName.split(" ")[1];
       const email = res.user.email;
-      const userData = await getUserDataFirestore(uid);
+      const userData = await checkIfExist(uid);
 
       if (userData) {
         if (tempCart) {
@@ -237,9 +317,18 @@ function AuthProvider({ children }) {
         }
         updateUserData(uid, userData, false);
       } else {
-        setAuthUserFirestore(
-          await createUserFirestore(uid, userName, lastName, email, "", "Twitter", tempCart ? [tempCart] : [])
-        );
+        await startSession(res.user);
+        const data = {
+          id: uid,
+          name: userName,
+          lastName: lastName,
+          age: "",
+          email: email,
+          signProvider: "Twitter",
+          cart: tempCart ? [tempCart] : [],
+        };
+        const getData = await createUser(res.user, data);
+        setAuthUserFirestore(getData);
         setSuccessMsg("newUser");
       }
       tempCart && setTempCart(null);
@@ -255,6 +344,7 @@ function AuthProvider({ children }) {
       router.push("/");
       setErrorMsg(errorMessage);
     }
+    setBlock(false);
   }
 
   async function updateUserData(uid, userData, onlyOrders) {
@@ -273,33 +363,6 @@ function AuthProvider({ children }) {
     setUserOrders([]);
     setAdmin(false);
   }
-  const startSession = async (user) => {
-    try {
-      const idToken = await user.getIdToken(true);
-      const payload = {
-        secret: process.env.NEXT_PUBLIC_API_KEY,
-        idToken: idToken,
-      };
-      return await axios.post("/api/session/start/", payload);
-    } catch (error) {
-      console.log(error);
-      setErrorMsg("Unauthorized token.");
-      logoutUser();
-    }
-  };
-  const destroySession = async (user) => {
-    try {
-      const idToken = await user.getIdToken(true);
-      const payload = {
-        secret: process.env.NEXT_PUBLIC_API_KEY,
-        idToken: idToken,
-      };
-      await axios.post("/api/session/destroy/", payload);
-      return;
-    } catch (error) {
-      throw error;
-    }
-  };
 
   //Menage users login/out states
   useEffect(() => {
@@ -309,7 +372,7 @@ function AuthProvider({ children }) {
         // create session cookie and check admin role
         const res = await startSession(user);
         setAdmin(false);
-        res.data.admin && setAdmin(true);
+        res?.data?.admin && setAdmin(true);
 
         if (!authUserFirestore && !refBlock.current) {
           await updateUserData(user.uid, null, false); //after logging in load all the user data, but block it just after registration

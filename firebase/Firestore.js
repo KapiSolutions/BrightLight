@@ -1,15 +1,5 @@
 import { db } from "../config/firebase";
-import {
-  doc,
-  getDoc,
-  getDocs,
-  setDoc,
-  deleteDoc,
-  updateDoc,
-  collection,
-  query,
-  where,
-} from "firebase/firestore";
+import { doc, getDoc, getDocs, setDoc, deleteDoc, updateDoc, collection, query, where } from "firebase/firestore";
 
 const createDocFirestore = async (collection, docID, data) => {
   const docRef = doc(db, collection, docID);
@@ -43,7 +33,7 @@ const createUserFirestore = async (uid, name, lastName, email, age, provider, ca
   }
 };
 
-const getUserDataFirestore = async (uid) => {
+const getUserDataFirestore = async (uid, acceptError) => {
   const docRef = doc(db, "users", uid);
   try {
     const docSnap = await getDoc(docRef);
@@ -53,8 +43,12 @@ const getUserDataFirestore = async (uid) => {
       return null;
     }
   } catch (err) {
-    console.log("getUserDataFirestore error: ", err);
-    throw err;
+    if (acceptError) {
+      return null;
+    } else {
+      console.log("getUserDataFirestore error: ", err);
+      throw err;
+    }
   }
 };
 
