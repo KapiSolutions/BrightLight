@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { useAuth } from "../../context/AuthProvider";
 import { Badge, Button, Modal, Spinner } from "react-bootstrap";
@@ -16,11 +16,12 @@ function BlogItemAdmin(props) {
   const locale = router.locale;
   const post = props.post;
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const { setErrorMsg } = useAuth();
+  const { setErrorMsg, authUserCredential } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
   const [loadingDel, setLoadingDel] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [idToken, setIdToken] = useState(undefined);
   const cardsIcon = "/img/cards-light.png";
 
   const t = {
@@ -48,6 +49,16 @@ function BlogItemAdmin(props) {
     },
   };
 
+  const getToken = async () => {
+    const token = await authUserCredential.getIdToken(true);
+    setIdToken(token.toString());
+  };
+
+  useEffect(() => {
+    getToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
@@ -56,12 +67,13 @@ function BlogItemAdmin(props) {
     try {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
-        paths: ["/admin/blogs", "/blog"]
-      }
-      
+        idToken: idToken,
+        paths: ["/admin/blogs", "/blog"],
+      };
+
       await deleteDocInCollection("blog", post.id);
       await deleteFilesInDirStorage(`images/blog/${post.id}`);
-      await axios.post("/api/revalidate", revalidateData);
+      await axios.post("/api/revalidate/", revalidateData);
       props.refresh(); //refresh the blog list after deleting
       setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
@@ -112,7 +124,7 @@ function BlogItemAdmin(props) {
                 <p className="mb-0">{post.title[locale]}</p>
                 <i>
                   <small>
-                  {t[locale].by} {post.author} - {timeStampToDate(post.date).toLocaleDateString()}
+                    {t[locale].by} {post.author} - {timeStampToDate(post.date).toLocaleDateString()}
                   </small>
                 </i>
               </>
@@ -222,10 +234,10 @@ function BlogItemAdmin(props) {
                 disabled={loadingEdit}
               >
                 {loadingEdit ? (
-                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                  ) : (
-                    "Edit"
-                  )}
+                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                ) : (
+                  "Edit"
+                )}
               </Button>
               <Button
                 variant="primary"

@@ -25,7 +25,7 @@ export default async function verifyToken(req, res) {
       // Check sessionCookie
       const sessionCookie = getCookie("session", { req, res }) || "";
       if (!sessionCookie) {
-        res.status(401).send("UNAUTHORIZED REQUEST!");
+        res.status(401).end("UNAUTHORIZED REQUEST!");
         return;
       }
       const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
@@ -35,11 +35,11 @@ export default async function verifyToken(req, res) {
         deleteCookie("session", { req, res });
         res.status(200).end(JSON.stringify({ status: "success" }));
       } else {
-        res.status(401).send("UNAUTHORIZED REQUEST!");
+        res.status(401).end("UNAUTHORIZED REQUEST!");
       }
     } catch (error) {
       console.log("error: ", error);
-      res.status(500).send(error);
+      res.status(500).end(error);
     }
   } else {
     res.setHeader("Allow", "POST");

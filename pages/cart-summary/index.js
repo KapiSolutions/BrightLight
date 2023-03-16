@@ -11,7 +11,7 @@ import { useDeviceStore } from "../../stores/deviceStore";
 import { getFileUrlStorage } from "../../firebase/Storage";
 import CartItem from "../../components/Cart/CartItem";
 import { v4 as uuidv4 } from "uuid";
-import { setup } from '../../config/csrf';
+import { setup } from "../../config/csrf";
 
 export default function CartSummaryPage() {
   const router = useRouter();
@@ -19,13 +19,23 @@ export default function CartSummaryPage() {
   const { isAuthenticated, authUserFirestore, setErrorMsg, updateProfile, authUserCredential } = useAuth();
   const [totalPrice, setTotalPrice] = useState(0);
   const [loading, setLoading] = useState(undefined);
+  const [idToken, setIdToken] = useState(undefined);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const currency = useDeviceStore((state) => state.currency);
   const theme = useDeviceStore((state) => state.themeState);
 
+  const getToken = async () => {
+    const token = await authUserCredential.getIdToken(true);
+    setIdToken(token.toString());
+  };
+
   useEffect(() => {
     if (isAuthenticated()) {
-      authUserFirestore?.cart.length == 0 && !loading && router.replace("/");
+      if (authUserFirestore?.cart.length == 0 && !loading) {
+        router.replace("/");
+      } else {
+        getToken();
+      }
     } else {
       router.replace("/sign-in");
       return;
@@ -130,7 +140,6 @@ export default function CartSummaryPage() {
     };
     //CREATE ORDER IN THE FIRESTORE
     try {
-      const idToken = await authUserCredential.getIdToken(true);
       const payload = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
@@ -139,81 +148,81 @@ export default function CartSummaryPage() {
           collection: "orders",
           insert: order,
         },
-      };      
-      const data = await axios.post("/api/admin/firebase/", payload);
-      console.log(data.data)
+      };
+      await axios.post("/api/admin/firebase/", payload);
       //Clean the cart
       // await updateProfile({ cart: [] });
     } catch (error) {
-      setErrorMsg(t[locale].sthWrong + " (" + error.response.statusText +")");
+      setErrorMsg(t[locale].sthWrong + " (" + error.response.statusText + ")");
       setLoading(undefined);
       return;
     }
 
-    // !Delete setLoading after test: 
+    // !Delete setLoading after test:
     setLoading(undefined);
     // !
 
-    if(false){
-    //START STRIPE CHECKOUT SESSION
-    try {
-      //prepare stripe product data
-      const stripeCart = order.items.map((item) => ({
-        price: item.price[currency].s_id,
-        quantity: 1,
-      }));
-      //prepare cart items data for email notification
-      const cartItems = await Promise.all(
-        order.items.map(async (item) => ({
-          name: item.name[locale],
-          price: item.price[currency].amount,
-          currency: currency,
-          image: await getFileUrlStorage(`images/products/${item.product_id}`, item.image.name),
-        }))
-      );
+    if (false) {
+      //START STRIPE CHECKOUT SESSION
+      try {
+        //prepare stripe product data
+        const stripeCart = order.items.map((item) => ({
+          price: item.price[currency].s_id,
+          quantity: 1,
+        }));
+        //prepare cart items data for email notification
+        const cartItems = await Promise.all(
+          order.items.map(async (item) => ({
+            name: item.name[locale],
+            price: item.price[currency].amount,
+            currency: currency,
+            image: await getFileUrlStorage(`images/products/${item.product_id}`, item.image.name),
+          }))
+        );
 
-      const payload = {
-        secret: process.env.NEXT_PUBLIC_API_KEY,
-        data: {
-          sendOrderConfirmEmail: true,
-          orderID: order.id,
-          userName: order.userName,
-          userEmail: order.userEmail,
-          totalPrice: order.totalPrice,
-          currency: order.currency,
-          cartItems: cartItems,
-          stripeCart: stripeCart,
-          localeLanguage: localeLanguage,
-          localeTimeZone: localeTimeZone,
-          language: order.language,
-          timeCreate: order.timeCreate.toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
-        },
-      };
-      //Start checkoutSession
-      const res = await axios.post("/api/stripe/checkout_session", payload);
-      if (res.status === 500) {
-        console.error(res.message);
-        return;
-      }
-      // Redirect to checkout
-      const stripe = await getStripe();
-      router.push(res.data.url);
-      const { error } = await stripe.redirectToCheckout({ sessionId: res.data.id });
-      
-      if (error) {
-        console.error(error.message);
+        const payload = {
+          secret: process.env.NEXT_PUBLIC_API_KEY,
+          idToken: idToken,
+          data: {
+            sendOrderConfirmEmail: true,
+            orderID: order.id,
+            userName: order.userName,
+            userEmail: order.userEmail,
+            totalPrice: order.totalPrice,
+            currency: order.currency,
+            cartItems: cartItems,
+            stripeCart: stripeCart,
+            localeLanguage: localeLanguage,
+            localeTimeZone: localeTimeZone,
+            language: order.language,
+            timeCreate: order.timeCreate.toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
+          },
+        };
+        //Start checkoutSession
+        const res = await axios.post("/api/stripe/checkout_session", payload);
+        if (res.status === 500) {
+          console.error(res.message);
+          return;
+        }
+        // Redirect to checkout
+        const stripe = await getStripe();
+        router.push(res.data.url);
+        const { error } = await stripe.redirectToCheckout({ sessionId: res.data.id });
+
+        if (error) {
+          console.error(error.message);
+          setErrorMsg(t[locale].redirectingFail);
+          router.replace("/user/orders#main");
+        }
+        setLoading(undefined);
+      } catch (error) {
+        console.log(error);
+        setLoading(undefined);
         setErrorMsg(t[locale].redirectingFail);
         router.replace("/user/orders#main");
+        return;
       }
-      setLoading(undefined);
-    } catch (error) {
-      console.log(error);
-      setLoading(undefined);
-      setErrorMsg(t[locale].redirectingFail);
-      router.replace("/user/orders#main");
-      return;
     }
-  }
   }
 
   return (
@@ -411,6 +420,6 @@ export default function CartSummaryPage() {
   );
 }
 
-export const getServerSideProps = setup(async ({req, res}) => {
-  return { props: {}}
+export const getServerSideProps = setup(async ({ req, res }) => {
+  return { props: {} };
 });

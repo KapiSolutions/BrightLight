@@ -13,7 +13,8 @@ function OrderDetails(props) {
   const router = useRouter();
   const locale = router.locale;
   const order = props.order;
-  const { setErrorMsg } = useAuth();
+  const { setErrorMsg, authUserCredential } = useAuth();
+  const [idToken, setIdToken] = useState(undefined);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [answersQt, setAnswersQt] = useState(Array.from(Array(order.items.length), () => false)); //[false,false...], set tu true when item is answered
   const [readyToFinish, setReadyToFinish] = useState(false);
@@ -83,6 +84,16 @@ function OrderDetails(props) {
       modalButton: "Super!",
     },
   };
+
+  const getToken = async () => {
+    const token = await authUserCredential.getIdToken(true);
+    setIdToken(token.toString());
+  };
+
+  useEffect(() => {
+    getToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const answersQtFunc = (idx) => {
     let arr = [...answersQt];
@@ -163,6 +174,7 @@ function OrderDetails(props) {
   const sendEmail = async (data) => {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
+      idToken: idToken,
       data: data,
       type: "orderFinished",
     };

@@ -16,6 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 import { createDocFirestore, getDocById, updateDocFields } from "../../firebase/Firestore";
 import SuccessModal from "../Modals/SuccessModal";
 import { SiGoogletranslate } from "react-icons/si";
+import { useAuth } from "../../context/AuthProvider";
 
 function BlogTemplate(props) {
   const router = useRouter();
@@ -27,6 +28,7 @@ function BlogTemplate(props) {
   const dateRef = useRef();
   const mainImgSourceRef = useRef();
 
+  const { setErrorMsg, authUserCredential } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const [langPreview, setLangPreview] = useState(locale);
@@ -44,6 +46,7 @@ function BlogTemplate(props) {
   const [mainPicStyle, setMainPicStyle] = useState("cover");
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [idToken, setIdToken] = useState(undefined);
   const invalidInit = { title: false, mainImg: false, content: false, author: false, date: false };
   const [invalid, updateInvalid] = useReducer((state, updates) => ({ ...state, ...updates }), invalidInit);
   const initPost = {
@@ -145,7 +148,10 @@ function BlogTemplate(props) {
       back: "Wróć",
     },
   };
-
+  const getToken = async () => {
+    const token = await authUserCredential.getIdToken(true);
+    setIdToken(token.toString());
+  };
   //Update Blog content on evry editor state change
   useEffect(() => {
     setShowPreview(false);
@@ -162,6 +168,7 @@ function BlogTemplate(props) {
       setTagsString(postEdit.tags.join(" "));
       setTags([...postEdit.tags]);
     }
+    getToken();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -419,13 +426,14 @@ function BlogTemplate(props) {
       }
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
         paths: ["/admin/blogs", "/blog"],
       };
       if (postEdit) {
         revalidateData.paths.push(`/blog/${readyBlog.id}`);
       }
 
-      await axios.post("/api/revalidate", revalidateData);
+      await axios.post("/api/revalidate/", revalidateData);
       setShowSuccess(postEdit ? t[locale].successEdited : t[locale].successCreated);
       setLoading(false);
     } catch (error) {

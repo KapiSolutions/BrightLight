@@ -1,7 +1,8 @@
 import { auth, db } from "../../../../config/firebaseAdmin";
+import { csrf } from "../../../../config/csrf";
 import {setCookie} from "cookies-next";
 
-export default async function verifyToken(req, res) {
+async function verifyToken(req, res) {
   const { secret, idToken } = req.body;
 
   // Check the secret key first
@@ -22,13 +23,12 @@ export default async function verifyToken(req, res) {
   const adminRoleCheck = async (uid) => {
     const response = await db.collection("users").doc(uid).get();
     const doc = response.data();
-    if (doc.role == process.env.NEXT_PUBLIC_ADMIN_KEY) {
+    if (doc.role == process.env.ADMIN_KEY) {
       return true;
     } else {
       return false;
     }
   };
-
 
   if (req.method === "POST") {
     try {
@@ -50,3 +50,5 @@ export default async function verifyToken(req, res) {
     res.status(405).end("Method Not Allowed");
   }
 }
+
+export default csrf(verifyToken);

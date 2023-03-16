@@ -23,7 +23,8 @@ function Order(props) {
   const config = appConfig();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [tmpOrder, setTmpOrder] = useState(null);
-  const { setErrorMsg } = useAuth();
+  const { setErrorMsg, authUserCredential } = useAuth();
+  const [idToken, setIdToken] = useState(undefined);
   const [errorEmail, setErrorEmail] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loading, setLoading] = useState(false); //used for notification sending
@@ -102,6 +103,11 @@ function Order(props) {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
 
+  const getToken = async () => {
+    const token = await authUserCredential.getIdToken(true);
+    setIdToken(token.toString());
+  };
+
   useEffect(() => {
     if (order.notificationTime || tmpOrder?.notificationTime) {
       setNotificationSended(true);
@@ -109,6 +115,7 @@ function Order(props) {
       setNotificationSended(false);
       setPaymentDisabled(false);
     }
+    getToken();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -134,6 +141,7 @@ function Order(props) {
   const sendEmail = async (data) => {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
+      idToken: idToken,
       data: data,
       type: "orderCancelled",
     };
@@ -174,6 +182,7 @@ function Order(props) {
       };
       const payload = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
         data: data,
         type: "unpaidNotification",
       };
@@ -446,7 +455,8 @@ function Order(props) {
                     <>
                       {loading ? (
                         <span>
-                          {t[locale].sending} <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                          {t[locale].sending}{" "}
+                          <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                         </span>
                       ) : (
                         <span>
@@ -464,7 +474,7 @@ function Order(props) {
             {isMobile && (
               <div className="text-center mt-4 mb-4">
                 <Button variant="outline-accent4" className="pointer" onClick={showDetailsFunc}>
-                {t[locale].hide}
+                  {t[locale].hide}
                 </Button>
               </div>
             )}

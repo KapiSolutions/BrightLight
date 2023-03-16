@@ -32,7 +32,7 @@ function ProductTemplate(props) {
   const cardsRef = useRef();
   const categoryRef = useRef();
 
-  const { setErrorMsg } = useAuth();
+  const { setErrorMsg, authUserCredential } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const [langPreview, setLangPreview] = useState(locale);
@@ -43,6 +43,7 @@ function ProductTemplate(props) {
   const [showPreview, setShowPreview] = useState(false);
   const [loading, setLoading] = useState(false);
   const [loadingExc, setLoadingExc] = useState(false);
+  const [idToken, setIdToken] = useState(undefined);
   const invalidInit = {
     title: false,
     image: false,
@@ -142,6 +143,10 @@ function ProductTemplate(props) {
       successAdded: "Produkt pomyślnie dodany!",
     },
   };
+  const getToken = async () => {
+    const token = await authUserCredential.getIdToken(true);
+    setIdToken(token.toString());
+  };
 
   useEffect(() => {
     if (prodEdit) {
@@ -152,6 +157,7 @@ function ProductTemplate(props) {
         })
         .catch((error) => console.log(error));
     }
+    getToken();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -318,6 +324,7 @@ function ProductTemplate(props) {
   const addStripeProduct = async (lang, ccy, imgUrl) => {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
+      idToken: idToken,
       mode: "create",
       data: {
         name: product.title[lang],
@@ -330,7 +337,7 @@ function ProductTemplate(props) {
       },
     };
     try {
-      return await axios.post("/api/stripe/products", payload);
+      return await axios.post("/api/stripe/products/", payload);
     } catch (error) {
       console.log(error);
       throw error;
@@ -363,12 +370,13 @@ function ProductTemplate(props) {
 
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
+      idToken: idToken,
       mode: "update",
       data: { prod: tmpData, price: tmpPrice, id: prodEdit.price[ccy].prod_id },
     };
     if (tmpData || tmpPrice) {
       try {
-        return await axios.post("/api/stripe/products", payload);
+        return await axios.post("/api/stripe/products/", payload);
       } catch (error) {
         console.log(error);
         throw error;
@@ -391,13 +399,14 @@ function ProductTemplate(props) {
       }
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
         paths: ["/admin/products", "/"],
       };
       if (prodEdit) {
         revalidateData.paths.push(`/product/${readyProduct.id}`);
       }
 
-      await axios.post("/api/revalidate", revalidateData);
+      await axios.post("/api/revalidate/", revalidateData);
       setShowSuccess(prodEdit ? t[locale].successEdited : t[locale].successAdded);
       setLoading(false);
     } catch (error) {

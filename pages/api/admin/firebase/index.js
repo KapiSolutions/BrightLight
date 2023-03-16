@@ -9,7 +9,7 @@ async function firebaseAdmin(req, res) {
   const adminRoleCheck = async (uid) => {
     const response = await db.collection("users").doc(uid).get();
     const doc = response.data();
-    if (doc.role == process.env.NEXT_PUBLIC_ADMIN_KEY) {
+    if (doc.role == process.env.ADMIN_KEY) {
       return true;
     } else {
       return false;
@@ -44,9 +44,7 @@ async function firebaseAdmin(req, res) {
             //     ...data.insert,
             //     timeCreate: data.insert.timeCreate ? new Date(data.insert.timeCreate) : new Date(),
             //   });
-            // res.status(200).send("Document created!");
-            console.log("Yeah")
-            res.status(200).json({ admin: admin });
+            res.status(200).send("Document created!");
           } catch (e) {
             res.status(500).send(e);
           }

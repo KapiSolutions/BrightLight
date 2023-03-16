@@ -17,12 +17,23 @@ function Product(props) {
   const product = props.product;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
-  const { setErrorMsg } = useAuth();
+  const { setErrorMsg, authUserCredential } = useAuth();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [loadingEdit, setLoadingEdit] = useState(false);
   const [loadingDel, setLoadingDel] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
+  const [idToken, setIdToken] = useState(undefined);
+
+  const getToken = async () => {
+    const token = await authUserCredential.getIdToken(true);
+    setIdToken(token.toString());
+  };
+
+  useEffect(() => {
+    getToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
@@ -72,6 +83,7 @@ function Product(props) {
     try {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
         paths: ["/admin/products", "/"],
       };
 
@@ -79,7 +91,7 @@ function Product(props) {
       await deleteStripeProduct("usd");
       await deleteStripeProduct("pln");
       await deleteFilesInDirStorage(`images/products/${product.id}`);
-      await axios.post("/api/revalidate", revalidateData);
+      await axios.post("/api/revalidate/", revalidateData);
       props.refresh(); //refresh the product list
       setShowConfirmModal({ msg: "", itemID: "" });
     } catch (error) {
@@ -95,10 +107,11 @@ function Product(props) {
     try {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
-        paths: ["/","/admin/products"],
+        idToken: idToken,
+        paths: ["/", "/admin/products"],
       };
       await updateDocFields("products", product.id, { active: !product.active });
-      await axios.post("/api/revalidate", revalidateData);
+      await axios.post("/api/revalidate/", revalidateData);
       props.refresh(); //refresh the product list
     } catch (error) {
       console.log(error);

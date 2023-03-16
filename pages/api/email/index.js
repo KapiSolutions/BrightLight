@@ -1,22 +1,39 @@
 import sendEmail from "../../../utils/emails/sendEmail";
+import { auth, db } from "../../../config/firebaseAdmin";
+import { csrf } from "../../../config/csrf";
+import verifyRequest from "../../../utils/verifyRequest";
 
-export default async function orderFinishEmail(req, res) {
+async function emailHandler(req, res) {
   if (req.method === "POST") {
-    const { secret, data, type } = req.body;
+    const { secret, idToken, data, type } = req.body;
 
-    // Check the secret key first
-    if (secret !== process.env.NEXT_PUBLIC_API_KEY) {
-      return res.status(401).json({ message: "Invalid token" });
-    }
+    const adminRoleCheck = async (uid) => {
+      const response = await db.collection("users").doc(uid).get();
+      const doc = response.data();
+      if (doc.role == process.env.ADMIN_KEY) {
+        return true;
+      } else {
+        return false;
+      }
+    };
 
-    try {
-      await sendEmail(type, data, data.language);
-      return res.status(200).end("OK");
-    } catch (error) {
-      return res.status(500).end("Error revalidating");
+    const uid = await verifyRequest(auth, secret, idToken, req, res);
+    // If verified request then check if admin
+    if (uid) {
+      const admin = await adminRoleCheck(uid);
+      if (admin) {
+        try {
+          await sendEmail(type, data, data.language);
+          return res.status(200).end("OK");
+        } catch (error) {
+          return res.status(500).end("Error revalidating");
+        }
+      }
     }
   } else {
     res.setHeader("Allow", "POST");
     res.status(405).end("Method Not Allowed");
   }
 }
+
+export default csrf(emailHandler);
