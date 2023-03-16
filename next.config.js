@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+let prod = process.env.NODE_ENV == "production";
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -33,7 +34,7 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self' https://vitals.vercel-insights.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://www.google.com/images/cleardot.gif; form-action 'self'; style-src 'self'; script-src 'self' https://firestore.googleapis.com https://securetoken.googleapis.com https://google-analytics.com https://ajax.googleapis.com https://googletagmanager.com https://identitytoolkit.googleapis.com https://cdn.lr-in-prod.com https://vitals.vercel-insights.com/ ;",
+              `default-src 'self' https://vitals.vercel-insights.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com  https://firebasestorage.googleapis.com  https://www.google.com/images/cleardot.gif; form-action 'self'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; img-src 'self' https://firebasestorage.googleapis.com ; script-src 'self' ${prod ? "" : "'unsafe-eval'"} https://firestore.googleapis.com https://securetoken.googleapis.com https://google-analytics.com https://ajax.googleapis.com https://www.googletagmanager.com https://identitytoolkit.googleapis.com https://cdn.lr-in-prod.com https://vitals.vercel-insights.com/ ;`,
           },
           {
             key: "X-Content-Type-Options",
