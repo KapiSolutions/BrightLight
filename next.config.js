@@ -33,7 +33,7 @@ const nextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "default-src 'self'; form-action 'self'; style-src 'self'; script-src 'self' 'https://firestore.googleapis.com' 'https://securetoken.googleapis.com' 'https://google-analytics.com' 'https://ajax.googleapis.com' 'https://googletagmanager.com' 'https://identitytoolkit.googleapis.com' 'https://cdn.lr-in-prod.com' 'https://vitals.vercel-insights.com/' ;",
+              "default-src 'self' 'https://vitals.vercel-insights.com' 'https://identitytoolkit.googleapis.com' 'https://securetoken.googleapis.com' 'https://firestore.googleapis.com' 'https://www.google.com/images/cleardot.gif'; form-action 'self'; style-src 'self'; script-src 'self' 'https://firestore.googleapis.com' 'https://securetoken.googleapis.com' 'https://google-analytics.com' 'https://ajax.googleapis.com' 'https://googletagmanager.com' 'https://identitytoolkit.googleapis.com' 'https://cdn.lr-in-prod.com' 'https://vitals.vercel-insights.com/' ;",
           },
           {
             key: "X-Content-Type-Options",
