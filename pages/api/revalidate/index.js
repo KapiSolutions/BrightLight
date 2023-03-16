@@ -1,4 +1,4 @@
-import { auth } from "../../../config/firebaseAdmin";
+import { auth, db } from "../../../config/firebaseAdmin";
 import { csrf } from "../../../config/csrf";
 import verifyRequest from "../../../utils/verifyRequest";
 
