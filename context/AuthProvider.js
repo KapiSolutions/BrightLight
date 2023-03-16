@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
+import axios from "axios";
 import { useRouter } from "next/router";
 import { auth } from "../config/firebase";
 import {
@@ -23,7 +24,7 @@ import {
   TwitterAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import useStateRef from 'react-usestateref'
+import useStateRef from "react-usestateref";
 
 const AuthContext = React.createContext();
 
@@ -44,13 +45,21 @@ function AuthProvider({ children }) {
   const GoogleProvider = new GoogleAuthProvider();
   const FacebookProvider = new FacebookAuthProvider();
   const TwitterProvider = new TwitterAuthProvider();
-  var [block,setBlock,refBlock]=useStateRef(false);
+  var [block, setBlock, refBlock] = useStateRef(false);
 
   async function registerUser(email, password, name) {
     try {
       setBlock(true);
       const res = await createUserWithEmailAndPassword(auth, email, password);
-      const userData = await createUserFirestore(res.user.uid, name, "", email, "", "emailAndPassword", tempCart ? [tempCart] : [])
+      const userData = await createUserFirestore(
+        res.user.uid,
+        name,
+        "",
+        email,
+        "",
+        "emailAndPassword",
+        tempCart ? [tempCart] : []
+      );
       setAuthUserFirestore(userData);
       tempCart && setTempCart(null);
       setBlock(false);
@@ -75,9 +84,17 @@ function AuthProvider({ children }) {
       updateUserData(res.user.uid, null);
     });
   }
-  function logoutUser() {
-    return auth.signOut();
-  }
+  const logoutUser = async () => {
+    try {
+      await destroySession(authUserCredential);
+      auth.signOut();
+      router.push("/");
+      return;
+    } catch (error) {
+      console.log(error);
+      setErrorMsg("Unauthorized token.");
+    }
+  };
   async function deleteAccount() {
     try {
       await deleteDocInCollection("users", authUserCredential.uid);
@@ -255,11 +272,40 @@ function AuthProvider({ children }) {
     setAuthUserFirestore(null);
     setUserOrders([]);
   }
+  const startSession = async (user) => {
+    try {
+      const idToken = await user.getIdToken(true);
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
+      };
+      await axios.post("/api/session/start/", payload);
+    } catch (error) {
+      console.log(error);
+      setErrorMsg("Unauthorized token.");
+      logoutUser();
+    }
+  };
+  const destroySession = async (user) => {
+    try {
+      const idToken = await user.getIdToken(true);
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
+      };
+      await axios.post("/api/session/destroy/", payload);
+      return;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   //Menage users login/out states
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setAuthUserCredential(user);
       if (user) {
+        await startSession(user);
         if (!authUserFirestore && !refBlock.current) {
           await updateUserData(user.uid, null, false); //after logging in load all the user data, but block it just after registration
         }

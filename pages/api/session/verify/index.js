@@ -1,9 +1,10 @@
 import { auth } from "../../../../config/firebaseAdmin";
-import { getCookies, getCookie, setCookie, deleteCookie } from "cookies-next";
+import { getCookie} from "cookies-next";
 
 export default async function verifyToken(req, res) {
   const { secret, idToken } = req.body;
   const headers = req.headers;
+  console.log(headers)
 
   // Check the secret key first
   if (secret !== process.env.NEXT_PUBLIC_API_KEY) {
