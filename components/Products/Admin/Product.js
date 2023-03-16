@@ -127,6 +127,7 @@ function Product(props) {
   const deleteStripeProduct = async (ccy) => {
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
+      idToken: idToken,
       mode: "delete",
       data: {
         prod_id: product.price[ccy].prod_id,
@@ -134,7 +135,7 @@ function Product(props) {
       },
     };
     try {
-      return await axios.post("/api/stripe/products", payload);
+      return await axios.post("/api/stripe/products/", payload);
     } catch (error) {
       console.log(error);
       throw error;
