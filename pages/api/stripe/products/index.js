@@ -1,6 +1,7 @@
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 import { auth, db } from "../../../../config/firebaseAdmin";
 import { csrf } from "../../../../config/csrf";
+import verifyRequest from "../../../../utils/verifyRequest";
 // https://stripe.com/docs/api/products/create?lang=node
 // https://stripe.com/docs/api/prices/create
 
