@@ -27,13 +27,12 @@ async function revalidate(req, res) {
           await Promise.all(
             paths.map(async (path) => {
               await res.revalidate(path);
-              await res.revalidate("/pl" + path);
-              await res.revalidate("/en" + path);
             })
           );
 
           return res.status(200).json({ revalidated: true });
         } catch (error) {
+          console.log(error);
           return res.status(500).end("Error revalidating");
         }
       }
