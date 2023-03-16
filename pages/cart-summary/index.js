@@ -11,8 +11,9 @@ import { useDeviceStore } from "../../stores/deviceStore";
 import { getFileUrlStorage } from "../../firebase/Storage";
 import CartItem from "../../components/Cart/CartItem";
 import { v4 as uuidv4 } from "uuid";
+import { setup } from '../../config/csrf';
 
-function CartSummaryPage() {
+export default function CartSummaryPage() {
   const router = useRouter();
   const locale = router.locale;
   const { isAuthenticated, authUserFirestore, setErrorMsg, updateProfile, authUserCredential } = useAuth();
@@ -129,29 +130,18 @@ function CartSummaryPage() {
     };
     //CREATE ORDER IN THE FIRESTORE
     try {
+      const idToken = await authUserCredential.getIdToken(true);
       const payload = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
         mode: "create-doc",
         data: {
           collection: "orders",
           insert: order,
         },
-      };
-      // *
-      try {
-        const idToken = await authUserCredential.getIdToken(true);
-        console.log(idToken)
-        const payload = {
-          secret: process.env.NEXT_PUBLIC_API_KEY,
-          idToken: idToken,
-        };
-        await axios.post("/api/session/verify/", payload);
-      } catch (error) {
-        console.log(error)
-      }
-      // *
-      
-      // await axios.post("/api/admin/firebase/", payload);
+      };      
+      const data = await axios.post("/api/admin/firebase/", payload);
+      console.log(data.data)
       //Clean the cart
       // await updateProfile({ cart: [] });
     } catch (error) {
@@ -421,4 +411,6 @@ function CartSummaryPage() {
   );
 }
 
-export default CartSummaryPage;
+export const getServerSideProps = setup(async ({req, res}) => {
+  return { props: {}}
+});

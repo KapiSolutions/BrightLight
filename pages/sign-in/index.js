@@ -2,13 +2,11 @@ import React from "react";
 import Head from "next/head";
 import LayoutSign from "../../components/layout/Sign/LayoutSign";
 import SignInForm from "../../components/SignInForm";
-import useLocalStorageState from "use-local-storage-state";
+import { setup } from '../../config/csrf';
+import { useDeviceStore } from "../../stores/deviceStore";
 
 function SignIn() {
-  const [theme, setTheme] = useLocalStorageState("theme", {
-    ssr: true,
-    defaultValue: "light",
-  });
+  const theme = useDeviceStore((state) => state.themeState);
   return (
     <>
       <Head>
@@ -25,3 +23,7 @@ export default SignIn;
 SignIn.getLayout = function getLayout(page) {
   return <LayoutSign>{page}</LayoutSign>;
 };
+
+export const getServerSideProps = setup(async ({req, res}) => {
+  return { props: {}}
+});

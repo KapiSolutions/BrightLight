@@ -271,6 +271,7 @@ function AuthProvider({ children }) {
   function clearUserData() {
     setAuthUserFirestore(null);
     setUserOrders([]);
+    setAdmin(false);
   }
   const startSession = async (user) => {
     try {
@@ -279,7 +280,7 @@ function AuthProvider({ children }) {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
       };
-      await axios.post("/api/session/start/", payload);
+      return await axios.post("/api/session/start/", payload);
     } catch (error) {
       console.log(error);
       setErrorMsg("Unauthorized token.");
@@ -305,7 +306,11 @@ function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setAuthUserCredential(user);
       if (user) {
-        await startSession(user);
+        // create session cookie and check admin role
+        const res = await startSession(user);
+        setAdmin(false);
+        res.data.admin && setAdmin(true);
+
         if (!authUserFirestore && !refBlock.current) {
           await updateUserData(user.uid, null, false); //after logging in load all the user data, but block it just after registration
         }
@@ -317,11 +322,6 @@ function AuthProvider({ children }) {
     return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  //check if user has Admin role
-  useEffect(() => {
-    setAdmin(authUserFirestore?.role === process.env.NEXT_PUBLIC_ADMIN_KEY);
-  }, [authUserFirestore?.role]);
 
   const value = {
     authUserCredential,

@@ -14,7 +14,7 @@ function User(props) {
   const router = useRouter();
   const locale = router.locale;
   const user = props.user;
-  const { setErrorMsg } = useAuth();
+  const { setErrorMsg, authUserCredential } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [loadingDel, setLoadingDel] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -80,13 +80,15 @@ function User(props) {
   };
 
   async function deleteUser() {
+    const idToken = await authUserCredential.getIdToken(true);
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
+      idToken: idToken,
       data: { uid: user.id },
       mode: "delete-user",
     };
     try {
-      const res = await axios.post("/api/admin/firebase", payload);
+      const res = await axios.post("/api/admin/firebase/", payload);
       if (res.status === 200) {
         await deleteDocInCollection("users", user.id);
         setShowConfirmModal({ msg: "", itemID: "" });

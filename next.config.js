@@ -53,27 +53,6 @@ const nextConfig = {
           },
         ],
       },
-      // {
-      //   source: "/(.*)",
-      //   has: [
-      //     {
-      //       type: "query",
-      //       key: "secret",
-      //       value: process.env.NEXT_PUBLIC_API_KEY,
-      //     },
-      //     {
-      //       type: "cookie",
-      //       key: "authorized",
-      //       value: "true",
-      //     },
-      //   ],
-      //   headers: [
-      //     {
-      //       key: "x-authorized",
-      //       value: ":authorized:",
-      //     },
-      //   ],
-      // },
     ];
   },
 };
