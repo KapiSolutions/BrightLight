@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { auth } from "../config/firebase";
 import {
   getUserDataFirestore,
-  createUserFirestore,
   deleteDocInCollection,
   updateDocFields,
   queryByFirestore,

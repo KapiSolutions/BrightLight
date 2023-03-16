@@ -13,26 +13,6 @@ const createDocFirestore = async (collection, docID, data) => {
   }
 };
 
-const createUserFirestore = async (uid, name, lastName, email, age, provider, cart) => {
-  const userData = {
-    id: uid,
-    name: name,
-    lastName: lastName,
-    age: age,
-    email: email,
-    role: "user",
-    signProvider: provider,
-    cart: cart,
-  };
-  try {
-    await setDoc(doc(db, "users", uid), userData);
-    return userData;
-  } catch (err) {
-    console.error("createUserFirestore Err: ", err);
-    throw err;
-  }
-};
-
 const getUserDataFirestore = async (uid, acceptError) => {
   const docRef = doc(db, "users", uid);
   try {
@@ -158,7 +138,6 @@ const handleLikeBlog = async (action, blogID, userID, userName) => {
 export {
   createDocFirestore,
   getUserDataFirestore,
-  createUserFirestore,
   queryByFirestore,
   deleteDocInCollection,
   updateDocFields,
