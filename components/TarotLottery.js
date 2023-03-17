@@ -14,6 +14,7 @@ import placeholder from "../utils/placeholder";
 import Link from "next/link";
 import { getDocById } from "../firebase/Firestore";
 import tarotCards from "../utils/tarotCards";
+import TarotOpenAi from "./TarotOpenAi";
 
 function TarotLotteryDesktop(props) {
   const router = useRouter();
@@ -319,8 +320,9 @@ function TarotLotteryDesktop(props) {
           </div>
         )}
 
+        {/* This section is shown after choosing all the cards by user */}
         {flipCards.length == product.cardSet && !message && (
-          <div>
+          <section>
             <h4 className="mt-0 color-primary">{t[locale].okay}</h4>
             <p className="color-primary">
               {product.cardSet == "1" ? t[locale].msgInterpretationOneCard : t[locale].msgInterpretation}
@@ -330,13 +332,14 @@ function TarotLotteryDesktop(props) {
                 <Form.Control
                   as="textarea"
                   id="questionField"
+                  maxLength="400"
                   className={`${themeDarkInput} ${noQuestion && "border-danger"}`}
                   style={{ minHeight: "150px" }}
                   required
                 />
                 {noQuestion && <small className="ms-0 text-danger">{t[locale].addQuestion}</small>}
               </FloatingLabel>
-              {!!authUserFirestore ? (
+              {authUserFirestore ? (
                 <>
                   <ButtonGroup onClick={handleBuy} className={`pointer mt-4 ${styles.animatedBorderLight} rounded`}>
                     <Button className="btn-lg" variant="primary">
@@ -372,6 +375,11 @@ function TarotLotteryDesktop(props) {
                       <span>{t[locale].addToCart}</span>
                     )}
                   </Button>
+
+                  {/* OpenAi component */}
+                  <section className="mt-4">
+                  <TarotOpenAi />
+                  </section>
                 </>
               ) : (
                 <>
@@ -383,7 +391,7 @@ function TarotLotteryDesktop(props) {
                 </>
               )}
             </Form>
-          </div>
+          </section>
         )}
         {flipCards.length == product.cardSet && message && (
           <section className="color-primary mt-1">
