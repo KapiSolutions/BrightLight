@@ -26,6 +26,7 @@ function TarotLotteryDesktop(props) {
   const { authUserFirestore, setTempCart, updateProfile, setErrorMsg } = useAuth();
   const [flipCards, setFlipCards] = useState([]);
   const [userCards, setUserCards] = useState([]);
+  const [userCardsEn, setUserCardsEn] = useState([]);//in english for the ai reading
   const [cardsSet, setcardsSet] = useState([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -107,7 +108,7 @@ function TarotLotteryDesktop(props) {
       const cardName = cardNames.en[cardNo];
       img.setAttribute("src", `${cardsUrl}/${cardName}.png`);
       setUserCards((prev) => [...prev, cardNames[locale][cardNo]]);
-
+      setUserCardsEn((prev) => [...prev, cardNames.en[cardNo]]);
       if (!isMobile) {
         document.getElementById(cardNo).style.display = "none";
       }
@@ -375,11 +376,6 @@ function TarotLotteryDesktop(props) {
                       <span>{t[locale].addToCart}</span>
                     )}
                   </Button>
-
-                  {/* OpenAi component */}
-                  <section className="mt-4">
-                  <TarotOpenAi />
-                  </section>
                 </>
               ) : (
                 <>
@@ -391,6 +387,10 @@ function TarotLotteryDesktop(props) {
                 </>
               )}
             </Form>
+            {/* OpenAi component */}
+            <section className="mt-4">
+              <TarotOpenAi tarotTitle={product.title} cards={userCardsEn}/>
+            </section>
           </section>
         )}
         {flipCards.length == product.cardSet && message && (
