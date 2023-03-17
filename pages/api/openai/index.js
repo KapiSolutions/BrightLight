@@ -1,4 +1,4 @@
-const { Configuration, OpenAIApi } = require("openai");
+import { Configuration, OpenAIApi } from "openai";
 import { auth, db } from "../../../config/firebaseAdmin";
 import { csrf } from "../../../config/csrf";
 import verifyRequest from "../../../utils/verifyRequest";
