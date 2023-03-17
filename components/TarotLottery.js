@@ -20,23 +20,28 @@ function TarotLotteryDesktop(props) {
   const router = useRouter();
   const locale = props.locale;
   const product = props.product;
+  const questionRef = useRef();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const currency = useDeviceStore((state) => state.currency);
   const { authUserFirestore, setTempCart, updateProfile, setErrorMsg } = useAuth();
   const [flipCards, setFlipCards] = useState([]);
   const [userCards, setUserCards] = useState([]);
-  const [userCardsEn, setUserCardsEn] = useState([]);//in english for the ai reading
+  const [userCardsEn, setUserCardsEn] = useState([]); //in english for the ai reading
   const [cardsSet, setcardsSet] = useState([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingBuy, setLoadingBuy] = useState(false);
   const [noQuestion, setNoQuestion] = useState(false);
+  const [chars, setChars] = useState(0);
+  const [standardTarot, setStandardTarot] = useState(true);
+  const [aiReady, setAiReady] = useState(false);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
   const cardsUrl = "/img/cards/";
   const cardNames = tarotCards();
   let cardStyleBack = {};
   let cardStyleFront = {};
+  const qMaxLen = 500;
 
   const t = {
     en: {
@@ -56,6 +61,8 @@ function TarotLotteryDesktop(props) {
       msgSuccessCart: `The ${product.title} tarot successfully added to the cart!`,
       addQuestion: "Please add your question.",
       back: "Back",
+      standardDesc:
+        "Your tarot along with selected cards and question will be interpreted by an experienced esotericist - Bright Light Gypsy!",
     },
     pl: {
       home: "Strona główna",
@@ -72,6 +79,8 @@ function TarotLotteryDesktop(props) {
       msgSuccessCart: `Tarot "${product.title}" pomyślnie dodany do koszyka!`,
       addQuestion: "Dodaj proszę swoje pytanie.",
       back: "Wróć",
+      standardDesc:
+        "Twojego tarota wraz z wybranymi kartami i zadanym pytaniem zinterpretuje doświadczona ezoteryczka, czyli ja - Bright Light Gypsy!",
     },
   };
 
@@ -139,7 +148,7 @@ function TarotLotteryDesktop(props) {
   }, []);
 
   const handleSaveAndSignIn = async () => {
-    const question = document.getElementById("questionField").value;
+    const question = questionRef.current.value;
     const doc = await getDocById("products", product.id); //get title in both languages
     if (question) {
       const cartItem = {
@@ -155,7 +164,7 @@ function TarotLotteryDesktop(props) {
     }
   };
   const handleBuy = async () => {
-    const question = document.getElementById("questionField").value;
+    const question = questionRef.current.value;
     const doc = await getDocById("products", product.id); //get title in both languages
     if (question) {
       setErrorMsg("");
@@ -188,7 +197,7 @@ function TarotLotteryDesktop(props) {
   const handleAddToCart = async () => {
     setMessage("");
     setLoading(true);
-    const question = document.getElementById("questionField").value;
+    const question = questionRef.current.value;
     const doc = await getDocById("products", product.id); //get title in both languages
     if (question) {
       const cartItem = {
@@ -321,78 +330,99 @@ function TarotLotteryDesktop(props) {
           </div>
         )}
 
-        {/* This section is shown after choosing all the cards by user */}
-        {flipCards.length == product.cardSet && !message && (
+        {/* This section is shown after choosing all the cards by user and closed after adding item to cart */}
+        {flipCards.length == product.cardSet && !message && !aiReady && (
           <section>
             <h4 className="mt-0 color-primary">{t[locale].okay}</h4>
             <p className="color-primary">
               {product.cardSet == "1" ? t[locale].msgInterpretationOneCard : t[locale].msgInterpretation}
             </p>
-            <Form className="mt-4 m-auto color-primary" style={{ maxWidth: "500px" }} onSubmit={handleSubmit}>
-              <FloatingLabel label={t[locale].txtAreaLabel}>
-                <Form.Control
-                  as="textarea"
-                  id="questionField"
-                  maxLength="400"
-                  className={`${themeDarkInput} ${noQuestion && "border-danger"}`}
-                  style={{ minHeight: "150px" }}
-                  required
-                />
-                {noQuestion && <small className="ms-0 text-danger">{t[locale].addQuestion}</small>}
-              </FloatingLabel>
-              {authUserFirestore ? (
-                <>
-                  <ButtonGroup onClick={handleBuy} className={`pointer mt-4 ${styles.animatedBorderLight} rounded`}>
-                    <Button className="btn-lg" variant="primary">
-                      {loadingBuy ? (
+
+            {/* Switch */}
+            <div className="d-flex align-items-center justify-content-center gap-3 mt-4">
+              <span className="ms-3">Standard</span>
+              <Form.Check
+                type="switch"
+                role="switch"
+                value={standardTarot}
+                onChange={() => setStandardTarot(!standardTarot)}
+              />
+              <span>AI Generated</span>
+            </div>
+
+            {standardTarot && (
+              <Form className="mt-4 m-auto color-primary" style={{ maxWidth: "500px" }} onSubmit={handleSubmit}>
+                <FloatingLabel label={t[locale].txtAreaLabel}>
+                  <Form.Control
+                    as="textarea"
+                    id="questionField"
+                    ref={questionRef}
+                    maxLength={qMaxLen}
+                    onChange={() => setChars(questionRef.current.value.length)}
+                    className={`${themeDarkInput} ${noQuestion && "border-danger"}`}
+                    style={{ minHeight: "150px" }}
+                    required
+                  />
+                  <div className="d-flex justify-content-between">
+                    <span>{noQuestion && <small className="ms-0 text-danger">{t[locale].addQuestion}</small>}</span>
+                    <small className="text-muted">
+                      {chars}/{qMaxLen}
+                    </small>
+                  </div>
+
+                  <small>{t[locale].standardDesc}</small>
+                </FloatingLabel>
+                {authUserFirestore ? (
+                  <>
+                    <ButtonGroup onClick={handleBuy} className={`pointer mt-4 ${styles.animatedBorderLight} rounded`}>
+                      <Button className="btn-lg" variant="primary">
+                        {loadingBuy ? (
+                          <>
+                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                            <span>{t[locale].loading}</span>
+                          </>
+                        ) : (
+                          <span>{t[locale].buy}</span>
+                        )}
+                      </Button>
+                      <Button variant="outline-primary" style={{ pointerEvents: "none" }}>
+                        <span>
+                          {product.price[currency].amount} <span className="text-uppercase">{currency}</span>
+                        </span>
+                      </Button>
+                    </ButtonGroup>
+                    <br />
+                    <Button
+                      variant="outline-primary"
+                      type="submit"
+                      className="mt-4"
+                      onClick={handleAddToCart}
+                      disabled={loading}
+                    >
+                      {loading ? (
                         <>
                           <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                           <span>{t[locale].loading}</span>
                         </>
                       ) : (
-                        <span>{t[locale].buy}</span>
+                        <span>{t[locale].addToCart}</span>
                       )}
                     </Button>
-                    <Button variant="outline-primary" style={{ pointerEvents: "none" }}>
-                      <span>
-                        {product.price[currency].amount} <span className="text-uppercase">{currency}</span>
-                      </span>
+                  </>
+                ) : (
+                  <>
+                    <Button className="btn-lg mt-4" type="submit" onClick={handleSaveAndSignIn}>
+                      {t[locale].save}
                     </Button>
-                  </ButtonGroup>
-                  <br />
-                  <Button
-                    variant="outline-primary"
-                    type="submit"
-                    className="mt-4"
-                    onClick={handleAddToCart}
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                        <span>{t[locale].loading}</span>
-                      </>
-                    ) : (
-                      <span>{t[locale].addToCart}</span>
-                    )}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button className="btn-lg mt-4" type="submit" onClick={handleSaveAndSignIn}>
-                    {t[locale].save}
-                  </Button>
-                  <br />
-                  <small className="color-primary">{t[locale].msgUnregistered}</small>
-                </>
-              )}
-            </Form>
-            {/* OpenAi component */}
-            <section className="mt-4">
-              <TarotOpenAi tarotTitle={product.title} cards={userCardsEn}/>
-            </section>
+                    <br />
+                    <small className="color-primary">{t[locale].msgUnregistered}</small>
+                  </>
+                )}
+              </Form>
+            )}
           </section>
         )}
+        {/* Successfuly added to cart! */}
         {flipCards.length == product.cardSet && message && (
           <section className="color-primary mt-1">
             <p>{message}</p>
@@ -408,6 +438,13 @@ function TarotLotteryDesktop(props) {
             >
               {t[locale].back}
             </Button>
+          </section>
+        )}
+
+        {/* OpenAi component */}
+        {flipCards.length == product.cardSet && !message && !standardTarot && (
+          <section className="mt-0">
+            <TarotOpenAi tarotTitle={product.title} cards={userCardsEn} aiReady={setAiReady} />
           </section>
         )}
       </Row>

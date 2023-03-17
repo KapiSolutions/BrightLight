@@ -3,13 +3,13 @@ import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import { useRouter } from "next/router";
 import { useDeviceStore } from "../stores/deviceStore";
-import { Button, FloatingLabel, Form } from "react-bootstrap";
+import { Button, FloatingLabel, Form, Spinner } from "react-bootstrap";
+import { GiGlassHeart } from "react-icons/gi";
 
 function TarotOpenAi(props) {
   const router = useRouter();
   const locale = router.locale;
   const { authUserFirestore, setErrorMsg, authUserCredential } = useAuth();
-  const [cards, setCards] = useState("");
   const [loading, setLoading] = useState(false);
   const [idToken, setIdToken] = useState(undefined);
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -19,6 +19,10 @@ function TarotOpenAi(props) {
   const questionRef = useRef();
   const [sex, setSex] = useState(false);
   const [zodiac, setZodiac] = useState(false);
+  const [answer, setAnswer] = useState("");
+  const [question, setQuestion] = useState("");
+  const [chars, setChars] = useState(0);
+  const qMaxLen = 100;
 
   const getToken = async () => {
     const token = await authUserCredential.getIdToken(true);
@@ -30,6 +34,11 @@ function TarotOpenAi(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    answer && props.aiReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [answer]);
+
   const t = {
     en: {
       new: "New!",
@@ -38,6 +47,11 @@ function TarotOpenAi(props) {
       attach: "Attach to the question:",
       zodiac: "Zodiac sign",
       sex: "Sex",
+      loading: "Loading...",
+      button: "Get Ai Reading!",
+      aiDesc: "Artificial intelligence will interpret your tarot along with selected cards and asked question!",
+      yourAnswer: "Your answer is ready!",
+      back: "Home",
     },
     pl: {
       new: "Nowość!",
@@ -46,6 +60,11 @@ function TarotOpenAi(props) {
       attach: "Dołącz do pytania:",
       zodiac: "Znak zodiaku",
       sex: "Płeć",
+      loading: "Ładuję...",
+      button: "Zdobądź odpowiedź!",
+      aiDesc: "Twojego tarota wraz z wybranymi kartami i zadanym pytaniem zinterpretuje sztuczna inteligencja!",
+      yourAnswer: "Interpretacja gotowa!",
+      back: "Strona Główna",
     },
   };
   const translateText = async (inputText, from, to) => {
@@ -71,6 +90,9 @@ function TarotOpenAi(props) {
 
   const getOpenAiAnswers = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setAnswer("");
+    setQuestion(questionRef.current.value.trim());
     const title = await translateText(props.tarotTitle, "pl", "en");
     const question =
       locale == "pl"
@@ -81,14 +103,17 @@ function TarotOpenAi(props) {
       zodiac ? `My zodiac is ${authUserFirestore.zodiac}. ` : ""
     }I did the ${title} tarot with question:${question}. My cards: ${props.cards.join(",")}. What does it mean?`;
 
-    console.log(readyQuestion);
     try {
       const payload = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
         data: readyQuestion,
       };
-      //   await axios.post("/api/openai/", payload);
+      const res = await axios.post("/api/openai/", payload);
+      const generatedAnswer = locale == "pl" ? await translateText(res.data.answer, "en", "pl") : res.data.answer;
+      console.log(generatedAnswer);
+      setAnswer(generatedAnswer);
+      setLoading(false);
       //? Add answer and data to the "ai readings page?"
     } catch (error) {
       console.log(error);
@@ -100,29 +125,70 @@ function TarotOpenAi(props) {
 
   return (
     <div className="color-primary">
-      <h4>{t[locale].new}</h4>
-
-      <Form className="m-auto color-primary" style={{ maxWidth: "500px" }} onSubmit={getOpenAiAnswers}>
-        <FloatingLabel label={t[locale].txtAreaLabel} className="text-start">
-          <Form.Control
-            as="textarea"
-            type="text"
-            ref={questionRef}
-            maxLength="100"
-            className={`${themeDarkInput} `}
-            style={{ minHeight: isMobile ? "150px" : "80px" }}
-            required
-          />
-        </FloatingLabel>
-        <p className="mt-2 mb-1">{t[locale].attach}</p>
-        <Form.Check inline label={t[locale].zodiac} checked={zodiac} onChange={()=>setZodiac(!zodiac)} />
-        <Form.Check inline label={t[locale].sex} checked={sex} onChange={()=>setSex(!sex)} />
-        <div className="w-100">
-          <Button className="mt-3" type="submit">
-            Get Ai Reading!
-          </Button>
-        </div>
-      </Form>
+      {!answer ? (
+        <Form className="m-auto mt-4 color-primary" style={{ maxWidth: "500px" }} onSubmit={getOpenAiAnswers}>
+          <FloatingLabel label={t[locale].txtAreaLabel} className="text-start">
+            <Form.Control
+              as="textarea"
+              type="text"
+              ref={questionRef}
+              maxLength={qMaxLen}
+              onChange={() => setChars(questionRef.current.value.length)}
+              className={`${themeDarkInput} `}
+              style={{ minHeight: isMobile ? "150px" : "90px" }}
+              required
+            />
+            <div className="text-end">
+              <small className="text-muted">
+                {chars}/{qMaxLen}
+              </small>
+            </div>
+            <div className="text-center">
+              <small>{t[locale].aiDesc}</small>
+            </div>
+          </FloatingLabel>
+          <p className="mt-4 mb-1">{t[locale].attach}</p>
+          <Form.Check inline label={t[locale].zodiac} checked={zodiac} onChange={() => setZodiac(!zodiac)} />
+          <Form.Check inline label={t[locale].sex} checked={sex} onChange={() => setSex(!sex)} />
+          <div className="w-100">
+            <Button className="mt-3" type="submit" disabled={loading}>
+              {loading ? (
+                <>
+                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  <span> {t[locale].loading}</span>
+                </>
+              ) : (
+                <span>{t[locale].button}</span>
+              )}
+            </Button>
+          </div>
+        </Form>
+      ) : (
+        <section>
+          <p className="fs-4">{t[locale].yourAnswer}</p>
+          <p className="text-muted">
+            {" "}
+            <i>&ldquo;{question}&rdquo;</i>{" "}
+          </p>
+          <div className={`text-start m-auto ${!isMobile && "w-75"}`}>
+            <span style={{ whiteSpace: "pre-wrap", lineHeight: "0.5" }}>{answer}</span>
+          </div>
+          <div className="mt-4">
+            <GiGlassHeart style={{ width: "30px", height: "30px" }} />
+            <br />
+            <Button
+              variant="primary"
+              size="md"
+              className="mt-3"
+              onClick={() => {
+                router.push("/#main");
+              }}
+            >
+              {t[locale].back}
+            </Button>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

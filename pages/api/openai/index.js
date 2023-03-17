@@ -15,10 +15,10 @@ async function openAi(req, res) {
 
     // Verify data
     const question = data || "";
-    if (question.trim().length === 0 || question.trim().length > 200) {
+    if (question.trim().length === 0 || question.trim().length > 500) {
       res.status(400).json({
         error: {
-          message: "Please enter a valid question (max 200 characters)",
+          message: "Please enter a valid question (max 500 characters)",
         },
       });
       return;
@@ -30,9 +30,9 @@ async function openAi(req, res) {
         const completion = await openai.createChatCompletion({
           model: "gpt-3.5-turbo",
           messages: [{ role: "user", content: question }],
+          temperature: 0.5,
         });
-        console.log(completion.data.choices[0].message);
-        res.status(200).json({ answer: completion.data.choices[0].message });
+        res.status(200).json({ answer: completion.data.choices[0].message.content });
       } catch (err) {
         if (err.response) {
           console.error(err.response.status, err.response.data);
