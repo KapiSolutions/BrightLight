@@ -65,6 +65,9 @@ function RegisterForm() {
       privacy: "Privacy Policy.",
       account: "Already have an account?",
       sign: "Sign In!",
+      male: "Male",
+      female: "Female",
+      notProvided: "Not provide",
     },
     pl: {
       h1: "Zaczynamy!",
@@ -81,6 +84,9 @@ function RegisterForm() {
       privacy: "Politykę Prywatności.",
       account: "Masz już konto?",
       sign: "Zaloguj się!",
+      male: "Mężczyzna",
+      female: "Kobieta",
+      notProvided: "Nie podawaj",
     },
   };
   return (
@@ -126,7 +132,11 @@ function RegisterForm() {
               )}
             </InputGroup.Text>
           </div>
-
+          {/* <div className="mt-2">
+            <Form.Check inline label={t[locale].male} />
+            <Form.Check inline label={t[locale].female} />
+            <Form.Check inline label={t[locale].notProvided} />
+          </div> */}
           <Button className="w-100 mt-4 mb-2 btn-lg" type="submit" disabled={loading}>
             {loading ? (
               <>
