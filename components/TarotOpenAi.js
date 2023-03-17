@@ -111,7 +111,6 @@ function TarotOpenAi(props) {
       };
       const res = await axios.post("/api/openai/", payload);
       const generatedAnswer = locale == "pl" ? await translateText(res.data.answer, "en", "pl") : res.data.answer;
-      console.log(generatedAnswer);
       setAnswer(generatedAnswer);
       setLoading(false);
       //? Add answer and data to the "ai readings page?"
