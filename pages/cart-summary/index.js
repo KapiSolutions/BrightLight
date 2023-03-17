@@ -153,75 +153,70 @@ export default function CartSummaryPage() {
       //Clean the cart
       await updateProfile({ cart: [] });
     } catch (error) {
-      setErrorMsg(t[locale].sthWrong + " (" + error.response.statusText + ")");
+      console.log(error);
+      setErrorMsg(t[locale].sthWrong);
       setLoading(undefined);
-      return;
+      throw error;
     }
 
-    // !Delete setLoading after test:
-    // setLoading(undefined);
-    // !
+    //START STRIPE CHECKOUT SESSION
+    try {
+      //prepare stripe product data
+      const stripeCart = order.items.map((item) => ({
+        price: item.price[currency].s_id,
+        quantity: 1,
+      }));
+      //prepare cart items data for email notification
+      const cartItems = await Promise.all(
+        order.items.map(async (item) => ({
+          name: item.name[locale],
+          price: item.price[currency].amount,
+          currency: currency,
+          image: await getFileUrlStorage(`images/products/${item.product_id}`, item.image.name),
+        }))
+      );
 
-    if (true) {
-      //START STRIPE CHECKOUT SESSION
-      try {
-        //prepare stripe product data
-        const stripeCart = order.items.map((item) => ({
-          price: item.price[currency].s_id,
-          quantity: 1,
-        }));
-        //prepare cart items data for email notification
-        const cartItems = await Promise.all(
-          order.items.map(async (item) => ({
-            name: item.name[locale],
-            price: item.price[currency].amount,
-            currency: currency,
-            image: await getFileUrlStorage(`images/products/${item.product_id}`, item.image.name),
-          }))
-        );
-
-        const payload = {
-          secret: process.env.NEXT_PUBLIC_API_KEY,
-          idToken: idToken,
-          data: {
-            sendOrderConfirmEmail: true,
-            orderID: order.id,
-            userName: order.userName,
-            userEmail: order.userEmail,
-            totalPrice: order.totalPrice,
-            currency: order.currency,
-            cartItems: cartItems,
-            stripeCart: stripeCart,
-            localeLanguage: localeLanguage,
-            localeTimeZone: localeTimeZone,
-            language: order.language,
-            timeCreate: order.timeCreate.toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
-          },
-        };
-        //Start checkoutSession
-        const res = await axios.post("/api/stripe/checkout_session", payload);
-        if (res.status === 500) {
-          console.error(res.message);
-          return;
-        }
-        // Redirect to checkout
-        const stripe = await getStripe();
-        router.push(res.data.url);
-        const { error } = await stripe.redirectToCheckout({ sessionId: res.data.id });
-
-        if (error) {
-          console.error(error.message);
-          setErrorMsg(t[locale].redirectingFail);
-          router.replace("/user/orders#main");
-        }
-        setLoading(undefined);
-      } catch (error) {
-        console.log(error);
-        setLoading(undefined);
-        setErrorMsg(t[locale].redirectingFail);
-        router.replace("/user/orders#main");
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
+        data: {
+          sendOrderConfirmEmail: true,
+          orderID: order.id,
+          userName: order.userName,
+          userEmail: order.userEmail,
+          totalPrice: order.totalPrice,
+          currency: order.currency,
+          cartItems: cartItems,
+          stripeCart: stripeCart,
+          localeLanguage: localeLanguage,
+          localeTimeZone: localeTimeZone,
+          language: order.language,
+          timeCreate: order.timeCreate.toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
+        },
+      };
+      //Start checkoutSession
+      const res = await axios.post("/api/stripe/checkout_session", payload);
+      if (res.status === 500) {
+        console.error(res.message);
         return;
       }
+      // Redirect to checkout
+      const stripe = await getStripe();
+      router.push(res.data.url);
+      const { error } = await stripe.redirectToCheckout({ sessionId: res.data.id });
+
+      if (error) {
+        console.error(error.message);
+        setErrorMsg(t[locale].redirectingFail);
+        router.replace("/user/orders#main");
+      }
+      setLoading(undefined);
+    } catch (error) {
+      console.log(error);
+      setLoading(undefined);
+      setErrorMsg(t[locale].redirectingFail);
+      router.replace("/user/orders#main");
+      return;
     }
   }
 
