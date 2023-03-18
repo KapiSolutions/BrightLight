@@ -2,12 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { auth } from "../config/firebase";
-import {
-  getUserDataFirestore,
-  deleteDocInCollection,
-  updateDocFields,
-  queryByFirestore,
-} from "../firebase/Firestore";
+import { getUserDataFirestore, deleteDocInCollection, updateDocFields, queryByFirestore } from "../firebase/Firestore";
 import {
   deleteUser,
   createUserWithEmailAndPassword,
@@ -363,16 +358,25 @@ function AuthProvider({ children }) {
     setAdmin(false);
   }
 
+  const checkAdmin = async (user) => {
+    try {
+      const res = await user.getIdTokenResult();
+      setAdmin(res.claims?.admin);
+      console.log("admin: ", res.claims.admin);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   //Menage users login/out states
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setAuthUserCredential(user);
       if (user) {
-        // create session cookie and check admin role
-        const res = await startSession(user);
-        setAdmin(false);
-        res?.data?.admin && setAdmin(true);
-
+        checkAdmin(user);
+        // create session cookie
+        startSession(user);
+        
         if (!authUserFirestore && !refBlock.current) {
           await updateUserData(user.uid, null, false); //after logging in load all the user data, but block it just after registration
         }

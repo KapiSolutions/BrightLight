@@ -10,7 +10,9 @@ async function emailHandler(req, res) {
     const adminRoleCheck = async (uid) => {
       const response = await db.collection("users").doc(uid).get();
       const doc = response.data();
-      if (doc.role == process.env.ADMIN_KEY) {
+      const claims = await auth.verifyIdToken(idToken);
+      
+      if (doc.role == process.env.ADMIN_KEY && claims.admin) {
         return true;
       } else {
         return false;

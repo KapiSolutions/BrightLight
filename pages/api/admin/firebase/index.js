@@ -4,15 +4,30 @@ import verifyRequest from "../../../../utils/verifyRequest";
 
 async function firebaseAdmin(req, res) {
   const { secret, idToken, data, mode } = req.body;
-  // console.log(req.headers)
 
   const adminRoleCheck = async (uid) => {
     const response = await db.collection("users").doc(uid).get();
     const doc = response.data();
-    if (doc.role == process.env.ADMIN_KEY) {
+    const claims = await auth.verifyIdToken(idToken);
+ 
+    if (doc.role == process.env.ADMIN_KEY && claims.admin) {
       return true;
     } else {
       return false;
+    }
+  };
+
+  const listAllUsers = async (nextPageToken) => {
+    const users = [];
+    // List batch of users, 1000 at a time.
+    try {
+      const listUsersResult = await auth.listUsers(1000, nextPageToken);
+      listUsersResult.users.map((user) => {
+        users.push(user.toJSON());
+      });
+      return users;
+    } catch (error) {
+      console.log("Error listing users:", error);
     }
   };
 
@@ -63,7 +78,7 @@ async function firebaseAdmin(req, res) {
             await db
               .collection("users")
               .doc("/" + data.id + "/")
-              .create({ ...data, role: "user", timeCreate: new Date()});
+              .create({ ...data, role: "user", timeCreate: new Date() });
             const response = await db.collection("users").doc(data.id).get();
             const document = response.data();
             res.status(200).json(document);
@@ -71,8 +86,37 @@ async function firebaseAdmin(req, res) {
             res.status(500).send(e);
           }
           break;
-        case "admin-check":
-          res.status(200).json({ admin: admin });
+        case "get-users":
+          const users = await listAllUsers();
+          res.status(200).json({ users });
+          break;
+        case "set-admin":
+          try {
+            await auth.setCustomUserClaims(data.id, { admin: true });
+            res.status(200).json({ status: "success" });
+          } catch (e) {
+            res.status(500).send(e);
+          }
+          break;
+          case "unset-admin":
+          try {
+            await auth.setCustomUserClaims(data.id, null);
+            res.status(200).json({ status: "success" });
+          } catch (e) {
+            res.status(500).send(e);
+          }
+          break;
+        case "check-admin":
+          try {
+            const admin = await adminRoleCheck(uid);
+            if (admin === true) {
+              res.status(200).json({ admin: true });
+            } else {
+              res.status(200).json({ admin: false });
+            }
+          } catch (e) {
+            res.status(500).send(e);
+          }
           break;
 
         default:
