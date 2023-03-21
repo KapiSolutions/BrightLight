@@ -4,7 +4,7 @@ export const config = {
 
 export default async function openAi(req) {
   if (req.method === "POST") {
-    const { secret, idToken, data } = await req.json();
+    const { secret, data } = await req.json();
 
     // Check secret key
     if (secret !== process.env.NEXT_PUBLIC_API_KEY) {
