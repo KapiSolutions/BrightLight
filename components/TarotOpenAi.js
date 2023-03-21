@@ -110,11 +110,13 @@ function TarotOpenAi(props) {
         data: readyQuestion,
       };
       const res = await axios.post("/api/openai/", payload);
+      if (res.status !== 200){
+        console.log(res.error)
+        setErrorMsg(res.error.message);
+      }
       const generatedAnswer = locale == "pl" ? await translateText(res.data, "en", "pl") : res.data;
-
       setAnswer(generatedAnswer);
       setLoading(false);
-      //? Add answer and data to the "ai readings page?"
     } catch (error) {
       console.log(error);
       setErrorMsg(t[locale].sthWrong);
