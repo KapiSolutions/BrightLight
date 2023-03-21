@@ -362,7 +362,6 @@ function AuthProvider({ children }) {
     try {
       const res = await user.getIdTokenResult();
       setAdmin(res.claims?.admin);
-      console.log("admin: ", res.claims.admin);
     } catch (error) {
       console.log(error);
     }
