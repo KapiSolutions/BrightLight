@@ -142,7 +142,7 @@ function AuthProvider({ children }) {
       return;
     } catch (error) {
       console.log(error);
-      setErrorMsg("Unauthorized token.");
+      setErrorMsg("Error on session destroy.");
     }
   };
   async function deleteAccount() {
