@@ -24,8 +24,8 @@ async function verifyToken(req, res) {
       setCookie("session", sessionCookie, options);
       res.status(200).json({ status: "success" });
     } catch (error) {
-      console.log("error: ", error);
-      res.status(401).send("UNAUTHORIZED REQUEST!");
+      // console.log("error: ", error);
+      res.status(401).send("Error creating cookie!");
     }
   } else {
     res.setHeader("Allow", "POST");
