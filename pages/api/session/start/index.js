@@ -1,5 +1,5 @@
 import { auth } from "../../../../config/firebaseAdmin";
-import { csrf } from "../../../../config/csrf";
+// import { csrf } from "../../../../config/csrf";
 import { setCookie } from "cookies-next";
 
 async function verifyToken(req, res) {
@@ -32,5 +32,5 @@ async function verifyToken(req, res) {
     res.status(405).end("Method Not Allowed");
   }
 }
-
-export default csrf(verifyToken);
+export default verifyToken;
+// export default csrf(verifyToken);
