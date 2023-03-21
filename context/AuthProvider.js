@@ -51,7 +51,7 @@ function AuthProvider({ children }) {
       return await axios.post("/api/session/start/", payload);
     } catch (error) {
       console.log(error);
-      setErrorMsg("Unauthorized token.");
+      setErrorMsg("Error creating session.");
       logoutUser();
     }
   };
