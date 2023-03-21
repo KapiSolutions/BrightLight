@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { useDeviceStore } from "../stores/deviceStore";
 import { Button, FloatingLabel, Form, Spinner } from "react-bootstrap";
 import { GiGlassHeart } from "react-icons/gi";
+import styles from "../styles/components/loader.module.scss";
 
 function TarotOpenAi(props) {
   const router = useRouter();
@@ -52,6 +53,7 @@ function TarotOpenAi(props) {
       aiDesc: "Artificial intelligence will interpret your tarot along with selected cards and asked question!",
       yourAnswer: "Your answer is ready!",
       back: "Home",
+      sthWrong: "Something went wrong, please try again later.",
     },
     pl: {
       new: "Nowość!",
@@ -65,6 +67,7 @@ function TarotOpenAi(props) {
       aiDesc: "Twojego tarota wraz z wybranymi kartami i zadanym pytaniem zinterpretuje sztuczna inteligencja!",
       yourAnswer: "Interpretacja gotowa!",
       back: "Strona Główna",
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
     },
   };
   const translateText = async (inputText, from, to) => {
@@ -90,81 +93,103 @@ function TarotOpenAi(props) {
 
   const getOpenAiAnswers = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setAnswer("");
-    setQuestion(questionRef.current.value.trim());
+    const inputQuest = questionRef.current.value.trim();
+    setQuestion(inputQuest);
+    setLoading(true);
+
     const title = await translateText(props.tarotTitle, "pl", "en");
-    const question =
-      locale == "pl"
-        ? await translateText(questionRef.current.value.trim(), "pl", "en")
-        : questionRef.current.value.trim();
+    const question = locale == "pl" ? await translateText(inputQuest, "pl", "en") : inputQuest;
 
     const readyQuestion = `${sex ? `I am ${authUserFirestore.sex}.` : ""}${
       zodiac ? `My zodiac is ${authUserFirestore.zodiac}. ` : ""
     }I did the ${title} tarot with question:${question}. My cards: ${props.cards.join(",")}. What does it mean?`;
 
-    try {
-      const payload = {
-        secret: process.env.NEXT_PUBLIC_API_KEY,
-        idToken: idToken,
-        data: readyQuestion,
-      };
-      const res = await axios.post("/api/openai/", payload);
-      if (res.status !== 200){
-        console.log(res.error)
-        setErrorMsg(res.error.message);
-      }
-      const generatedAnswer = locale == "pl" ? await translateText(res.data, "en", "pl") : res.data;
-      setAnswer(generatedAnswer);
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      setErrorMsg(t[locale].sthWrong);
-      setLoading(false);
-      throw error;
-    }
+    const payload = {
+      secret: process.env.NEXT_PUBLIC_API_KEY,
+      idToken: idToken,
+      data: readyQuestion,
+    };
+
+    axios
+      .post("/api/openai/", payload)
+      .then(async (res) => {
+        const generatedAnswer = locale == "pl" ? await translateText(res.data, "en", "pl") : res.data;
+        setAnswer(generatedAnswer);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setErrorMsg(t[locale].sthWrong);
+        setLoading(false);
+      });
   };
 
   return (
     <div className="color-primary">
       {!answer ? (
-        <Form className="m-auto mt-4 color-primary" style={{ maxWidth: "500px" }} onSubmit={getOpenAiAnswers}>
-          <FloatingLabel label={t[locale].txtAreaLabel} className="text-start">
-            <Form.Control
-              as="textarea"
-              type="text"
-              ref={questionRef}
-              maxLength={qMaxLen}
-              onChange={() => setChars(questionRef.current.value.length)}
-              className={`${themeDarkInput} `}
-              style={{ minHeight: isMobile ? "150px" : "90px" }}
-              required
-            />
-            <div className="text-end">
-              <small className="text-muted">
-                {chars}/{qMaxLen}
-              </small>
-            </div>
-            <div className="text-center">
-              <small>{t[locale].aiDesc}</small>
-            </div>
-          </FloatingLabel>
-          <p className="mt-4 mb-1">{t[locale].attach}</p>
-          <Form.Check inline label={t[locale].zodiac} checked={zodiac} onChange={() => setZodiac(!zodiac)} />
-          <Form.Check inline label={t[locale].sex} checked={sex} onChange={() => setSex(!sex)} />
-          <div className="w-100">
-            <Button className="mt-3" type="submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                  <span> {t[locale].loading}</span>
-                </>
-              ) : (
-                <span>{t[locale].button}</span>
-              )}
-            </Button>
-          </div>
-        </Form>
+        <>
+          {loading ? (
+            <section style={{ position: "relative", top: "-30px" }}>
+              <div className="d-flex justify-content-center pt-2">
+                <div className={styles.loader}>
+                  <div className={styles.planet}>
+                    <div className={styles.ring}></div>
+                    <div className={styles.coverRing}></div>
+                    <div className={styles.spots}>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p className="mt-0">{t[locale].loading}</p>
+            </section>
+          ) : (
+            <Form className="m-auto mt-4 color-primary" style={{ maxWidth: "500px" }} onSubmit={getOpenAiAnswers}>
+              <FloatingLabel label={t[locale].txtAreaLabel} className="text-start">
+                <Form.Control
+                  as="textarea"
+                  type="text"
+                  ref={questionRef}
+                  defaultValue={question ? question : ""}
+                  maxLength={qMaxLen}
+                  onChange={() => setChars(questionRef.current.value.length)}
+                  className={`${themeDarkInput} `}
+                  style={{ minHeight: isMobile ? "150px" : "90px" }}
+                  required
+                />
+                <div className="text-end">
+                  <small className="text-muted">
+                    {chars}/{qMaxLen}
+                  </small>
+                </div>
+                <div className="text-center">
+                  <small>{t[locale].aiDesc}</small>
+                </div>
+              </FloatingLabel>
+              <p className="mt-4 mb-1">{t[locale].attach}</p>
+              <Form.Check inline label={t[locale].zodiac} checked={zodiac} onChange={() => setZodiac(!zodiac)} />
+              <Form.Check inline label={t[locale].sex} checked={sex} onChange={() => setSex(!sex)} />
+              <div className="w-100">
+                <Button className="mt-3" type="submit" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                      <span> {t[locale].loading}</span>
+                    </>
+                  ) : (
+                    <span>{t[locale].button}</span>
+                  )}
+                </Button>
+              </div>
+            </Form>
+          )}
+        </>
       ) : (
         <section>
           <p className="fs-4">{t[locale].yourAnswer}</p>

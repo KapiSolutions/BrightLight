@@ -34,7 +34,7 @@ function TarotLotteryDesktop(props) {
   const [loadingBuy, setLoadingBuy] = useState(false);
   const [noQuestion, setNoQuestion] = useState(false);
   const [chars, setChars] = useState(0);
-  const [standardTarot, setStandardTarot] = useState(true);
+  const [aiGenTarot, setAiGenTarot] = useState(false);
   const [aiReady, setAiReady] = useState(false);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
   const cardsUrl = "/img/cards/";
@@ -224,7 +224,7 @@ function TarotLotteryDesktop(props) {
   }
 
   return (
-    <>
+    <div className="color-primary">
       <section className="d-flex gap-1 mb-2">
         <small>
           <Link href="/#main">{t[locale].home}</Link>
@@ -233,7 +233,7 @@ function TarotLotteryDesktop(props) {
         <small>{product.title}</small>
       </section>
       <Row className="d-flex mb-3 text-center">
-        <h1 className="color-primary mb-3"> {product.title} </h1>
+        <h1 className="mb-3"> {product.title} </h1>
       </Row>
       <Row className="d-flex mb-4 justify-content-center gap-2">
         {Array.from({ length: product.cardSet }).map((_, idx) => (
@@ -264,7 +264,7 @@ function TarotLotteryDesktop(props) {
 
       <Row className="d-flex justify-content-center">
         {flipCards.length === 0 && (
-          <p className="color-primary">
+          <p>
             {locale === "pl" ? (
               <>
                 Zastanów się głęboko nad swoim pytaniem i{" "}
@@ -282,7 +282,7 @@ function TarotLotteryDesktop(props) {
           </p>
         )}
         {flipCards.length > 0 && flipCards.length < product.cardSet - 1 && (
-          <p className="color-primary">
+          <p>
             {locale === "pl" ? (
               <strong>
                 Dobrze, jeszcze {product.cardSet - flipCards.length}{" "}
@@ -294,7 +294,7 @@ function TarotLotteryDesktop(props) {
           </p>
         )}
         {flipCards.length == product.cardSet - 1 && product.cardSet != "1" && (
-          <p className="color-primary">
+          <p>
             <strong>{t[locale].lastOne}</strong>
           </p>
         )}
@@ -333,25 +333,29 @@ function TarotLotteryDesktop(props) {
         {/* This section is shown after choosing all the cards by user and closed after adding item to cart */}
         {flipCards.length == product.cardSet && !message && !aiReady && (
           <section>
-            <h4 className="mt-0 color-primary">{t[locale].okay}</h4>
-            <p className="color-primary">
-              {product.cardSet == "1" ? t[locale].msgInterpretationOneCard : t[locale].msgInterpretation}
-            </p>
+            <h4 className="mt-0">{t[locale].okay}</h4>
+            <p>{product.cardSet == "1" ? t[locale].msgInterpretationOneCard : t[locale].msgInterpretation}</p>
 
             {/* Switch */}
             <div className="d-flex align-items-center justify-content-center gap-3 mt-4">
-              <span className="ms-3">Standard</span>
-              <Form.Check
-                type="switch"
-                role="switch"
-                value={standardTarot}
-                onChange={() => setStandardTarot(!standardTarot)}
-              />
-              <span>AI Generated</span>
+              <span className="ms-3 pointer" onClick={() => setAiGenTarot(false)}>
+                Standard
+              </span>
+              <span className="pointer">
+                <Form.Check
+                  type="switch"
+                  role="switch"
+                  checked={aiGenTarot}
+                  onChange={() => setAiGenTarot(!aiGenTarot)}
+                />
+              </span>
+              <span className="pointer" onClick={() => setAiGenTarot(true)}>
+                AI Generated
+              </span>
             </div>
 
-            {standardTarot && (
-              <Form className="mt-4 m-auto color-primary" style={{ maxWidth: "500px" }} onSubmit={handleSubmit}>
+            {!aiGenTarot && (
+              <Form className="mt-4 m-auto" style={{ maxWidth: "500px" }} onSubmit={handleSubmit}>
                 <FloatingLabel label={t[locale].txtAreaLabel}>
                   <Form.Control
                     as="textarea"
@@ -415,7 +419,7 @@ function TarotLotteryDesktop(props) {
                       {t[locale].save}
                     </Button>
                     <br />
-                    <small className="color-primary">{t[locale].msgUnregistered}</small>
+                    <small>{t[locale].msgUnregistered}</small>
                   </>
                 )}
               </Form>
@@ -424,7 +428,7 @@ function TarotLotteryDesktop(props) {
         )}
         {/* Successfuly added to cart! */}
         {flipCards.length == product.cardSet && message && (
-          <section className="color-primary mt-1">
+          <section className="mt-1">
             <p>{message}</p>
             <GiGlassHeart style={{ width: "30px", height: "30px" }} />
             <br />
@@ -442,13 +446,13 @@ function TarotLotteryDesktop(props) {
         )}
 
         {/* OpenAi component */}
-        {flipCards.length == product.cardSet && !message && !standardTarot && (
+        {flipCards.length == product.cardSet && !message && aiGenTarot && (
           <section className="mt-0">
             <TarotOpenAi tarotTitle={product.title} cards={userCardsEn} aiReady={setAiReady} />
           </section>
         )}
       </Row>
-    </>
+    </div>
   );
 }
 

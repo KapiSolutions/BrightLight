@@ -1,5 +1,3 @@
-import { OpenAIStream } from "../../../utils/openAiStreamPayload";
-
 export const config = {
   runtime: "edge",
 };
@@ -29,14 +27,31 @@ export default async function openAi(req) {
       );
     }
 
-    const payload = {
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: question }],
-      temperature: 0.5,
-    };
+    // If everything Ok then make request
+    try {
+      const payload = {
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: question }],
+        temperature: 0.5,
+      };
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.OPENAI_API_KEY ?? ""}`,
+        },
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
 
-    const stream = await OpenAIStream(payload);
-    return new Response(stream);
+      const answer = await res.json();
+      return new Response(answer?.choices[0]?.message?.content || "", {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    } catch (e) {
+      console.log(e);
+      return new Response(e, { status: 500, headers: { "content-type": "application/json" } });
+    }
   } else {
     return new Response(
       JSON.stringify({
