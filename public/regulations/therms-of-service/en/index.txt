@@ -1,3 +1,6 @@
+<p>
+    Effective date: 01/03/2023
+</p>
 <p align="center">
     <strong>§ 1</strong>
 </p>
