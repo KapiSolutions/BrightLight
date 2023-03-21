@@ -31,7 +31,7 @@ function TarotOpenAi(props) {
   };
 
   useEffect(() => {
-    getToken();
+    authUserCredential && getToken();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -54,6 +54,8 @@ function TarotOpenAi(props) {
       yourAnswer: "Your answer is ready!",
       back: "Home",
       sthWrong: "Something went wrong, please try again later.",
+      signedUsers: "Only available for signed users.",
+      signButton: "Sign In",
     },
     pl: {
       new: "Nowość!",
@@ -68,6 +70,8 @@ function TarotOpenAi(props) {
       yourAnswer: "Interpretacja gotowa!",
       back: "Strona Główna",
       sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
+      signedUsers: "Dostępne tylko dla zalogowanych użytkowników.",
+      signButton: "Zaloguj się",
     },
   };
   const translateText = async (inputText, from, to) => {
@@ -126,96 +130,123 @@ function TarotOpenAi(props) {
 
   return (
     <div className="color-primary">
-      {!answer ? (
-        <>
-          {loading ? (
-            <section style={{ position: "relative", top: "-30px" }}>
-              <div className="d-flex justify-content-center pt-2">
-                <div className={styles.loader}>
-                  <div className={styles.planet}>
-                    <div className={styles.ring}></div>
-                    <div className={styles.coverRing}></div>
-                    <div className={styles.spots}>
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                      <span></span>
+      <>
+        {authUserCredential ? (
+          <>
+            {/* Content for signed in users */}
+            {!answer ? (
+              <>
+                {/* Display Loader when request starts */}
+                {loading ? (
+                  <section style={{ position: "relative", top: "-30px" }}>
+                    <div className="d-flex justify-content-center pt-2">
+                      <div className={styles.loader}>
+                        <div className={styles.planet}>
+                          <div className={styles.ring}></div>
+                          <div className={styles.coverRing}></div>
+                          <div className={styles.spots}>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                    <p className="mt-0">{t[locale].loading}</p>
+                  </section>
+                ) : (
+                  <Form className="m-auto mt-4 color-primary" style={{ maxWidth: "500px" }} onSubmit={getOpenAiAnswers}>
+                    {/* Display question form */}
+                    <FloatingLabel label={t[locale].txtAreaLabel} className="text-start">
+                      <Form.Control
+                        as="textarea"
+                        type="text"
+                        ref={questionRef}
+                        defaultValue={question ? question : ""}
+                        maxLength={qMaxLen}
+                        onChange={() => setChars(questionRef.current.value.length)}
+                        className={`${themeDarkInput} `}
+                        style={{ minHeight: isMobile ? "150px" : "90px" }}
+                        required
+                      />
+                      <div className="text-end">
+                        <small className="text-muted">
+                          {chars}/{qMaxLen}
+                        </small>
+                      </div>
+                      <div className="text-center">
+                        <small>{t[locale].aiDesc}</small>
+                      </div>
+                    </FloatingLabel>
+                    <p className="mt-4 mb-1">{t[locale].attach}</p>
+                    <Form.Check inline label={t[locale].zodiac} checked={zodiac} onChange={() => setZodiac(!zodiac)} />
+                    <Form.Check inline label={t[locale].sex} checked={sex} onChange={() => setSex(!sex)} />
+                    <div className="w-100">
+                      <Button className="mt-3" type="submit" disabled={loading}>
+                        {loading ? (
+                          <>
+                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                            <span> {t[locale].loading}</span>
+                          </>
+                        ) : (
+                          <span>{t[locale].button}</span>
+                        )}
+                      </Button>
+                    </div>
+                  </Form>
+                )}
+              </>
+            ) : (
+              <section>
+                {/* Display received answer */}
+                <p className="fs-4">{t[locale].yourAnswer}</p>
+                <p className="text-muted">
+                  {" "}
+                  <i>&ldquo;{question}&rdquo;</i>{" "}
+                </p>
+                <div className={`text-start m-auto ${!isMobile && "w-75"}`}>
+                  <span style={{ whiteSpace: "pre-wrap", lineHeight: "0.5" }}>{answer}</span>
                 </div>
-              </div>
-              <p className="mt-0">{t[locale].loading}</p>
-            </section>
-          ) : (
-            <Form className="m-auto mt-4 color-primary" style={{ maxWidth: "500px" }} onSubmit={getOpenAiAnswers}>
-              <FloatingLabel label={t[locale].txtAreaLabel} className="text-start">
-                <Form.Control
-                  as="textarea"
-                  type="text"
-                  ref={questionRef}
-                  defaultValue={question ? question : ""}
-                  maxLength={qMaxLen}
-                  onChange={() => setChars(questionRef.current.value.length)}
-                  className={`${themeDarkInput} `}
-                  style={{ minHeight: isMobile ? "150px" : "90px" }}
-                  required
-                />
-                <div className="text-end">
-                  <small className="text-muted">
-                    {chars}/{qMaxLen}
-                  </small>
+                <div className="mt-4">
+                  <GiGlassHeart style={{ width: "30px", height: "30px" }} />
+                  <br />
+                  <Button
+                    variant="primary"
+                    size="md"
+                    className="mt-3"
+                    onClick={() => {
+                      router.push("/#main");
+                    }}
+                  >
+                    {t[locale].back}
+                  </Button>
                 </div>
-                <div className="text-center">
-                  <small>{t[locale].aiDesc}</small>
-                </div>
-              </FloatingLabel>
-              <p className="mt-4 mb-1">{t[locale].attach}</p>
-              <Form.Check inline label={t[locale].zodiac} checked={zodiac} onChange={() => setZodiac(!zodiac)} />
-              <Form.Check inline label={t[locale].sex} checked={sex} onChange={() => setSex(!sex)} />
-              <div className="w-100">
-                <Button className="mt-3" type="submit" disabled={loading}>
-                  {loading ? (
-                    <>
-                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                      <span> {t[locale].loading}</span>
-                    </>
-                  ) : (
-                    <span>{t[locale].button}</span>
-                  )}
-                </Button>
-              </div>
-            </Form>
-          )}
-        </>
-      ) : (
-        <section>
-          <p className="fs-4">{t[locale].yourAnswer}</p>
-          <p className="text-muted">
-            {" "}
-            <i>&ldquo;{question}&rdquo;</i>{" "}
-          </p>
-          <div className={`text-start m-auto ${!isMobile && "w-75"}`}>
-            <span style={{ whiteSpace: "pre-wrap", lineHeight: "0.5" }}>{answer}</span>
-          </div>
-          <div className="mt-4">
-            <GiGlassHeart style={{ width: "30px", height: "30px" }} />
-            <br />
+              </section>
+            )}
+          </>
+        ) : (
+          <section className="mt-4">
+            {/* Display message for non signed in users */}
+            <p>
+              <strong>{t[locale].signedUsers}</strong>
+            </p>
             <Button
               variant="primary"
               size="md"
               className="mt-3"
               onClick={() => {
-                router.push("/#main");
+                router.push("/sign-in");
               }}
             >
-              {t[locale].back}
+              {t[locale].signButton}
             </Button>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
+      </>
     </div>
   );
 }
