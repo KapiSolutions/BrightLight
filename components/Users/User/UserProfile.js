@@ -72,6 +72,50 @@ function UserProfile() {
     },
   };
 
+  function getZodiac(month, day) {
+    let datecode = month * 100 + day; //this will give us a number represent month and day
+    if (datecode <= 120) {
+      // Jan 20
+      return "Capricorn";
+    } else if (datecode <= 219) {
+      // Feb 19
+      return "Aquarius";
+    } else if (datecode <= 320) {
+      // Mar 20
+      return "Pisces";
+    } else if (datecode <= 420) {
+      // Apr 20
+      return "Aries";
+    } else if (datecode <= 520) {
+      // May 20
+      return "Taurus";
+    } else if (datecode <= 621) {
+      // Jun 21
+      return "Gemini";
+    } else if (datecode <= 722) {
+      // Jul 22
+      return "Cancer";
+    } else if (datecode <= 822) {
+      // Aug 22
+      return "Leo";
+    } else if (datecode <= 921) {
+      // Sept 21
+      return "Virgo";
+    } else if (datecode <= 1022) {
+      // Oct 22
+      return "Libra";
+    } else if (datecode <= 1121) {
+      // Nov 21
+      return "Scorpio";
+    } else if (datecode <= 1221) {
+      // Dec 21
+      return "Sagittarius";
+    } else {
+      //if we hit this case it means we hava greater date code than Dec 21
+      return "Capricorn";
+    }
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
     try {
@@ -84,6 +128,10 @@ function UserProfile() {
       authUserFirestore.lastName != lastNameRef.current.value && (update["lastName"] = lastNameRef.current.value);
       authUserFirestore.age != ageRef.current.value && (update["age"] = ageRef.current.value);
       authUserFirestore.email != emailRef.current.value && (update["email"] = emailRef.current.value);
+      const month = new Date(ageRef.current.value).getMonth() + 1;
+      const day = new Date(ageRef.current.value).getDate();
+      const zodiac = getZodiac(month, day);
+      authUserFirestore.zodiac != zodiac && (update["zodiac"] = zodiac);
 
       if (Object.keys(update).length > 0) {
         if (emailChanged) {
@@ -151,7 +199,9 @@ function UserProfile() {
               <strong>Ups! </strong>
               {error}
             </span>
-            <span className="fs-5 pointer Hover" onClick={()=>setError("")}>X</span>
+            <span className="fs-5 pointer Hover" onClick={() => setError("")}>
+              X
+            </span>
           </Alert>
         )}
         {message && (

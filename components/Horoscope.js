@@ -12,12 +12,10 @@ function Horoscope() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [zodiac, setZodiac] = useState(null);
   const [when, setWhen] = useState("today");
   const baseURL = "https://aztro.sameerkumar.website";
-  const month = authUserFirestore?.age.slice(5, 7);
-  const day = authUserFirestore?.age.slice(8, 10);
   const zodiacPath = "/img/zodiac/";
+  const zodiac = authUserFirestore.zodiac;
 
   useEffect(() => {
     if (!authUserFirestore) {
@@ -25,49 +23,6 @@ function Horoscope() {
     }
   }, [authUserFirestore]);
 
-  function getZodiac(month, day) {
-    var datecode = month * 1 + day; //this will give us a number represent month and day
-    if (datecode <= 120) {
-      // Jan 20
-      return "Capricorn";
-    } else if (datecode <= 219) {
-      // Feb 19
-      return "Aquarius";
-    } else if (datecode <= 320) {
-      // Mar 20
-      return "Pisces";
-    } else if (datecode <= 420) {
-      // Apr 20
-      return "Aries";
-    } else if (datecode <= 520) {
-      // May 20
-      return "Taurus";
-    } else if (datecode <= 621) {
-      // Jun 21
-      return "Gemini";
-    } else if (datecode <= 722) {
-      // Jul 22
-      return "Cancer";
-    } else if (datecode <= 822) {
-      // Aug 22
-      return "Leo";
-    } else if (datecode <= 921) {
-      // Sept 21
-      return "Virgo";
-    } else if (datecode <= 1022) {
-      // Oct 22
-      return "Libra";
-    } else if (datecode <= 1121) {
-      // Nov 21
-      return "Scorpio";
-    } else if (datecode <= 1221) {
-      // Dec 21
-      return "Sagittarius";
-    } else {
-      //if we hit this case it means we hava greater date code than Dec 21
-      return "Capricorn";
-    }
-  }
   function getHoroscope(day) {
     axios
       .post(baseURL, null, {
@@ -95,13 +50,11 @@ function Horoscope() {
   }
 
   useEffect(() => {
-    const zodiakSign = getZodiac(month, day);
     setError("");
-    setZodiac(zodiakSign);
     axios
       .post(baseURL, null, {
         params: {
-          sign: zodiakSign,
+          sign: zodiac,
           day: "today",
         },
       })
