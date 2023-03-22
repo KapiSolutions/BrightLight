@@ -20,7 +20,7 @@ function ForgotPasswordForm(props) {
   const [userName, setUserName] = useState("");
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
-  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
+  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light border-accent4" : "";
 
   const t = {
     en: {

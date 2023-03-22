@@ -23,7 +23,7 @@ function SignInForm(props) {
   const [inputType, setInputType] = useState("password");
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
-  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
+  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light border-accent4" : "";
 
   const t = {
     en: {
@@ -125,7 +125,7 @@ function SignInForm(props) {
       <Row xs={1} md={2}>
         <Col
           className={`d-flex justify-content-center ${
-            !isMobile && `border-end ${props.theme == "dark" && "border-primary"}`
+            !isMobile && `border-end ${props.theme == "dark" && "border-accent4"}`
           } `}
         >
           {isMobile ? (
@@ -169,7 +169,7 @@ function SignInForm(props) {
               </Alert>
             )}
             <Form onSubmit={handleSubmit} className="mt-4">
-              <FloatingLabel controlId="loginEmail" label={t[locale].email} className="mb-3 text-dark">
+              <FloatingLabel controlId="loginEmail" label={t[locale].email} className="mb-3">
                 <Form.Control
                   type="email"
                   placeholder={t[locale].email}
@@ -182,7 +182,7 @@ function SignInForm(props) {
 
               <div className="d-flex flex-wrap w-100">
                 <div className="d-flex w-100">
-                  <FloatingLabel controlId="loginPassword" label={t[locale].pass} className="w-100 text-dark">
+                  <FloatingLabel controlId="loginPassword" label={t[locale].pass} className="w-100">
                     <Form.Control
                       type={inputType}
                       placeholder={t[locale].pass}
@@ -191,7 +191,7 @@ function SignInForm(props) {
                       required
                     />
                   </FloatingLabel>
-                  <InputGroup.Text className="pointer border" onClick={showHidePass}>
+                  <InputGroup.Text className={`pointer border ${theme == "dark" && "opacity-75"}`} onClick={showHidePass}>
                     {inputType === "password" ? (
                       <FaRegEyeSlash className="iconSizeAlert" />
                     ) : (
@@ -219,7 +219,7 @@ function SignInForm(props) {
 
             <div className="w-100 text-center mt-2">
               {t[locale].account}
-              <Link href="/register"> {t[locale].join}</Link>
+              <Link href="/register"> <strong>{t[locale].join}</strong></Link>
             </div>
           </section>
         </Col>

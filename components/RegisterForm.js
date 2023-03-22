@@ -28,7 +28,7 @@ function RegisterForm() {
   const [captchaResult, setCaptchaResult] = useState("");
   const invalidInit = { name: false, email: false, password: false, catpcha: false };
   const [invalid, updateInvalid] = useReducer((state, updates) => ({ ...state, ...updates }), invalidInit);
-  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
+  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light border-accent4" : "";
   const [men, setMen] = useState(false);
   const [women, setWomen] = useState(false);
   const [notProvided, setNotProvided] = useState(false);
@@ -208,7 +208,7 @@ function RegisterForm() {
         )}
         <Form onSubmit={handleSubmit} className="d-flex mt-1 flex-column ">
           <Form.Group className="mb-0" controlId="controlName">
-            <Form.Label className="mb-0">
+            <Form.Label className="mb-1">
               <small>{t[locale].name}</small>
             </Form.Label>
             <Form.Control
@@ -222,7 +222,7 @@ function RegisterForm() {
           </Form.Group>
 
           <Form.Group className="" controlId="controlEmail">
-            <Form.Label className="mb-0">
+            <Form.Label className="mb-1">
               <small>{t[locale].email}</small>
             </Form.Label>
             <Form.Control
@@ -237,7 +237,7 @@ function RegisterForm() {
           </Form.Group>
 
           <Form.Group className="d-flex flex-wrap w-100" controlId="controlPass">
-            <Form.Label className="mb-0 w-100">
+            <Form.Label className="mb-1 w-100">
               <small>{t[locale].pass}</small>
             </Form.Label>
             <div className="d-flex w-100">
@@ -251,7 +251,7 @@ function RegisterForm() {
                 className={`${invalid.password && "border border-danger"} ${themeDarkInput}`}
                 required
               />
-              <InputGroup.Text className="pointer border" onClick={showHidePass}>
+              <InputGroup.Text className={`pointer border ${theme == "dark" && "opacity-75"}`} onClick={showHidePass}>
                 {inputType === "password" ? (
                   <FaRegEyeSlash className="iconSizeAlert" />
                 ) : (
@@ -352,7 +352,7 @@ function RegisterForm() {
             </small>
           </p>
           {t[locale].account}
-          <Link href="/sign-in"> {t[locale].sign}</Link>
+          <Link href="/sign-in" className="color-secondary"> <strong>{t[locale].sign}</strong></Link>
         </div>
       </section>
     </Container>
