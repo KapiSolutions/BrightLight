@@ -9,10 +9,10 @@ async function handler(req, res) {
 
     try {
       const response = await axios.post(url);
-      if (response.success) {
+      if (response.data.success) {
         res.status(200).json({ success: true });
       } else {
-        res.status(401).json(response);
+        res.status(401).end("Invalid Captcha Code!");
       }
     } catch (error) {
       console.log("error: ", error);
