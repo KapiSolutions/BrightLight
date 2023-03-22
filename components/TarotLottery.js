@@ -75,7 +75,7 @@ function TarotLotteryDesktop(props) {
       buy: "Kup teraz",
       addToCart: "Dodaj do koszyka",
       save: "Zapisz i Zaloguj się",
-      msgUnregistered: "Tylko zarejestrowani użytkownicy mogą dostać prywatną interpretację.",
+      msgUnregistered: "Tylko zarejestrowani użytkownicy mogą otrzymać prywatną interpretację.",
       msgSuccessCart: `Tarot "${product.title}" pomyślnie dodany do koszyka!`,
       addQuestion: "Dodaj proszę swoje pytanie.",
       back: "Wróć",
@@ -182,11 +182,12 @@ function TarotLotteryDesktop(props) {
       cart.push(cartItem);
       try {
         await updateProfile({ cart: cart });
-        router.push("/cart-summary#main");
+        await router.push("/cart-summary#main");
+        setLoadingBuy(false);
       } catch (error) {
         setErrorMsg(error);
+        setLoadingBuy(false);
       }
-      setLoadingBuy(false);
     } else {
       setNoQuestion(true);
       document.getElementById("questionField").focus();
