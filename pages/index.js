@@ -68,10 +68,12 @@ export async function getStaticProps({ locale }) {
     doc.desc = doc.desc[locale];
     doc.title = doc.title[locale];
   });
+  // sort by price
+  const sortedDocs = docs.sort((a, b) => a.price.pln.amount - b.price.pln.amount);
 
   return {
     props: {
-      products: JSON.parse(JSON.stringify(docs)),
+      products: JSON.parse(JSON.stringify(sortedDocs)),
       locale: locale,
     },
     revalidate: false, //on demand revalidation
