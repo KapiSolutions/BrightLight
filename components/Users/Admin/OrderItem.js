@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { Badge, Button, Spinner } from "react-bootstrap";
 import { IoIosArrowForward } from "react-icons/io";
-import styles from "../../styles/components/Users/OrderItem.module.scss";
-import icon from "../../public/img/cards-light.png";
-import { useDeviceStore } from "../../stores/deviceStore";
+import styles from "../../../styles/components/Users/OrderItem.module.scss";
+import icon from "../../../public/img/cards-light.png";
+import { useDeviceStore } from "../../../stores/deviceStore";
 
 function OrderItem(props) {
   const order = props.order;

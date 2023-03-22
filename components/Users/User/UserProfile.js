@@ -3,8 +3,8 @@ import { Container, Form, Button, Alert, FloatingLabel, Spinner } from "react-bo
 import { RiAlertFill } from "react-icons/ri";
 import { IoCheckmarkDoneSharp } from "react-icons/io5";
 import { AiTwotoneDelete } from "react-icons/ai";
-import { useAuth } from "../context/AuthProvider";
-import ReAuthModal from "./Modals/ReAuthModal";
+import { useAuth } from "../../../context/AuthProvider";
+import ReAuthModal from "../../Modals/ReAuthModal";
 import { useRouter } from "next/router";
 
 function UserProfile() {

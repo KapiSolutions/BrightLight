@@ -3,7 +3,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { Container } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
-import UserProfile from "../../../components/UserProfile";
+import UserProfile from "../../../components/Users/User/UserProfile";
 import { useDeviceStore } from "../../../stores/deviceStore";
 
 function UserProfilePage() {

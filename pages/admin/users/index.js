@@ -5,7 +5,7 @@ import { Button, Container, Spinner } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
-import User from "../../../components/Users/User";
+import User from "../../../components/Users/Admin/User";
 import axios from "axios";
 
 function UserProfilePage() {

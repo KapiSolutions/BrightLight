@@ -3,10 +3,10 @@ import axios from "axios";
 import { Button, Spinner } from "react-bootstrap";
 import { FaRegUser, FaUserSecret } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
-import { useAuth } from "../../context/AuthProvider";
-import { deleteDocInCollection, queryByFirestore } from "../../firebase/Firestore";
-import { useDeviceStore } from "../../stores/deviceStore";
-import ConfirmActionModal from "../Modals/ConfirmActionModal";
+import { useAuth } from "../../../context/AuthProvider";
+import { deleteDocInCollection, queryByFirestore } from "../../../firebase/Firestore";
+import { useDeviceStore } from "../../../stores/deviceStore";
+import ConfirmActionModal from "../../Modals/ConfirmActionModal";
 import OrderItem from "./OrderItem";
 import { useRouter } from "next/router";
 
