@@ -136,9 +136,9 @@ function AuthProvider({ children }) {
   }
   const logoutUser = async () => {
     try {
+      router.push("/");
       await destroySession(authUserCredential);
       auth.signOut();
-      router.push("/");
       return;
     } catch (error) {
       console.log(error);
@@ -148,9 +148,9 @@ function AuthProvider({ children }) {
   async function deleteAccount() {
     try {
       await deleteDocInCollection("users", authUserCredential.uid);
+      router.push("/");
       await destroySession(authUserCredential);
       await deleteUser(authUserCredential);
-      router.push("/");
       setSuccessMsg("deleteUser");
     } catch (err) {
       throw err;
