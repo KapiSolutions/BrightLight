@@ -16,6 +16,8 @@ function RegisterForm() {
   const nameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
+  const recaptchaRef = useRef(null);
+
   const theme = useDeviceStore((state) => state.themeState);
   const { registerUser, loginWithGoogle, loginWithFacebook, loginWithTwitter } = useAuth();
   const [error, setError] = useState("");
@@ -66,11 +68,11 @@ function RegisterForm() {
     }
 
     try {
-      const res = await axios.post("/api/recaptcha")
-      console.log(res.data)
-      console.log("success!! ", res.data.success)
+      const res = await axios.post("/api/recaptcha", { captcha: captchaResult });
+      console.log(res.data);
+      console.log("success!! ", res.data.success);
     } catch (error) {
-      console.log(error.response.data)
+      console.log(error.response.data);
     }
 
     // try {
@@ -200,9 +202,10 @@ function RegisterForm() {
           {recaptchaNeeded && (
             <div className="mt-3 d-flex justify-content-center">
               <ReCAPTCHA
+                ref={recaptchaRef}
                 sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY}
                 onChange={onReCAPTCHAChange}
-                theme="dark"
+                theme={theme}
               />
             </div>
           )}
