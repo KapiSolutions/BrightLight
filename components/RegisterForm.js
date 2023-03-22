@@ -1,11 +1,14 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useReducer, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Container, Form, Button, Alert, Spinner, InputGroup } from "react-bootstrap";
 import { FaFacebookF, FaGoogle, FaTwitter, FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 import { RiAlertFill } from "react-icons/ri";
 import { useAuth } from "../context/AuthProvider";
-import ReCAPTCHA from "react-google-recaptcha";
+import dynamic from "next/dynamic";
+import { useDeviceStore } from "../stores/deviceStore";
+const ReCAPTCHA = dynamic(() => import("react-google-recaptcha"));
+import axios from "axios";
 
 function RegisterForm() {
   const router = useRouter();
@@ -13,30 +16,74 @@ function RegisterForm() {
   const nameRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
+  const theme = useDeviceStore((state) => state.themeState);
   const { registerUser, loginWithGoogle, loginWithFacebook, loginWithTwitter } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); //to disable the submit button after clicked and wait for submit response
   const [inputType, setInputType] = useState("password");
+  const [recaptchaNeeded, setRecaptchaNeeded] = useState(false);
+  const [captchaResult, setCaptchaResult] = useState("");
+  const invalidInit = { name: false, email: false, password: false, catpcha: false };
+  const [invalid, updateInvalid] = useReducer((state, updates) => ({ ...state, ...updates }), invalidInit);
+  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
   const [men, setMen] = useState(false);
   const [women, setWomen] = useState(false);
   const [notProvided, setNotProvided] = useState(false);
 
+  const checkFields = () => {
+    if (nameRef.current.value !== "" && emailRef.current.value !== "" && passwordRef.current.value !== "") {
+      setRecaptchaNeeded(true);
+    }
+
+    if (invalid.password && passwordRef.current.value.length >= 6) {
+      updateInvalid({ password: false }); //data ok
+    }
+  };
+
+  const onReCAPTCHAChange = async (captchaCode) => {
+    if (!captchaCode) {
+      return;
+    }
+    setCaptchaResult(captchaCode);
+  };
+
+  // handle register action
   async function handleSubmit(e) {
     e.preventDefault();
+
     if (passwordRef.current.value.length < 6) {
-      return setError("Password should be at least 6 characters");
+      updateInvalid({ password: true }); //invalid
+      document.getElementsByName("registerPassword")[0].focus();
+      document.getElementsByName("registerPassword")[0].scrollIntoView({ block: "center", inline: "nearest" });
+      return;
+    } else {
+      updateInvalid({ password: false }); //data ok
     }
+
+    if (!captchaResult) {
+      console.log("error catpcha");
+      return;
+    }
+
     try {
-      setLoading(true);
-      setError("");
-      await registerUser(emailRef.current.value, passwordRef.current.value, nameRef.current.value);
+      const res = await axios.post("/api/recaptcha")
+      console.log(res.data)
+      console.log("success!! ", res.data.success)
     } catch (error) {
-      setLoading(false);
-      if (error.message.includes("email-already-in-use")) {
-        return setError("Failed to register user: email already in use.");
-      }
-      return setError("Failed to register user: " + error.message);
+      console.log(error.response.data)
     }
+
+    // try {
+    //   setLoading(true);
+    //   setError("");
+    //   await registerUser(emailRef.current.value, passwordRef.current.value, nameRef.current.value);
+    // } catch (error) {
+    //   setLoading(false);
+    //   if (error.message.includes("email-already-in-use")) {
+    //     return setError("Failed to register user: email already in use.");
+    //   }
+    //   return setError("Failed to register user: " + error.message);
+    // }
   }
 
   const showHidePass = (e) => {
@@ -64,6 +111,7 @@ function RegisterForm() {
       male: "Male",
       female: "Female",
       notProvided: "Not provide",
+      shortPassword: "The password should be at least 6 characters long.",
     },
     pl: {
       h1: "Zaczynamy!",
@@ -83,6 +131,7 @@ function RegisterForm() {
       male: "Mężczyzna",
       female: "Kobieta",
       notProvided: "Nie podawaj",
+      shortPassword: "Hasło powinno mieć co najmniej 6 znaków.",
     },
   };
   return (
@@ -101,7 +150,7 @@ function RegisterForm() {
           <p className="color-primary background">{t[locale].or}</p>
         </div>
         {error && (
-          <Alert variant="danger">
+          <Alert variant="danger" className="mt-2 mb-0">
             <RiAlertFill className="me-2 mb-1 iconSizeAlert" data-size="2" />
             <strong>Ups! </strong>
             {error}
@@ -112,14 +161,14 @@ function RegisterForm() {
             <Form.Label className="mb-0">
               <small>{t[locale].name}</small>
             </Form.Label>
-            <Form.Control type="text" placeholder={t[locale].name} ref={nameRef} required />
+            <Form.Control type="text" placeholder={t[locale].name} ref={nameRef} maxLength={20} required />
           </Form.Group>
 
           <Form.Group className="" controlId="controlEmail">
             <Form.Label className="mb-0">
               <small>{t[locale].email}</small>
             </Form.Label>
-            <Form.Control type="email" placeholder={t[locale].email} ref={emailRef} required />
+            <Form.Control type="email" placeholder={t[locale].email} ref={emailRef} maxLength={40} required />
           </Form.Group>
 
           <Form.Group className="d-flex flex-wrap w-100" controlId="controlPass">
@@ -127,7 +176,16 @@ function RegisterForm() {
               <small>{t[locale].pass}</small>
             </Form.Label>
             <div className="d-flex w-100">
-              <Form.Control type={inputType} placeholder={t[locale].pass} ref={passwordRef} required />
+              <Form.Control
+                name="registerPassword"
+                type={inputType}
+                placeholder={t[locale].pass}
+                ref={passwordRef}
+                onChange={checkFields}
+                maxLength={30}
+                className={`${invalid.password && "border border-danger"} w-100 ${themeDarkInput}`}
+                required
+              />
               <InputGroup.Text className="pointer border" onClick={showHidePass}>
                 {inputType === "password" ? (
                   <FaRegEyeSlash className="iconSizeAlert" />
@@ -136,11 +194,18 @@ function RegisterForm() {
                 )}
               </InputGroup.Text>
             </div>
+            {invalid.password && <small className="text-danger">{t[locale].shortPassword}</small>}
           </Form.Group>
 
-          <div className="mt-2 d-flex justify-content-end">
-            <ReCAPTCHA size="normal" sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY} />
-          </div>
+          {recaptchaNeeded && (
+            <div className="mt-3 d-flex justify-content-center">
+              <ReCAPTCHA
+                sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY}
+                onChange={onReCAPTCHAChange}
+                theme="dark"
+              />
+            </div>
+          )}
 
           {/* <div className="mt-3">
             <Form.Check inline>
