@@ -18,12 +18,11 @@ function TarotOpenAi(props) {
   const theme = useDeviceStore((state) => state.themeState);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
   const questionRef = useRef();
-  const [sex, setSex] = useState(false);
-  const [zodiac, setZodiac] = useState(false);
   const [answer, setAnswer] = useState("");
   const [question, setQuestion] = useState("");
   const [chars, setChars] = useState(0);
   const qMaxLen = 100;
+  const zodiac = authUserFirestore.zodiac;
 
   const getToken = async () => {
     const token = await authUserCredential.getIdToken(true);
@@ -45,9 +44,6 @@ function TarotOpenAi(props) {
       new: "New!",
       txtAreaLabel: "Provide short question.",
       txtAreaPlaceholder: "(I got a new job offer, should I take it?)",
-      attach: "Attach to the question:",
-      zodiac: "Zodiac sign",
-      sex: "Sex",
       loading: "Loading...",
       button: "Get Ai Reading!",
       aiDesc: "Artificial intelligence will interpret your tarot along with selected cards and asked question!",
@@ -61,9 +57,6 @@ function TarotOpenAi(props) {
       new: "Nowość!",
       txtAreaLabel: "Wprowadź krótkie pytanie.",
       txtAreaPlaceholder: "(przykład: dostałem ofertę nowej pracy, powinienem ją przyjąć?)",
-      attach: "Dołącz do pytania:",
-      zodiac: "Znak zodiaku",
-      sex: "Płeć",
       loading: "Ładuję...",
       button: "Zdobądź odpowiedź!",
       aiDesc: "Twojego tarota wraz z wybranymi kartami i zadanym pytaniem zinterpretuje sztuczna inteligencja!",
@@ -105,7 +98,7 @@ function TarotOpenAi(props) {
     const title = await translateText(props.tarotTitle, "pl", "en");
     const question = locale == "pl" ? await translateText(inputQuest, "pl", "en") : inputQuest;
 
-    const readyQuestion = `${sex ? `I am ${authUserFirestore.sex}.` : ""}${
+    const readyQuestion = `${
       zodiac ? `My zodiac is ${authUserFirestore.zodiac}. ` : ""
     }I did the ${title} tarot with question:${question}. My cards: ${props.cards.join(",")}. What does it mean?`;
 
@@ -182,9 +175,7 @@ function TarotOpenAi(props) {
                         <small>{t[locale].aiDesc}</small>
                       </div>
                     </FloatingLabel>
-                    <p className="mt-4 mb-1">{t[locale].attach}</p>
-                    <Form.Check inline label={t[locale].zodiac} checked={zodiac} onChange={() => setZodiac(!zodiac)} />
-                    <Form.Check inline label={t[locale].sex} checked={sex} onChange={() => setSex(!sex)} />
+
                     <div className="w-100">
                       <Button className="mt-3" type="submit" disabled={loading}>
                         {loading ? (
