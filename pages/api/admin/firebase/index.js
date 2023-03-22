@@ -96,7 +96,7 @@ async function firebaseAdmin(req, res) {
             res.status(500).send(e);
           }
           break;
-        case "unset-admin":
+        case "remove-admin":
           try {
             await auth.setCustomUserClaims(data.id, null);
             await db.collection("users").doc(data.id).update({ role: "user" });

@@ -14,9 +14,11 @@ function User(props) {
   const router = useRouter();
   const locale = router.locale;
   const user = props.user;
+  const idToken = props.idToken;
   const { setErrorMsg, authUserCredential } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const [loadingDel, setLoadingDel] = useState(false);
+  const [loadingAdmin, setLoadingAdmin] = useState(false); //menage admin claims
   const [showDetails, setShowDetails] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [userOrders, setUserOrders] = useState([]);
@@ -39,6 +41,10 @@ function User(props) {
       orders: "User orders:",
       noOrders: "No orders yet.",
       emailAndPassword: "Email and password",
+      tryAdmin: "You are trying to add Admin permission to this account. Please confirm.",
+      addAdmin: "Add Admin permissions",
+      removeAdmin: "Remove Admin permissions",
+      loadingAdmin: "Changing permissions..",
     },
     pl: {
       sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
@@ -57,6 +63,10 @@ function User(props) {
       orders: "Zamówienia:",
       noOrders: "Brak zamówień.",
       emailAndPassword: "E-mail i hasło",
+      tryAdmin: "Próbujesz dodać uprawnienia administratora do tego konta. Proszę potwierdzić.",
+      addAdmin: "Dodaj uprawnienia administratora",
+      removeAdmin: "Odbierz uprawnienia administratora",
+      loadingAdmin: "Zmieniam uprawnienia..",
     },
   };
 
@@ -91,18 +101,38 @@ function User(props) {
       const res = await axios.post("/api/admin/firebase/", payload);
       if (res.status === 200) {
         await deleteDocInCollection("users", user.id);
-        setShowConfirmModal({ msg: "", itemID: "" });
       } else {
-        setShowConfirmModal({ msg: "", itemID: "" });
         setErrorMsg(t[locale].sthWrong);
       }
+      setShowConfirmModal({ msg: "", mode: null });
       props.refresh(); //refresh the user list
     } catch (error) {
       console.log(error);
-      setShowConfirmModal({ msg: "", itemID: "" });
+      setShowConfirmModal({ msg: "", mode: null });
       setErrorMsg(t[locale].sthWrong);
     }
   }
+
+  const handleAdmin = async () => {
+    setLoadingAdmin(true);
+    try {
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
+        mode: user.role == "user" ? "set-admin" : "remove-admin",
+        data: {
+          id: user.id,
+        },
+      };
+      await axios.post("/api/admin/firebase/", payload);
+      props.refresh(); //refresh the user list
+    } catch (error) {
+      // console.log(error.response.data);
+      setErrorMsg(error.response.status === 404 ? "Bad request, error code: 404" : error.response.data);
+    }
+    setLoadingAdmin(false);
+    setShowConfirmModal({ msg: "", mode: null });
+  };
   return (
     <div className="color-primary">
       {props.idx === 0 && (
@@ -160,7 +190,7 @@ function User(props) {
             <div className="col-5 text-uppercase pointer" onClick={() => setShowDetails(!showDetails)}>
               <small>{user.email}</small>
             </div>
-            <div className="col-2 pointer" onClick={() => setShowDetails(!showDetails)} >
+            <div className="col-2 pointer" onClick={() => setShowDetails(!showDetails)}>
               {user.signProvider === "emailAndPassword" ? t[locale].emailAndPassword : user.signProvider}
             </div>
             <div className="col-2">
@@ -168,41 +198,69 @@ function User(props) {
                 <Button variant="outline-primary" size="sm" onClick={showDetailsFunc}>
                   {showDetails ? t[locale].showLess : t[locale].showMore}
                 </Button>
-                <Button
-                  variant="primary"
-                  className="text-light"
-                  size="sm"
-                  onClick={() => {
-                    setShowConfirmModal({
-                      msg: t[locale].tryDelete,
-                      itemID: "",
-                    });
-                  }}
-                  disabled={loadingDel}
-                >
-                  {loadingDel ? (
-                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                  ) : (
-                    t[locale].delete
-                  )}
-                </Button>
+                {authUserCredential.uid != user.id && (
+                  <Button
+                    variant="primary"
+                    className="text-light"
+                    size="sm"
+                    onClick={() => {
+                      setShowConfirmModal({
+                        msg: t[locale].tryDelete,
+                        mode: deleteUser,
+                      });
+                    }}
+                    disabled={loadingDel}
+                  >
+                    {loadingDel ? (
+                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                    ) : (
+                      t[locale].delete
+                    )}
+                  </Button>
+                )}
               </div>
             </div>
 
             {/* Actions bar on Desktops */}
             {showDetails && (
               <div className="mt-3 w-100">
-                <div>
-                  <p>
-                    <small className="text-uppercase">
-                      <strong>{t[locale].role}</strong> {user.role == "user" ? t[locale].user : t[locale].admin}
-                    </small>
-                    <br />
-
-                    <small className="text-uppercase">
-                      <strong>ID:</strong> {user.id}
-                    </small>
-                  </p>
+                <div className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <p>
+                      <small className="text-uppercase">
+                        <strong>{t[locale].role}</strong> {user.role == "user" ? t[locale].user : t[locale].admin}
+                      </small>
+                      <br />
+                      <small className="text-uppercase">
+                        <strong>ID:</strong> {user.id}
+                      </small>
+                    </p>
+                  </div>
+                  <div>
+                    {/* Change role Button */}
+                    {authUserCredential.uid != user.id && (
+                      <Button
+                        variant={user.role == "user" ? "outline-success" : "outline-primary"}
+                        size="sm"
+                        onClick={() => {
+                          setShowConfirmModal({
+                            msg: t[locale].tryAdmin,
+                            mode: handleAdmin,
+                          });
+                        }}
+                        disabled={loadingAdmin}
+                      >
+                        {loadingAdmin ? (
+                          <>
+                            <span className="me-1">{t[locale].loadingAdmin}</span>
+                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                          </>
+                        ) : (
+                          <span>{user.role == "user" ? t[locale].addAdmin : t[locale].removeAdmin}</span>
+                        )}
+                      </Button>
+                    )}
+                  </div>
                 </div>
                 <div className="w-100 opacity-50">
                   <hr />
@@ -267,26 +325,49 @@ function User(props) {
 
                   {userOrders.length == 0 && <p>{t[locale].noOrders}</p>}
                 </div>
-                <div className="w-100 text-end">
-                  <Button
-                    variant="primary"
-                    className="text-light"
-                    size="sm"
-                    onClick={() => {
-                      setShowConfirmModal({
-                        msg: t[locale].tryDelete,
-                        itemID: "",
-                      });
-                    }}
-                    disabled={loadingDel}
-                  >
-                    {loadingDel ? (
-                      <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                    ) : (
-                      t[locale].delete
-                    )}
-                  </Button>
-                </div>
+                {authUserCredential.uid != user.id && (
+                  <div className="d-flex justify-content-between mt-3">
+                    <Button
+                      variant={user.role == "user" ? "outline-success" : "outline-primary"}
+                      size="sm"
+                      onClick={() => {
+                        setShowConfirmModal({
+                          msg: t[locale].tryAdmin,
+                          mode: handleAdmin,
+                        });
+                      }}
+                      disabled={loadingAdmin}
+                    >
+                      {loadingAdmin ? (
+                        <>
+                          <span className="me-1">{t[locale].loadingAdmin}</span>
+                          <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                        </>
+                      ) : (
+                        <span>{user.role == "user" ? t[locale].addAdmin : t[locale].removeAdmin}</span>
+                      )}
+                    </Button>
+
+                    <Button
+                      variant="primary"
+                      className="text-light"
+                      size="sm"
+                      onClick={() => {
+                        setShowConfirmModal({
+                          msg: t[locale].tryDelete,
+                          mode: deleteUser,
+                        });
+                      }}
+                      disabled={loadingDel}
+                    >
+                      {loadingDel ? (
+                        <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                      ) : (
+                        t[locale].delete
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
           </>
@@ -297,8 +378,8 @@ function User(props) {
       {/* Modal which appears when user wants to cancel the order */}
       <ConfirmActionModal
         msg={showConfirmModal.msg}
-        closeModal={() => setShowConfirmModal({ msg: "", itemID: "" })}
-        action={deleteUser}
+        closeModal={() => setShowConfirmModal({ msg: "", mode: null })}
+        action={showConfirmModal.mode}
       />
     </div>
   );

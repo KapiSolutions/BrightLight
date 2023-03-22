@@ -6,7 +6,7 @@ import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
 import User from "../../../components/Users/Admin/User";
-import axios from "axios";
+import { FiRefreshCcw } from "react-icons/fi";
 
 function UserProfilePage() {
   const router = useRouter();
@@ -35,9 +35,16 @@ function UserProfilePage() {
   };
 
   const getUserList = async () => {
-    const docs = await getDocsFromCollection("users");
-    const sortedDocs = docs.sort((a, b) => timeStampToDate(a.timeCreate) - timeStampToDate(b.timeCreate))
-    setUsers(sortedDocs);
+    setLoading(true);
+    try {
+      const docs = await getDocsFromCollection("users");
+      const sortedDocs = docs.sort((a, b) => timeStampToDate(a.timeCreate) - timeStampToDate(b.timeCreate));
+      setUsers(sortedDocs);
+    } catch (e) {
+      console.log(e);
+      setErrorMsg(t[locale].sthWrong);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -62,39 +69,18 @@ function UserProfilePage() {
       title: "Admin - Users",
       h1: "Menage Users",
       loading: "Loading...",
-      button: "Get users",
+      button: "Refresh",
+      sthWrong: "Something went wrong, please try again later.",
     },
     pl: {
       title: "Admin - Użytkownicy",
       h1: "Panel Użytkowników",
       loading: "Ładuje...",
-      button: "Pobierz listę",
+      button: "Odśwież",
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
     },
   };
-  const getUsersAuth = async () => {
-    setLoading(true);
-    try {
-      const payload = {
-        secret: process.env.NEXT_PUBLIC_API_KEY,
-        idToken: idToken,
-        // mode: "set-admin",
-        mode: "unset-admin",
-        // mode: "check-admin",
-        data: {
-          id: "oxkq7jiA7RS1JWk1GkhO0w4eIC83"
-        }
-      };
-      const res = await axios.post("/api/admin/firebase/", payload);
-      console.log(res.data.users);
-      // console.log(res.data);
-      setLoading(false);
-    } catch (error) {
-      // setErrorMsg(t[locale].sthWrong);
-      // console.log(error.response.data);
-      setErrorMsg(error.response.status === 404 ? "Bad request, error code: 404" : error.response.data);
-      setLoading(false);
-    }
-  };
+
   return (
     <>
       <Head>
@@ -102,20 +88,28 @@ function UserProfilePage() {
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="au-ctx">
         <h1>{t[locale].h1}</h1>
-
-        <Button onClick={getUsersAuth} disabled={loading}>
-          {loading ? (
-            <>
-              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-              <span>{t[locale].loading}</span>
-            </>
-          ) : (
-            <span>{t[locale].button}</span>
-          )}
-        </Button>
-
+        <div className="text-end">
+          <Button
+            onClick={getUserList}
+            variant="outline-primary"
+            className={isMobile ? "w-100" : "mb-2"}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                <span className="ms-1">{t[locale].loading}</span>
+              </>
+            ) : (
+              <>
+                <span className="me-2">{t[locale].button}</span>
+                <FiRefreshCcw style={{ width: "22px", height: "22px" }} />
+              </>
+            )}
+          </Button>
+        </div>
         {users.map((user, idx) => (
-          <User key={idx} idx={idx} user={user} refresh={getUserList} />
+          <User key={idx} idx={idx} user={user} refresh={getUserList} idToken={idToken} />
         ))}
       </Container>
     </>
