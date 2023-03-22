@@ -8,8 +8,8 @@ async function handler(req, res) {
     const url = `https://www.google.com/recaptcha/api/siteverify?secret=${secret_key}&response=${captcha}`;
 
     try {
-      const res = await axios.post(url);
-      if (res.success) {
+      const response = await axios.post(url);
+      if (response.success) {
         res.status(200).json({ success: true });
       } else {
         res.status(401).end("Invalid Captcha Code!");
