@@ -32,68 +32,6 @@ function RegisterForm() {
   const [women, setWomen] = useState(false);
   const [notProvided, setNotProvided] = useState(false);
 
-  const checkFields = () => {
-    if (nameRef.current.value !== "" && emailRef.current.value !== "" && passwordRef.current.value !== "") {
-      setRecaptchaNeeded(true);
-    }
-
-    if (invalid.password && passwordRef.current.value.length >= 6) {
-      updateInvalid({ password: false }); //data ok
-    }
-  };
-
-  const onReCAPTCHAChange = async (captchaCode) => {
-    if (!captchaCode) {
-      return;
-    }
-    setCaptchaResult(captchaCode);
-  };
-
-  // handle register action
-  async function handleSubmit(e) {
-    e.preventDefault();
-
-    if (passwordRef.current.value.length < 6) {
-      updateInvalid({ password: true }); //invalid
-      document.getElementsByName("registerPassword")[0].focus();
-      document.getElementsByName("registerPassword")[0].scrollIntoView({ block: "center", inline: "nearest" });
-      return;
-    } else {
-      updateInvalid({ password: false }); //data ok
-    }
-
-    if (!captchaResult) {
-      console.log("error catpcha");
-      return;
-    }
-
-    try {
-      const res = await axios.post("/api/recaptcha", { captcha: captchaResult });
-      console.log(res.data);
-      console.log("success!! ", res.data.success);
-    } catch (error) {
-      console.log(error.response.data);
-    }
-
-    // try {
-    //   setLoading(true);
-    //   setError("");
-    //   await registerUser(emailRef.current.value, passwordRef.current.value, nameRef.current.value);
-    // } catch (error) {
-    //   setLoading(false);
-    //   if (error.message.includes("email-already-in-use")) {
-    //     return setError("Failed to register user: email already in use.");
-    //   }
-    //   return setError("Failed to register user: " + error.message);
-    // }
-  }
-
-  const showHidePass = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setInputType(inputType === "text" ? "password" : "text");
-  };
-
   const t = {
     en: {
       h1: "Let's Start!",
@@ -114,6 +52,9 @@ function RegisterForm() {
       female: "Female",
       notProvided: "Not provide",
       shortPassword: "The password should be at least 6 characters long.",
+      errorCaptcha: "Error reCAPTCHA validation.",
+      errEmailExists: "User with provided Email already exists.",
+      errFirebase: "Failed to register user: ",
     },
     pl: {
       h1: "Zaczynamy!",
@@ -134,8 +75,88 @@ function RegisterForm() {
       female: "Kobieta",
       notProvided: "Nie podawaj",
       shortPassword: "Hasło powinno mieć co najmniej 6 znaków.",
+      errorCaptcha: "Błąd uwierzytelnienia reCAPTCHA.",
+      errEmailExists: "Podany adres email już istnieje.",
+      errFirebase: "Błąd rejestracji: ",
     },
   };
+
+  const checkFields = () => {
+    if (nameRef.current.value !== "" && emailRef.current.value !== "" && passwordRef.current.value !== "") {
+      setRecaptchaNeeded(true);
+    }
+
+    if (invalid.password && passwordRef.current.value.length >= 6) {
+      updateInvalid({ password: false }); //data ok
+    }
+  };
+
+  const onReCAPTCHAChange = async (captchaCode) => {
+    if (!captchaCode) {
+      return;
+    }
+    setCaptchaResult(captchaCode);
+  };
+
+  const captchaValidation = async (captchaCode) => {
+    try {
+      const res = await axios.post("/api/recaptcha", { captcha: captchaCode });
+      if (res.data.success) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      console.log(error.response.data);
+      setError(t[locale].errorCaptcha);
+      return false;
+    }
+  };
+
+  // handle register action
+  async function handleSubmit(e) {
+    e.preventDefault();
+    // Validate data
+    if (passwordRef.current.value.length < 6) {
+      updateInvalid({ password: true }); //invalid
+      document.getElementsByName("registerPassword")[0].focus();
+      document.getElementsByName("registerPassword")[0].scrollIntoView({ block: "center", inline: "nearest" });
+      return;
+    } else {
+      updateInvalid({ password: false }); //data ok
+    }
+
+    if (!captchaResult) {
+      return;
+    }
+
+    const captchaOK = await captchaValidation(captchaResult);
+
+    if (captchaOK) {
+      try {
+        setLoading(true);
+        setError("");
+        await registerUser(emailRef.current.value, passwordRef.current.value, nameRef.current.value);
+      } catch (error) {
+        setLoading(false);
+        if (error.message.includes("email-already-in-use")) {
+          setError(t[locale].errEmailExists);
+        }
+        setError(t[locale].errFirebase + error.message);
+      }
+      return;
+    } else {
+      return;
+    }
+  }
+
+  const showHidePass = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setInputType(inputType === "text" ? "password" : "text");
+  };
+
+
   return (
     <Container className="d-flex justify-content-center color-primary">
       <section className="w-100" style={{ maxWidth: "400px" }}>
