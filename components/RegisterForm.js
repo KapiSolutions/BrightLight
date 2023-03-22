@@ -90,10 +90,10 @@ function RegisterForm() {
     },
   };
   return (
-    <Container className="d-flex justify-content-center border color-primary">
+    <Container className="d-flex justify-content-center color-primary">
       <section className="w-100" style={{ maxWidth: "400px" }}>
-        <h1 className="text-center mt-2 mb-1">{t[locale].h1}</h1>
-        <p className="text-center mb-3">{t[locale].paragraph}</p>
+        <h1 className="text-center mt-2 mb-2">{t[locale].h1}</h1>
+        <p className="text-center mb-4">{t[locale].paragraph}</p>
         <div className="d-flex justify-content-evenly align-content-center mb-3 ">
           <FaFacebookF className="pointer zoom" onClick={loginWithFacebook} />
           <FaGoogle className="pointer zoom" onClick={loginWithGoogle} />
@@ -111,19 +111,21 @@ function RegisterForm() {
             {error}
           </Alert>
         )}
-        <Form onSubmit={handleSubmit}>
-          <FloatingLabel controlId="registerName" label={t[locale].name} className="mb-3 text-dark">
-            <Form.Control type="text" placeholder={t[locale].name} ref={nameRef} required />
-          </FloatingLabel>
+        <Form onSubmit={handleSubmit} className="d-flex flex-column ">
+          <Form.Group className="mb-0" controlId="controlName">
+            <Form.Label className="mb-0"><small>{t[locale].name}</small></Form.Label>
+            <Form.Control type="text" placeholder={t[locale].name} ref={nameRef} required/>
+          </Form.Group>
 
-          <FloatingLabel controlId="registerEmail" label={t[locale].email} className="mb-3 text-dark">
-            <Form.Control type="email" placeholder={t[locale].email} ref={emailRef} required />
-          </FloatingLabel>
+          <Form.Group className="" controlId="controlEmail">
+            <Form.Label className="mb-0"><small>{t[locale].email}</small></Form.Label>
+            <Form.Control type="email" placeholder={t[locale].email} ref={emailRef} required/>
+          </Form.Group>
 
-          <div className="d-flex w-100">
-            <FloatingLabel controlId="registerPassword" label={t[locale].pass} className="w-100 text-dark">
-              <Form.Control type={inputType} placeholder={t[locale].pass} ref={passwordRef} required />
-            </FloatingLabel>
+          <Form.Group className="d-flex flex-wrap w-100" controlId="controlPass">
+            <Form.Label className="mb-0 w-100"><small>{t[locale].pass}</small></Form.Label>
+            <div className="d-flex w-100">
+            <Form.Control type={inputType} placeholder={t[locale].pass} ref={passwordRef} required/>
             <InputGroup.Text className="pointer border" onClick={showHidePass}>
               {inputType === "password" ? (
                 <FaRegEyeSlash className="iconSizeAlert" />
@@ -131,12 +133,15 @@ function RegisterForm() {
                 <FaRegEye className="iconSizeAlert" />
               )}
             </InputGroup.Text>
-          </div>
+            </div>
+            </Form.Group>
+          
           <div className="mt-3">
             <Form.Check inline label={t[locale].male} />
             <Form.Check inline label={t[locale].female} />
             <Form.Check inline label={t[locale].notProvided} />
           </div>
+
           <Button className="w-100 mt-3 mb-2 btn-lg" type="submit" disabled={loading}>
             {loading ? (
               <>
