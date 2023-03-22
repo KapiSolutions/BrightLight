@@ -116,6 +116,9 @@ function RegisterForm() {
   // handle register action
   async function handleSubmit(e) {
     e.preventDefault();
+    updateInvalid({ email: false }); //reset
+    setError("");
+    setLoading(true);
     // Validate data
     if (passwordRef.current.value.length < 6) {
       updateInvalid({ password: true }); //invalid
@@ -127,6 +130,7 @@ function RegisterForm() {
     }
 
     if (!captchaResult) {
+      setLoading(false);
       return;
     }
 
@@ -134,18 +138,20 @@ function RegisterForm() {
 
     if (captchaOK) {
       try {
-        setLoading(true);
-        setError("");
         await registerUser(emailRef.current.value, passwordRef.current.value, nameRef.current.value);
       } catch (error) {
-        setLoading(false);
-        if (error.message.includes("email-already-in-use")) {
+        const errMessage = error.message.toString();
+        if (errMessage.includes("email-already-in-use")) {
+          updateInvalid({ email: true }); //invalid
           setError(t[locale].errEmailExists);
+        } else {
+          setError(t[locale].errFirebase + errMessage);
         }
-        setError(t[locale].errFirebase + error.message);
       }
+      setLoading(false);
       return;
     } else {
+      setLoading(false);
       return;
     }
   }
@@ -155,7 +161,6 @@ function RegisterForm() {
     e.stopPropagation();
     setInputType(inputType === "text" ? "password" : "text");
   };
-
 
   return (
     <Container className="d-flex justify-content-center color-primary">
@@ -184,14 +189,29 @@ function RegisterForm() {
             <Form.Label className="mb-0">
               <small>{t[locale].name}</small>
             </Form.Label>
-            <Form.Control type="text" placeholder={t[locale].name} ref={nameRef} maxLength={20} required />
+            <Form.Control
+              type="text"
+              placeholder={t[locale].name}
+              ref={nameRef}
+              maxLength={20}
+              className={themeDarkInput}
+              required
+            />
           </Form.Group>
 
           <Form.Group className="" controlId="controlEmail">
             <Form.Label className="mb-0">
               <small>{t[locale].email}</small>
             </Form.Label>
-            <Form.Control type="email" placeholder={t[locale].email} ref={emailRef} maxLength={40} required />
+            <Form.Control
+              name="registerEmail"
+              type="email"
+              placeholder={t[locale].email}
+              ref={emailRef}
+              maxLength={40}
+              className={`${invalid.email && "border border-danger"} ${themeDarkInput}`}
+              required
+            />
           </Form.Group>
 
           <Form.Group className="d-flex flex-wrap w-100" controlId="controlPass">
@@ -206,7 +226,7 @@ function RegisterForm() {
                 ref={passwordRef}
                 onChange={checkFields}
                 maxLength={30}
-                className={`${invalid.password && "border border-danger"} w-100 ${themeDarkInput}`}
+                className={`${invalid.password && "border border-danger"} ${themeDarkInput}`}
                 required
               />
               <InputGroup.Text className="pointer border" onClick={showHidePass}>
