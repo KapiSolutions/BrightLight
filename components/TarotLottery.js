@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import ReactCardFlip from "react-card-flip";
-import { Row, Col, Card, Button, FloatingLabel, Form, ButtonGroup, Spinner } from "react-bootstrap";
+import { Row, Col, Card, Button, FloatingLabel, Form, ButtonGroup, Spinner, Badge } from "react-bootstrap";
 import styles from "../styles/components/TarotLotteryDesktop.module.scss";
 import { useDeviceStore } from "../stores/deviceStore";
 import { useAuth } from "../context/AuthProvider";
@@ -339,7 +339,7 @@ function TarotLotteryDesktop(props) {
 
             {/* Switch */}
             <div className="d-flex align-items-center justify-content-center gap-3 mt-4">
-              <span className="ms-3 pointer" onClick={() => setAiGenTarot(false)}>
+              <span className="ms-5 pointer" onClick={() => setAiGenTarot(false)}>
                 Standard
               </span>
               <span className="pointer">
@@ -352,6 +352,11 @@ function TarotLotteryDesktop(props) {
               </span>
               <span className="pointer" onClick={() => setAiGenTarot(true)}>
                 AI Generated
+                <span style={{ position: "relative", top: "-8px", left: "5px", width: "1px" }}>
+                  <small>
+                    <Badge bg="danger">New!</Badge>
+                  </small>
+                </span>
               </span>
             </div>
 
