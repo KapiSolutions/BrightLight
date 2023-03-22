@@ -9,7 +9,7 @@ async function firebaseAdmin(req, res) {
     const response = await db.collection("users").doc(uid).get();
     const doc = response.data();
     const claims = await auth.verifyIdToken(idToken);
- 
+
     if (doc.role == process.env.ADMIN_KEY && claims.admin) {
       return true;
     } else {
@@ -17,19 +17,20 @@ async function firebaseAdmin(req, res) {
     }
   };
 
-  const listAllUsers = async (nextPageToken) => {
-    const users = [];
-    // List batch of users, 1000 at a time.
-    try {
-      const listUsersResult = await auth.listUsers(1000, nextPageToken);
-      listUsersResult.users.map((user) => {
-        users.push(user.toJSON());
-      });
-      return users;
-    } catch (error) {
-      console.log("Error listing users:", error);
-    }
-  };
+  //! not used
+  // const listAllUsers = async (nextPageToken) => {
+  //   const users = [];
+  //   // List batch of users, 1000 at a time.
+  //   try {
+  //     const listUsersResult = await auth.listUsers(1000, nextPageToken);
+  //     listUsersResult.users.map((user) => {
+  //       users.push(user.toJSON());
+  //     });
+  //     return users;
+  //   } catch (error) {
+  //     console.log("Error listing users:", error);
+  //   }
+  // };
 
   if (req.method === "POST") {
     const uid = await verifyRequest(auth, secret, idToken, req, res);
@@ -50,29 +51,6 @@ async function firebaseAdmin(req, res) {
             res.status(500).send(e);
           }
           break;
-        case "create-doc":
-          try {
-            await db
-              .collection(data.collection)
-              .doc("/" + data.insert.id + "/")
-              .create({
-                ...data.insert,
-                timeCreate: data.insert.timeCreate ? new Date(data.insert.timeCreate) : new Date(),
-              });
-            res.status(200).send("Document created!");
-          } catch (e) {
-            res.status(500).send(e);
-          }
-          break;
-        case "get-doc":
-          try {
-            const response = await db.collection(data.collection).doc(data.id).get();
-            const document = response.data();
-            res.status(200).send(document);
-          } catch (e) {
-            res.status(500).send(e);
-          }
-          break;
         case "create-user":
           try {
             await db
@@ -86,46 +64,56 @@ async function firebaseAdmin(req, res) {
             res.status(500).send(e);
           }
           break;
-        case "get-users":
-          const users = await listAllUsers();
-          res.status(200).json({ users });
+        case "create-order":
+          try {
+            await db
+              .collection("orders")
+              .doc("/" + data.id + "/")
+              .create({
+                ...data,
+                timeCreate: data.timeCreate ? new Date(data.timeCreate) : new Date(),
+              });
+            res.status(200).send("Order created!");
+          } catch (e) {
+            res.status(500).send(e);
+          }
+          break;
+        case "get-doc":
+          try {
+            const response = await db.collection(data.collection).doc(data.id).get();
+            const document = response.data();
+            res.status(200).send(document);
+          } catch (e) {
+            res.status(500).send(e);
+          }
           break;
         case "set-admin":
           try {
             await auth.setCustomUserClaims(data.id, { admin: true });
+            await db.collection("users").doc(data.id).update({ role: process.env.ADMIN_KEY });
             res.status(200).json({ status: "success" });
           } catch (e) {
             res.status(500).send(e);
           }
           break;
-          case "unset-admin":
+        case "unset-admin":
           try {
             await auth.setCustomUserClaims(data.id, null);
+            await db.collection("users").doc(data.id).update({ role: "user" });
             res.status(200).json({ status: "success" });
           } catch (e) {
             res.status(500).send(e);
           }
           break;
-        case "check-admin":
-          try {
-            const admin = await adminRoleCheck(uid);
-            if (admin === true) {
-              res.status(200).json({ admin: true });
-            } else {
-              res.status(200).json({ admin: false });
-            }
-          } catch (e) {
-            res.status(500).send(e);
-          }
-          break;
-
+        // case "get-users": //!not used
+        //   const users = await listAllUsers();
+        //   res.status(200).json({ users });
+        //   break;
         default:
+          res.status(405).end("Method Not Allowed");
           break;
       }
     }
-    // Get user:
-    // const user = await admin.auth().getUser(uid);
-
     // delete doc
     // db.collection('items').doc(id).delete();
 

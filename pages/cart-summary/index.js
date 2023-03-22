@@ -143,20 +143,17 @@ export default function CartSummaryPage() {
       const payload = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
-        mode: "create-doc",
-        data: {
-          collection: "orders",
-          insert: order,
-        },
+        mode: "create-order",
+        data: order,
       };
       await axios.post("/api/admin/firebase/", payload);
       //Clean the cart
       await updateProfile({ cart: [] });
     } catch (error) {
-      console.log(error);
+      // console.log(error.response.data);
       setErrorMsg(t[locale].sthWrong);
       setLoading(undefined);
-      throw error;
+      return;
     }
 
     //START STRIPE CHECKOUT SESSION

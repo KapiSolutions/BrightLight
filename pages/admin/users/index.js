@@ -12,7 +12,7 @@ function UserProfilePage() {
   const router = useRouter();
   const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const { isAuthenticated, isAdmin, authUserCredential } = useAuth();
+  const { isAuthenticated, isAdmin, authUserCredential, setErrorMsg } = useAuth();
   const [users, setUsers] = useState([]);
   const [idToken, setIdToken] = useState(undefined);
   const [loading, setLoading] = useState(false);
@@ -25,17 +25,27 @@ function UserProfilePage() {
     document.getElementById("au-ctx").scrollIntoView();
   }
 
+  const timeStampToDate = (time) => {
+    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  };
+
   const getToken = async () => {
     const token = await authUserCredential.getIdToken(true);
     setIdToken(token.toString());
+  };
+
+  const getUserList = async () => {
+    const docs = await getDocsFromCollection("users");
+    const sortedDocs = docs.sort((a, b) => timeStampToDate(a.timeCreate) - timeStampToDate(b.timeCreate))
+    setUsers(sortedDocs);
   };
 
   useEffect(() => {
     if (isAuthenticated()) {
       if (isAdmin) {
         isMobile && scroll();
-        getUserList();
         getToken();
+        getUserList();
       } else {
         router.replace("/");
         return;
@@ -46,11 +56,6 @@ function UserProfilePage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const getUserList = async () => {
-    const docs = await getDocsFromCollection("users");
-    setUsers(docs);
-  };
 
   const t = {
     en: {
@@ -73,22 +78,21 @@ function UserProfilePage() {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
         // mode: "set-admin",
-        // mode: "unset-admin",
-        mode: "get-users",
+        mode: "unset-admin",
         // mode: "check-admin",
         data: {
           id: "oxkq7jiA7RS1JWk1GkhO0w4eIC83"
         }
       };
       const res = await axios.post("/api/admin/firebase/", payload);
-      // console.log(res.data.users);
-      console.log(res.data);
+      console.log(res.data.users);
+      // console.log(res.data);
       setLoading(false);
     } catch (error) {
       // setErrorMsg(t[locale].sthWrong);
-      console.log(error);
+      // console.log(error.response.data);
+      setErrorMsg(error.response.status === 404 ? "Bad request, error code: 404" : error.response.data);
       setLoading(false);
-      throw error;
     }
   };
   return (
