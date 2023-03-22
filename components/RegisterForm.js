@@ -1,10 +1,11 @@
 import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Container, Form, Button, Alert, FloatingLabel, Spinner, InputGroup } from "react-bootstrap";
+import { Container, Form, Button, Alert, Spinner, InputGroup } from "react-bootstrap";
 import { FaFacebookF, FaGoogle, FaTwitter, FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 import { RiAlertFill } from "react-icons/ri";
 import { useAuth } from "../context/AuthProvider";
+import ReCAPTCHA from "react-google-recaptcha";
 
 function RegisterForm() {
   const router = useRouter();
@@ -16,29 +17,24 @@ function RegisterForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false); //to disable the submit button after clicked and wait for submit response
   const [inputType, setInputType] = useState("password");
+  const [men, setMen] = useState(false);
+  const [women, setWomen] = useState(false);
+  const [notProvided, setNotProvided] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (passwordRef.current.value.length < 6) {
       return setError("Password should be at least 6 characters");
     }
-
     try {
       setLoading(true);
       setError("");
-      await registerUser(
-        emailRef.current.value,
-        passwordRef.current.value,
-        nameRef.current.value
-        // bdateRef.current.value
-      );
+      await registerUser(emailRef.current.value, passwordRef.current.value, nameRef.current.value);
     } catch (error) {
       setLoading(false);
-
       if (error.message.includes("email-already-in-use")) {
         return setError("Failed to register user: email already in use.");
       }
-
       return setError("Failed to register user: " + error.message);
     }
   }
@@ -111,36 +107,93 @@ function RegisterForm() {
             {error}
           </Alert>
         )}
-        <Form onSubmit={handleSubmit} className="d-flex flex-column ">
+        <Form onSubmit={handleSubmit} className="d-flex mt-1 flex-column ">
           <Form.Group className="mb-0" controlId="controlName">
-            <Form.Label className="mb-0"><small>{t[locale].name}</small></Form.Label>
-            <Form.Control type="text" placeholder={t[locale].name} ref={nameRef} required/>
+            <Form.Label className="mb-0">
+              <small>{t[locale].name}</small>
+            </Form.Label>
+            <Form.Control type="text" placeholder={t[locale].name} ref={nameRef} required />
           </Form.Group>
 
           <Form.Group className="" controlId="controlEmail">
-            <Form.Label className="mb-0"><small>{t[locale].email}</small></Form.Label>
-            <Form.Control type="email" placeholder={t[locale].email} ref={emailRef} required/>
+            <Form.Label className="mb-0">
+              <small>{t[locale].email}</small>
+            </Form.Label>
+            <Form.Control type="email" placeholder={t[locale].email} ref={emailRef} required />
           </Form.Group>
 
           <Form.Group className="d-flex flex-wrap w-100" controlId="controlPass">
-            <Form.Label className="mb-0 w-100"><small>{t[locale].pass}</small></Form.Label>
+            <Form.Label className="mb-0 w-100">
+              <small>{t[locale].pass}</small>
+            </Form.Label>
             <div className="d-flex w-100">
-            <Form.Control type={inputType} placeholder={t[locale].pass} ref={passwordRef} required/>
-            <InputGroup.Text className="pointer border" onClick={showHidePass}>
-              {inputType === "password" ? (
-                <FaRegEyeSlash className="iconSizeAlert" />
-              ) : (
-                <FaRegEye className="iconSizeAlert" />
-              )}
-            </InputGroup.Text>
+              <Form.Control type={inputType} placeholder={t[locale].pass} ref={passwordRef} required />
+              <InputGroup.Text className="pointer border" onClick={showHidePass}>
+                {inputType === "password" ? (
+                  <FaRegEyeSlash className="iconSizeAlert" />
+                ) : (
+                  <FaRegEye className="iconSizeAlert" />
+                )}
+              </InputGroup.Text>
             </div>
-            </Form.Group>
-          
-          <div className="mt-3">
-            <Form.Check inline label={t[locale].male} />
-            <Form.Check inline label={t[locale].female} />
-            <Form.Check inline label={t[locale].notProvided} />
+          </Form.Group>
+
+          <div className="mt-2 d-flex justify-content-end">
+            <ReCAPTCHA size="normal" sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY} />
           </div>
+
+          {/* <div className="mt-3">
+            <Form.Check inline>
+              <Form.Check.Input
+                id="checkMen"
+                type="checkbox"
+                checked={men}
+                className="pointer"
+                onChange={() => {
+                  setMen(true);
+                  setWomen(false);
+                  setNotProvided(false);
+                }}
+              />
+              <Form.Check.Label htmlFor="checkMen" className="pointer">
+                {t[locale].male}
+              </Form.Check.Label>
+            </Form.Check>
+
+            <Form.Check inline>
+              <Form.Check.Input
+                id="checkWowen"
+                type="checkbox"
+                checked={women}
+                className="pointer"
+                onChange={() => {
+                  setMen(false);
+                  setWomen(true);
+                  setNotProvided(false);
+                }}
+              />
+              <Form.Check.Label htmlFor="checkWowen" className="pointer">
+                {t[locale].female}
+              </Form.Check.Label>
+            </Form.Check>
+
+            <Form.Check inline>
+              <Form.Check.Input
+                id="checkNotProvided"
+                type="checkbox"
+                checked={notProvided}
+                className="pointer"
+                onChange={() => {
+                  setMen(false);
+                  setWomen(false);
+                  setNotProvided(true);
+                }}
+              />
+              <Form.Check.Label htmlFor="checkNotProvided" className="pointer">
+                {t[locale].notProvided}
+              </Form.Check.Label>
+            </Form.Check>
+          </div> */}
 
           <Button className="w-100 mt-3 mb-2 btn-lg" type="submit" disabled={loading}>
             {loading ? (
