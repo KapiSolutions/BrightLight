@@ -43,6 +43,7 @@ function SignInForm(props) {
       failLogin: "Failed to log in: ",
       failLoginPass: "Incorrect password.",
       failLoginUser: "User with this email address does not exist.",
+      popUpClosed: "Popup closed by the user.",
     },
     pl: {
       h1: "Logowanie",
@@ -61,6 +62,7 @@ function SignInForm(props) {
       failLogin: "Błąd logowania: ",
       failLoginPass: "Niepoprawne hasło.",
       failLoginUser: "Użytkownik z takim adresem email nie istnieje.",
+      popUpClosed: "Zamknięto okno logowania.",
     },
   };
 
@@ -93,13 +95,17 @@ function SignInForm(props) {
 
   const externalLogin = async (provider) => {
     setLoading(true);
-
     try {
       await provider();
+      await router.push("/")
     } catch (error) {
       console.log(error);
+      if (error.includes("popup-closed-by-user")) {
+        setError(t[locale].popUpClosed);
+      } else {
+        setError(t[locale].failLogin + error);
+      }
     }
-
     setLoading(false);
   };
 
@@ -111,7 +117,6 @@ function SignInForm(props) {
 
   return (
     <div className="color-primary ps-3 pe-3">
-      
       {!isMobile && (
         <div className="d-flex gap-2" style={{ position: "absolute", top: "20px", left: "20px" }}>
           <small>
@@ -153,8 +158,8 @@ function SignInForm(props) {
 
             <div className="d-flex justify-content-evenly align-content-center mb-4 mt-3">
               <FaFacebookF className="pointer zoom" onClick={() => externalLogin(loginWithFacebook)} />
-              <FaGoogle className="pointer zoom" onClick={loginWithGoogle} />
-              <FaTwitter className="pointer zoom" onClick={loginWithTwitter} />
+              <FaGoogle className="pointer zoom" onClick={() => externalLogin(loginWithGoogle)} />
+              <FaTwitter className="pointer zoom" onClick={() => externalLogin(loginWithTwitter)} />
             </div>
 
             <div className="hrDivider text-center">
@@ -175,6 +180,7 @@ function SignInForm(props) {
                   placeholder={t[locale].email}
                   ref={emailRef}
                   className={`${errorEmail && "border border-danger"} ${themeDarkInput}`}
+                  disabled={loading}
                   required
                 />
                 {errorEmail && <small className="text-danger">{t[locale].failLoginUser}</small>}
@@ -188,10 +194,14 @@ function SignInForm(props) {
                       placeholder={t[locale].pass}
                       ref={passwordRef}
                       className={`${errorPass && "border border-danger"} ${themeDarkInput}`}
+                      disabled={loading}
                       required
                     />
                   </FloatingLabel>
-                  <InputGroup.Text className={`pointer border ${theme == "dark" && "opacity-75"}`} onClick={showHidePass}>
+                  <InputGroup.Text
+                    className={`pointer border ${theme == "dark" && "opacity-75"}`}
+                    onClick={showHidePass}
+                  >
                     {inputType === "password" ? (
                       <FaRegEyeSlash className="iconSizeAlert" />
                     ) : (
@@ -219,7 +229,10 @@ function SignInForm(props) {
 
             <div className="w-100 text-center mt-2">
               {t[locale].account}
-              <Link href="/register"> <strong>{t[locale].join}</strong></Link>
+              <Link href="/register">
+                {" "}
+                <strong>{t[locale].join}</strong>
+              </Link>
             </div>
           </section>
         </Col>

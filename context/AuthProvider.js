@@ -234,18 +234,18 @@ function AuthProvider({ children }) {
         setSuccessMsg("newUser");
       }
       tempCart && setTempCart(null);
-      router.push("/");
+      setBlock(false);
+      return;
       // const credential = GoogleAuthProvider.credentialFromResult(res);
       // const token = credential?.accessToken;
     } catch (err) {
+      setBlock(false);
       // const errorCode = err.code;
-      const errorMessage = err.message;
+      throw err.message;
       // const email = err.email;
       // const credential = GoogleAuthProvider.credentialFromError(err);
-      router.push("/");
-      setErrorMsg(errorMessage);
     }
-    setBlock(false);
+    
   }
 
   async function loginWithFacebook() {
@@ -280,18 +280,17 @@ function AuthProvider({ children }) {
         setSuccessMsg("newUser");
       }
       tempCart && setTempCart(null);
-      router.push("/");
+      setBlock(false);
       // const credential = FacebookAuthProvider.credentialFromResult(res);
       // const accessToken = credential.accessToken;
     } catch (err) {
+      setBlock(false);
       // const errorCode = err.code;
-      const errorMessage = err.message;
+      throw err.message;
       // const email = err.customData.email;
       // const credential = FacebookAuthProvider.credentialFromError(err);
-      router.push("/");
-      setErrorMsg(errorMessage);
     }
-    setBlock(false);
+    
   }
 
   async function loginWithTwitter() {
@@ -326,19 +325,18 @@ function AuthProvider({ children }) {
         setSuccessMsg("newUser");
       }
       tempCart && setTempCart(null);
-      router.push("/");
+      setBlock(false);
       // const credential = TwitterAuthProvider.credentialFromResult(res);
       // const token = credential.accessToken;
       // const secret = credential.secret;
     } catch (err) {
+      setBlock(false);
       // const errorCode = err.code;
-      const errorMessage = err.message;
+      throw err.message;
       // const email = err.customData.email;
       // const credential = TwitterAuthProvider.credentialFromError(err);
-      router.push("/");
-      setErrorMsg(errorMessage);
     }
-    setBlock(false);
+    
   }
 
   async function updateUserData(uid, userData, onlyOrders) {

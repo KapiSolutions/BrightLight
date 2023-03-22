@@ -29,9 +29,6 @@ function RegisterForm() {
   const invalidInit = { name: false, email: false, password: false, catpcha: false };
   const [invalid, updateInvalid] = useReducer((state, updates) => ({ ...state, ...updates }), invalidInit);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light border-accent4" : "";
-  const [men, setMen] = useState(false);
-  const [women, setWomen] = useState(false);
-  const [notProvided, setNotProvided] = useState(false);
 
   const t = {
     en: {
@@ -52,13 +49,11 @@ function RegisterForm() {
       privacy: "Privacy Policy.",
       account: "Already have an account?",
       sign: "Sign In!",
-      male: "Male",
-      female: "Female",
-      notProvided: "Not provide",
       shortPassword: "The password should be at least 6 characters long.",
       errorCaptcha: "Error reCAPTCHA validation.",
       errEmailExists: "User with provided Email already exists.",
       errFirebase: "Failed to register user: ",
+      popUpClosed: "Popup closed by the user.",
     },
     pl: {
       h1: "Zaczynamy!",
@@ -78,13 +73,11 @@ function RegisterForm() {
       privacy: "Politykę Prywatności.",
       account: "Masz już konto?",
       sign: "Zaloguj się!",
-      male: "Mężczyzna",
-      female: "Kobieta",
-      notProvided: "Nie podawaj",
       shortPassword: "Hasło powinno mieć co najmniej 6 znaków.",
       errorCaptcha: "Błąd uwierzytelnienia reCAPTCHA.",
       errEmailExists: "Podany adres email już istnieje.",
       errFirebase: "Błąd rejestracji: ",
+      popUpClosed: "Zamknięto okno logowania.",
     },
   };
 
@@ -163,6 +156,22 @@ function RegisterForm() {
     }
   }
 
+  const externalRegister = async (provider) => {
+    setLoading(true);
+    try {
+      await provider();
+      await router.push("/")
+    } catch (error) {
+      console.log(error);
+      if (error.includes("popup-closed-by-user")) {
+        setError(t[locale].popUpClosed);
+      } else {
+        setError(t[locale].errFirebase + error);
+      }
+    }
+    setLoading(false);
+  };
+
   const showHidePass = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -190,9 +199,9 @@ function RegisterForm() {
         <h1 className="text-center mt-2 mb-2">{t[locale].h1}</h1>
         <p className="text-center mb-4">{t[locale].paragraph}</p>
         <div className="d-flex justify-content-evenly align-content-center mb-3 ">
-          <FaFacebookF className="pointer zoom" onClick={loginWithFacebook} />
-          <FaGoogle className="pointer zoom" onClick={loginWithGoogle} />
-          <FaTwitter className="pointer zoom" onClick={loginWithTwitter} />
+          <FaFacebookF className="pointer zoom" onClick={() => externalRegister(loginWithFacebook)} />
+          <FaGoogle className="pointer zoom" onClick={() => externalRegister(loginWithGoogle)} />
+          <FaTwitter className="pointer zoom" onClick={() => externalRegister(loginWithTwitter)} />
         </div>
 
         <div className="hrDivider text-center">
@@ -217,6 +226,7 @@ function RegisterForm() {
               ref={nameRef}
               maxLength={20}
               className={themeDarkInput}
+              disabled={loading}
               required
             />
           </Form.Group>
@@ -232,6 +242,7 @@ function RegisterForm() {
               ref={emailRef}
               maxLength={40}
               className={`${invalid.email && "border border-danger"} ${themeDarkInput}`}
+              disabled={loading}
               required
             />
           </Form.Group>
@@ -249,6 +260,7 @@ function RegisterForm() {
                 onChange={checkFields}
                 maxLength={30}
                 className={`${invalid.password && "border border-danger"} ${themeDarkInput}`}
+                disabled={loading}
                 required
               />
               <InputGroup.Text className={`pointer border ${theme == "dark" && "opacity-75"}`} onClick={showHidePass}>
@@ -272,59 +284,6 @@ function RegisterForm() {
               />
             </div>
           )}
-
-          {/* <div className="mt-3">
-            <Form.Check inline>
-              <Form.Check.Input
-                id="checkMen"
-                type="checkbox"
-                checked={men}
-                className="pointer"
-                onChange={() => {
-                  setMen(true);
-                  setWomen(false);
-                  setNotProvided(false);
-                }}
-              />
-              <Form.Check.Label htmlFor="checkMen" className="pointer">
-                {t[locale].male}
-              </Form.Check.Label>
-            </Form.Check>
-
-            <Form.Check inline>
-              <Form.Check.Input
-                id="checkWowen"
-                type="checkbox"
-                checked={women}
-                className="pointer"
-                onChange={() => {
-                  setMen(false);
-                  setWomen(true);
-                  setNotProvided(false);
-                }}
-              />
-              <Form.Check.Label htmlFor="checkWowen" className="pointer">
-                {t[locale].female}
-              </Form.Check.Label>
-            </Form.Check>
-
-            <Form.Check inline>
-              <Form.Check.Input
-                id="checkNotProvided"
-                type="checkbox"
-                checked={notProvided}
-                className="pointer"
-                onChange={() => {
-                  setMen(false);
-                  setWomen(false);
-                  setNotProvided(true);
-                }}
-              />
-              <Form.Check.Label htmlFor="checkNotProvided" className="pointer">
-                {t[locale].notProvided}
-              </Form.Check.Label>
-            </Form.Check>
-          </div> */}
 
           <Button className="w-100 mt-3 mb-2 btn-lg" type="submit" disabled={loading}>
             {loading ? (
