@@ -90,11 +90,11 @@ function RegisterForm() {
     },
   };
   return (
-    <Container className="d-flex justify-content-center color-primary">
+    <Container className="d-flex justify-content-center border color-primary">
       <section className="w-100" style={{ maxWidth: "400px" }}>
-        <h1 className="text-center mt-2 mb-3">{t[locale].h1}</h1>
+        <h1 className="text-center mt-2 mb-1">{t[locale].h1}</h1>
         <p className="text-center mb-3">{t[locale].paragraph}</p>
-        <div className="d-flex justify-content-evenly align-content-center mb-4 ">
+        <div className="d-flex justify-content-evenly align-content-center mb-3 ">
           <FaFacebookF className="pointer zoom" onClick={loginWithFacebook} />
           <FaGoogle className="pointer zoom" onClick={loginWithGoogle} />
           <FaTwitter className="pointer zoom" onClick={loginWithTwitter} />
@@ -132,12 +132,12 @@ function RegisterForm() {
               )}
             </InputGroup.Text>
           </div>
-          {/* <div className="mt-2">
+          <div className="mt-3">
             <Form.Check inline label={t[locale].male} />
             <Form.Check inline label={t[locale].female} />
             <Form.Check inline label={t[locale].notProvided} />
-          </div> */}
-          <Button className="w-100 mt-4 mb-2 btn-lg" type="submit" disabled={loading}>
+          </div>
+          <Button className="w-100 mt-3 mb-2 btn-lg" type="submit" disabled={loading}>
             {loading ? (
               <>
                 <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />

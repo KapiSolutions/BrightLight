@@ -19,7 +19,7 @@ function LayoutSign({ children }) {
       <SSRProvider>
         <div
           className={`${theme} d-flex align-items-center justify-content-center`}
-          style={{ height: "100vh", width: "100vw" }}
+          style={{ height: "100vh", maxWidth: "100vw" }}
         >
           {isMobile && (
             <div className={`${styles.backButton} pointer background`} onClick={() => router.back()}>
