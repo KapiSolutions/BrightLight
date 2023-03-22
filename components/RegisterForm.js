@@ -163,7 +163,7 @@ function RegisterForm() {
   };
 
   return (
-    <Container className="d-flex justify-content-center color-primary">
+    <Container className="d-flex justify-content-center color-primary mt-2 mb-4">
       <section className="w-100" style={{ maxWidth: "400px" }}>
         <h1 className="text-center mt-2 mb-2">{t[locale].h1}</h1>
         <p className="text-center mb-4">{t[locale].paragraph}</p>
