@@ -12,7 +12,7 @@ async function handler(req, res) {
       if (response.success) {
         res.status(200).json({ success: true });
       } else {
-        res.status(401).end("Invalid Captcha Code!");
+        res.status(401).json(response);
       }
     } catch (error) {
       console.log("error: ", error);

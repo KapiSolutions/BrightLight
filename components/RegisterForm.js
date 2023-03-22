@@ -68,7 +68,8 @@ function RegisterForm() {
     }
 
     try {
-      const res = await axios.post("/api/recaptcha", { captcha: captchaResult });
+      console.log(captchaResult);
+      const res = await axios.post("/api/recaptcha/", { captcha: captchaResult });
       console.log(res.data);
       console.log("success!! ", res.data.success);
     } catch (error) {
