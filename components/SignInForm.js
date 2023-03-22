@@ -17,9 +17,13 @@ function SignInForm(props) {
   const passwordRef = useRef();
   const { loginUser, loginWithGoogle, loginWithFacebook, loginWithTwitter } = useAuth();
   const [error, setError] = useState("");
+  const [errorPass, setErrorPass] = useState(false);
+  const [errorEmail, setErrorEmail] = useState(false);
   const [loading, setLoading] = useState(false); //to disable the submit button after clicked and wait for submit response
   const [inputType, setInputType] = useState("password");
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const theme = useDeviceStore((state) => state.themeState);
+  const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
 
   const t = {
     en: {
@@ -35,8 +39,8 @@ function SignInForm(props) {
       join: "Join now!",
       shortPass: "Password should be at least 6 characters",
       failLogin: "Failed to log in: ",
-      failLoginPass: "Failed to log in: wrong password",
-      failLoginUser: "Failed to log in: user not found"
+      failLoginPass: "Incorrect password.",
+      failLoginUser: "User with this email address does not exist.",
     },
     pl: {
       h1: "Logowanie",
@@ -51,39 +55,55 @@ function SignInForm(props) {
       join: "Dołącz teraz!",
       shortPass: "Hasło powinno mieć przynajmiej 6 znaków",
       failLogin: "Błąd logowania: ",
-      failLoginPass: "Błąd logowania: złe hasło",
-      failLoginUser: "Błąd logowania: użytkownik nie istnieje"
+      failLoginPass: "Niepoprawne hasło.",
+      failLoginUser: "Użytkownik z takim adresem email nie istnieje.",
     },
   };
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setError("");
+    setErrorPass(false);
+    setErrorEmail(false);
     if (passwordRef.current.value.length < 6) {
       return setError(t[locale].shortPass);
     }
 
+    setLoading(true);
+
     try {
-      setLoading(true);
-      setError("");
       await loginUser(emailRef.current.value, passwordRef.current.value);
       router.push("/");
     } catch (error) {
       setLoading(false);
       if (error.message.includes("wrong-password")) {
-        return setError(t[locale].failLoginPass);
+        setErrorPass(true);
+        return;
       } else if (error.message.includes("user-not-found")) {
-        return setError(t[locale].failLoginUser);
+        setErrorEmail(true);
+        return;
       }
       return setError(t[locale].failLogin + error.message);
     }
   }
+
+  const externalLogin = async (provider) => {
+    setLoading(true);
+
+    try {
+      await provider();
+    } catch (error) {
+      console.log(error);
+    }
+
+    setLoading(false);
+  };
 
   const showHidePass = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setInputType(inputType === "text" ? "password" : "text");
   };
-
 
   return (
     <div className="color-primary ps-3 pe-3">
@@ -117,7 +137,7 @@ function SignInForm(props) {
             <p className="text-center mb-4">{t[locale].unlock}</p>
 
             <div className="d-flex justify-content-evenly align-content-center mb-4 mt-3">
-              <FaFacebookF className="pointer zoom" onClick={loginWithFacebook} />
+              <FaFacebookF className="pointer zoom" onClick={() => externalLogin(loginWithFacebook)} />
               <FaGoogle className="pointer zoom" onClick={loginWithGoogle} />
               <FaTwitter className="pointer zoom" onClick={loginWithTwitter} />
             </div>
@@ -127,28 +147,44 @@ function SignInForm(props) {
               <p className="color-primary background">{t[locale].or}</p>
             </div>
             {error && (
-              <Alert variant="danger">
+              <Alert variant="danger" className="mt-3 mb-0">
                 <RiAlertFill className="me-2 mb-1 iconSizeAlert" data-size="2" />
                 <strong>Ups! </strong>
                 {error}
               </Alert>
             )}
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} className="mt-4">
               <FloatingLabel controlId="loginEmail" label={t[locale].email} className="mb-3 text-dark">
-                <Form.Control type="email" placeholder={t[locale].email} ref={emailRef} required />
+                <Form.Control
+                  type="email"
+                  placeholder={t[locale].email}
+                  ref={emailRef}
+                  className={`${errorEmail && "border border-danger"} ${themeDarkInput}`}
+                  required
+                />
+                {errorEmail && <small className="text-danger">{t[locale].failLoginUser}</small>}
               </FloatingLabel>
 
-              <div className="d-flex w-100">
-                <FloatingLabel controlId="loginPassword" label={t[locale].pass} className="w-100 text-dark">
-                  <Form.Control type={inputType} placeholder={t[locale].pass} ref={passwordRef} required />
-                </FloatingLabel>
-                <InputGroup.Text className="pointer border" onClick={showHidePass}>
-                  {inputType === "password" ? (
-                    <FaRegEyeSlash className="iconSizeAlert" />
-                  ) : (
-                    <FaRegEye className="iconSizeAlert" />
-                  )}
-                </InputGroup.Text>
+              <div className="d-flex flex-wrap w-100">
+                <div className="d-flex w-100">
+                  <FloatingLabel controlId="loginPassword" label={t[locale].pass} className="w-100 text-dark">
+                    <Form.Control
+                      type={inputType}
+                      placeholder={t[locale].pass}
+                      ref={passwordRef}
+                      className={`${errorPass && "border border-danger"} ${themeDarkInput}`}
+                      required
+                    />
+                  </FloatingLabel>
+                  <InputGroup.Text className="pointer border" onClick={showHidePass}>
+                    {inputType === "password" ? (
+                      <FaRegEyeSlash className="iconSizeAlert" />
+                    ) : (
+                      <FaRegEye className="iconSizeAlert" />
+                    )}
+                  </InputGroup.Text>
+                </div>
+                {errorPass && <small className="text-danger w-100">{t[locale].failLoginPass}</small>}
               </div>
 
               <Button className="w-100 btn-lg  mt-4" type="submit" disabled={loading}>
