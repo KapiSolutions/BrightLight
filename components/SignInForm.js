@@ -28,6 +28,8 @@ function SignInForm(props) {
   const t = {
     en: {
       h1: "Sign In",
+      home: "Home",
+      loginPage: "Sign In",
       unlock: "Unlock your way to the Future!",
       or: "Or",
       email: "E-mail address",
@@ -44,6 +46,8 @@ function SignInForm(props) {
     },
     pl: {
       h1: "Logowanie",
+      home: "Strona Główna",
+      loginPage: "Logowanie",
       unlock: "Otwórz swoją drogę do przyszłości!",
       or: "Lub",
       email: "Adres e-mail",
@@ -107,6 +111,17 @@ function SignInForm(props) {
 
   return (
     <div className="color-primary ps-3 pe-3">
+      
+      {!isMobile && (
+        <div className="d-flex gap-2" style={{ position: "absolute", top: "20px", left: "20px" }}>
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].loginPage}</small>
+        </div>
+      )}
+
       <Row xs={1} md={2}>
         <Col
           className={`d-flex justify-content-center ${

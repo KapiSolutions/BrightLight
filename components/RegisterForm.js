@@ -18,6 +18,7 @@ function RegisterForm() {
   const passwordRef = useRef();
   const recaptchaRef = useRef(null);
 
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const { registerUser, loginWithGoogle, loginWithFacebook, loginWithTwitter } = useAuth();
   const [error, setError] = useState("");
@@ -35,6 +36,9 @@ function RegisterForm() {
   const t = {
     en: {
       h1: "Let's Start!",
+      home: "Home",
+      loginPage: "Sign In",
+      registerPage: "Create account",
       paragraph: "Sign up with",
       or: "Or",
       name: "Name",
@@ -58,6 +62,9 @@ function RegisterForm() {
     },
     pl: {
       h1: "Zaczynamy!",
+      home: "Strona Główna",
+      loginPage: "Logowanie",
+      registerPage: "Rejestracja",
       paragraph: "Utwórz konto poprzez",
       or: "Lub",
       name: "Imię",
@@ -164,6 +171,21 @@ function RegisterForm() {
 
   return (
     <Container className="d-flex justify-content-center color-primary mt-2 mb-4">
+
+      {!isMobile && (
+        <div className="d-flex gap-2" style={{ position: "absolute", top: "20px", left: "20px" }}>
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>
+            <Link href="/sign-in#main">{t[locale].loginPage}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].registerPage}</small>
+        </div>
+      )}
+
       <section className="w-100" style={{ maxWidth: "400px" }}>
         <h1 className="text-center mt-2 mb-2">{t[locale].h1}</h1>
         <p className="text-center mb-4">{t[locale].paragraph}</p>
