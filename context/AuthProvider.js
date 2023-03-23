@@ -136,9 +136,9 @@ function AuthProvider({ children }) {
   }
   const logoutUser = async () => {
     try {
-      router.push("/");
       await destroySession(authUserCredential);
-      auth.signOut();
+      await auth.signOut();
+      router.push("/");
       return;
     } catch (error) {
       console.log(error);

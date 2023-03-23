@@ -198,7 +198,7 @@ function User(props) {
                 <Button variant="outline-primary" size="sm" onClick={showDetailsFunc}>
                   {showDetails ? t[locale].showLess : t[locale].showMore}
                 </Button>
-                {authUserCredential.uid != user.id && (
+                {authUserCredential?.uid != user.id && (
                   <Button
                     variant="primary"
                     className="text-light"
@@ -238,7 +238,7 @@ function User(props) {
                   </div>
                   <div>
                     {/* Change role Button */}
-                    {authUserCredential.uid != user.id && (
+                    {authUserCredential?.uid != user.id && (
                       <Button
                         variant={user.role == "user" ? "outline-success" : "outline-primary"}
                         size="sm"
@@ -325,7 +325,7 @@ function User(props) {
 
                   {userOrders.length == 0 && <p>{t[locale].noOrders}</p>}
                 </div>
-                {authUserCredential.uid != user.id && (
+                {authUserCredential?.uid != user.id && (
                   <div className="d-flex justify-content-between mt-3">
                     <Button
                       variant={user.role == "user" ? "outline-success" : "outline-primary"}
