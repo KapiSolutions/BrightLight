@@ -3,13 +3,16 @@ import axios from "axios";
 import { useAuth } from "../context/AuthProvider";
 import { useRouter } from "next/router";
 import { useDeviceStore } from "../stores/deviceStore";
-import { Button, FloatingLabel, Form, Spinner } from "react-bootstrap";
+import { Button, ButtonGroup, FloatingLabel, Form, Spinner } from "react-bootstrap";
 import { GiGlassHeart } from "react-icons/gi";
+import { RiCoinsFill, RiCopperCoinLine } from "react-icons/ri";
+import { BiCoin } from "react-icons/bi";
 import styles from "../styles/components/loader.module.scss";
 
 function TarotOpenAi(props) {
   const router = useRouter();
   const locale = router.locale;
+  const stylesParent = props.styles;
   const { authUserFirestore, setErrorMsg, authUserCredential } = useAuth();
   const [loading, setLoading] = useState(false);
   const [idToken, setIdToken] = useState(undefined);
@@ -131,7 +134,10 @@ function TarotOpenAi(props) {
               <>
                 {/* Display Loader when request starts */}
                 {loading ? (
-                  <section style={{ position: "relative", top: "-30px" }}>
+                  <section
+                    className={styles.fadeLoader}
+                    style={{ position: "relative", top: "-30px", maxWidth: "100vw", overflowX: "hidden" }}
+                  >
                     <div className="d-flex justify-content-center pt-2">
                       <div className={styles.loader}>
                         <div className={styles.planet}>
@@ -177,16 +183,26 @@ function TarotOpenAi(props) {
                     </FloatingLabel>
 
                     <div className="w-100">
-                      <Button className="mt-3" type="submit" disabled={loading}>
-                        {loading ? (
-                          <>
-                            <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                            <span> {t[locale].loading}</span>
-                          </>
-                        ) : (
-                          <span>{t[locale].button}</span>
-                        )}
-                      </Button>
+                      <ButtonGroup className={`pointer mt-4 ${stylesParent.animatedBorderLight} rounded`}>
+                        <Button variant="primary" type="submit">
+                          {loading ? (
+                            <>
+                              <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                              <span>{t[locale].loading}</span>
+                            </>
+                          ) : (
+                            <span>{t[locale].button}</span>
+                          )}
+                        </Button>
+                        <Button variant="outline-primary ps-2 pe-1" type="submit" style={{ pointerEvents: "none" }}>
+                          <span>
+                            <span className="me-1">
+                              <strong>2</strong>
+                            </span>
+                            <BiCoin style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }} />
+                          </span>
+                        </Button>
+                      </ButtonGroup>
                     </div>
                   </Form>
                 )}

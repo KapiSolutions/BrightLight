@@ -454,7 +454,7 @@ function TarotLotteryDesktop(props) {
         {/* OpenAi component */}
         {flipCards.length == product.cardSet && !message && aiGenTarot && (
           <section className="mt-0">
-            <TarotOpenAi tarotTitle={product.title} cards={userCardsEn} aiReady={setAiReady} />
+            <TarotOpenAi tarotTitle={product.title} cards={userCardsEn} aiReady={setAiReady} styles={styles}/>
           </section>
         )}
       </Row>
