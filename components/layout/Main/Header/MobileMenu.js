@@ -235,7 +235,7 @@ function MobileMenu(props) {
                         <a className={`text-${revTheme}`}> {t[locale].cart}</a>
                       </Offcanvas.Title>
                     </Offcanvas.Header>
-                    <Offcanvas.Body>
+                    <Offcanvas.Body className={`text-${revTheme}`}>
                       <Cart theme={props.theme} setShowCart={setShowCart} />
                     </Offcanvas.Body>
                   </Navbar.Offcanvas>
