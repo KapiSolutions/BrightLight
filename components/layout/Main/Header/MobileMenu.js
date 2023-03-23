@@ -181,7 +181,7 @@ function MobileMenu(props) {
                           <Nav.Link className={`text-${revTheme}`}>
                             {t[locale].coins}
                             <span className="ms-1">
-                              0
+                            {authUserFirestore?.coins.amount}
                               <BiCoin
                                 className="ms-1"
                                 style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }}

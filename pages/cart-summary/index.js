@@ -10,6 +10,11 @@ import { BsInfoCircle } from "react-icons/bs";
 import { useDeviceStore } from "../../stores/deviceStore";
 import { getFileUrlStorage } from "../../firebase/Storage";
 import CartItem from "../../components/Cart/CartItem";
+import visaSvg from "../../public/img/pay_methods/visa.svg";
+import mcardSvg from "../../public/img/pay_methods/mcard.svg";
+import amexSvg from "../../public/img/pay_methods/amex.svg";
+import p24Svg from "../../public/img/pay_methods/p24.svg";
+import blikSvg from "../../public/img/pay_methods/blik.svg";
 import { v4 as uuidv4 } from "uuid";
 import { setup } from "../../config/csrf";
 
@@ -398,11 +403,11 @@ export default function CartSummaryPage() {
                 )}
               </Button>
               <section className="d-flex justify-content-center gap-1 mt-3 ">
-                <Image src="/img/pay_methods/visa.svg" width="32" height="32" alt="Visa" />
-                <Image src="/img/pay_methods/mcard.svg" width="32" height="32" alt="Master card" />
-                <Image src="/img/pay_methods/amex.svg" width="30" height="32" alt="American express" />
-                <Image src="/img/pay_methods/p24.svg" width="32" height="32" alt="Przelewy24" />
-                <Image src="/img/pay_methods/blik.svg" width="36" height="32" alt="blik" />
+                <Image src={visaSvg} width="32" height="32" alt="Visa" />
+                <Image src={mcardSvg} width="32" height="32" alt="Master card" />
+                <Image src={amexSvg} width="30" height="32" alt="American express" />
+                <Image src={p24Svg} width="32" height="32" alt="Przelewy24" />
+                <Image src={blikSvg} width="36" height="32" alt="blik" />
               </section>
             </Form>
           </section>

@@ -148,7 +148,8 @@ function DesktopMenu(props) {
                         <Link href="/user/coins#main" passHref legacyBehavior>
                           <Dropdown.Item>
                             {t[locale].coins}:
-                            <span className="ms-1">0
+                            <span className="ms-1">
+                            {authUserFirestore?.coins.amount}
                             <BiCoin className="ms-1" style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }} />
                             </span>
                           </Dropdown.Item>

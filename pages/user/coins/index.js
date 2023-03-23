@@ -1,17 +1,20 @@
 import React, { useEffect } from "react";
 import Head from "next/head";
-import { Container } from "react-bootstrap";
+import { Card, Container } from "react-bootstrap";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { useAuth } from "../../../context/AuthProvider";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { BiCoin } from "react-icons/bi";
+import Image from "next/image";
+import coinImg from "../../../public/img/coins/coins2.jpg";
 
 function CoinsPage() {
   const router = useRouter();
   const locale = router.locale;
+  const theme = useDeviceStore((state) => state.themeState);
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, authUserFirestore } = useAuth();
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   };
@@ -65,10 +68,40 @@ function CoinsPage() {
           <p>
             {t[locale].yourCoins}
             <span className="ms-1">
-              0
+              {authUserFirestore?.coins.amount}
               <BiCoin className="ms-1" style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }} />
             </span>
           </p>
+        </section>
+        <section className="d-flex justify-content-center">
+        <Card style={{ width: "18rem" }} className="background border shadow-sm">
+      <div className="rounded" style={{ position: "relative", height: "100px" }}>
+        <Image
+          src={coinImg}
+          // variant="top"
+          fill
+          placeholder="blur"
+        //   blurDataURL={placeholder("dark")}
+          sizes="(max-width: 768px) 100vw, 33vw"
+          alt={`${t[locale].title} - Bright Light Gypsy Tarot`}
+          title={`${t[locale].title} - Bright Light Gypsy Tarot`}
+          style={{ objectFit: "cover" }}
+        />
+      </div>
+      <Card.Body>
+        <Card.Title className="color-primary">
+          <strong>asd</strong>
+        </Card.Title>
+        <Card.Text>
+          some text
+        </Card.Text>
+      </Card.Body>
+      <Card.Footer
+        className={`d-flex align-items-center justify-content-center ${theme === "dark" && "border-top border-dark"}`}
+      >
+        
+      </Card.Footer>
+    </Card>
         </section>
       </Container>
     </>
