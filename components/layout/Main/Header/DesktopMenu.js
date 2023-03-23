@@ -149,8 +149,11 @@ function DesktopMenu(props) {
                           <Dropdown.Item>
                             {t[locale].coins}:
                             <span className="ms-1">
-                            {authUserFirestore?.coins.amount}
-                            <BiCoin className="ms-1" style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }} />
+                              {authUserFirestore?.coins.amount}
+                              <BiCoin
+                                className="ms-1"
+                                style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }}
+                              />
                             </span>
                           </Dropdown.Item>
                         </Link>
