@@ -22,7 +22,7 @@ function TarotOpenAi(props) {
   const [question, setQuestion] = useState("");
   const [chars, setChars] = useState(0);
   const qMaxLen = 100;
-  const zodiac = authUserFirestore.zodiac;
+  const zodiac = authUserFirestore?.zodiac;
 
   const getToken = async () => {
     const token = await authUserCredential.getIdToken(true);

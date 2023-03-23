@@ -68,7 +68,7 @@ function BlogItem(props) {
   };
   return (
     <>
-      <Card className="background border shadow-sm color-primary col-12 col-sm-6 col-md-5 col-lg-4">
+      <Card className="background border shadow-sm color-primary col-12 col-sm-8 col-md-5 col-lg-3" style={{minWidth: "300px"}}>
         <Card.Img
           id={post.id}
           alt={`${post.title} - Bright Light Gypsy tarot`}
