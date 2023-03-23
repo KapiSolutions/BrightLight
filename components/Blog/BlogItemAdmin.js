@@ -121,7 +121,7 @@ function BlogItemAdmin(props) {
           <div>
             {isMobile ? (
               <>
-                <p className="mb-0">{post.title[locale]}</p>
+                <p className="mb-0">{post.title}</p>
                 <i>
                   <small>
                     {t[locale].by} {post.author} - {timeStampToDate(post.date).toLocaleDateString()}
@@ -130,7 +130,7 @@ function BlogItemAdmin(props) {
               </>
             ) : (
               <>
-                <p className="mb-0">{post.title[locale]}</p>
+                <p className="mb-0">{post.title}</p>
                 <small className="text-muted">By: {post.author}</small>
               </>
             )}
@@ -236,7 +236,7 @@ function BlogItemAdmin(props) {
                 {loadingEdit ? (
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                 ) : (
-                  "Edit"
+                  t[locale].edit
                 )}
               </Button>
               <Button
@@ -245,7 +245,7 @@ function BlogItemAdmin(props) {
                 size="sm"
                 onClick={() => {
                   setShowConfirmModal({
-                    msg: "You are trying to delete your Blog Post. This action is irreversible. Please confirm.",
+                    msg: t[locale].tryDelete,
                     itemID: "",
                   });
                 }}
@@ -254,7 +254,7 @@ function BlogItemAdmin(props) {
                 {loadingDel ? (
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
                 ) : (
-                  "Delete"
+                  t[locale].delete
                 )}
               </Button>
             </div>

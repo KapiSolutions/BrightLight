@@ -8,7 +8,6 @@ import { getDocsFromCollection } from "../../../firebase/Firestore";
 import BlogItemAdmin from "../../../components/Blog/BlogItemAdmin";
 import FilterAndSortBar from "../../../components/Blog/FilterAndSortBar";
 import { FiRefreshCcw } from "react-icons/fi";
-import Image from "next/image";
 
 function AdminBlogsPage(props) {
   const [posts, setPosts] = useState([]);
@@ -19,7 +18,21 @@ function AdminBlogsPage(props) {
   const themeState = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
   const router = useRouter();
+  const locale = router.locale;
   const idForSortingBar = "BlogAdmin";
+
+  const t = {
+    en: {
+      title: "Blog Menagment",
+      new: "Create New Blog!",
+      loading: "Loading",
+    },
+    pl: {
+      title: "Zarządzaj Blogiem",
+      new: "Dodaj nowy Wpis!",
+      loading: "Ładuję",
+    },
+  };
 
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -64,10 +77,10 @@ function AdminBlogsPage(props) {
   return (
     <>
       <Head>
-        <title>BrightLight | Admin - Blog Menagment</title>
+        <title>BrightLight | Admin - {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="abn-ctx">
-        <h1>Blog Menagment</h1>
+        <h1>{t[locale].title}</h1>
         <div className="d-flex justify-content-end gap-2 text-end mt-4">
           <Button
             size="md"
@@ -81,10 +94,10 @@ function AdminBlogsPage(props) {
           >
             {loadingNew ? (
               <span>
-                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Loading
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> {t[locale].loading}
               </span>
             ) : (
-              "Create New Blog!"
+              <span>{t[locale].new}</span>
             )}
           </Button>
           <Button
@@ -126,13 +139,18 @@ function AdminBlogsPage(props) {
 
 export default AdminBlogsPage;
 
-export async function getStaticProps() {
+export async function getStaticProps({ locale }) {
   const docs = await getDocsFromCollection("blog");
+
+  docs.map((doc) => {
+    doc.content = doc.content[locale];
+    doc.title = doc.title[locale];
+  });
 
   return {
     props: {
       blogPosts: JSON.parse(JSON.stringify(docs)),
     },
-    revalidate: 30, //1 - 1 second
+    revalidate: false, 
   };
 }
