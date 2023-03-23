@@ -56,7 +56,7 @@ async function firebaseAdmin(req, res) {
             await db
               .collection("users")
               .doc("/" + data.id + "/")
-              .create({ ...data, role: "user", timeCreate: new Date() });
+              .create({ ...data, role: "user", timeCreate: new Date(), coins: { amount: 5, lastUpdate: new Date() } });
             const response = await db.collection("users").doc(data.id).get();
             const document = response.data();
             res.status(200).json(document);
