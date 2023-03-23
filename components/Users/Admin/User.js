@@ -90,6 +90,7 @@ function User(props) {
   };
 
   async function deleteUser() {
+    setLoadingDel(true);
     const idToken = await authUserCredential.getIdToken(true);
     const payload = {
       secret: process.env.NEXT_PUBLIC_API_KEY,
@@ -111,6 +112,7 @@ function User(props) {
       setShowConfirmModal({ msg: "", mode: null });
       setErrorMsg(t[locale].sthWrong);
     }
+    setLoadingDel(false);
   }
 
   const handleAdmin = async () => {
