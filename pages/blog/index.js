@@ -9,7 +9,7 @@ function BlogPage(props) {
   const locale = props.locale;
   const [posts, setPosts] = useState([]);
   const [message, setMessage] = useState("");
-  const idForSortingBar = "BlogUser";
+  const idForSortingBar = "BlogUser" + locale;
 
   const t = {
     en: {

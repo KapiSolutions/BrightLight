@@ -54,7 +54,7 @@ function FilterAndSortBar(props) {
     //sort array on initialization
     props.outputArray(props.refArray.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.refArray]);
 
   useEffect(() => {
     //add some styles on initialization
