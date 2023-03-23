@@ -12,6 +12,7 @@ import { BsCart4 } from "react-icons/bs";
 import { GiSparkSpirit, GiWallet } from "react-icons/gi";
 import Cart from "../../../Cart/Cart";
 import ChangeLocale from "../../../ChangeLocale";
+import { BiCoin } from "react-icons/bi";
 
 function MobileMenu(props) {
   const router = useRouter();
@@ -72,6 +73,7 @@ function MobileMenu(props) {
       signIn: "Sign In",
       cart: "Shopping Cart",
       admin: "Admin Panel",
+      coins: "My Bright Coins",
     },
     pl: {
       profile: "Profil",
@@ -87,6 +89,7 @@ function MobileMenu(props) {
       signIn: "Zaloguj",
       cart: "Koszyk",
       admin: "Panel Administratora",
+      coins: "Moje monety",
     },
   };
   return (
@@ -129,6 +132,7 @@ function MobileMenu(props) {
                       </Offcanvas.Title>
                     </Offcanvas.Header>
                     <Offcanvas.Body>
+                      {/* Admin section */}
                       <Nav className="ms-auto">
                         {isAdmin && (
                           <>
@@ -166,16 +170,29 @@ function MobileMenu(props) {
                           </>
                         )}
 
+                        {/* User section */}
                         <Link href="/user/profile" scroll={false} passHref legacyBehavior>
                           <Nav.Link className={`text-${revTheme}`}>{t[locale].profile}</Nav.Link>
                         </Link>
                         <Link href="/user/orders" scroll={false} passHref legacyBehavior>
                           <Nav.Link className={`text-${revTheme}`}>{t[locale].myOrders}</Nav.Link>
                         </Link>
+                        <Link href="/user/coins" scroll={false} passHref legacyBehavior>
+                          <Nav.Link className={`text-${revTheme}`}>
+                            {t[locale].coins}
+                            <span className="ms-1">
+                              0
+                              <BiCoin
+                                className="ms-1"
+                                style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }}
+                              />
+                            </span>
+                          </Nav.Link>
+                        </Link>
                         <Link href="/user/horoscope" scroll={false} passHref legacyBehavior>
                           <Nav.Link className={`text-${revTheme}`}>
                             {t[locale].dailyHoroscope}
-                            <small className="ms-1">
+                            <small className="ms-1" style={{ position: "relative", bottom: "5px" }}>
                               <Badge bg="danger">NEW!</Badge>
                             </small>
                           </Nav.Link>
@@ -239,9 +256,9 @@ function MobileMenu(props) {
                 ) : (
                   <Link href="/sign-in" passHref legacyBehavior>
                     <Nav.Link onClick={menuClicked} className={back && "mt-1"}>
-                    <Button size="md" className="ps-2 pt-1 pe-2 pb-1">
-                      {t[locale].signIn}
-                    </Button>
+                      <Button size="md" className="ps-2 pt-1 pe-2 pb-1">
+                        {t[locale].signIn}
+                      </Button>
                     </Nav.Link>
                   </Link>
                 )}

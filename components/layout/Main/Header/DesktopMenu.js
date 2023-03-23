@@ -16,6 +16,7 @@ import { GiSparkSpirit, GiWallet } from "react-icons/gi";
 import Cart from "../../../Cart/Cart";
 import ChangeLocale from "../../../ChangeLocale";
 import ChangeCurrency from "../../../ChangeCurrency";
+import { BiCoin } from "react-icons/bi";
 
 function DesktopMenu(props) {
   const router = useRouter();
@@ -62,6 +63,7 @@ function DesktopMenu(props) {
       finances: "Finances",
       signIn: "Sign In",
       cart: "Shopping Cart",
+      coins: "My Bright Coins",
     },
     pl: {
       profile: "Profil",
@@ -76,6 +78,7 @@ function DesktopMenu(props) {
       finances: "Finanse",
       signIn: "Zaloguj",
       cart: "Koszyk",
+      coins: "Moje monety",
     },
   };
 
@@ -134,6 +137,7 @@ function DesktopMenu(props) {
                         <FaRegUserCircle className={`${styles.icons} color-primary ms-1 mt-1`} />
                       </Dropdown.Toggle>
 
+                      {/* User Menu */}
                       <Dropdown.Menu variant={props.theme} className="background mt-2">
                         <Link href="/user/profile#main" passHref legacyBehavior>
                           <Dropdown.Item>{t[locale].profile}</Dropdown.Item>
@@ -141,10 +145,18 @@ function DesktopMenu(props) {
                         <Link href="/user/orders#main" passHref legacyBehavior>
                           <Dropdown.Item>{t[locale].myOrders}</Dropdown.Item>
                         </Link>
+                        <Link href="/user/coins#main" passHref legacyBehavior>
+                          <Dropdown.Item>
+                            {t[locale].coins}:
+                            <span className="ms-1">0
+                            <BiCoin className="ms-1" style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }} />
+                            </span>
+                          </Dropdown.Item>
+                        </Link>
                         <Link href="/user/horoscope#main" passHref legacyBehavior>
                           <Dropdown.Item>
                             {t[locale].dailyHoroscope}
-                            <small className="ms-1">
+                            <small className="ms-1" style={{ position: "relative", bottom: "5px" }}>
                               <Badge bg="danger">NEW!</Badge>
                             </small>
                           </Dropdown.Item>
