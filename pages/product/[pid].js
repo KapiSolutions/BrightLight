@@ -24,7 +24,7 @@ function ProductPage(props) {
       <Head>
         <title>BrightLight | {props.product ? props.product.title : "404 Error"}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5">
+      <Container className="justify-content-center text-center mt-4">
         {props.product ? (
           <TarotLottery locale={locale} product={props.product} />
         ) : (

@@ -1,9 +1,10 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Head from "next/head";
 import { Container } from "react-bootstrap";
 import BlogItem from "../../components/Blog/BlogItem";
 import { getDocsFromCollection } from "../../firebase/Firestore";
 import FilterAndSortBar from "../../components/Blog/FilterAndSortBar";
+import Link from "next/link";
 
 function BlogPage(props) {
   const locale = props.locale;
@@ -14,9 +15,11 @@ function BlogPage(props) {
   const t = {
     en: {
       title: "Blog",
+      home: "Home",
     },
     pl: {
       title: "Blog",
+      home: "Strona Główna",
     },
   };
   return (
@@ -24,16 +27,23 @@ function BlogPage(props) {
       <Head>
         <title>BrightLight | {t[locale].title}</title>
       </Head>
-      <Container className="text-center mt-5 color-primary">
+      <Container className="text-center mt-4 color-primary">
+        <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].title}</small>
+        </nav>
         <h1 className="mb-0 text-uppercase"> {t[locale].title} </h1>
         <div className="mb-4">
-        <FilterAndSortBar
-          id={idForSortingBar}
-          refArray={props.blogPosts}
-          inputArray={posts}
-          outputArray={setPosts}
-          msg={setMessage}
-        />
+          <FilterAndSortBar
+            id={idForSortingBar}
+            refArray={props.blogPosts}
+            inputArray={posts}
+            outputArray={setPosts}
+            msg={setMessage}
+          />
         </div>
         <section className="d-flex justify-content-center gap-4 flex-wrap">
           {posts.map((post) => (
@@ -57,7 +67,7 @@ export async function getStaticProps({ locale }) {
     doc.content = doc.content[locale];
     doc.title = doc.title[locale];
   });
-  
+
   return {
     props: {
       blogPosts: JSON.parse(JSON.stringify(docs)),

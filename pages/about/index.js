@@ -9,6 +9,7 @@ import avatarPath from "../../public/img/about/avatar.png";
 import diamondPath from "../../public/img/about/diamond.png";
 import tarotPath from "../../public/img/about/tarot-cards.png";
 import japanPath from "../../public/img/about/japan-sticker.png";
+import Link from "next/link";
 
 function AboutPage(props) {
   const locale = props.locale;
@@ -18,6 +19,7 @@ function AboutPage(props) {
   const t = {
     en: {
       title: "About Me",
+      home: "Home",
       firstSection:
         "I'm a tarotist with several years of experience. Since I was a child, I have also had visions and highly developed intuition. My other passion is music, especially singing.",
       secondSection:
@@ -29,6 +31,7 @@ function AboutPage(props) {
     },
     pl: {
       title: "O mnie",
+      home: "Strona Główna",
       firstSection:
         "Jestem tarocistką z kilkuletnim doświadczeniem. Od dziecka miewam też wizje i wysoko rozwiniętą intuicję. Moją drugą pasją jest muzyka, a szczególnie śpiew.",
       secondSection:
@@ -45,7 +48,14 @@ function AboutPage(props) {
       <Head>
         <title>BrightLight | {t[locale].title}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5 color-primary">
+      <Container className="justify-content-center text-center mt-4 color-primary">
+        <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].title}</small>
+        </nav>
         {!isMobile && (
           <div style={{ height: "80px" }}>
             <h1 className="mt-0 color-primary text-center">{t[locale].title}</h1>

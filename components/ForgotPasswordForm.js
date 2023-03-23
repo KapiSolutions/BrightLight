@@ -80,7 +80,7 @@ function ForgotPasswordForm(props) {
   return (
     <Container className="d-flex justify-content-center color-primary">
       {!isMobile && (
-        <div className="d-flex gap-2" style={{ position: "absolute", top: "20px", left: "20px" }}>
+        <nav className="d-flex gap-2" style={{ position: "absolute", top: "20px", left: "20px" }}>
           <small>
             <Link href="/#main">{t[locale].home}</Link>
           </small>
@@ -90,7 +90,7 @@ function ForgotPasswordForm(props) {
           </small>
           <small>&gt;</small>
           <small>{t[locale].forgotPage}</small>
-        </div>
+        </nav>
       )}
 
       <Row xs={1} md={2}>

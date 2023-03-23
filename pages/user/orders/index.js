@@ -6,6 +6,7 @@ import { useDeviceStore } from "../../../stores/deviceStore";
 import { useAuth } from "../../../context/AuthProvider";
 import Order from "../../../components/Orders/User/Order";
 import FilterAndSortBar from "../../../components/Orders/FilterAndSortBar_Orders";
+import Link from "next/link";
 
 function UserOrdersPage() {
   const router = useRouter();
@@ -32,11 +33,12 @@ function UserOrdersPage() {
     en: {
       title: "My orders",
       noOrders: "No orders yet.",
+      home: "Home",
     },
     pl: {
       title: "Moje zamówienia",
       noOrders: "Brak zamówień.",
-
+      home: "Strona Główna",
     },
   };
 
@@ -51,14 +53,12 @@ function UserOrdersPage() {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
 
-//update and sort orders after eg. deletetion of the order
+  //update and sort orders after eg. deletetion of the order
   useEffect(() => {
     setOrders(userOrders.sort((a, b) => timeStampToDate(b.timeCreate) - timeStampToDate(a.timeCreate)));
     setResetFilterBar(!resetFilterBar);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userOrders]);
-  
-
 
   return (
     <>
@@ -66,6 +66,13 @@ function UserOrdersPage() {
         <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5" id="uo-ctx">
+        <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].title}</small>
+        </nav>
         <h1 className="color-primary">{t[locale].title}</h1>
         {userOrders?.length == 0 ? (
           <p className="color-primary">{t[locale].noOrders}</p>

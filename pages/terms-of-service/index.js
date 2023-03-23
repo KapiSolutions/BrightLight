@@ -6,6 +6,7 @@ import { promises as fs } from "fs";
 const parse = require("html-react-parser");
 import DOMPurify from "dompurify";
 import { useDeviceStore } from "../../stores/deviceStore";
+import Link from "next/link";
 
 function TermsOfService(props) {
   const locale = props.locale;
@@ -13,9 +14,11 @@ function TermsOfService(props) {
   const t = {
     en: {
       title: "Terms of Service",
+      home: "Home",
     },
     pl: {
       title: "Regulamin",
+      home: "Strona Główna",
     },
   };
   return (
@@ -23,9 +26,15 @@ function TermsOfService(props) {
       <Head>
         <title>BrightLight | {t[locale].title}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5 color-primary" style={{maxWidth: "100vw"}}>
+      <Container className="justify-content-center text-center mt-4 color-primary" style={{maxWidth: "100vw"}}>
+      <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].title}</small>
+        </nav>
         <h1>{t[locale].title}</h1>
-
         <section className={`text-start m-auto ${!isMobile && "w-75"}`}>{parse(DOMPurify.sanitize(props.text))}</section>
       </Container>
     </>

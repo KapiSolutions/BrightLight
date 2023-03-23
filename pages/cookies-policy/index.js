@@ -6,6 +6,7 @@ import { promises as fs } from "fs";
 const parse = require("html-react-parser");
 import DOMPurify from "dompurify";
 import { useDeviceStore } from "../../stores/deviceStore";
+import Link from "next/link";
 
 function CookiesPolicyPage(props) {
   const locale = props.locale;
@@ -13,11 +14,11 @@ function CookiesPolicyPage(props) {
   const t = {
     en: {
       title: "Cookies Policy",
-
+      home: "Home",
     },
     pl: {
       title: "Polityka Cookies",
-
+      home: "Strona Główna",
     },
   };
   return (
@@ -25,9 +26,18 @@ function CookiesPolicyPage(props) {
       <Head>
         <title>BrightLight | {t[locale].title}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5 color-primary" style={{maxWidth: "100vw"}}>
+      <Container className="justify-content-center text-center mt-4 color-primary" style={{ maxWidth: "100vw" }}>
+        <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].title}</small>
+        </nav>
         <h1>{t[locale].title}</h1>
-        <section className={`text-start m-auto ${!isMobile && "w-75"}`}>{parse(DOMPurify.sanitize(props.text))}</section>
+        <section className={`text-start m-auto ${!isMobile && "w-75"}`}>
+          {parse(DOMPurify.sanitize(props.text))}
+        </section>
       </Container>
     </>
   );
@@ -38,17 +48,16 @@ export default CookiesPolicyPage;
 export async function getStaticProps({ locale }) {
   let filePath = "";
   let text = "";
-  
-    if (locale != "default") {
-      filePath = path.join(process.cwd(), `public/regulations/cookies/${locale}/index.txt`);
-      text = await fs.readFile(filePath, "utf8");
-    } 
-      return {
-        props: {
-          text: text,
-          locale: locale,
-        },
-        revalidate: false, //on demand revalidation
-      };
-    
+
+  if (locale != "default") {
+    filePath = path.join(process.cwd(), `public/regulations/cookies/${locale}/index.txt`);
+    text = await fs.readFile(filePath, "utf8");
   }
+  return {
+    props: {
+      text: text,
+      locale: locale,
+    },
+    revalidate: false, //on demand revalidation
+  };
+}

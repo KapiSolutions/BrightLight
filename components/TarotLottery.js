@@ -226,13 +226,13 @@ function TarotLotteryDesktop(props) {
 
   return (
     <div className="color-primary">
-      <section className="d-flex gap-1 mb-2">
+      <nav className="d-flex gap-1 mb-2">
         <small>
           <Link href="/#main">{t[locale].home}</Link>
         </small>
         <small>&gt;</small>
         <small>{product.title}</small>
-      </section>
+      </nav>
       <Row className="d-flex mb-3 text-center">
         <h1 className="mb-3"> {product.title} </h1>
       </Row>

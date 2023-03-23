@@ -5,6 +5,7 @@ import Horoscope from "../../../components/Horoscope";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { useAuth } from "../../../context/AuthProvider";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 function HoroscopePage() {
   const router = useRouter();
@@ -21,7 +22,7 @@ function HoroscopePage() {
 
   useEffect(() => {
     if (isAuthenticated()) {
-        isMobile && scroll();
+      isMobile && scroll();
     } else {
       router.replace("/sign-in");
       return;
@@ -32,11 +33,11 @@ function HoroscopePage() {
   const t = {
     en: {
       title: "Horoscope",
-
+      home: "Home",
     },
     pl: {
       title: "Horoskop",
-
+      home: "Strona Główna",
     },
   };
   return (
@@ -45,6 +46,13 @@ function HoroscopePage() {
         <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5" id="uh-ctx">
+        <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].title}</small>
+        </nav>
         <h1 className="color-primary">{t[locale].title}</h1>
         <Horoscope />
       </Container>

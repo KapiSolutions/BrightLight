@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import Head from "next/head";
 import { Container } from "react-bootstrap";
-import Horoscope from "../../../components/Horoscope";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { useAuth } from "../../../context/AuthProvider";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 function CoinsPage() {
   const router = useRouter();
@@ -32,11 +32,11 @@ function CoinsPage() {
   const t = {
     en: {
       title: "Bright Coins",
-
+      home: "Home",
     },
     pl: {
       title: "Moje Monety",
-
+      home: "Strona Główna",
     },
   };
   return (
@@ -45,6 +45,13 @@ function CoinsPage() {
         <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5" id="uc-ctx">
+        <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].title}</small>
+        </nav>
         <h1 className="color-primary">{t[locale].title}</h1>
         
       </Container>

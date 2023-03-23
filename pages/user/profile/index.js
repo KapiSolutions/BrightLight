@@ -5,6 +5,7 @@ import { Container } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import UserProfile from "../../../components/Users/User/UserProfile";
 import { useDeviceStore } from "../../../stores/deviceStore";
+import Link from "next/link";
 
 function UserProfilePage() {
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -33,10 +34,12 @@ function UserProfilePage() {
     en: {
       title: "Profile",
       h1: "User Profile",
+      home: "Home",
     },
     pl: {
       title: "Profil",
       h1: "Mój Profil",
+      home: "Strona Główna",
     },
   };
   return (
@@ -45,6 +48,13 @@ function UserProfilePage() {
         <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5" id="up-ctx">
+      <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].title}</small>
+        </nav>
         <h1 className="color-primary">{t[locale].h1}</h1>
         <UserProfile />
       </Container>
