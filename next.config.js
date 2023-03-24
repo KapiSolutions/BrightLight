@@ -53,7 +53,7 @@ const nextConfig = {
             value: "1; mode=block",
           },
         ],
-        source: "/admin/coins",
+        source: "/:path*",
         has: [
           {
             type: 'query',
