@@ -74,6 +74,7 @@ function MobileMenu(props) {
       cart: "Shopping Cart",
       admin: "Admin Panel",
       coins: "My Bright Coins",
+      coinsAdmin: "Coins",
     },
     pl: {
       profile: "Profil",
@@ -90,6 +91,7 @@ function MobileMenu(props) {
       cart: "Koszyk",
       admin: "Panel Administratora",
       coins: "Moje monety",
+      coinsAdmin: "Monety",
     },
   };
   return (
@@ -142,6 +144,15 @@ function MobileMenu(props) {
                               </p>
                               <Link href="/admin/blogs#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>{t[locale].blogPosts}</Nav.Link>
+                              </Link>
+                              <Link href="/admin/coins#main" passHref legacyBehavior>
+                                <Nav.Link className={`text-${revTheme}`}>
+                                  {t[locale].coinsAdmin}
+                                  <BiCoin
+                                    className="ms-1"
+                                    style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }}
+                                  />
+                                </Nav.Link>
                               </Link>
                               <Link href="/admin/products#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>{t[locale].products}</Nav.Link>

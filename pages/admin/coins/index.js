@@ -90,7 +90,7 @@ function AdminCoinsPage() {
         <h1>{t[locale].h1}</h1>
         <div className="text-end">
           <Button
-            onClick={getUserList}
+            onClick={getCoins}
             variant="outline-primary"
             className={isMobile ? "w-100" : "mb-2"}
             disabled={loading}

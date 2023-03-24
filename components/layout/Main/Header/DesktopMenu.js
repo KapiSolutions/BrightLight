@@ -64,6 +64,7 @@ function DesktopMenu(props) {
       signIn: "Sign In",
       cart: "Shopping Cart",
       coins: "My Bright Coins",
+      coinsAdmin: "Coins",
     },
     pl: {
       profile: "Profil",
@@ -79,6 +80,7 @@ function DesktopMenu(props) {
       signIn: "Zaloguj",
       cart: "Koszyk",
       coins: "Moje monety",
+      coinsAdmin: "Monety",
     },
   };
 
@@ -146,7 +148,7 @@ function DesktopMenu(props) {
                           <Dropdown.Item>{t[locale].myOrders}</Dropdown.Item>
                         </Link>
                         <Link href="/user/coins#main" passHref legacyBehavior>
-                          <Dropdown.Item>
+                          <Dropdown.Item >
                             {t[locale].coins}:
                             <span className="ms-1">
                               {authUserFirestore?.coins.amount}
@@ -188,6 +190,15 @@ function DesktopMenu(props) {
                         <Dropdown.Menu variant={props.theme} className="background mt-2">
                           <Link href="/admin/blogs#main" passHref legacyBehavior>
                             <Dropdown.Item>{t[locale].blogPosts}</Dropdown.Item>
+                          </Link>
+                          <Link href="/admin/coins#main" passHref legacyBehavior>
+                            <Dropdown.Item className="pb-0">
+                              {t[locale].coinsAdmin}
+                              <BiCoin
+                                className="ms-1"
+                                style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }}
+                              />
+                            </Dropdown.Item>
                           </Link>
                           <Link href="/admin/products#main" passHref legacyBehavior>
                             <Dropdown.Item>{t[locale].products}</Dropdown.Item>
