@@ -7,6 +7,7 @@ import { useDeviceStore } from "../../../../stores/deviceStore";
 import ProductTemplate from "../../../../components/Products/Admin/ProductTemplate";
 import { VscBracketError } from "react-icons/vsc";
 import { getDocById, getDocsFromCollection } from "../../../../firebase/Firestore";
+import Link from "next/link";
 
 function EditProductPage(props) {
   const router = useRouter();
@@ -42,12 +43,16 @@ function EditProductPage(props) {
       h1: "Edit Product",
       noProduct: "Product does not exist.",
       button: "Go Back",
+      home: "Home",
+      productsMenagement: "Products Menagment",
     },
     pl: {
       title: "Admin - Edycja Produktu",
       h1: "Edycja Produktu",
       noProduct: "Produkt nie istnieje.",
       button: "Wróć",
+      home: "Strona Główna",
+      productsMenagement: "Panel Produktów",
     },
   };
   return (
@@ -55,7 +60,18 @@ function EditProductPage(props) {
       <Head>
         <title>BrightLight | {t[locale].title}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5 color-primary" id="aep-ctx">
+      <Container className="justify-content-center text-center mt-4 color-primary" id="aep-ctx">
+        <section className="d-flex gap-1 mb-2">
+          <small>
+            <Link href="/">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>
+            <Link href="/admin/products#main">{t[locale].productsMenagement}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{props.product.id}</small>
+        </section>
         <h1>{t[locale].h1}</h1>
         {props.product ? (
           <ProductTemplate product={props.product} />
