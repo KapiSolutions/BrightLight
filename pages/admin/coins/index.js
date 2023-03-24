@@ -7,6 +7,7 @@ import { useDeviceStore } from "../../../stores/deviceStore";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
 import { FiRefreshCcw } from "react-icons/fi";
 import CoinsItem from "../../../components/Coins/Admin/CoinsItem";
+import { BiCoin } from "react-icons/bi";
 
 function AdminCoinsPage() {
   const router = useRouter();
@@ -87,12 +88,13 @@ function AdminCoinsPage() {
         <title>BrightLight | {t[locale].title}</title>
       </Head>
       <Container className="justify-content-center text-center mt-5 color-primary" id="ac-ctx">
-        <h1>{t[locale].h1}</h1>
+        <h1 className="mb-0">{t[locale].h1}</h1>
+        <span><BiCoin style={{ width: "30px", height: "30px" }} /></span>
         <div className="text-end">
           <Button
             onClick={getCoins}
             variant="outline-primary"
-            className={isMobile ? "w-100" : "mb-2"}
+            className={isMobile && "mt-3"}
             disabled={loading}
           >
             {loading ? (

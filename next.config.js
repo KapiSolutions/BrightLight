@@ -21,7 +21,7 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: "/(.*)",
+        source: "/:path*",
         headers: [
           {
             key: "X-DNS-Prefetch-Control",
@@ -53,6 +53,21 @@ const nextConfig = {
             value: "1; mode=block",
           },
         ],
+        source: "/admin/coins",
+        has: [
+          {
+            type: 'query',
+            key: 'origin',
+            value: 'origin',
+          },
+        ],
+        headers: [
+          {
+            key: "Referrer-Policy",
+            value: "origin-when-cross-origin",
+          },
+        ],
+        
       },
     ];
   },
