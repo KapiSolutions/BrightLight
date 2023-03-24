@@ -73,9 +73,6 @@ function ProductTemplate(props) {
 
   const t = {
     en: {
-      home: "Home",
-      productsMenagement: "Products Menagment",
-      newProduct: "New Product",
       loading: "Loading...",
       mainPicture: "Main Picture",
       selectAnother: "Select another",
@@ -108,9 +105,6 @@ function ProductTemplate(props) {
       successAdded: "Product created successfuly!",
     },
     pl: {
-      home: "Strona Główna",
-      productsMenagement: "Panel Produktów",
-      newProduct: "Nowy Produkt",
       loading: "Ładuję..",
       mainPicture: "Zdjęcie Główne",
       selectAnother: "Wybierz inne",
@@ -427,7 +421,7 @@ function ProductTemplate(props) {
     const options = {
       method: "GET",
       url: "https://api.api-ninjas.com/v1/convertcurrency",
-      params: { have: have, want: want, amount: amount },
+      params: { have: have, want: want, amount: amount, origin: "origin" },
       headers: {
         "X-Api-Key": process.env.NEXT_PUBLIC_NINJAS_KEY,
       },
@@ -471,18 +465,6 @@ function ProductTemplate(props) {
 
   return (
     <>
-      <section className="d-flex gap-1 mb-2">
-        <small>
-          <Link href="/">{t[locale].home}</Link>
-        </small>
-        <small>&gt;</small>
-        <small>
-          <Link href="/admin/products#main">{t[locale].productsMenagement}</Link>
-        </small>
-        <small>&gt;</small>
-        <small>{prodEdit ? prodEdit.id : t[locale].newProduct}</small>
-      </section>
-
       <div className={`d-flex align-items-center ${isMobile && "flex-wrap"}`}>
         {/* Main picture & DropZone */}
         <div className={`col-12 col-md-3 ${!isMobile && "pe-3"}`}>
