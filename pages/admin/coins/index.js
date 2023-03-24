@@ -5,8 +5,8 @@ import { Button, Container, Spinner } from "react-bootstrap";
 import { useAuth } from "../../../context/AuthProvider";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
-import User from "../../../components/Users/Admin/User";
 import { FiRefreshCcw } from "react-icons/fi";
+import CoinsItem from "../../../components/Coins/Admin/CoinsItem";
 
 function AdminCoinsPage() {
   const router = useRouter();
@@ -109,7 +109,7 @@ function AdminCoinsPage() {
           </Button>
         </div>
         {coins.map((coin, idx) => (
-          <User key={idx} idx={idx} coin={coin} refresh={getCoins} idToken={idToken} />
+          <CoinsItem key={idx} idx={idx} coin={coin} refresh={getCoins} idToken={idToken} />
         ))}
       </Container>
     </>

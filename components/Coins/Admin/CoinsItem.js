@@ -1,6 +1,6 @@
 import React from 'react'
 
-function CoinItem() {
+function CoinsItem() {
   return (
     <div>
         Item
@@ -9,4 +9,4 @@ function CoinItem() {
   )
 }
 
-export default CoinItem
+export default CoinsItem
