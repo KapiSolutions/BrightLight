@@ -5,6 +5,7 @@ import { Button, Form, Spinner } from "react-bootstrap";
 import { BsCurrencyExchange } from "react-icons/bs";
 import axios from "axios";
 import { useAuth } from "../../../context/AuthProvider";
+import { updateDocFields } from "../../../firebase/Firestore";
 
 function CoinsItem(props) {
   const router = useRouter();
@@ -15,6 +16,7 @@ function CoinsItem(props) {
   const quantityRef_min = useRef();
   const quantityRef_max = useRef();
   const [edit, setEdit] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [loadingExc, setLoadingExc] = useState(false);
   const theme = useDeviceStore((state) => state.themeState);
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -35,6 +37,8 @@ function CoinsItem(props) {
       save: "Save Changes",
       edit: "Edit",
       closeEdit: "Don't save and close",
+      sthWrong: "Something went wrong, please try again later.",
+      loading: "Loading...",
     },
     pl: {
       coins: "Moneta",
@@ -47,6 +51,8 @@ function CoinsItem(props) {
       save: "Zapisz zmiany",
       edit: "Edytuj",
       closeEdit: "Nie zapisuj i zamknij",
+      sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
+      loading: "Ładuję...",
     },
   };
 
@@ -86,6 +92,7 @@ function CoinsItem(props) {
       }
     } catch (error) {
       console.log(error);
+      setErrorMsg(t[locale].sthWrong);
     }
     setLoadingExc(false);
   };
@@ -112,20 +119,69 @@ function CoinsItem(props) {
     }
   };
 
+  const prepareData = async () => {
+    let coinData = {
+      price: {...coin.price},
+      quantity: {...coin.quantity},
+    };
+
+    if (coin.quantity.min != Number(quantityRef_min.current.value)) {
+      coinData.quantity.min = Number(quantityRef_min.current.value);
+    }
+    if (coin.quantity.max != Number(quantityRef_max.current.value)) {
+      coinData.quantity.max = Number(quantityRef_max.current.value);
+    }
+
+    if (coin.price.usd.amount != Number(priceRef_usd.current.value)) {
+      try {
+        const res = await stripeUpdate("usd");
+        if (res) {
+          coinData.price.usd.s_id = res.data.default_price;
+          coinData.price.usd.amount = Number(priceRef_usd.current.value);
+        }
+      } catch (e) {
+        throw e;
+      }
+    }
+    if (coin.price.pln.amount != Number(priceRef_pln.current.value)) {
+      try {
+        const res = await stripeUpdate("pln");
+        if (res) {
+          coinData.price.pln.s_id = res.data.default_price;
+          coinData.price.pln.amount = Number(priceRef_pln.current.value);
+        }
+      } catch (e) {
+        throw e;
+      }
+    }
+    return coinData;
+  };
+
   const saveChanges = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    let data = null;
+
     try {
-      await stripeUpdate("usd");
-    } catch (error) {
-      console.log(error);
+      //prepare data and update Stripe coins
+      data = await prepareData();
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
       return;
     }
+
     try {
-      await stripeUpdate("pln");
-    } catch (error) {
-      console.log(error);
-      return;
+      //if stripe updates successfull then update the data in the firestore
+      await updateDocFields("coins", coin.id, data);
+      props.refresh();
+      setEdit(false)
+    } catch (e) {
+      console.log(e);
+      setErrorMsg(t[locale].sthWrong);
     }
+
+    setLoading(false);
   };
 
   return (
@@ -234,7 +290,16 @@ function CoinsItem(props) {
               </Button>
             </div>
             <hr />
-            <Button type="submit">{t[locale].save}</Button>
+            <Button type="submit">
+              {loading ? (
+                <>
+                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                  <span> {t[locale].loading}</span>
+                </>
+              ) : (
+                <span>{t[locale].save}</span>
+              )}
+            </Button>
           </Form>
           <Button
             variant={`outline-${theme === "light" ? "dark" : "light"}`}
