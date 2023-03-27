@@ -53,35 +53,6 @@ const nextConfig = {
             value: "1; mode=block",
           },
         ],
-        source: "/admin/coins",
-        has: [
-          {
-            type: 'query',
-            key: 'origin',
-            value: 'origin',
-          },
-        ],
-        headers: [
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
-        ],
-        source: "/admin/products/:path*",
-        has: [
-          {
-            type: 'query',
-            key: 'origin',
-            value: 'origin',
-          },
-        ],
-        headers: [
-          {
-            key: "Referrer-Policy",
-            value: "origin-when-cross-origin",
-          },
-        ],
-        
       },
     ];
   },
