@@ -27,7 +27,9 @@ function AboutPage(props) {
       thirdSection:
         "Therefore, in addition to learning about the upcoming future and other people's intentions, it is also worth asking them for advice.",
       titleJapan: "Japan Dream",
-      japanSection: "One of my biggest dreams is to travel to Japan. Discovering beautiful nature and local culture.",
+      japanSection1: "One of my biggest dreams is to travel to Japan. Discovering beautiful nature and local culture. Japan is a country that is famous for its beautiful landscapes, from volcanoes to mountains to the sea. I would like to see them with my own eyes and feel the amazing feeling that comes from contact with wild nature.",
+      japanSection2: "But it's not just nature that attracts me to Japan. It is also a rich history and a fascinating culture that has been developing for hundreds of years. I would like to discover this culture, get to know its customs, traditions and taste the local cuisine. Feel like one of the locals and see Japan from their perspective. I would like to discover the beauty of this country, visit beautiful gardens, admire the blooming cherry trees and travel through the mountains and forests in search of amazing views and adventures. Japan is full of contrasts, from densely populated cities to small villages where time has stood still. I would like to meet local people, try their cuisine and immerse myself in their culture. It will surely be an unforgettable experience.",
+      japanSection3: "I encourage you to join me on this adventure and help me realize my dream. Every contribution is valuable and contributes to making my dream of traveling to Japan a reality. I thank you in advance for every donation and I promise that I will not disappoint you with my relations from Japan.",
     },
     pl: {
       title: "O mnie",
@@ -39,8 +41,12 @@ function AboutPage(props) {
       thirdSection:
         "Dlatego oprócz poznawania nadchodzącej przyszłości i intencji innych ludzi, warto też zapytać kart o radę.",
       titleJapan: "Sen o Japonii",
-      japanSection:
-        "Jednym z moich największych marzeń jest podróż do Japonii. Odkrywanie pięknej przyrody i lokalnej kultury.",
+      japanSection1:
+        "Jednym z moich największych marzeń jest podróż do Japonii. Odkrywanie pięknej przyrody i lokalnej kultury. Japonia to kraj, który słynie z pięknych krajobrazów, od wulkanów, przez góry, po morze. Chciałabym zobaczyć je na własne oczy i poczuć to niesamowite wrażenie, które daje kontakt z dziką przyrodą.",
+      japanSection2:
+        "Ale to nie tylko natura przyciąga mnie do Japonii. To również bogata historia i fascynująca kultura, która rozwija się od setek lat. Chciałabym odkryć tę kulturę, poznać jej zwyczaje, tradycje i zasmakować w lokalnej kuchni. Czuć się jak jeden z mieszkańców i zobaczyć Japonię z ich perspektywy. Chciałbym odkryć piękno tego kraju, odwiedzić piękne ogrody, podziwiać kwitnące drzewa wiśni oraz przemierzyć góry i lasy w poszukiwaniu niesamowitych widoków i przygód. Japonia jest pełna kontrastów, od gęsto zaludnionych miast, po małe wioski, w których czas się zatrzymał. Chciałbym poznać lokalnych mieszkańców, spróbować ich kuchni i zanurzyć się w ich kulturze. Z pewnością będą to niezapomniane doświadczenia.",
+      japanSection3:
+        "Zachęcam Was, abyście dołączyli do mnie w tej przygodzie i pomogli mi zrealizować moje marzenie. Każdy wkład jest cenny i przyczynia się do tego, aby moje marzenie o podróży do Japonii stało się rzeczywistością. Dziękuję z góry za każdy datek i obiecuję, że nie zawiodę Was swoimi relacjami z Japonii.",
     },
   };
   return (
@@ -109,8 +115,9 @@ function AboutPage(props) {
             <Image src={japanPath} width="170" height="159" alt="Japan sticker" />
             <h2 className="mt-0 text-dark">{t[locale].titleJapan}</h2>
           </div>
-          <p>{t[locale].japanSection}</p>
-          <p>(...)</p>
+          <p>{t[locale].japanSection1}</p>
+          <p>{t[locale].japanSection2}</p>
+          <p>{t[locale].japanSection3}</p>
         </section>
       </Container>
     </>
