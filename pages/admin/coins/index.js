@@ -8,6 +8,7 @@ import { getDocsFromCollection } from "../../../firebase/Firestore";
 import { FiRefreshCcw } from "react-icons/fi";
 import CoinsItem from "../../../components/Coins/Admin/CoinsItem";
 import { BiCoin } from "react-icons/bi";
+import { setup } from "../../../config/csrf";
 
 function AdminCoinsPage() {
   const router = useRouter();
@@ -119,3 +120,7 @@ function AdminCoinsPage() {
 }
 
 export default AdminCoinsPage;
+
+export const getServerSideProps = setup(async ({ req, res }) => {
+  return { props: {} };
+});

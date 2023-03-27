@@ -1,10 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { BiCoin } from "react-icons/bi";
 import { useDeviceStore } from "../../../stores/deviceStore";
 import { Button, Form, Spinner } from "react-bootstrap";
 import { BsCurrencyExchange } from "react-icons/bs";
 import axios from "axios";
+import { useAuth } from "../../../context/AuthProvider";
 
 function CoinsItem(props) {
   const router = useRouter();
@@ -19,6 +19,8 @@ function CoinsItem(props) {
   const theme = useDeviceStore((state) => state.themeState);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const currency = useDeviceStore((state) => state.currency);
+  const { setErrorMsg, authUserCredential } = useAuth();
+  const [idToken, setIdToken] = useState(undefined);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light border-accent4" : "";
 
   const t = {
@@ -47,6 +49,16 @@ function CoinsItem(props) {
       closeEdit: "Nie zapisuj i zamknij",
     },
   };
+
+  const getToken = async () => {
+    const token = await authUserCredential.getIdToken(true);
+    setIdToken(token.toString());
+  };
+
+  useEffect(() => {
+    getToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const exchangeAmount = async () => {
     setLoadingExc(true);
@@ -78,18 +90,59 @@ function CoinsItem(props) {
     setLoadingExc(false);
   };
 
+  const stripeUpdate = async (ccy) => {
+    const tmpData = null;
+    const price = ccy == "usd" ? priceRef_usd.current.value : priceRef_pln.current.value;
+    const tmpPrice = {
+      product: coin.price[ccy].prod_id,
+      unit_amount: Math.trunc(price * 100), //price in cents, eg. 2000 means 20$ or 20pln etc.
+      currency: ccy,
+    };
+    const payload = {
+      secret: process.env.NEXT_PUBLIC_API_KEY,
+      idToken: idToken,
+      mode: "update",
+      data: { prod: tmpData, price: tmpPrice, id: coin.price[ccy].prod_id },
+    };
+    try {
+      return await axios.post("/api/stripe/products/", payload);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
   const saveChanges = async (e) => {
     e.preventDefault();
-    console.log("save");
+    try {
+      await stripeUpdate("usd");
+    } catch (error) {
+      console.log(error);
+      return;
+    }
+    try {
+      await stripeUpdate("pln");
+    } catch (error) {
+      console.log(error);
+      return;
+    }
   };
+
   return (
     <section className="d-flex flex-column justify-content-center">
       <div className="d-flex flex-wrap flex-column w-100 justify-content-center align-items-center mt-3 mb-2 gap-2">
         <p>
-          {t[locale].quantity} <strong>{coin.quantity.min}-{coin.quantity.max}</strong> {t[locale].pcs}
+          {t[locale].quantity}{" "}
+          <strong>
+            {coin.quantity.min}-{coin.quantity.max}
+          </strong>{" "}
+          {t[locale].pcs}
         </p>
         <p>
-        {t[locale].price} <strong>{coin.price.usd.amount.toFixed(2)} USD / {coin.price.pln.amount.toFixed(2)} PLN</strong>
+          {t[locale].price}{" "}
+          <strong>
+            {coin.price.usd.amount.toFixed(2)} USD / {coin.price.pln.amount.toFixed(2)} PLN
+          </strong>
         </p>
       </div>
       {edit ? (
