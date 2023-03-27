@@ -14,6 +14,7 @@ function CoinsItem(props) {
   const priceRef_pln = useRef();
   const quantityRef_min = useRef();
   const quantityRef_max = useRef();
+  const [edit, setEdit] = useState(false);
   const [loadingExc, setLoadingExc] = useState(false);
   const theme = useDeviceStore((state) => state.themeState);
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -28,14 +29,22 @@ function CoinsItem(props) {
       quantity: "How many coins to buy at once:",
       convertTitle: "Convert price to the choosen currency USD/PLN",
       converting: "Converting...",
+      pcs: "pcs.",
+      save: "Save Changes",
+      edit: "Edit",
+      closeEdit: "Don't save and close",
     },
     pl: {
       coins: "Moneta",
       price: "Cena:",
       wrongPrice: "Nieprawidłowa wartość",
-      quantity: "Ile monet można kupić za jednym razem:",
+      quantity: "Ilość monet do kupienia jednorazowo:",
       convertTitle: "Przelicz cenę zgodnie z kursem USD/PLN",
       converting: "Konwertuję...",
+      pcs: "szt.",
+      save: "Zapisz zmiany",
+      edit: "Edytuj",
+      closeEdit: "Nie zapisuj i zamknij",
     },
   };
 
@@ -68,89 +77,125 @@ function CoinsItem(props) {
     }
     setLoadingExc(false);
   };
+
+  const saveChanges = async (e) => {
+    e.preventDefault();
+    console.log("save");
+  };
   return (
     <section className="d-flex flex-column justify-content-center">
-      <Form className={`${isMobile ? "w-100 mt-3" : "w-25"} m-auto d-flex flex-column justify-content-center`} style={{minWidth: "300px"}}>
-        {/* Prices */}
-        <div className="mb-3">
-          <Form.Label>{t[locale].quantity}</Form.Label>
-          <div className="d-flex gap-1">
-            <Form.Control
-              type="number"
-              min="0"
-              step="any"
-              ref={quantityRef_min}
-              defaultValue={coin.quantity.min}
-              className={`${false && "border border-danger"} ${themeDarkInput}`}
-            />
-            <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
-              Min
-            </span>
-            <Form.Control
-              type="number"
-              min="0"
-              step="any"
-              ref={quantityRef_max}
-              defaultValue={coin.quantity.max}
-              className={`${false && "border border-danger"} ${themeDarkInput}`}
-            />
-            <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
-              Max
-            </span>
-          </div>
-          {false && <small className="text-danger">{t[locale].wrongPrice}</small>}
-        </div>
-        
-        {/* Prices */}
+      <div className="d-flex flex-wrap flex-column w-100 justify-content-center align-items-center mt-3 mb-2 gap-2">
+        <p>
+          {t[locale].quantity} <strong>{coin.quantity.min}-{coin.quantity.max}</strong> {t[locale].pcs}
+        </p>
+        <p>
+        {t[locale].price} <strong>{coin.price.usd.amount.toFixed(2)} USD / {coin.price.pln.amount.toFixed(2)} PLN</strong>
+        </p>
+      </div>
+      {edit ? (
         <div>
-          <Form.Label>{t[locale].price}</Form.Label>
-          <div className="d-flex gap-1">
-            <Form.Control
-              type="number"
-              min="0"
-              step="any"
-              ref={priceRef_usd}
-              defaultValue={coin.price.usd.amount}
-              className={`${false && "border border-danger"} ${themeDarkInput}`}
-            />
-            <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
-              USD
-            </span>
-            <Form.Control
-              type="number"
-              min="0"
-              step="any"
-              ref={priceRef_pln}
-              defaultValue={coin.price.pln.amount}
-              className={`${false && "border border-danger"} ${themeDarkInput}`}
-            />
-            <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
-              PLN
-            </span>
-          </div>
-          {false && <small className="text-danger">{t[locale].wrongPrice}</small>}
-        </div>
-        <div className="d-flex mt-2">
-          <Button
-            className={`w-100`}
-            variant={`outline-${theme == "dark" ? "light" : "dark"}`}
-            onClick={exchangeAmount}
-            disabled={loadingExc}
-            title={t[locale].convertTitle}
+          <Form
+            className={`${
+              isMobile ? "w-100 mt-3" : "w-25"
+            } m-auto d-flex flex-column justify-content-center p-3 border rounded`}
+            style={{ minWidth: "350px" }}
+            onSubmit={saveChanges}
           >
-            {loadingExc ? (
-              <>
-                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                <span> {t[locale].converting}</span>
-              </>
-            ) : (
-              <>
-                USD <BsCurrencyExchange /> PLN
-              </>
-            )}
+            {/* Prices */}
+            <div className="mb-3">
+              <Form.Label>{t[locale].quantity}</Form.Label>
+              <div className="d-flex gap-1">
+                <Form.Control
+                  type="number"
+                  min="0"
+                  step="any"
+                  ref={quantityRef_min}
+                  defaultValue={coin.quantity.min}
+                  className={`${false && "border border-danger"} ${themeDarkInput}`}
+                />
+                <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
+                  Min
+                </span>
+                <Form.Control
+                  type="number"
+                  min="0"
+                  step="any"
+                  ref={quantityRef_max}
+                  defaultValue={coin.quantity.max}
+                  className={`${false && "border border-danger"} ${themeDarkInput}`}
+                />
+                <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
+                  Max
+                </span>
+              </div>
+              {false && <small className="text-danger">{t[locale].wrongPrice}</small>}
+            </div>
+
+            {/* Prices */}
+            <div>
+              <Form.Label>{t[locale].price}</Form.Label>
+              <div className="d-flex gap-1">
+                <Form.Control
+                  type="number"
+                  min="0"
+                  step="any"
+                  ref={priceRef_usd}
+                  defaultValue={coin.price.usd.amount}
+                  className={`${false && "border border-danger"} ${themeDarkInput}`}
+                />
+                <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
+                  USD
+                </span>
+                <Form.Control
+                  type="number"
+                  min="0"
+                  step="any"
+                  ref={priceRef_pln}
+                  defaultValue={coin.price.pln.amount}
+                  className={`${false && "border border-danger"} ${themeDarkInput}`}
+                />
+                <span className="text-muted" style={{ position: "relative", right: "70px", top: "4px", width: "0px" }}>
+                  PLN
+                </span>
+              </div>
+              {false && <small className="text-danger">{t[locale].wrongPrice}</small>}
+            </div>
+            <div className="d-flex mt-2">
+              <Button
+                className={`w-100`}
+                variant={`outline-${theme == "dark" ? "light" : "dark"}`}
+                onClick={exchangeAmount}
+                disabled={loadingExc}
+                title={t[locale].convertTitle}
+              >
+                {loadingExc ? (
+                  <>
+                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+                    <span> {t[locale].converting}</span>
+                  </>
+                ) : (
+                  <>
+                    USD <BsCurrencyExchange /> PLN
+                  </>
+                )}
+              </Button>
+            </div>
+            <hr />
+            <Button type="submit">{t[locale].save}</Button>
+          </Form>
+          <Button
+            variant={`outline-${theme === "light" ? "dark" : "light"}`}
+            className="mt-4"
+            onClick={() => setEdit(false)}
+          >
+            {t[locale].closeEdit}
           </Button>
         </div>
-      </Form>
+      ) : (
+        <div>
+          <Button onClick={() => setEdit(true)}>{t[locale].edit}</Button>
+        </div>
+      )}
     </section>
   );
 }
