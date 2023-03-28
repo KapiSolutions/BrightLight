@@ -34,9 +34,8 @@ function CoinsCard() {
   const getCoins = async () => {
     try {
       const docs = await getDocsFromCollection("coins");
-      console.log(docs);
-      console.log(docs[0]);
       setCoins(docs[0]);
+      setAmountToPay((docs[0].quantity.min * docs[0].price[currency].amount).toFixed(2));
       setLoaded(true);
       return;
     } catch (e) {
@@ -53,6 +52,7 @@ function CoinsCard() {
 
   useEffect(() => {
     getToken();
+    getCoins();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -68,22 +68,14 @@ function CoinsCard() {
   }, [coinsRef.current?.value]);
 
   useEffect(() => {
-    const getCoinsFunc = () => {
-      getCoins();
-    };
-    return getCoinsFunc;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currency]);
-
-  useEffect(() => {
     if (coins) {
       const quantity =
-        coins.quantity.min == Number(coinsRef.current.value) ? coins.quantity.min : Number(coinsRef.current.value);
+        coins.quantity.min == Number(coinsRef?.current?.value) ? coins.quantity.min : Number(coinsRef.current.value);
       setAmountToPay((quantity * coins.price[currency].amount).toFixed(2));
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coins]);
+  }, [currency]);
 
   const t = {
     en: {
