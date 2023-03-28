@@ -7,6 +7,7 @@ import { useDeviceStore } from "../../../stores/deviceStore";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
 import User from "../../../components/Users/Admin/User";
 import { FiRefreshCcw } from "react-icons/fi";
+import Link from "next/link";
 
 function UserProfilePage() {
   const router = useRouter();
@@ -71,6 +72,7 @@ function UserProfilePage() {
       loading: "Loading...",
       button: "Refresh",
       sthWrong: "Something went wrong, please try again later.",
+      home: "Home",
     },
     pl: {
       title: "Admin - Użytkownicy",
@@ -78,6 +80,7 @@ function UserProfilePage() {
       loading: "Ładuje...",
       button: "Odśwież",
       sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
+      home: "Strona Główna",
     },
   };
 
@@ -86,7 +89,14 @@ function UserProfilePage() {
       <Head>
         <title>BrightLight | {t[locale].title}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5 color-primary" id="au-ctx">
+      <Container className="justify-content-center text-center mt-4 color-primary" id="au-ctx">
+        <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].h1}</small>
+        </nav>
         <h1>{t[locale].h1}</h1>
         <div className="text-end">
           <Button

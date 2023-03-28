@@ -8,6 +8,7 @@ import { getDocsFromCollection } from "../../../firebase/Firestore";
 import BlogItemAdmin from "../../../components/Blog/BlogItemAdmin";
 import FilterAndSortBar from "../../../components/Blog/FilterAndSortBar";
 import { FiRefreshCcw } from "react-icons/fi";
+import Link from "next/link";
 
 function AdminBlogsPage(props) {
   const [posts, setPosts] = useState([]);
@@ -26,11 +27,15 @@ function AdminBlogsPage(props) {
       title: "Blog Menagment",
       new: "Create New Blog!",
       loading: "Loading",
+      home: "Home",
+      blogPage: "Blog Menagment",
     },
     pl: {
       title: "Zarządzaj Blogiem",
       new: "Dodaj nowy Wpis!",
       loading: "Ładuję",
+      home: "Strona Główna",
+      blogPage: "Zarządzanie Blogiem",
     },
   };
 
@@ -79,7 +84,14 @@ function AdminBlogsPage(props) {
       <Head>
         <title>BrightLight | Admin - {t[locale].title}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5 color-primary" id="abn-ctx">
+      <Container className="justify-content-center text-center mt-4 color-primary" id="abn-ctx">
+        <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].blogPage}</small>
+        </nav>
         <h1>{t[locale].title}</h1>
         <div className="d-flex justify-content-end gap-2 text-end mt-4">
           <Button
@@ -151,6 +163,6 @@ export async function getStaticProps({ locale }) {
     props: {
       blogPosts: JSON.parse(JSON.stringify(docs)),
     },
-    revalidate: false, 
+    revalidate: false,
   };
 }

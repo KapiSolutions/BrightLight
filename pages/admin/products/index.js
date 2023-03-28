@@ -8,6 +8,7 @@ import { FiRefreshCcw } from "react-icons/fi";
 import Product from "../../../components/Products/Admin/Product";
 import FilterAndSortBar from "../../../components/Products/Admin/FilterAndSortBar";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
+import Link from "next/link";
 
 function AdminProductsPage(props) {
   const router = useRouter();
@@ -49,42 +50,55 @@ function AdminProductsPage(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-    // refresh the product list after deleting the product
-    const refreshProductList = async () => {
-      setLoadingRfs(true);
-      try {
-        const docs = await getDocsFromCollection("products");
-        setRefProducts(JSON.parse(JSON.stringify(docs)));
-        setProducts(JSON.parse(JSON.stringify(docs)).sort((a, b) => timeStampToDate(b.createDate) - timeStampToDate(a.createDate)));
-        setLoadingRfs(false);
-      } catch (e) {
-        console.log(e);
-        setLoadingRfs(false);
-      }
-    };
+  // refresh the product list after deleting the product
+  const refreshProductList = async () => {
+    setLoadingRfs(true);
+    try {
+      const docs = await getDocsFromCollection("products");
+      setRefProducts(JSON.parse(JSON.stringify(docs)));
+      setProducts(
+        JSON.parse(JSON.stringify(docs)).sort((a, b) => timeStampToDate(b.createDate) - timeStampToDate(a.createDate))
+      );
+      setLoadingRfs(false);
+    } catch (e) {
+      console.log(e);
+      setLoadingRfs(false);
+    }
+  };
 
-    const t = {
-      en: {
-        title: "Admin - Products",
-        h1: "Product Menagment",
-        loading: "Loading",
-        newProduct: "Create new Product!",
-        refresh: "Refresh Product List",
-      },
-      pl: {
-        title: "Admin - Produkty",
-        h1: "Panel Produktów",
-        loading: "Ładuję",
-        newProduct: "Dodaj nowy Produkt!",
-        refresh: "Odśwież listę produktów",
-      },
-    };
+  const t = {
+    en: {
+      title: "Admin - Products",
+      h1: "Product Menagment",
+      loading: "Loading",
+      newProduct: "Create new Product!",
+      refresh: "Refresh Product List",
+      home: "Home",
+      productPage: "Product Menagment",
+    },
+    pl: {
+      title: "Admin - Produkty",
+      h1: "Panel Produktów",
+      loading: "Ładuję",
+      newProduct: "Dodaj nowy Produkt!",
+      refresh: "Odśwież listę produktów",
+      home: "Strona Główna",
+      productPage: "Panel Produktów",
+    },
+  };
   return (
     <>
       <Head>
         <title>BrightLight | {t[locale].title}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5 color-primary" id="ap-ctx">
+      <Container className="justify-content-center text-center mt-4 color-primary" id="ap-ctx">
+        <nav className="d-flex gap-2">
+          <small>
+            <Link href="/#main">{t[locale].home}</Link>
+          </small>
+          <small>&gt;</small>
+          <small>{t[locale].productPage}</small>
+        </nav>
         <h1>{t[locale].h1}</h1>
         <div className="d-flex justify-content-end gap-2 text-end mt-4">
           <Button
