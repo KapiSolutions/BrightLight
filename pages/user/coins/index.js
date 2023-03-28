@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import { Container } from "react-bootstrap";
 import { useDeviceStore } from "../../../stores/deviceStore";
@@ -14,6 +14,8 @@ function CoinsPage() {
   const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const { isAuthenticated, authUserFirestore } = useAuth();
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [paymentFailure, setPaymentFailure] = useState(false);
 
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -26,6 +28,11 @@ function CoinsPage() {
   useEffect(() => {
     if (isAuthenticated()) {
       isMobile && scroll();
+      if (router.query.success == "true") {
+        setPaymentSuccess(true);
+      } else if (router.query.success == "false") {
+        setPaymentFailure(true);
+      }
     } else {
       router.replace("/sign-in");
       return;
@@ -74,7 +81,8 @@ function CoinsPage() {
             </span>
           </p>
         </section>
-
+        {paymentSuccess && <span className="mt-3 mb-3">Success!</span>}
+        {paymentFailure && <span className="mt-3 mb-3">Failure!</span>}
         <CoinsCard />
       </Container>
     </>
@@ -86,4 +94,3 @@ export default CoinsPage;
 export const getServerSideProps = setup(async ({ req, res }) => {
   return { props: {} };
 });
-

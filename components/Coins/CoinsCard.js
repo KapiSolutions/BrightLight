@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Button, Card, Form } from "react-bootstrap";
+import { Button, Card, Form, Spinner } from "react-bootstrap";
 import { useDeviceStore } from "../../stores/deviceStore";
 import { useAuth } from "../../context/AuthProvider";
 import { useRouter } from "next/router";
@@ -12,6 +12,8 @@ import amexSvg from "../../public/img/pay_methods/amex.svg";
 import p24Svg from "../../public/img/pay_methods/p24.svg";
 import blikSvg from "../../public/img/pay_methods/blik.svg";
 import { getDocsFromCollection } from "../../firebase/Firestore";
+import getStripe from "../../utils/get-stripejs";
+import axios from "axios";
 
 function CoinsCard() {
   const router = useRouter();
@@ -23,30 +25,11 @@ function CoinsCard() {
   const [coins, setCoins] = useState();
   const [coinsErr, setCoinsErr] = useState(false); //true when incorrect value
   const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [amountToPay, setAmountToPay] = useState();
-
-  const { authUserFirestore, setErrorMsg } = useAuth();
+  const [idToken, setIdToken] = useState(undefined);
+  const { authUserFirestore, authUserCredential, setErrorMsg } = useAuth();
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light border-accent4" : "";
-
-  useEffect(() => {
-    if (coins) {
-      if (coinsRef.current?.value > coins.quantity.max || coinsRef.current?.value < coins.quantity.min) {
-        setCoinsErr(true);
-      } else {
-        setCoinsErr(false);
-      }
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coinsRef.current?.value]);
-
-  useEffect(() => {
-    const getCoinsFunc = () => {
-      getCoins();
-    };
-    return getCoinsFunc;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currency]);
 
   const getCoins = async () => {
     try {
@@ -60,6 +43,35 @@ function CoinsCard() {
       return;
     }
   };
+
+  const getToken = async () => {
+    const token = await authUserCredential.getIdToken(true);
+    setIdToken(token.toString());
+  };
+
+  useEffect(() => {
+    getToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (coins) {
+      if (coinsRef.current?.value > coins.quantity.max || coinsRef.current?.value < coins.quantity.min) {
+        setCoinsErr(true);
+      } else {
+        setCoinsErr(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coinsRef.current?.value]);
+
+  useEffect(() => {
+    const getCoinsFunc = () => {
+      getCoins();
+    };
+    return getCoinsFunc;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency]);
 
   useEffect(() => {
     if (coins) {
@@ -82,6 +94,7 @@ function CoinsCard() {
       coin: "Bright Coin",
       buy: "Buy Now",
       total: "Total:",
+      loading: "Loading...",
     },
     pl: {
       inputLabel: "Wybierz ilość monet",
@@ -93,6 +106,7 @@ function CoinsCard() {
       coin: "Moneta",
       buy: "Kup teraz",
       total: "Razem:",
+      loading: "Ładuję...",
     },
   };
 
@@ -105,6 +119,57 @@ function CoinsCard() {
       document.getElementsByName("coinsAmountBuyField")[0].scrollIntoView({ block: "center", inline: "nearest" });
       return;
     }
+
+    try {
+      const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
+      //prepare stripe product data
+      const stripeCart = [
+        {
+          price: coins.price[currency].s_id,
+          quantity: Number(coinsRef.current?.value),
+        },
+      ];
+
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
+        data: {
+          sendOrderConfirmEmail: false, //dont send order confirmation email (send only payment confirmation by webhook)
+          stripeCart: stripeCart,
+          language: locale,
+          coins: Number(coinsRef.current?.value), //how many coins to add
+        },
+        redirects: {
+          success: "user/coins?success=true",
+          cancel: "user/coins?success=false",
+        },
+        metadata: {
+          localeLanguage: locale,
+          localeTimeZone: localeTimeZone,
+          coinsBuy: true, //true for payment for the coins
+          userID: authUserFirestore.id,
+        },
+      };
+
+      //start checkoutSession
+      const res = await axios.post("/api/stripe/checkout_session/", payload);
+      if (res.status === 500) {
+        console.error(res.message);
+        return;
+      }
+      // Redirect to checkout
+      const stripe = await getStripe();
+      router.push(res.data.url);
+      const { error } = await stripe.redirectToCheckout({ sessionId: res.data.id });
+      if (error) {
+        console.error(error.message);
+        setErrorMsg(t[locale].sthWrong);
+      }
+    } catch (error) {
+      console.log(error);
+      setErrorMsg(t[locale].sthWrong);
+    }
+    setLoading(false);
   };
   return (
     <section className="d-flex justify-content-center">
@@ -189,7 +254,16 @@ function CoinsCard() {
                 </Form.Check.Label>
               </Form.Check>
 
-              <Button type="submit">{t[locale].buy}</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? (
+                  <span>
+                    <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />{" "}
+                    {t[locale].loading}
+                  </span>
+                ) : (
+                  t[locale].buy
+                )}
+              </Button>
             </Form>
           </Card.Body>
           <Card.Footer className={`${theme === "dark" && "border-top border-dark"}`}>
