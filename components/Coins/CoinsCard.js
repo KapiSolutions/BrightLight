@@ -113,6 +113,7 @@ function CoinsCard() {
   const buyCoins = async (e) => {
     e.preventDefault();
     setCoinsErr(false);
+    setLoading(true);
     if (coinsRef.current?.value > coins.quantity.max || coinsRef.current?.value < coins.quantity.min) {
       setCoinsErr(true);
       document.getElementsByName("coinsAmountBuyField")[0].focus();
@@ -138,7 +139,6 @@ function CoinsCard() {
           stripeCart: stripeCart,
           language: locale,
           coinsToBuy: Number(coinsRef.current?.value), //how many coins to add
-          coinsAlreadyHave: authUserFirestore.coins.amount, //how many coins already have user
         },
         redirects: {
           success: "user/coins?success=true",
@@ -149,6 +149,8 @@ function CoinsCard() {
           localeTimeZone: localeTimeZone,
           coinsBuy: true, //true for payment for the coins
           userID: authUserFirestore.id,
+          coinsToAdd: Number(coinsRef.current?.value), //how many coins to add
+          coinsAlreadyHave: Number(authUserFirestore.coins.amount), //how many coins already have user
         },
       };
 
