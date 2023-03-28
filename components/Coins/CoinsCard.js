@@ -143,8 +143,12 @@ function CoinsCard() {
           localeTimeZone: localeTimeZone,
           coinsBuy: true, //true for payment for the coins
           userID: authUserFirestore.id,
-          coinsToAdd: Number(coinsRef.current?.value), //how many coins to add
-          coinsAlreadyHave: Number(authUserFirestore.coins.amount), //how many coins already have user
+          coin: coins.name[locale],
+          coinsToAdd: coinsRef.current?.value, //how many coins to add
+          coinsAlreadyHave: authUserFirestore.coins.amount, //how many coins already have user
+          unitPrice: coins.price[currency].amount,
+          totalPrice: amountToPay,
+          currency: currency,
         },
       };
 

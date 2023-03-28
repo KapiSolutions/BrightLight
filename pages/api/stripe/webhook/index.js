@@ -3,6 +3,7 @@ import { buffer } from "micro";
 import sendEmail from "../../../../utils/emails/sendEmail";
 import { db } from "../../../../config/firebaseAdmin";
 import { getFileUrlStorage } from "../../../../firebase/Storage";
+import { v4 as uuidv4 } from "uuid";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -12,10 +13,10 @@ export const config = {
   },
 };
 
-const handleOrder = async (orderID, paymentIntent, payMethod, localeLanguage, localeTimeZone) => {
+const handleOrder = async (metadata, paymentIntent, payMethod) => {
   try {
     //Update the order with payment details
-    await db.collection("orders").doc(orderID).update({
+    await db.collection("orders").doc(metadata.orderID).update({
       paid: true,
       status: "In realization",
       timePayment: new Date(),
@@ -24,7 +25,7 @@ const handleOrder = async (orderID, paymentIntent, payMethod, localeLanguage, lo
     });
 
     // Get all details of the order
-    const response = await db.collection("orders").doc(orderID).get();
+    const response = await db.collection("orders").doc(metadata.orderID).get();
     const data = response.data();
 
     // Prepare order items for the email confirmation
@@ -39,7 +40,9 @@ const handleOrder = async (orderID, paymentIntent, payMethod, localeLanguage, lo
 
     const dataEmail = {
       orderID: data.id,
-      timeCreate: data.timeCreate.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
+      timeCreate: data.timeCreate
+        .toDate()
+        .toLocaleString(metadata.localeLanguage, { timeZone: metadata.localeTimeZone }),
       userName: data.userName,
       userEmail: data.userEmail,
       totalPrice: data.totalPrice,
@@ -49,7 +52,9 @@ const handleOrder = async (orderID, paymentIntent, payMethod, localeLanguage, lo
       paymentMethod: data.paymentMethod,
       amountPaid: data.totalPrice,
       language: data.language,
-      timePayment: data.timePayment.toDate().toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
+      timePayment: data.timePayment
+        .toDate()
+        .toLocaleString(metadata.localeLanguage, { timeZone: metadata.localeTimeZone }),
     };
     //Send confirmation email about the succeeded payment
     await sendEmail("paymentConfirmation", dataEmail, data.language);
@@ -59,18 +64,56 @@ const handleOrder = async (orderID, paymentIntent, payMethod, localeLanguage, lo
   }
 };
 
-const handleCoins = async (userID, coinsToAdd, coinsAlreadyHave) => {
+const handleCoins = async (metadata, paymentIntent, payMethod) => {
   try {
+    const date = new Date();
+    const id = uuidv4().slice(0, 13);
     //Update user data
     await db
       .collection("users")
-      .doc(userID)
+      .doc(metadata.userID)
       .update({
         coins: {
-          amount: Number(coinsToAdd) + Number(coinsAlreadyHave),
-          lastUpdate: new Date(),
+          amount: Number(metadata.coinsToAdd) + Number(metadata.coinsAlreadyHave),
+          lastUpdate: date,
         },
       });
+    // Create payment details object in the firestore
+    await db
+      .collection("coinsPayments")
+      .doc("/" + id + "/")
+      .create({
+        id: id,
+        userID: metadata.userID,
+        coinsAdded: Number(metadata.coinsToAdd),
+        totalPrice: metadata.totalPrice,
+        currency: metadata.currency,
+        paymentMethod: payMethod,
+        paymentID: paymentIntent,
+        timeCreate: date,
+      });
+    // Get all the necessary user data
+    const response = await db.collection("users").doc(metadata.userID).get();
+    const user = response.data();
+
+    const dataEmail = {
+      orderID: id,
+      userName: user.name,
+      userEmail: user.email,
+      currency: metadata.currency,
+      unitPrice: metadata.unitPrice,
+      totalPrice: metadata.totalPrice,
+      coin: metadata.coin,
+      coinsToAdd: metadata.coinsToAdd,
+      paymentID: paymentIntent,
+      paymentMethod: payMethod,
+      amountPaid: metadata.totalPrice,
+      language: metadata.localeLanguage,
+      timePayment: date.toLocaleString(metadata.localeLanguage, { timeZone: metadata.localeTimeZone }),
+    };
+    //Send confirmation email about the succeeded payment
+    await sendEmail("coinPaymentConfirmation", dataEmail, metadata.localeLanguage);
+    return;
   } catch (error) {
     throw error;
   }
@@ -96,33 +139,18 @@ export default async function handler(req, res) {
       // console.log("💰  Payment received!: ", event.data.object);
       try {
         //Get the client's locale information for the proper date conversion in the email notification
-        const localeLanguage = event.data.object.metadata.localeLanguage; //Client's locale language
-        const localeTimeZone = event.data.object.metadata.localeTimeZone; //Client's locale time zone
+        const metadata = event.data.object.metadata;
         const coinsPayment = event.data.object.metadata.coinsBuy;
         //Get the payment method from the payment intent
         const paymentIntent = await stripe.paymentIntents.retrieve(event.data.object.payment_intent);
         const paymentMethod = paymentIntent.payment_method_types[0];
 
-        if (coinsPayment) {//handle coins payment
-          const coinsToAdd = event.data.object.metadata.coinsToAdd;
-          const coinsAlreadyHave = event.data.object.metadata.coinsAlreadyHave;
-          await handleCoins(
-            event.data.object.metadata.userID,
-            coinsToAdd,
-            coinsAlreadyHave,
-            event.data.object.payment_intent,
-            paymentMethod,
-            localeLanguage,
-            localeTimeZone
-          );
-        } else {//handle tarot payment
-          await handleOrder(
-            event.data.object.metadata.orderID,
-            event.data.object.payment_intent,
-            paymentMethod,
-            localeLanguage,
-            localeTimeZone
-          );
+        if (coinsPayment) {
+          //handle coins payment
+          await handleCoins(metadata, event.data.object.payment_intent, paymentMethod);
+        } else {
+          //handle tarot payment
+          await handleOrder(metadata, event.data.object.payment_intent, paymentMethod);
         }
       } catch (e) {
         console.error(e);
