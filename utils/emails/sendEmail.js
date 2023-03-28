@@ -9,6 +9,7 @@ import paymentConfirmation from "./paymentConfirmation";
 import orderFinished from "./orderFinished";
 import unpaidNotification from "./unpaidNotification";
 import orderCancelled from "./orderCancelled";
+import coinPaymentConfirmation from "./coinPaymentConfirmation";
 
 export default async function sendEmail(emailType, data, language) {
   await new Promise(async (resolve, reject) => {
@@ -42,6 +43,11 @@ export default async function sendEmail(emailType, data, language) {
           const { emailData_occ, replacements_occ } = orderCancelled(data);
           emailData = emailData_occ;
           replacements = replacements_occ;
+          break;
+          case "coinPaymentConfirmation":
+          const { emailData_cp, replacements_cp } = coinPaymentConfirmation(data);
+          emailData = emailData_cp;
+          replacements = replacements_cp;
           break;
 
         default:
