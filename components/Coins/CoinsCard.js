@@ -34,6 +34,8 @@ function CoinsCard() {
   const getCoins = async () => {
     try {
       const docs = await getDocsFromCollection("coins");
+      console.log(docs);
+      console.log(docs[0]);
       setCoins(docs[0]);
       setLoaded(true);
       return;
