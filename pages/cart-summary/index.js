@@ -123,7 +123,7 @@ export default function CartSummaryPage() {
   async function handleCheckout(e) {
     e.preventDefault();
     setLoading(true);
-    const localeLanguage = window.navigator.userLanguage || window.navigator.language; //to display the date in the email in the client's language format
+    // const localeLanguage = window.navigator.userLanguage || window.navigator.language; //to display the date in the email in the client's language format
     const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
     const comments = document.getElementById("commentsField").value;
     const orderID = uuidv4().slice(0, 13);
@@ -190,10 +190,17 @@ export default function CartSummaryPage() {
           currency: order.currency,
           cartItems: cartItems,
           stripeCart: stripeCart,
-          localeLanguage: localeLanguage,
-          localeTimeZone: localeTimeZone,
           language: order.language,
-          timeCreate: order.timeCreate.toLocaleString(localeLanguage, { timeZone: localeTimeZone }),
+          timeCreate: order.timeCreate.toLocaleString(order.language, { timeZone: localeTimeZone }),
+        },
+        redirects: {
+          success: "payment/success",
+          cancel: "payment/cancel",
+        },
+        metadata: {
+          orderID: order.id,
+          localeLanguage: order.language,
+          localeTimeZone: localeTimeZone,
         },
       };
       //Start checkoutSession

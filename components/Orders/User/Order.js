@@ -101,7 +101,7 @@ function Order(props) {
   async function handlePayment() {
     try {
       setLoading(true);
-      const localeLanguage = window.navigator.userLanguage || window.navigator.language; //to display the date in the email in the client's language format
+      // const localeLanguage = window.navigator.userLanguage || window.navigator.language; //to display the date in the email in the client's language format
       const localeTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone; //to display the date in the email in the client's time zone
 
       //prepare stripe product data
@@ -118,7 +118,14 @@ function Order(props) {
           orderID: order.id,
           stripeCart: stripeCart,
           language: order.language,
-          localeLanguage: localeLanguage,
+        },
+        redirects: {
+          success: "payment/success",
+          cancel: "payment/cancel",
+        },
+        metadata: {
+          orderID: order.id,
+          localeLanguage: locale,
           localeTimeZone: localeTimeZone,
         },
       };

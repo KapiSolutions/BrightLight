@@ -6,9 +6,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 async function checkoutHandler(req, res) {
   if (req.method === "POST") {
-    const { secret, idToken, data } = req.body;
-    const stripeCart = data.stripeCart;
-    const orderID = data.orderID;
+    const { secret, idToken, data, metadata, redirects } = req.body;
 
     const uid = await verifyRequest(auth, secret, idToken, req, res);
     // If verified request then do the rest
@@ -18,23 +16,21 @@ async function checkoutHandler(req, res) {
       }
       try {
         const session = await stripe.checkout.sessions.create({
-          line_items: stripeCart,
+          line_items: data.stripeCart,
           mode: "payment",
-          success_url: `${req.headers.origin}/${data.language}/payment/success`,
-          cancel_url: `${req.headers.origin}/${data.language}/payment/cancel`,
+          success_url: `${req.headers.origin}/${data.language}/${redirects.success}`,
+          cancel_url: `${req.headers.origin}/${data.language}/${redirects.cancel}`,
           automatic_tax: { enabled: false },
           // client_reference_id: orderID,
-          metadata: {
-            orderID: orderID,
-            localeLanguage: data.localeLanguage,
-            localeTimeZone: data.localeTimeZone,
-          },
+          metadata: metadata,
         });
-        res.json({ url: session.url, id: session.id }); //redirect to checkout from the client side
+        res.status(200).json({ url: session.url, id: session.id }); //redirect to checkout from the client side
       } catch (err) {
         console.log(err);
         res.status(err.statusCode || 500).json(err.message);
       }
+    } else {
+      res.status(401).end("Unauthorized request");
     }
   } else {
     res.setHeader("Allow", "POST");
