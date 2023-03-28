@@ -137,7 +137,8 @@ function CoinsCard() {
           sendOrderConfirmEmail: false, //dont send order confirmation email (send only payment confirmation by webhook)
           stripeCart: stripeCart,
           language: locale,
-          coins: Number(coinsRef.current?.value), //how many coins to add
+          coinsToBuy: Number(coinsRef.current?.value), //how many coins to add
+          coinsAlreadyHave: authUserFirestore.coins.amount, //how many coins already have user
         },
         redirects: {
           success: "user/coins?success=true",
