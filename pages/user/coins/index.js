@@ -47,6 +47,8 @@ function CoinsPage() {
       whatIsCoin:
         "Bright Coins are a virtual currency that allows you to use artificial intelligence in the form of Tarot interpretations.",
       yourCoins: "Your Bright Coins: ",
+      success: "Yeah! Bright Coins added!",
+      failure: "Ups! Something went wrong with the payment, try again.",
     },
     pl: {
       title: "Moje Monety",
@@ -54,6 +56,8 @@ function CoinsPage() {
       whatIsCoin:
         "Monety to wirtualna waluta pozwalająca na korzystanie z sztucznej inteligencji w formie interpretacji Tarota.",
       yourCoins: "Moje monety: ",
+      success: "Super! Monety zostały dodane!",
+      failure: "Ups! Coś poszło nie tak z płatnością, spróbuj ponownie.",
     },
   };
   return (
@@ -81,8 +85,8 @@ function CoinsPage() {
             </span>
           </p>
         </section>
-        {paymentSuccess && <span className="mt-3 mb-3">Success!</span>}
-        {paymentFailure && <span className="mt-3 mb-3">Failure!</span>}
+        {paymentSuccess && <p><strong>{t[locale].success}</strong></p>}
+        {paymentFailure && <p><strong>{t[locale].failure}</strong></p>}
         <CoinsCard />
       </Container>
     </>
