@@ -29,11 +29,15 @@ function CoinsCard() {
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light border-accent4" : "";
 
   useEffect(() => {
-    if (coinsRef.current?.value > 30 || coinsRef.current?.value < 5) {
-      setCoinsErr(true);
-    } else {
-      setCoinsErr(false);
+    if (coins) {
+      if (coinsRef.current?.value > coins.quantity.max || coinsRef.current?.value < coins.quantity.min) {
+        setCoinsErr(true);
+      } else {
+        setCoinsErr(false);
+      }
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coinsRef.current?.value]);
 
   useEffect(() => {
@@ -58,9 +62,14 @@ function CoinsCard() {
   };
 
   useEffect(() => {
-    coins && setAmountToPay((coins.quantity.min * coins.price[currency].amount).toFixed(2));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [coins])
+    if (coins) {
+      const quantity =
+        coins.quantity.min == Number(coinsRef.current.value) ? coins.quantity.min : Number(coinsRef.current.value);
+      setAmountToPay((quantity * coins.price[currency].amount).toFixed(2));
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [coins]);
 
   const t = {
     en: {
@@ -68,8 +77,8 @@ function CoinsCard() {
       accept: "I accept the",
       terms: "Terms of service",
       declare: "and I declare that I am over 18 years old.",
-      coinsErrLow: "The minimum number of coins is 5.",
-      coinsErrHigh: "The maximum number of coins is 30.",
+      coinsErrLow: "The minimum number of coins is ",
+      coinsErrHigh: "The maximum number of coins is ",
       coin: "Bright Coin",
       buy: "Buy Now",
       total: "Total:",
@@ -79,8 +88,8 @@ function CoinsCard() {
       accept: "Akceptuje",
       terms: "Regulamin",
       declare: "i oświadczam, że mam skończone 18lat.",
-      coinsErrLow: "Minimalna liczba monet to 5.",
-      coinsErrHigh: "Maksymalna liczba monet to 30.",
+      coinsErrLow: "Minimalna liczba monet to ",
+      coinsErrHigh: "Maksymalna liczba monet to ",
       coin: "Moneta",
       buy: "Kup teraz",
       total: "Razem:",
@@ -90,7 +99,7 @@ function CoinsCard() {
   const buyCoins = async (e) => {
     e.preventDefault();
     setCoinsErr(false);
-    if (coinsRef.current?.value > 30 || coinsRef.current?.value < 5) {
+    if (coinsRef.current?.value > coins.quantity.max || coinsRef.current?.value < coins.quantity.min) {
       setCoinsErr(true);
       document.getElementsByName("coinsAmountBuyField")[0].focus();
       document.getElementsByName("coinsAmountBuyField")[0].scrollIntoView({ block: "center", inline: "nearest" });
@@ -124,8 +133,8 @@ function CoinsCard() {
               <Form.Label htmlFor="coinsAmountBuyField">{t[locale].inputLabel}</Form.Label>
               <Form.Control
                 type="number"
-                min={5}
-                max={30}
+                min={coins.quantity.min}
+                max={coins.quantity.max}
                 step={1}
                 name="coinsAmountBuyField"
                 ref={coinsRef}
@@ -142,8 +151,16 @@ function CoinsCard() {
                 style={{ width: "80px" }}
               />
 
-              {coinsRef.current?.value < 5 && <small className="text-danger">{t[locale].coinsErrLow}</small>}
-              {coinsRef.current?.value > 30 && <small className="text-danger">{t[locale].coinsErrHigh}</small>}
+              {coinsRef.current?.value < coins.quantity.min && (
+                <small className="text-danger">
+                  {t[locale].coinsErrLow} {coins.quantity.min}.
+                </small>
+              )}
+              {coinsRef.current?.value > coins.quantity.max && (
+                <small className="text-danger">
+                  {t[locale].coinsErrHigh} {coins.quantity.max}.
+                </small>
+              )}
               {!coinsErr && (
                 <p className="mt-3">
                   <span>{t[locale].total} </span>

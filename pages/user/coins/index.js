@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { BiCoin } from "react-icons/bi";
 import CoinsCard from "../../../components/Coins/CoinsCard";
+import { setup } from "../../../config/csrf";
 
 function CoinsPage() {
   const router = useRouter();
@@ -81,3 +82,8 @@ function CoinsPage() {
 }
 
 export default CoinsPage;
+
+export const getServerSideProps = setup(async ({ req, res }) => {
+  return { props: {} };
+});
+
