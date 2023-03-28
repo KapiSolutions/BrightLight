@@ -5,7 +5,7 @@ import { useAuth } from "../../context/AuthProvider";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
-import coinImg from "../../public/img/coins/coins.png";
+import coinImg from "../../public/img/coins/coins.webp";
 import visaSvg from "../../public/img/pay_methods/visa.svg";
 import mcardSvg from "../../public/img/pay_methods/mcard.svg";
 import amexSvg from "../../public/img/pay_methods/amex.svg";
