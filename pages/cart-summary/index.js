@@ -182,7 +182,7 @@ export default function CartSummaryPage() {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
         data: {
-          sendOrderConfirmEmail: true,
+          sendOrderConfirmEmail: true, //send order confirmation email
           orderID: order.id,
           userName: order.userName,
           userEmail: order.userEmail,
@@ -201,6 +201,7 @@ export default function CartSummaryPage() {
           orderID: order.id,
           localeLanguage: order.language,
           localeTimeZone: localeTimeZone,
+          coinsBuy: false, //true for payment for the coins
         },
       };
       //Start checkoutSession

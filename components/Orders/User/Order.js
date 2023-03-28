@@ -114,7 +114,7 @@ function Order(props) {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
         data: {
-          sendOrderConfirmEmail: false,
+          sendOrderConfirmEmail: false, //dont send order confirmation email
           orderID: order.id,
           stripeCart: stripeCart,
           language: order.language,
@@ -127,6 +127,7 @@ function Order(props) {
           orderID: order.id,
           localeLanguage: locale,
           localeTimeZone: localeTimeZone,
+          coinsBuy: false, //true for payment for the coins
         },
       };
 
