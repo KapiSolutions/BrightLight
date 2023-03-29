@@ -13,7 +13,7 @@ export default function orderConfirmation(data) {
     });
   
     const emailData_pna = {
-      emailTo: "kuba.kapek@gmail.com",
+      emailTo: "wasikag27@gmail.com",
       emailSubject: `${data.language == "en" ? "New Order!":"Nowe zamówienie!"} (${data.orderID})`,
       userName: "Agusia",
     };
