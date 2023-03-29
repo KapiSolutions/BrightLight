@@ -8,8 +8,8 @@ import AuthProvider from "../context/AuthProvider";
 import { useDeviceStore } from "../stores/deviceStore";
 import { useRouter } from "next/router";
 import { GoogleAnalytics } from "nextjs-google-analytics";
-import LogRocket from "logrocket";
-import setupLogRocketReact from "logrocket-react";
+// import LogRocket from "logrocket";
+// import setupLogRocketReact from "logrocket-react";
 
 function MyApp({ Component, pageProps }) {
   const router = useRouter();
