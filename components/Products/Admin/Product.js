@@ -57,6 +57,7 @@ function Product(props) {
       category: "Category",
       desc: "Description",
       date: "Date",
+      coins: "Coins",
     },
     pl: {
       sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
@@ -75,6 +76,7 @@ function Product(props) {
       category: "Kategoria",
       desc: "Opis",
       date: "Data",
+      coins: "Monety",
     },
   };
 
@@ -292,7 +294,7 @@ function Product(props) {
             <div className="d-flex gap-3 mt-3 justify-content-between">
               <Button
                 variant="warning"
-                className="col-3"
+                style={{minWidth: "80px"}}
                 size="sm"
                 onClick={() => {
                   router.push({
@@ -313,7 +315,7 @@ function Product(props) {
               {/* Activate / Disable product Button */}
               <Button
                 variant={product.active ? "outline-success" : "outline-accent4"}
-                className="col-3"
+                style={{minWidth: "80px"}}
                 size="sm"
                 onClick={changeStatus}
                 disabled={loadingStatus}
@@ -326,7 +328,8 @@ function Product(props) {
               </Button>
               <Button
                 variant="primary"
-                className="text-light col-3"
+                className="text-light"
+                style={{minWidth: "80px"}}
                 size="sm"
                 onClick={() => {
                   setShowConfirmModal({
@@ -345,8 +348,8 @@ function Product(props) {
             </div>
 
             <div className="mt-3">
-              <div className="d-flex gap-2">
-                <p className="mb-0">
+              <div className="d-flex gap-3">
+                <p style={{width: "min-content"}}>
                   <small>
                     <strong>{t[locale].status}: </strong> {product.active ? t[locale].active : t[locale].disabled}
                   </small>
@@ -356,9 +359,14 @@ function Product(props) {
                     <strong>{t[locale].cards}: </strong> {product.cardSet}
                   </small>
                 </p>
-                <p>
+                <p style={{width: "min-content"}}>
                   <small>
                     <strong>{t[locale].category}: </strong> {product.category}
+                  </small>
+                </p>
+                <p>
+                  <small>
+                    <strong>{t[locale].coins}: </strong> {product.coins}
                   </small>
                 </p>
                 <p>
@@ -385,6 +393,9 @@ function Product(props) {
               </p>
               <p>
                 <strong>{t[locale].category}: </strong> {product.category}
+              </p>
+              <p>
+                <strong>{t[locale].coins}: </strong> {product.coins}
               </p>
             </div>
             <p className="mb-0">
