@@ -101,7 +101,7 @@ const handleCoins = async (metadata, paymentIntent, payMethod) => {
       userName: user.name,
       userEmail: user.email,
       currency: metadata.currency,
-      unitPrice: metadata.unitPrice,
+      unitPrice: Number(metadata.unitPrice),
       totalPrice: metadata.totalPrice,
       coin: metadata.coin,
       coinsToAdd: metadata.coinsToAdd,
