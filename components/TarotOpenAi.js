@@ -8,6 +8,7 @@ import { GiGlassHeart } from "react-icons/gi";
 import { RiCoinsFill, RiCopperCoinLine } from "react-icons/ri";
 import { BiCoin } from "react-icons/bi";
 import styles from "../styles/components/loader.module.scss";
+import Link from "next/link";
 
 function TarotOpenAi(props) {
   const router = useRouter();
@@ -197,12 +198,25 @@ function TarotOpenAi(props) {
                         <Button variant="outline-primary ps-2 pe-1" type="submit" style={{ pointerEvents: "none" }}>
                           <span>
                             <span className="me-1">
-                              <strong>2</strong>
+                              <strong>{props.coins}</strong>
                             </span>
                             <BiCoin style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }} />
                           </span>
                         </Button>
                       </ButtonGroup>
+                      {authUserFirestore?.coins.amount > props.coins ? (
+                        <p className="mt-2">
+                          <small>
+                            Nie masz wystarczającej ilości monet. <Link href="/user/coins#main" passHref><u className="color-secondary" >Dokup je tutaj.</u></Link>
+                          </small>
+                        </p>
+                      ) : (
+                        <p className="mt-2">
+                          <small>
+                            Zostaną wykorzystane {props.coins} monety. Posiadasz {authUserFirestore?.coins.amount}.
+                          </small>
+                        </p>
+                      )}
                     </div>
                   </Form>
                 )}
