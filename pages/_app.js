@@ -31,11 +31,11 @@ function MyApp({ Component, pageProps }) {
   useEffect(() => {
     handleWindowSizeChange();
     setCurrency(locale == "pl" ? "pln" : "usd");
-    // only initialize when in the browser
-    if (typeof window !== "undefined") {
-      LogRocket.init(process.env.NEXT_PUBLIC_LOGROCKET_KEY);
-      setupLogRocketReact(LogRocket);
-    }
+    // only initialize LogRocket when in the browser
+    // if (typeof window !== "undefined") {
+    //   LogRocket.init(process.env.NEXT_PUBLIC_LOGROCKET_KEY);
+    //   setupLogRocketReact(LogRocket);
+    // }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
