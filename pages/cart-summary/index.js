@@ -134,6 +134,7 @@ export default function CartSummaryPage() {
       userAge: authUserFirestore?.age,
       userEmail: authUserFirestore?.email,
       items: authUserFirestore?.cart,
+      zodiac: authUserFirestore?.zodiac,
       status: "Unpaid",
       paid: false,
       totalPrice: totalPrice,
