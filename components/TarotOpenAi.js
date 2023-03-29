@@ -14,11 +14,10 @@ function TarotOpenAi(props) {
   const router = useRouter();
   const locale = router.locale;
   const stylesParent = props.styles;
-  const { authUserFirestore, setErrorMsg, authUserCredential } = useAuth();
+  const { authUserFirestore, setErrorMsg, authUserCredential, updateProfile } = useAuth();
   const [loading, setLoading] = useState(false);
   const [idToken, setIdToken] = useState(undefined);
   const isMobile = useDeviceStore((state) => state.isMobile);
-  const currency = useDeviceStore((state) => state.currency);
   const theme = useDeviceStore((state) => state.themeState);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
   const questionRef = useRef();
@@ -129,10 +128,11 @@ function TarotOpenAi(props) {
         mode: "update-coins",
         data: {
           id: authUserFirestore.id,
-          coinsToTake: product.coins
+          coinsToTake: props.coins
         },
       };
       await axios.post("/api/admin/firebase/", payload);
+      updateProfile();
     } catch (error) {
       console.log(error);
     }
