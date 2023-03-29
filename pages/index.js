@@ -30,12 +30,12 @@ export default function Home(props) {
      crossorigin="anonymous"></script> */}
       </Head>
 
-      <Script
+      {/* <Script
         async
         src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADS_CLIENT_ID}`}
         strategy="lazyOnload"
         crossorigin="anonymous"
-      />
+      /> */}
 
       <Container className="d-flex mt-5 flex-column align-items-center justify-content-center">
         <Row className="d-flex mb-2 text-center">
@@ -54,7 +54,7 @@ export default function Home(props) {
           )}
         </Row>
         <section>
-          <AdBanner />
+          {/* <AdBanner /> */}
         </section>
       </Container>
     </>
