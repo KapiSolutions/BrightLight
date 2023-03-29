@@ -16,6 +16,7 @@ import { createDocFirestore, updateDocFields } from "../../../firebase/Firestore
 import SuccessModal from "../../Modals/SuccessModal";
 import ProductCard from "../ProductCard";
 import { useAuth } from "../../../context/AuthProvider";
+import { BiCoin } from "react-icons/bi";
 
 function ProductTemplate(props) {
   const router = useRouter();
@@ -31,6 +32,7 @@ function ProductTemplate(props) {
 
   const cardsRef = useRef();
   const categoryRef = useRef();
+  const coinsRef = useRef();
 
   const { setErrorMsg, authUserCredential } = useAuth();
   const isMobile = useDeviceStore((state) => state.isMobile);
@@ -51,6 +53,7 @@ function ProductTemplate(props) {
     price: false,
     cardSet: false,
     category: false,
+    coins: false,
   };
   const [invalid, updateInvalid] = useReducer((state, updates) => ({ ...state, ...updates }), invalidInit);
   const initProduct = {
@@ -59,6 +62,7 @@ function ProductTemplate(props) {
     desc: { en: "", pl: "" },
     price: { usd: { amount: 0, currency: "usd", s_id: "" }, pln: { amount: 0, currency: "pln", s_id: "" } },
     cardSet: 0,
+    coins: 0,
     image: {
       name: "",
       path: "",
@@ -103,6 +107,8 @@ function ProductTemplate(props) {
       sthWrong: "Something went wrong, please try again later.",
       successEdited: "Product edited successfuly!",
       successAdded: "Product created successfuly!",
+      coins: "Coins",
+      wrongCoins: "Coins must be more than 0.",
     },
     pl: {
       loading: "Ładuję..",
@@ -135,6 +141,8 @@ function ProductTemplate(props) {
       sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
       successEdited: "Produkt pomyślnie zaktualizowany!",
       successAdded: "Produkt pomyślnie dodany!",
+      coins: "Monety",
+      wrongCoins: "Podaj ilość większą niż 0.",
     },
   };
   const getToken = async () => {
@@ -217,6 +225,16 @@ function ProductTemplate(props) {
       document.getElementsByName("ProdAdminTmpCards")[0].scrollIntoView({ block: "center", inline: "nearest" });
     }
 
+    // check if cards quantity is added
+    if (coinsRef.current?.value > 0) {
+      updateInvalid({ coins: false }); //ok
+    } else {
+      dataOK = false;
+      updateInvalid({ coins: true }); //invalid
+      document.getElementsByName("ProdAdminTmpCoins")[0].focus();
+      document.getElementsByName("ProdAdminTmpCoins")[0].scrollIntoView({ block: "center", inline: "nearest" });
+    }
+
     // check if prices are added
     if (priceRef_usd.current?.value > 0 && priceRef_pln.current?.value > 0) {
       updateInvalid({ price: false }); //ok
@@ -251,6 +269,7 @@ function ProductTemplate(props) {
           },
         },
         cardSet: cardsRef.current?.value,
+        coins: Number(coinsRef.current?.value),
         category: categoryRef.current?.value,
         createDate: prodEdit ? timeStampToDate(prodEdit.createDate) : new Date(),
         active: true,
@@ -695,7 +714,7 @@ function ProductTemplate(props) {
       <section className="mt-2 mb-2">
         <Form className="text-start d-flex gap-md-2 flex-wrap align-items-top justify-content-center">
           {/* Cards */}
-          <div className={`col-md-2 col-6 ${isMobile && "pe-2"}`}>
+          <div className={`col-md-1 col-6 ${isMobile && "pe-2"}`}>
             <Form.Label style={{ position: "relative", top: "8px" }}>{t[locale].cards}</Form.Label>
             <Form.Control
               type="number"
@@ -728,6 +747,21 @@ function ProductTemplate(props) {
               <option value="career-path">{t[locale].careerPath}</option>
               <option value="three-card">{t[locale].threeCard}</option>
             </Form.Select>
+          </div>
+          {/* Coins */}
+          <div className="col-md-1 col-6">
+            <Form.Label style={{ position: "relative", top: "8px" }}>{t[locale].coins}</Form.Label>
+            <Form.Control
+              type="number"
+              min={0}
+              step={1}
+              ref={coinsRef}
+              name="ProdAdminTmpCoins"
+              onChange={() => setShowPreview(false)}
+              defaultValue={prodEdit ? prodEdit.coins : 0}
+              className={`${invalid.coins && "border border-danger"} ${themeDarkInput}`}
+            />
+            {invalid.coins && <small className="text-danger">{t[locale].wrongCoins}</small>}
           </div>
           {/* Prices */}
           <div className="col-md-4 col-12" name="ProdAdminTmpPrice">
