@@ -148,10 +148,10 @@ export default async function handler(req, res) {
         const paymentIntent = await stripe.paymentIntents.retrieve(event.data.object.payment_intent);
         const paymentMethod = paymentIntent.payment_method_types[0];
 
-        if (coinsPayment) {
+        if (coinsPayment == "true") {
           //handle coins payment
           await handleCoins(metadata, event.data.object.payment_intent, paymentMethod);
-        } else {
+        } else if(coinsPayment == "false"){
           //handle tarot payment
           await handleOrder(metadata, event.data.object.payment_intent, paymentMethod);
         }
