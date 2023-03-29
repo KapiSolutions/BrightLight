@@ -1,9 +1,9 @@
 export default function orderConfirmation(data) {
   let item = `
             <div class="OrderItem">
-              <img class="OrderImg" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Femails%2Fcoins.webp?alt=media&token=742b7043-df08-4fca-973c-6f5e5a259cd1" alt="Bright Coin - Bright Light Gypsy tarot" />
+              <img class="OrderImg" src="https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Femails%2Fcoins.png?alt=media&token=4bbcadd2-fac6-427e-a774-6c84d1ffca9c" alt="Bright Coin - Bright Light Gypsy tarot" />
               <p class="OrderItemName"><strong>${data.coin}</strong></p>
-              <p class="OrderItemPrice"><strong>${data.coinsToAdd} x ${data.unitPrice} <span style="text-transform: uppercase">${data.currency}</span></strong></p>
+              <p class="OrderItemPrice"><strong>${data.coinsToAdd} x ${data.unitPrice.toFixed(2)} <span style="text-transform: uppercase">${data.currency}</span></strong></p>
             </div>
             `;
 
