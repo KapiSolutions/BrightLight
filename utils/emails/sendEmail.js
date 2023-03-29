@@ -10,6 +10,7 @@ import orderFinished from "./orderFinished";
 import unpaidNotification from "./unpaidNotification";
 import orderCancelled from "./orderCancelled";
 import coinPaymentConfirmation from "./coinPaymentConfirmation";
+import pushNotificationAdmin from "./pushNotificationAdmin";
 
 export default async function sendEmail(emailType, data, language) {
   await new Promise(async (resolve, reject) => {
@@ -48,6 +49,11 @@ export default async function sendEmail(emailType, data, language) {
           const { emailData_cp, replacements_cp } = coinPaymentConfirmation(data);
           emailData = emailData_cp;
           replacements = replacements_cp;
+          break;
+          case "pushNotificationAdmin":
+          const { emailData_pna, replacements_pna } = pushNotificationAdmin(data);
+          emailData = emailData_pna;
+          replacements = replacements_pna;
           break;
 
         default:

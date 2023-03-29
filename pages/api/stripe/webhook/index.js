@@ -45,6 +45,7 @@ const handleOrder = async (metadata, paymentIntent, payMethod) => {
         .toLocaleString(metadata.localeLanguage, { timeZone: metadata.localeTimeZone }),
       userName: data.userName,
       userEmail: data.userEmail,
+      userID: data.userID,
       totalPrice: data.totalPrice,
       currency: data.currency,
       cartItems: cartItems,
@@ -58,6 +59,8 @@ const handleOrder = async (metadata, paymentIntent, payMethod) => {
     };
     //Send confirmation email about the succeeded payment
     await sendEmail("paymentConfirmation", dataEmail, data.language);
+    //Send notification to the admin
+    await sendEmail("pushNotificationAdmin", dataEmail, "pl");
     return;
   } catch (error) {
     throw error;
