@@ -106,23 +106,37 @@ function TarotOpenAi(props) {
       zodiac ? `My zodiac is ${authUserFirestore.zodiac}. ` : ""
     }I did the ${title} tarot with question:${question}. My cards: ${props.cards.join(",")}. What does it mean?`;
 
-    const payload = {
-      secret: process.env.NEXT_PUBLIC_API_KEY,
-      idToken: idToken,
-      data: readyQuestion,
-    };
-
-    axios
-      .post("/api/openai/", payload)
-      .then(async (res) => {
-        const generatedAnswer = locale == "pl" ? await translateText(res.data, "en", "pl") : res.data;
-        setAnswer(generatedAnswer);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setErrorMsg(t[locale].sthWrong);
-        setLoading(false);
-      });
+    // Get AI reading
+    try {
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
+        data: readyQuestion,
+      };
+      const res = await axios.post("/api/openai/", payload);
+      const generatedAnswer = locale == "pl" ? await translateText(res.data, "en", "pl") : res.data;
+      setAnswer(generatedAnswer);
+    } catch (error) {
+      setErrorMsg(t[locale].sthWrong);
+      setLoading(false);
+      return;
+    }
+    // Update user coins
+    try {
+      const payload = {
+        secret: process.env.NEXT_PUBLIC_API_KEY,
+        idToken: idToken,
+        mode: "update-coins",
+        data: {
+          id: authUserFirestore.id,
+          coinsToTake: product.coins
+        },
+      };
+      await axios.post("/api/admin/firebase/", payload);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
   };
 
   return (
@@ -204,10 +218,13 @@ function TarotOpenAi(props) {
                           </span>
                         </Button>
                       </ButtonGroup>
-                      {authUserFirestore?.coins.amount > props.coins ? (
+                      {authUserFirestore?.coins.amount < props.coins ? (
                         <p className="mt-2">
                           <small>
-                            Nie masz wystarczającej ilości monet. <Link href="/user/coins#main" passHref><u className="color-secondary" >Dokup je tutaj.</u></Link>
+                            Nie masz wystarczającej ilości monet.{" "}
+                            <Link href="/user/coins#main" passHref>
+                              <u className="color-secondary">Dokup je tutaj.</u>
+                            </Link>
                           </small>
                         </p>
                       ) : (

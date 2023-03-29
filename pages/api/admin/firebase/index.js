@@ -105,6 +105,20 @@ async function firebaseAdmin(req, res) {
             res.status(500).send(e);
           }
           break;
+        case "update-coins":
+          try {
+            const response = await db.collection("users").doc(data.id).get();
+            const user = response.data();
+            const coins = Number(user.coins.amount) - Number(data.coinsToTake);
+            await db
+              .collection("users")
+              .doc(data.id)
+              .update({ coins: { amount: coins, lastUpdate: new Date() } });
+            res.status(200).json({ status: "success" });
+          } catch (e) {
+            res.status(500).send(e);
+          }
+          break;
         // case "get-users": //!not used
         //   const users = await listAllUsers();
         //   res.status(200).json({ users });
