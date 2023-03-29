@@ -199,7 +199,7 @@ function TarotOpenAi(props) {
 
                     <div className="w-100">
                       <ButtonGroup className={`pointer mt-4 ${stylesParent.animatedBorderLight} rounded`}>
-                        <Button variant="primary" type="submit">
+                        <Button variant="primary" type="submit" disabled={authUserFirestore?.coins.amount < props.coins}>
                           {loading ? (
                             <>
                               <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -209,7 +209,7 @@ function TarotOpenAi(props) {
                             <span>{t[locale].button}</span>
                           )}
                         </Button>
-                        <Button variant="outline-primary ps-2 pe-1" type="submit" style={{ pointerEvents: "none" }}>
+                        <Button variant="outline-primary ps-2 pe-1" type="submit" style={{ pointerEvents: "none" }} disabled={authUserFirestore?.coins.amount < props.coins}>
                           <span>
                             <span className="me-1">
                               <strong>{props.coins}</strong>
