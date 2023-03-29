@@ -161,7 +161,9 @@ function AuthProvider({ children }) {
       if (update?.email) {
         await updateEmail(authUserCredential, update.email);
       }
-      await updateDocFields("users", authUserCredential.uid, update);
+      if(update){
+        await updateDocFields("users", authUserCredential.uid, update);
+      }
       setAuthUserFirestore(await getUserDataFirestore(authUserCredential.uid));
       return true;
     } catch (err) {
