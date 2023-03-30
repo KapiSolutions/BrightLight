@@ -7,6 +7,7 @@ import { useAuth } from "../../../context/AuthProvider";
 import Order from "../../../components/Orders/User/Order";
 import FilterAndSortBar from "../../../components/Orders/FilterAndSortBar_Orders";
 import Link from "next/link";
+import { setup } from '../../config/csrf';
 
 function UserOrdersPage() {
   const router = useRouter();
@@ -102,3 +103,7 @@ function UserOrdersPage() {
 }
 
 export default UserOrdersPage;
+
+export const getServerSideProps = setup(async ({req, res}) => {
+  return { props: {}}
+});
