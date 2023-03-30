@@ -11,7 +11,7 @@ import {
   reauthenticateWithCredential,
   onAuthStateChanged,
   sendPasswordResetEmail,
-  sendSignInLinkToEmail,
+  sendEmailVerification,
   updateEmail,
   updatePassword,
   FacebookAuthProvider,
@@ -115,11 +115,7 @@ function AuthProvider({ children }) {
       setAuthUserFirestore(userData);
 
       // Send verification email
-      const actionCodeSettings = {
-        url: "https://www.brightlightgypsy.pl/?emailVerified=true",
-        handleCodeInApp: true, // This must be true.
-      };
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+      await sendEmailVerification(auth.currentUser);
 
       tempCart && setTempCart(null);
       setBlock(false);
