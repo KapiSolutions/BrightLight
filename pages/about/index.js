@@ -27,9 +27,12 @@ function AboutPage(props) {
       thirdSection:
         "Therefore, in addition to learning about the upcoming future and other people's intentions, it is also worth asking them for advice.",
       titleJapan: "Japan Dream",
-      japanSection1: "One of my biggest dreams is to travel to Japan. Discovering beautiful nature and local culture. Japan is a country that is famous for its beautiful landscapes, from volcanoes to mountains to the sea. I would like to see them with my own eyes and feel the amazing feeling that comes from contact with wild nature.",
-      japanSection2: "But it's not just nature that attracts me to Japan. It is also a rich history and a fascinating culture that has been developing for hundreds of years. I would like to discover this culture, get to know its customs, traditions and taste the local cuisine. Feel like one of the locals and see Japan from their perspective. I would like to discover the beauty of this country, visit beautiful gardens, admire the blooming cherry trees and travel through the mountains and forests in search of amazing views and adventures. Japan is full of contrasts, from densely populated cities to small villages where time has stood still. I would like to meet local people, try their cuisine and immerse myself in their culture. It will surely be an unforgettable experience.",
-      japanSection3: "I encourage you to join me on this adventure and help me realize my dream. Every contribution is valuable and contributes to making my dream of traveling to Japan a reality. I thank you in advance for every donation and I promise that I will not disappoint you with my relations from Japan. ❤",
+      japanSection1:
+        "One of my biggest dreams is to travel to Japan. Discovering beautiful nature and local culture. Japan is a country that is famous for its beautiful landscapes, from volcanoes to mountains to the sea. I would like to see them with my own eyes and feel the amazing feeling that comes from contact with wild nature.",
+      japanSection2:
+        "But it's not just nature that attracts me to Japan. It is also a rich history and a fascinating culture that has been developing for hundreds of years. I would like to discover this culture, get to know its customs, traditions and taste the local cuisine. Feel like one of the locals and see Japan from their perspective. I would like to discover the beauty of this country, visit beautiful gardens, admire the blooming cherry trees and travel through the mountains and forests in search of amazing views and adventures. Japan is full of contrasts, from densely populated cities to small villages where time has stood still. I would like to meet local people, try their cuisine and immerse myself in their culture. It will surely be an unforgettable experience.",
+      japanSection3:
+        "I encourage you to join me on this adventure and help me realize my dream. Every contribution is valuable and contributes to making my dream of traveling to Japan a reality. I thank you in advance for every donation and I promise that I will not disappoint you with my relations from Japan. ❤",
     },
     pl: {
       title: "O mnie",
@@ -119,6 +122,15 @@ function AboutPage(props) {
           <p>{t[locale].japanSection2}</p>
           <p>{t[locale].japanSection3}</p>
         </section>
+        <iframe
+          id="kofiframe"
+          src="https://ko-fi.com/brightlightgypsy/?hidefeed=true&widget=true&embed=true&preview=true"
+          className="bg-none rounded w-100 shadow"
+          style={{ border: "none", maxWidth: "400px"}}
+          height={650}
+          title="brightlightgypsy"
+          loading="lazy"
+        ></iframe>
       </Container>
     </>
   );
