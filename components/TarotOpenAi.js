@@ -125,13 +125,12 @@ function TarotOpenAi(props) {
       const payload = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
-        mode: "update-coins",
         data: {
           id: authUserFirestore.id,
           coinsToTake: props.coins
         },
       };
-      await axios.post("/api/admin/firebase/", payload);
+      await axios.post("/api/coins/", payload);
       updateProfile();
     } catch (error) {
       console.log(error);
