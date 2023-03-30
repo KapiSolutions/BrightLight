@@ -11,6 +11,7 @@ import {
   reauthenticateWithCredential,
   onAuthStateChanged,
   sendPasswordResetEmail,
+  sendSignInLinkToEmail,
   updateEmail,
   updatePassword,
   FacebookAuthProvider,
@@ -109,8 +110,17 @@ function AuthProvider({ children }) {
         signProvider: "emailAndPassword",
         cart: tempCart ? [tempCart] : [],
       };
+      // Create user in the firestore
       const userData = await createUser(res.user, data);
       setAuthUserFirestore(userData);
+
+      // Send verification email
+      const actionCodeSettings = {
+        url: "https://www.brightlightgypsy.pl/?emailVerified=true",
+        handleCodeInApp: true, // This must be true.
+      };
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+
       tempCart && setTempCart(null);
       setBlock(false);
       router.push("/");
@@ -161,7 +171,7 @@ function AuthProvider({ children }) {
       if (update?.email) {
         await updateEmail(authUserCredential, update.email);
       }
-      if(update){
+      if (update) {
         await updateDocFields("users", authUserCredential.uid, update);
       }
       setAuthUserFirestore(await getUserDataFirestore(authUserCredential.uid));
@@ -247,7 +257,6 @@ function AuthProvider({ children }) {
       // const email = err.email;
       // const credential = GoogleAuthProvider.credentialFromError(err);
     }
-    
   }
 
   async function loginWithFacebook() {
@@ -292,7 +301,6 @@ function AuthProvider({ children }) {
       // const email = err.customData.email;
       // const credential = FacebookAuthProvider.credentialFromError(err);
     }
-    
   }
 
   async function loginWithTwitter() {
@@ -338,7 +346,6 @@ function AuthProvider({ children }) {
       // const email = err.customData.email;
       // const credential = TwitterAuthProvider.credentialFromError(err);
     }
-    
   }
 
   async function updateUserData(uid, userData, onlyOrders) {
@@ -375,7 +382,7 @@ function AuthProvider({ children }) {
         checkAdmin(user);
         // create session cookie
         startSession(user);
-        
+
         if (!authUserFirestore && !refBlock.current) {
           await updateUserData(user.uid, null, false); //after logging in load all the user data, but block it just after registration
         }
