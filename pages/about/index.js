@@ -125,7 +125,7 @@ function AboutPage(props) {
         <iframe
           id="kofiframe"
           src="https://ko-fi.com/brightlightgypsy/?hidefeed=true&widget=true&embed=true&preview=true"
-          className="bg-none rounded w-100 shadow"
+          className="bg-none rounded w-100 shadow mt-3"
           style={{ border: "none", maxWidth: "400px"}}
           height={650}
           title="brightlightgypsy"
