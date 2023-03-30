@@ -123,12 +123,11 @@ function AboutPage(props) {
           <p>{t[locale].japanSection3}</p>
         </section>
         <iframe
-          id="kofiframe"
+          id="kofiframeAboutMe"
           src="https://ko-fi.com/brightlightgypsy/?hidefeed=true&widget=true&embed=true&preview=true"
           className="bg-none rounded w-100 shadow mt-3"
-          style={{ border: "none", maxWidth: "400px"}}
-          height={650}
-          title="brightlightgypsy"
+          style={{ border: "none", maxWidth: "400px", minHeight: "650px", maxHeight: "712px" }}
+          title="Bright Light Gypsy Ko-fi"
           loading="lazy"
         ></iframe>
       </Container>
