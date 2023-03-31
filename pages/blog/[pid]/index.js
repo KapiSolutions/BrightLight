@@ -82,7 +82,7 @@ function BlogPage(props) {
             <span itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID={`/blog${router.asPath}`}>
               <small itemProp="name">{props.post?.title}</small>
             </span>
-            <meta itemProp="position" content="1" />
+            <meta itemProp="position" content="2" />
           </li>
         </ol>
       </nav>

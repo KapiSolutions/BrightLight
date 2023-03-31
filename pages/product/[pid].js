@@ -5,6 +5,7 @@ import { Container, Button } from "react-bootstrap";
 import TarotLottery from "../../components/TarotLottery";
 import { getDocById, getDocsFromCollection } from "../../firebase/Firestore";
 import { VscBracketError } from "react-icons/vsc";
+import Link from "next/link";
 
 function ProductPage(props) {
   const router = useRouter();
@@ -13,13 +14,15 @@ function ProductPage(props) {
     en: {
       msg: "Tarot does not exist.",
       button: "Go Back",
+      home: "Home",
     },
     pl: {
       msg: "Wybrany tarot nie istnieje.",
       button: "Wróć",
+      home: "Strona Główna",
     },
   };
-  console.log(router)
+  console.log(router);
   return (
     <>
       <NextSeo
@@ -40,7 +43,32 @@ function ProductPage(props) {
           },
         ]}
       />
-      <Container className="justify-content-center text-center mt-4">
+      {/* Breadcrumbs */}
+      <nav>
+        <ol
+          itemScope=""
+          itemType="http://schema.org/BreadcrumbList"
+          style={{ listStyleType: "none" }}
+          className="d-flex flex-row gap-2 ps-3 mb-0 mt-2"
+        >
+          <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
+            <Link href="/#main" itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID="/" passHref>
+              <small itemProp="name">{t[locale].home}</small>
+            </Link>
+            <meta itemProp="position" content="0" />
+          </li>
+          <li>
+            <small>&gt;</small>
+          </li>
+          <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
+            <span itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID={`/product${router.asPath}`}>
+              <small itemProp="name">{props.product?.title}</small>
+            </span>
+            <meta itemProp="position" content="1" />
+          </li>
+        </ol>
+      </nav>
+      <Container className="justify-content-center text-center mt-3">
         {props.product ? (
           <TarotLottery locale={locale} product={props.product} />
         ) : (
@@ -63,8 +91,10 @@ export async function getStaticProps(context) {
   const id = context.params.pid;
   const locale = context.locale;
   let doc = await getDocById("products", id);
-  doc.desc = doc.desc[locale];
-  doc.title = doc.title[locale];
+  if (doc) {
+    doc.desc = doc.desc[locale];
+    doc.title = doc.title[locale];
+  }
 
   return {
     props: {
