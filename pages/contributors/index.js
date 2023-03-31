@@ -73,9 +73,9 @@ function ContributorsPage(props) {
         <h1 className="mt-0 color-primary text-center">{t[locale].title}</h1>
 
         <section>
-          <ol className="w-100 d-flex flex-column gap-2">
+          <ol className="w-100 d-flex flex-column gap-2 text-start ps-0">
             <li className="d-flex flex-row align-items-center border-bottom pb-2">
-              <div className="d-flex align-items-center me-2" style={{ position: "relative", height: "100px", width: "100px"}}>
+              <div className="d-flex me-2" style={{ position: "relative", height: "100px", minWidth: "100px"}}>
                 <Image
                   src={cardsIcon}
                   fill
@@ -84,21 +84,22 @@ function ContributorsPage(props) {
                 />
               </div>
               <div>
+              Image by {" "}
                 <Link href="https://www.freepik.com/free-vector/witchy-occult-set_26753006.htm#page=3&query=vecstock%20tarot&position=31&from_view=search&track=ais">
-                  Image by gstudioimagen1
+                  gstudioimagen1
                 </Link>{" "}
                 on Freepik
               </div>
             </li>
             {/* ------- */}
             <li className="d-flex flex-row align-items-center border-bottom pb-2">
-              <div className="d-flex align-items-center me-2" style={{ position: "relative", height: "100px", width: "100px"}}>
+              <div className="d-flex me-2 border" style={{ position: "relative", height: "100px", minWidth: "100px"}}>
                 <Image
                   src={tarotDeck}
                   fill
                   alt="Tarot Online - Bright Light Gypsy"
                   title="Tarot Online - Bright Light Gypsy"
-                  style={{objectFit: "contain"}}
+                  style={{objectFit: "cover"}}
                   className="rounded"
                 />
               </div>
@@ -111,7 +112,7 @@ function ContributorsPage(props) {
             </li>
             {/* ------- */}
             <li className="d-flex flex-row align-items-center border-bottom pb-2">
-              <div className="d-flex align-items-center me-2" style={{ position: "relative", height: "100px", width: "100px"}}>
+              <div className="d-flex me-2" style={{ position: "relative", height: "100px", minWidth: "100px"}}>
                 <Image
                   src={cookie}
                   fill
