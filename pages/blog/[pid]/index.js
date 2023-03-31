@@ -5,6 +5,7 @@ import { Button, Container } from "react-bootstrap";
 import BlogPost from "../../../components/Blog/BlogPost";
 import { getDocById, getDocsFromCollection } from "../../../firebase/Firestore";
 import { VscBracketError } from "react-icons/vsc";
+import Link from "next/link";
 
 function BlogPage(props) {
   const router = useRouter();
@@ -13,17 +14,21 @@ function BlogPage(props) {
     en: {
       noBlog: "Blog does not exist.",
       button: "Back",
+      home: "Home",
+      blog: "Blog",
     },
     pl: {
       noBlog: "Wpis nie istnieje",
       button: "Wróć",
+      home: "Strona Główna",
+      blog: "Blog",
     },
   };
 
   return (
     <>
       <NextSeo
-        title={`BrightLight | ${props.post.title}`}
+        title={`BrightLight | ${props.post?.title}`}
         canonical={`https://www.brightlightgypsy.pl/${locale}${router.asPath}`}
         languageAlternates={[
           {
@@ -40,7 +45,47 @@ function BlogPage(props) {
           },
         ]}
       />
-
+      {/* Breadcrumbs */}
+      <nav>
+        <ol
+          itemScope=""
+          itemType="http://schema.org/BreadcrumbList"
+          style={{ listStyleType: "none" }}
+          className="d-flex flex-row gap-2 ps-3 mb-0 mt-2"
+        >
+          <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
+            <Link href="/#main" itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID="/" passHref>
+              <small itemProp="name">{t[locale].home}</small>
+            </Link>
+            <meta itemProp="position" content="0" />
+          </li>
+          <li>
+            <small>&gt;</small>
+          </li>
+          <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
+            <Link
+              href="/blog#main"
+              itemScope=""
+              itemType="http://schema.org/Thing"
+              itemProp="item"
+              itemID="/blog"
+              passHref
+            >
+              <small itemProp="name">{t[locale].blog}</small>
+            </Link>
+            <meta itemProp="position" content="1" />
+          </li>
+          <li>
+            <small>&gt;</small>
+          </li>
+          <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
+            <span itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID={`/blog${router.asPath}`}>
+              <small itemProp="name">{props.post?.title}</small>
+            </span>
+            <meta itemProp="position" content="1" />
+          </li>
+        </ol>
+      </nav>
       <Container className="color-primary justify-content-center text-start mt-3">
         {props.post ? (
           <BlogPost post={props.post} />
@@ -64,9 +109,10 @@ export async function getStaticProps(context) {
   const pid = context.params.pid;
   const locale = context.locale;
   const doc = await getDocById("blog", pid);
-
-  doc.content = doc.content[locale];
-  doc.title = doc.title[locale];
+  if (doc !== undefined) {
+    doc.content = doc.content[locale];
+    doc.title = doc.title[locale];
+  }
 
   return {
     props: {

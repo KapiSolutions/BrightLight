@@ -50,7 +50,25 @@ export default function Home(props) {
         crossorigin="anonymous"
       /> */}
 
-      <Container className="d-flex mt-5 flex-column align-items-center justify-content-center">
+      {/* Breadcrumbs */}
+        <nav>
+          <ol
+            itemScope=""
+            itemType="http://schema.org/BreadcrumbList"
+            style={{ listStyleType: "none" }}
+            className="d-flex flex-row ps-3 mb-0 mt-2"
+          >
+            <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
+              <span itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID="/">
+                <small itemProp="name" className="text-muted">{t[locale].title}</small>
+              </span>
+              <meta itemProp="position" content="0" />
+            </li>
+          </ol>
+        </nav>
+
+      <Container className="d-flex mt-3 flex-column align-items-center justify-content-center">
+        
         <Row className="d-flex mb-2 text-center">
           <h1 className="color-primary">{t[locale].h1}</h1>
           <p className="color-primary small">{t[locale].choose}</p>

@@ -42,14 +42,32 @@ function BlogPage(props) {
           },
         ]}
       />
-      <Container className="text-center mt-4 color-primary">
-        <nav className="d-flex gap-2">
-          <small>
-            <Link href="/#main">{t[locale].home}</Link>
-          </small>
-          <small>&gt;</small>
-          <small>{t[locale].title}</small>
-        </nav>
+      {/* Breadcrumbs */}
+      <nav>
+        <ol
+          itemScope=""
+          itemType="http://schema.org/BreadcrumbList"
+          style={{ listStyleType: "none" }}
+          className="d-flex flex-row gap-2 ps-3 mb-0 mt-2"
+        >
+          <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
+            <Link href="/#main" itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID="/" passHref>
+              <small itemProp="name">{t[locale].home}</small>
+            </Link>
+            <meta itemProp="position" content="0" />
+          </li>
+          <li>
+            <small>&gt;</small>
+          </li>
+          <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
+            <span itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID="/blog">
+              <small itemProp="name">{t[locale].title}</small>
+            </span>
+            <meta itemProp="position" content="1" />
+          </li>
+        </ol>
+      </nav>
+      <Container className="text-center mt-3 color-primary">
         <h1 className="mb-0 text-uppercase"> {t[locale].title} </h1>
         <div className="mb-4">
           <FilterAndSortBar
