@@ -170,17 +170,6 @@ function BlogPost(props) {
   };
   return (
     <>
-      <section className="d-flex gap-1">
-        <small>
-          <Link href="/">{t[locale].home}</Link>
-        </small>
-        <small>&gt;</small>
-        <small>
-          <Link href="/blog#main">Blog</Link>
-        </small>
-        <small>&gt;</small>
-        <small>{post.title}</small>
-      </section>
       <div className="text-start">
         <h1 className="color-primary mb-0"> {post.title} </h1>
         <p className="ms-2 text-muted">
