@@ -1,5 +1,5 @@
 import React from "react";
-import { NextSeo } from "next-seo";
+import { BreadcrumbJsonLd, NextSeo } from "next-seo";
 import { Container, Row, Col } from "react-bootstrap";
 import ProductCard from "../components/Products/ProductCard";
 import { getDocsFromCollection } from "../firebase/Firestore";
@@ -14,12 +14,16 @@ export default function Home(props) {
       h1: "Your Cards",
       choose: "Choose one or more to get what you need.",
       findIt: "Find it out!",
+      aboutMe: "About me",
+      oracle: "Oracle of Love",
     },
     pl: {
       title: "Strona Główna",
       h1: "Twoje karty",
       choose: "Wybierz jedną lub kilka by dowiedzieć się tego czego potrzebujesz.",
       findIt: "Poznaj ją teraz!",
+      aboutMe: "O mnie",
+      oracle: "Wyrocznia miłości",
     },
   };
   return (
@@ -50,25 +54,54 @@ export default function Home(props) {
         crossorigin="anonymous"
       /> */}
 
+      {/* Breadcrumbs SEO */}
+      <BreadcrumbJsonLd
+        itemListElements={[
+          {
+            position: 1,
+            name: "Tarot Online",
+            item: `https://www.brightlightgypsy.pl/${locale == "default" ? "" : locale}`,
+          },
+          {
+            position: 2,
+            name: t[locale == "default" ? "en" : locale].oracle,
+            item: `https://www.brightlightgypsy.pl/${
+              locale == "default" ? "" : locale + "/"
+            }product/d58647bd-056d#main`,
+          },
+          {
+            position: 3,
+            name: "Blog",
+            item: `https://www.brightlightgypsy.pl/${locale == "default" ? "" : locale + "/"}blog`,
+          },
+          {
+            position: 4,
+            name: t[locale == "default" ? "en" : locale].aboutMe,
+            item: `https://www.brightlightgypsy.pl/${locale == "default" ? "" : locale + "/"}about`,
+          },
+        ]}
+      />
+
       {/* Breadcrumbs */}
-        <nav>
-          <ol
-            itemScope=""
-            itemType="http://schema.org/BreadcrumbList"
-            style={{ listStyleType: "none" }}
-            className="d-flex flex-row ps-3 mb-0 mt-2"
-          >
-            <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
-              <span itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID="/">
-                <small itemProp="name" className="text-muted">{t[locale].title}</small>
-              </span>
-              <meta itemProp="position" content="0" />
-            </li>
-          </ol>
-        </nav>
+      <nav>
+        <ol
+          itemScope=""
+          itemType="http://schema.org/BreadcrumbList"
+          style={{ listStyleType: "none" }}
+          className="d-flex flex-row ps-3 mb-0 mt-2"
+        >
+          <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
+            <span itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID="/">
+              <small itemProp="name" className="text-muted">
+                {t[locale].title}
+              </small>
+            </span>
+            <meta itemProp="position" content="0" />
+          </li>
+        </ol>
+      </nav>
 
       <Container className="d-flex mt-3 flex-column align-items-center justify-content-center">
-        
         <Row className="d-flex mb-2 text-center">
           <h1 className="color-primary">{t[locale].h1}</h1>
           <p className="color-primary small">{t[locale].choose}</p>
