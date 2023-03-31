@@ -47,7 +47,7 @@ function PrivacyPolicy(props) {
           itemScope=""
           itemType="http://schema.org/BreadcrumbList"
           style={{ listStyleType: "none" }}
-          className="d-flex flex-row gap-2 ps-3 mb-0 mt-2"
+          className="d-flex flex-row gap-2 ps-3 mb-0 mt-2 color-primary"
         >
           <li itemProp="itemListElement" itemScope="" itemType="http://schema.org/ListItem">
             <Link href="/#main" itemScope="" itemType="http://schema.org/Thing" itemProp="item" itemID="/" passHref>
