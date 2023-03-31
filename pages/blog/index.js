@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Head from "next/head";
+import { NextSeo } from "next-seo";
 import { Container } from "react-bootstrap";
 import BlogItem from "../../components/Blog/BlogItem";
 import { getDocsFromCollection } from "../../firebase/Firestore";
@@ -24,9 +24,24 @@ function BlogPage(props) {
   };
   return (
     <>
-      <Head>
-        <title>BrightLight | {t[locale].title}</title>
-      </Head>
+      <NextSeo
+        title={`BrightLight | ${t[locale].title}`}
+        canonical={`https://www.brightlightgypsy.pl/${locale}/blog`}
+        languageAlternates={[
+          {
+            hrefLang: "en",
+            href: "https://www.brightlightgypsy.pl/en/blog",
+          },
+          {
+            hrefLang: "pl",
+            href: "https://www.brightlightgypsy.pl/pl/blog",
+          },
+          {
+            hrefLang: "x-default",
+            href: "https://www.brightlightgypsy.pl/blog",
+          },
+        ]}
+      />
       <Container className="text-center mt-4 color-primary">
         <nav className="d-flex gap-2">
           <small>

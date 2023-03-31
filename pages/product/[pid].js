@@ -1,5 +1,5 @@
 import React from "react";
-import Head from "next/head";
+import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { Container, Button } from "react-bootstrap";
 import TarotLottery from "../../components/TarotLottery";
@@ -16,14 +16,30 @@ function ProductPage(props) {
     },
     pl: {
       msg: "Wybrany tarot nie istnieje.",
-      button: "Wróć"
+      button: "Wróć",
     },
   };
+  console.log(router)
   return (
     <>
-      <Head>
-        <title>BrightLight | {props.product ? props.product.title : "404 Error"}</title>
-      </Head>
+      <NextSeo
+        title={`BrightLight | ${props.product ? props.product.title : "404 Error"}`}
+        canonical={`https://www.brightlightgypsy.pl/${locale}${router.asPath}`}
+        languageAlternates={[
+          {
+            hrefLang: "en",
+            href: `https://www.brightlightgypsy.pl/en${router.asPath}`,
+          },
+          {
+            hrefLang: "pl",
+            href: `https://www.brightlightgypsy.pl/pl${router.asPath}`,
+          },
+          {
+            hrefLang: "x-default",
+            href: `https://www.brightlightgypsy.pl${router.asPath}`,
+          },
+        ]}
+      />
       <Container className="justify-content-center text-center mt-4">
         {props.product ? (
           <TarotLottery locale={locale} product={props.product} />
@@ -32,7 +48,7 @@ function ProductPage(props) {
             <VscBracketError style={{ width: "40px", height: "40px" }} className="mb-3" />
             <h4 className="mt-0 mb-4">{t[locale].msg}</h4>
             <Button variant="outline-primary" onClick={() => router.replace("/#main")}>
-            {t[locale].button}
+              {t[locale].button}
             </Button>
           </div>
         )}

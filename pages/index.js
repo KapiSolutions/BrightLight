@@ -1,11 +1,10 @@
 import React from "react";
-import Head from "next/head";
 import { NextSeo } from "next-seo";
 import { Container, Row, Col } from "react-bootstrap";
 import ProductCard from "../components/Products/ProductCard";
-import AdBanner from "../components/AdBanner";
 import { getDocsFromCollection } from "../firebase/Firestore";
-import Script from "next/script";
+// import AdBanner from "../components/AdBanner";
+// import Script from "next/script";
 
 export default function Home(props) {
   const locale = props.locale;
@@ -15,42 +14,19 @@ export default function Home(props) {
       h1: "Your Cards",
       choose: "Choose one or more to get what you need.",
       findIt: "Find it out!",
-      desc: "Wanna know Your future? Don't wait! Get accurate tarot readings from professional esoteric girl or AI with our web app. Explore the mysteries of the universe and gain insights into your future today. Try now for a personalized and enlightening experience! Bright Light Gypsy Tarot online.",
-      descOg: "Wanna know Your future? Don't wait! Get accurate tarot readings from professional esoteric girl or AI ❤",
     },
     pl: {
       title: "Strona Główna",
       h1: "Twoje karty",
       choose: "Wybierz jedną lub kilka by dowiedzieć się tego czego potrzebujesz.",
       findIt: "Poznaj ją teraz!",
-      desc: "Nurtuje Cię przyszłość? Nie czekaj! Uzyskaj wyjątkowe odczyty tarota od profesjonalnej ezoteryczki lub sztucznej inteligencji AI! Poznaj tajemnice wszechświata i uzyskaj wgląd w swoją przyszłość już dziś. Wypróbuj teraz, aby uzyskać spersonalizowane i wyjątkowe doświadczenia! Bright Light Gypsy Tarot online.",
-      descOg:
-        "Nurtuje Cię przyszłość? Nie czekaj! Uzyskaj wyjątkowe odczyty tarota od profesjonalnej ezoteryczki lub sztucznej inteligencji AI ❤",
     },
   };
   return (
     <>
       <NextSeo
         title="BrightLight | Tarot Online"
-        description={t[locale].desc}
         canonical={`https://www.brightlightgypsy.pl/${locale}`}
-        openGraph={{
-          type: "website",
-          siteName: "Bright Light Gypsy",
-          url: `https://www.brightlightgypsy.pl/${locale == "default" ? "" : locale}`,
-          title: "BrightLight | Tarot Online",
-          locale: locale,
-          description: t[locale].descOg,
-          images: [
-            {
-              url: "https://firebasestorage.googleapis.com/v0/b/brightlight-443b7.appspot.com/o/images%2Fothers%2Fseo-og-image.png?alt=media&token=4b3ebb3c-b324-45c7-8cd5-9aff77723b7e",
-              width: 1200,
-              height: 628,
-              alt: "Bright Light Gypsy",
-              type: "image/png",
-            },
-          ],
-        }}
         languageAlternates={[
           {
             hrefLang: "en",

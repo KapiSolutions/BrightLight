@@ -1,5 +1,5 @@
 import React from "react";
-import Head from "next/head";
+import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { Button, Container } from "react-bootstrap";
 import BlogPost from "../../../components/Blog/BlogPost";
@@ -15,16 +15,32 @@ function BlogPage(props) {
       button: "Back",
     },
     pl: {
-      noBlog: "Blog",
+      noBlog: "Wpis nie istnieje",
       button: "Wróć",
     },
   };
 
   return (
     <>
-      <Head>
-        <title>BrightLight | {props.post.title} </title>
-      </Head>
+      <NextSeo
+        title={`BrightLight | ${props.post.title}`}
+        canonical={`https://www.brightlightgypsy.pl/${locale}${router.asPath}`}
+        languageAlternates={[
+          {
+            hrefLang: "en",
+            href: `https://www.brightlightgypsy.pl/en${router.asPath}`,
+          },
+          {
+            hrefLang: "pl",
+            href: `https://www.brightlightgypsy.pl/pl${router.asPath}`,
+          },
+          {
+            hrefLang: "x-default",
+            href: `https://www.brightlightgypsy.pl${router.asPath}`,
+          },
+        ]}
+      />
+
       <Container className="color-primary justify-content-center text-start mt-3">
         {props.post ? (
           <BlogPost post={props.post} />
@@ -33,7 +49,7 @@ function BlogPage(props) {
             <VscBracketError style={{ width: "40px", height: "40px" }} className="mb-3" />
             <h4 className="mt-0 mb-4">{t[locale].noBlog}</h4>
             <Button variant="outline-primary" onClick={() => router.replace("/blog#main")}>
-            {t[locale].button}
+              {t[locale].button}
             </Button>
           </div>
         )}

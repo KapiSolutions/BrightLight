@@ -1,5 +1,5 @@
 import React from "react";
-import Head from "next/head";
+import { NextSeo } from "next-seo";
 import Image from "next/image";
 import { Container } from "react-bootstrap";
 import { useDeviceStore } from "../../stores/deviceStore";
@@ -54,9 +54,24 @@ function AboutPage(props) {
   };
   return (
     <>
-      <Head>
-        <title>BrightLight | {t[locale].title}</title>
-      </Head>
+      <NextSeo
+        title={`BrightLight | ${t[locale].title}`}
+        canonical={`https://www.brightlightgypsy.pl/${locale}/about`}
+        languageAlternates={[
+          {
+            hrefLang: "en",
+            href: "https://www.brightlightgypsy.pl/en/about",
+          },
+          {
+            hrefLang: "pl",
+            href: "https://www.brightlightgypsy.pl/pl/about",
+          },
+          {
+            hrefLang: "x-default",
+            href: "https://www.brightlightgypsy.pl/about",
+          },
+        ]}
+      />
       <Container className="justify-content-center text-center mt-4 color-primary">
         <nav className="d-flex gap-2">
           <small>

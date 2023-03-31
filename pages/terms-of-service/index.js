@@ -1,5 +1,5 @@
 import React from "react";
-import Head from "next/head";
+import { NextSeo } from "next-seo";
 import { Container } from "react-bootstrap";
 import path from "path";
 import { promises as fs } from "fs";
@@ -23,11 +23,27 @@ function TermsOfService(props) {
   };
   return (
     <>
-      <Head>
-        <title>BrightLight | {t[locale].title}</title>
-      </Head>
-      <Container className="justify-content-center text-center mt-4 color-primary" style={{maxWidth: "100vw"}}>
-      <nav className="d-flex gap-2">
+      <NextSeo
+        title={`BrightLight | ${t[locale].title}`}
+        canonical={`https://www.brightlightgypsy.pl/${locale}/terms-of-service`}
+        languageAlternates={[
+          {
+            hrefLang: "en",
+            href: "https://www.brightlightgypsy.pl/en/terms-of-service",
+          },
+          {
+            hrefLang: "pl",
+            href: "https://www.brightlightgypsy.pl/pl/terms-of-service",
+          },
+          {
+            hrefLang: "x-default",
+            href: "https://www.brightlightgypsy.pl/terms-of-service",
+          },
+        ]}
+      />
+
+      <Container className="justify-content-center text-center mt-4 color-primary" style={{ maxWidth: "100vw" }}>
+        <nav className="d-flex gap-2">
           <small>
             <Link href="/#main">{t[locale].home}</Link>
           </small>
@@ -35,7 +51,9 @@ function TermsOfService(props) {
           <small>{t[locale].title}</small>
         </nav>
         <h1>{t[locale].title}</h1>
-        <section className={`text-start m-auto ${!isMobile && "w-75"}`}>{parse(DOMPurify.sanitize(props.text))}</section>
+        <section className={`text-start m-auto ${!isMobile && "w-75"}`}>
+          {parse(DOMPurify.sanitize(props.text))}
+        </section>
       </Container>
     </>
   );
@@ -44,19 +62,18 @@ function TermsOfService(props) {
 export default TermsOfService;
 
 export async function getStaticProps({ locale }) {
-let filePath = "";
-let text = "";
+  let filePath = "";
+  let text = "";
 
   if (locale != "default") {
     filePath = path.join(process.cwd(), `public/regulations/therms-of-service/${locale}/index.txt`);
     text = await fs.readFile(filePath, "utf8");
-  } 
-    return {
-      props: {
-        text: text,
-        locale: locale,
-      },
-      revalidate: false, //on demand revalidation
-    };
-  
+  }
+  return {
+    props: {
+      text: text,
+      locale: locale,
+    },
+    revalidate: false, //on demand revalidation
+  };
 }

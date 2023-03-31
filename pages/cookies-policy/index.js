@@ -1,5 +1,5 @@
 import React from "react";
-import Head from "next/head";
+import { NextSeo } from "next-seo";
 import { Container } from "react-bootstrap";
 import path from "path";
 import { promises as fs } from "fs";
@@ -23,9 +23,24 @@ function CookiesPolicyPage(props) {
   };
   return (
     <>
-      <Head>
-        <title>BrightLight | {t[locale].title}</title>
-      </Head>
+      <NextSeo
+        title={`BrightLight | ${t[locale].title}`}
+        canonical={`https://www.brightlightgypsy.pl/${locale}/cookies-policy`}
+        languageAlternates={[
+          {
+            hrefLang: "en",
+            href: "https://www.brightlightgypsy.pl/en/cookies-policy",
+          },
+          {
+            hrefLang: "pl",
+            href: "https://www.brightlightgypsy.pl/pl/cookies-policy",
+          },
+          {
+            hrefLang: "x-default",
+            href: "https://www.brightlightgypsy.pl/cookies-policy",
+          },
+        ]}
+      />
       <Container className="justify-content-center text-center mt-4 color-primary" style={{ maxWidth: "100vw" }}>
         <nav className="d-flex gap-2">
           <small>
