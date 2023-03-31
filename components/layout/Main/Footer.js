@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import styles from "../../../styles/layout/main/Footer.module.scss";
 import { RiInstagramFill } from "react-icons/ri";
+import { SiAuthy } from "react-icons/si";
 import { useDeviceStore } from "../../../stores/deviceStore";
 
 function Footer(props) {
@@ -49,10 +50,16 @@ function Footer(props) {
         <Container name="footer" className="mt-3">
           <div className={`${styles.container} color-primary`}>
             <div className={styles.content}>
+              <div className="d-flex flex-column gap-2 mb-2">
               <Link href="https://www.instagram.com" passHref className="pointer color-primary">
                 <RiInstagramFill style={{ width: "20px", height: "20px" }} />
                 Instagram
               </Link>
+              <Link href="/contributors#main" passHref className="pointer color-primary">
+                <SiAuthy style={{ width: "20px", height: "20px" }} />
+                {t[locale].contributors}
+              </Link>
+              </div>
 
               <p>
                 <a
