@@ -30,6 +30,7 @@
     "micro-cors": "^0.1.1",
     "next": "^13.2.3",
     "next-csrf": "^0.2.1",
+    "next-seo": "^5.15.0",
     "nextjs-google-analytics": "^2.3.3",
     "nodemailer": "^6.8.0",
     "openai": "^3.2.1",
