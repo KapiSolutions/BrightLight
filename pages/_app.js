@@ -28,6 +28,10 @@ function MyApp({ Component, pageProps }) {
       descOg:
         "Nurtuje Cię przyszłość? Nie czekaj! Uzyskaj wyjątkowe odczyty tarota od profesjonalnej ezoteryczki lub sztucznej inteligencji AI ❤",
     },
+    default: {
+      desc: "Wanna know Your future? Don't wait! Get accurate tarot readings from professional esoteric girl or AI with our web app. Explore the mysteries of the universe and gain insights into your future today. Try now for a personalized and enlightening experience! Bright Light Gypsy Tarot online.",
+      descOg: "Wanna know Your future? Don't wait! Get accurate tarot readings from professional esoteric girl or AI ❤",
+    }
   };
 
   function handleWindowSizeChange() {
@@ -64,7 +68,7 @@ function MyApp({ Component, pageProps }) {
           siteName: "Bright Light Gypsy",
           url: `https://www.brightlightgypsy.pl/${locale == "default" ? "" : locale}${router.asPath}`,
           title: "BrightLight | Tarot Online",
-          locale: locale,
+          locale: locale == "default" ? "en" : locale,
           description: t[locale].descOg,
           images: [
             {
