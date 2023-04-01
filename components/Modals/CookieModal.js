@@ -5,7 +5,7 @@ import { Button, Modal } from "react-bootstrap";
 import styles from "../../styles/components/CookieModal.module.scss";
 import cookie from "../../public/img/cookies/cookie.webp";
 import { useDeviceStore } from "../../stores/deviceStore";
-import {getCookie, setCookie } from 'cookies-next';
+import { getCookie, setCookie } from "cookies-next";
 
 function CookieModal() {
   const router = useRouter();
@@ -16,10 +16,24 @@ function CookieModal() {
   // Set session expiration to 120 days.
   const expiresIn = 60 * 60 * 24 * 120 * 1000;
 
-  useEffect(() => {
-    if(router.route != "/cookies-policy"){
-      !getCookie("allow-cookies") && setShow(true);
+  const checkPosition = () => {
+    if (router.route != "/cookies-policy") {
+      setShow(true);
+    } else {
+      setShow(false);
     }
+  };
+
+  useEffect(() => {
+    if (!getCookie("allow-cookies")) {
+      let timer1 = setTimeout(() => checkPosition(), 3000);
+      return () => {
+        clearTimeout(timer1);
+      };
+    } else {
+      return;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   const t = {
@@ -64,8 +78,8 @@ function CookieModal() {
           style={{ height: footerHeight, width: "50%", borderRadius: "0px 0px 0px 20px" }}
           variant="outline-secondary"
           onClick={() => {
-            router.push("/cookies-policy#main");
             setShow(false);
+            router.push("/cookies-policy#main");
           }}
         >
           <small>{t[locale].policy}</small>
