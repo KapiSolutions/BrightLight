@@ -188,7 +188,7 @@ function DesktopMenu(props) {
                           className={`color-primary fs-6 ${styles.hover}`}
                           id="dropdown-user"
                         >
-                          <span>Admin </span>
+                          <span>Admin</span>
                           <GiSparkSpirit className={`${styles.icons} color-primary `} />
                         </Dropdown.Toggle>
                         <Dropdown.Menu variant={props.theme} className="background mt-2">
