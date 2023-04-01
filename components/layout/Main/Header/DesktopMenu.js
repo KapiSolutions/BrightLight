@@ -121,10 +121,14 @@ function DesktopMenu(props) {
               <Nav className="ms-auto d-flex align-items-center">
                 {props.navItems.map((item) => (
                   <Link key={item.id} href={item.to} passHref legacyBehavior>
-                    <Nav.Link style={{ whiteSpace: "nowrap" }}>{item.text}</Nav.Link>
+                    <Nav.Link
+                      style={{ whiteSpace: "nowrap" }}
+                      className={`${router.pathname === item.base ? "text-decoration-underline" : ""}`}
+                    >
+                      {item.text}
+                    </Nav.Link>
                   </Link>
                 ))}
-
                 {authUserFirestore ? (
                   <Container className="d-flex align-items-center me-1">
                     <div className="vr m-2 color-primary"></div>
@@ -148,7 +152,7 @@ function DesktopMenu(props) {
                           <Dropdown.Item>{t[locale].myOrders}</Dropdown.Item>
                         </Link>
                         <Link href="/user/coins#main" passHref legacyBehavior>
-                          <Dropdown.Item >
+                          <Dropdown.Item>
                             {t[locale].coins}:
                             <span className="ms-1">
                               {authUserFirestore?.coins?.amount}

@@ -7,10 +7,10 @@ function Navigation(props) {
   const locale = props.locale;
   const isMobile = useDeviceStore((state) => state.isMobile)
   const navItems = [
-    { id: 1, to: "/#main", text: locale === "en" ? "Home": "Strona główna"},
-    { id: 2, to: "/about#main", text: locale === "en" ? "About": "O mnie" },
-    { id: 3, to: "/blog#main", text: "Blog" },
-    { id: 4, to: "#footer", text: locale === "en" ? "Contact": "Kontakt" }
+    { id: 1, to: "/#main", base: "/", text: locale === "en" ? "Home": "Strona główna"},
+    { id: 2, to: "/about#main", base: "/about",text: locale === "en" ? "About": "O mnie" },
+    { id: 3, to: "/blog#main", base: "/blog",text: "Blog" },
+    { id: 4, to: "#footer", base: "",text: locale === "en" ? "Contact": "Kontakt" }
   ];
 
   return (
