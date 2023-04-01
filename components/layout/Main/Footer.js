@@ -12,15 +12,19 @@ function Footer(props) {
   const t = {
     en: {
       cookies: "Cookies Policy",
+      cookiesMobile: "Cookies",
       service: "Terms of service",
       privacy: "Privacy Policy",
+      privacyMobile: "Privacy",
       contributors: "Contributors",
       hashTags: "#tarot online ",
     },
     pl: {
       cookies: "Polityka Cookies",
+      cookiesMobile: "Cookies",
       service: "Regulamin",
       privacy: "Polityka prywatności",
+      privacyMobile: "Prywatność",
       contributors: "Współtwórcy",
     },
   };
@@ -50,14 +54,14 @@ function Footer(props) {
         <Container name="footer" className="mt-3">
           <div className={`${styles.container} color-primary`}>
             <div className={styles.content}>
-              <div className="d-flex flex-column gap-2 mb-2">
+              <div className="d-flex flex-column gap-2 mb-3">
               <Link href="https://www.instagram.com" passHref className="pointer color-primary">
                 <RiInstagramFill style={{ width: "20px", height: "20px" }} />
-                Instagram
+                {" "}Instagram
               </Link>
               <Link href="/contributors#main" passHref className="pointer color-primary">
                 <SiAuthy style={{ width: "20px", height: "20px" }} />
-                {t[locale].contributors}
+                {" "}{t[locale].contributors}
               </Link>
               </div>
 
@@ -73,19 +77,19 @@ function Footer(props) {
 
               <nav className="d-flex flex-wrap  justify-content-center mb-4">
                 <section className="d-flex justify-content-center w-100 align-items-center ">
-                  <div className={`col-${isMobile ? "3" : "2"} text-center`}>
+                  <div className={`col-${isMobile ? "4" : "2"} text-center`}>
                     <Link href="/cookies-policy#main" passHref>
-                      <span className="color-primary">{t[locale].cookies}</span>
+                      <span className="color-primary">{isMobile? t[locale].cookiesMobile :  t[locale].cookies}</span>
                     </Link>
                   </div>
-                  <div className={`col-${isMobile ? "3" : "2"} text-center`}>
+                  <div className={`col-${isMobile ? "4" : "2"} text-center`}>
                     <Link href="/terms-of-service#main" passHref>
                       <span className="color-primary">{t[locale].service}</span>
                     </Link>
                   </div>
-                  <div className={`col-${isMobile ? "3" : "2"} text-center`}>
+                  <div className={`col-${isMobile ? "4" : "2"} text-center`}>
                     <Link href="/privacy-policy#main" passHref>
-                      <span className="color-primary">{t[locale].privacy}</span>
+                      <span className="color-primary">{isMobile ? t[locale].privacyMobile : t[locale].privacy}</span>
                     </Link>
                   </div>
                 </section>
