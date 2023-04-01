@@ -71,6 +71,10 @@ function AdminBlogsPage(props) {
     setLoadingRfs(true);
     try {
       const docs = await getDocsFromCollection("blog");
+      docs.map((doc) => {
+        doc.content = doc.content[locale];
+        doc.title = doc.title[locale];
+      });
       setPosts(JSON.parse(JSON.stringify(docs)).sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date)));
       setLoadingRfs(false);
     } catch (e) {
