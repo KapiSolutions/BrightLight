@@ -1,6 +1,6 @@
 import React from "react";
 import { BreadcrumbJsonLd, NextSeo } from "next-seo";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Carousel } from "react-bootstrap";
 import ProductCard from "../components/Products/ProductCard";
 import { getDocsFromCollection } from "../firebase/Firestore";
 import Link from "next/link";
@@ -143,16 +143,19 @@ export default function Home(props) {
       <HowItWorks locale={locale} isMobile={isMobile} />
 
       {/* Latest Posts */}
-      <Container>
+      
         <section className="mt-5 ps-2 pe-2 color-primary w-100">
           <h2 className="text-center">{t[locale].latestPosts}</h2>
-          <div className="d-flex flex-row gap-3 align-items-center w-100 justify-content-center">
+          <div className={`d-flex gap-3 align-items-center pb-4 justify-content-md-start justify-content-lg-center overflow-auto m-auto`}>
+            {props.posts.map((post, idx) => (
+              <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile} />
+            ))}
             {props.posts.map((post, idx) => (
               <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile} />
             ))}
           </div>
         </section>
-      </Container>
+      
     </>
   );
 }
@@ -179,7 +182,7 @@ export async function getStaticProps({ locale }) {
     post.content = post.content[locale == "default" ? "en" : locale];
     post.title = post.title[locale == "default" ? "en" : locale];
   });
-  const latestPosts = posts.slice(0, 5);
+  const latestPosts = posts.slice(0, 4);
 
   return {
     props: {

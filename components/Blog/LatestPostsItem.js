@@ -9,7 +9,8 @@ function LatestPostsItem(props) {
   const [loading, setLoading] = useState(false);
   return (
     <div
-      className={`rounded col-6 col-md-3 pointer opacity-${loading ? "50" : "100"}`}
+      className={`rounded col-7 col-md-3 pointer opacity-${loading ? "50" : "100"}`}
+      style={{maxWidth: 220}}
       onClick={() => {
         if (!loading) {
           router.push({
