@@ -127,7 +127,7 @@ export default function Home(props) {
 
         <section className="text-center mt-4 text-muted ps-2 pe-2">
           <small>
-            Illustrations of the cards from &ldquo;Pastel Yourney&rdquo; Tarot Deck by{" "}
+            Illustrations of the cards from &ldquo;Pastel Journey&rdquo; Tarot Deck by{" "}
             <Link
               target="_blank"
               rel="noopener noreferrer"
@@ -147,9 +147,6 @@ export default function Home(props) {
         <section className="mt-5 ps-2 pe-2 color-primary w-100">
           <h2 className="text-center">{t[locale].latestPosts}</h2>
           <div className={`d-flex gap-3 align-items-center pb-4 justify-content-md-start justify-content-lg-center overflow-auto m-auto`}>
-            {props.posts.map((post, idx) => (
-              <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile} />
-            ))}
             {props.posts.map((post, idx) => (
               <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile} />
             ))}

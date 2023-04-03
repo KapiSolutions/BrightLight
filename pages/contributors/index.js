@@ -114,7 +114,7 @@ function ContributorsPage(props) {
                 />
               </div>
               <div>
-                Illustrations of the cards from &ldquo;Pastel Yourney&rdquo; Tarot Deck by{" "}
+                Illustrations of the cards from &ldquo;Pastel Journey&rdquo; Tarot Deck by{" "}
                 <Link
                   target="_blank"
                   rel="noopener noreferrer"

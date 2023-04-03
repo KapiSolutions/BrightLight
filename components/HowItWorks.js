@@ -20,7 +20,7 @@ function HowItWorks(props) {
     pl: {
       h: "Jak to działa?",
       p1: `To prostę, wybierz swoje karty, zadaj pytanie i otrzymaj interpretację! Nasza platforma dostarcza szereg 
-      prywatnych interpretacji Tarota i porad za pośrednictwem ezoterycznki Bright Light Gypsy,
+      prywatnych interpretacji Tarota i porad za pośrednictwem ezoteryczki Bright Light Gypsy,
       lub poprzez technologię sztucznej inteligencji AI.`,
       p2: `Dzięki zastowowanym algorytmom możesz poczuć się jak na spotkaniu z prawdziwą Tarocistką, a to wszystko bez wychodzenia z domu! 
       To Ty wybierasz karty więc masz realny wpływ na wynik własnej wróżby i w efekcie uzyskanej porady.`,
