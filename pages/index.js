@@ -3,6 +3,7 @@ import { BreadcrumbJsonLd, NextSeo } from "next-seo";
 import { Container, Row, Col } from "react-bootstrap";
 import ProductCard from "../components/Products/ProductCard";
 import { getDocsFromCollection } from "../firebase/Firestore";
+import Link from "next/link";
 // import AdBanner from "../components/AdBanner";
 // import Script from "next/script";
 
@@ -118,6 +119,18 @@ export default function Home(props) {
           )}
         </Row>
         <section>{/* <AdBanner /> */}</section>
+        <section className="text-center mt-4 text-muted ps-2 pe-2">
+          <small>
+            Illustrations of the cards from &ldquo;Pastel Yourney&rdquo; Tarot Deck by{" "}
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://beau-life.com/products/the-pastel-journey-tarot-deck-by-vanessa-somuayina"
+            >
+              Vanessa Somuayina
+            </Link>
+          </small>
+        </section>
       </Container>
     </>
   );
