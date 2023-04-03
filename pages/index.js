@@ -138,23 +138,21 @@ export default function Home(props) {
           </small>
         </section>
 
-        
-
         <section>{/* <AdBanner /> */}</section>
       </Container>
       <HowItWorks locale={locale} isMobile={isMobile} />
 
-        {/* Latest Posts */}
-        <Container>
+      {/* Latest Posts */}
+      <Container>
         <section className="mt-5 ps-2 pe-2 color-primary w-100">
           <h2 className="text-center">{t[locale].latestPosts}</h2>
           <div className="d-flex flex-row gap-3 align-items-center w-100 justify-content-center">
             {props.posts.map((post, idx) => (
-              <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile}/>
+              <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile} />
             ))}
           </div>
         </section>
-        </Container>
+      </Container>
     </>
   );
 }
@@ -163,8 +161,8 @@ export async function getStaticProps({ locale }) {
   // Get all products
   let products = await getDocsFromCollection("products");
   products.map((product) => {
-    product.desc = product.desc[locale];
-    product.title = product.title[locale];
+    product.desc = product.desc[locale == "default" ? "en" : locale];
+    product.title = product.title[locale == "default" ? "en" : locale];
   });
   // sort by price
   const sortedProduct = products.sort((a, b) => a.price.pln.amount - b.price.pln.amount);
@@ -178,8 +176,8 @@ export async function getStaticProps({ locale }) {
   posts = JSON.parse(JSON.stringify(posts));
   posts = posts.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date));
   posts.map((post) => {
-    post.content = post.content[locale];
-    post.title = post.title[locale];
+    post.content = post.content[locale == "default" ? "en" : locale];
+    post.title = post.title[locale == "default" ? "en" : locale];
   });
   const latestPosts = posts.slice(0, 5);
 
