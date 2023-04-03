@@ -19,8 +19,6 @@ import Link from "next/link";
 
 function ContributorsPage(props) {
   const locale = props.locale;
-  const isMobile = useDeviceStore((state) => state.isMobile);
-  const theme = useDeviceStore((state) => state.themeState);
 
   const t = {
     en: {
@@ -116,21 +114,13 @@ function ContributorsPage(props) {
                 />
               </div>
               <div>
-                Pastel Yourney Tarot Deck by{" "}
+                Illustrations of the cards from &ldquo;Pastel Yourney&rdquo; Tarot Deck by{" "}
                 <Link
                   target="_blank"
                   rel="noopener noreferrer"
                   href="https://beau-life.com/products/the-pastel-journey-tarot-deck-by-vanessa-somuayina"
                 >
                   Vanessa Somuayina
-                </Link>{" "}
-                , Illustrations of the cards from{" "}
-                <Link
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://www.tarotstack.com/products/the-pastel-journey-tarot"
-                >
-                  TarotStack
                 </Link>
               </div>
             </li>
