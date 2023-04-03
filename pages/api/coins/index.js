@@ -11,12 +11,19 @@ export default async function handleCoins(req, res) {
       try {
         const response = await db.collection("users").doc(data.id).get();
         const user = response.data();
-        const coins = Number(user.coins.amount) - Number(data.coinsToTake);
-        await db
-          .collection("users")
-          .doc(data.id)
-          .update({ coins: { amount: coins, lastUpdate: new Date() } });
-        res.status(200).json({ status: "success" });
+        // check if admin
+        const claims = await auth.verifyIdToken(idToken);
+        if (user.role == process.env.ADMIN_KEY && claims.admin) {
+          res.status(200).json({ status: "admin" });
+        } else {
+          //if not admin then decrease amount of coins
+          const coins = Number(user.coins.amount) - Number(data.coinsToTake);
+          await db
+            .collection("users")
+            .doc(data.id)
+            .update({ coins: { amount: coins, lastUpdate: new Date() } });
+          res.status(200).json({ status: "success" });
+        }
       } catch (e) {
         res.status(500).send(e);
       }
