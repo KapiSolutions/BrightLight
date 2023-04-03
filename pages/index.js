@@ -4,11 +4,15 @@ import { Container, Row, Col } from "react-bootstrap";
 import ProductCard from "../components/Products/ProductCard";
 import { getDocsFromCollection } from "../firebase/Firestore";
 import Link from "next/link";
+import HowItWorks from "../components/HowItWorks";
+import LatestPostsItem from "../components/Blog/LatestPostsItem";
+import { useDeviceStore } from "../stores/deviceStore";
 // import AdBanner from "../components/AdBanner";
 // import Script from "next/script";
 
 export default function Home(props) {
   const locale = props.locale;
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const t = {
     en: {
       title: "Home",
@@ -17,6 +21,7 @@ export default function Home(props) {
       findIt: "Find it out!",
       aboutMe: "About me",
       oracle: "Oracle of Love",
+      latestPosts: "Latest posts",
     },
     pl: {
       title: "Strona Główna",
@@ -25,6 +30,7 @@ export default function Home(props) {
       findIt: "Poznaj ją teraz!",
       aboutMe: "O mnie",
       oracle: "Wyrocznia miłości",
+      latestPosts: "Najnowsze wpisy",
     },
   };
   return (
@@ -107,7 +113,7 @@ export default function Home(props) {
           <h1 className="color-primary">{t[locale].h1}</h1>
           <p className="color-primary small">{t[locale].choose}</p>
         </Row>
-
+        {/* Display cards */}
         <Row sm={2} md={2} lg={3} className="g-4 justify-content-center">
           {props.products.map(
             (product) =>
@@ -118,7 +124,7 @@ export default function Home(props) {
               )
           )}
         </Row>
-        <section>{/* <AdBanner /> */}</section>
+
         <section className="text-center mt-4 text-muted ps-2 pe-2">
           <small>
             Illustrations of the cards from &ldquo;Pastel Yourney&rdquo; Tarot Deck by{" "}
@@ -131,24 +137,56 @@ export default function Home(props) {
             </Link>
           </small>
         </section>
+
+        
+
+        <section>{/* <AdBanner /> */}</section>
       </Container>
+      <HowItWorks locale={locale} isMobile={isMobile} />
+
+        {/* Latest Posts */}
+        <Container>
+        <section className="mt-5 ps-2 pe-2 color-primary w-100">
+          <h2 className="text-center">{t[locale].latestPosts}</h2>
+          <div className="d-flex flex-row gap-3 align-items-center w-100 justify-content-center">
+            {props.posts.map((post, idx) => (
+              <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile}/>
+            ))}
+          </div>
+        </section>
+        </Container>
     </>
   );
 }
 
 export async function getStaticProps({ locale }) {
-  let docs = await getDocsFromCollection("products");
-
-  docs.map((doc) => {
-    doc.desc = doc.desc[locale];
-    doc.title = doc.title[locale];
+  // Get all products
+  let products = await getDocsFromCollection("products");
+  products.map((product) => {
+    product.desc = product.desc[locale];
+    product.title = product.title[locale];
   });
   // sort by price
-  const sortedDocs = docs.sort((a, b) => a.price.pln.amount - b.price.pln.amount);
+  const sortedProduct = products.sort((a, b) => a.price.pln.amount - b.price.pln.amount);
+
+  // Get latest Blog Posts
+  const timeStampToDate = (time) => {
+    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  };
+
+  let posts = await getDocsFromCollection("blog");
+  posts = JSON.parse(JSON.stringify(posts));
+  posts = posts.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date));
+  posts.map((post) => {
+    post.content = post.content[locale];
+    post.title = post.title[locale];
+  });
+  const latestPosts = posts.slice(0, 5);
 
   return {
     props: {
-      products: JSON.parse(JSON.stringify(sortedDocs)),
+      products: JSON.parse(JSON.stringify(sortedProduct)),
+      posts: latestPosts,
       locale: locale,
     },
     revalidate: false, //on demand revalidation
