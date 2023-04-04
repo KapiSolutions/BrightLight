@@ -16,6 +16,7 @@ function ProductCard(props) {
   const [fullDesc, setfullDesc] = useState(false);
   const [loading, setLoading] = useState(false);
   const truncLength = 60;
+  const themeDarkStyle = theme == "dark" ? "bg-accent6 text-light border-dark" : "";
 
   const t = {
     en: {
@@ -24,31 +25,32 @@ function ProductCard(props) {
     },
     pl: {
       button: "Wybieram!",
-      loading: "Ładuję.."
+      loading: "Ładuję..",
     },
   };
 
   return (
-    <Card style={{ width: "18rem" }} className="background border shadow-sm">
-      <div className="rounded" style={{ position: "relative", height: "330px" }}>
+    <Card style={{ width: "320px" }} className={`background border shadow-sm rounded ${themeDarkStyle}`}>
+      {/* init heigh 330px */}
+      <div className="rounded" style={{ position: "relative", height: "250px" }}>
         <Image
           src={product.image.path}
-          // variant="top"
+          quality={100}
           fill
           placeholder="blur"
           blurDataURL={placeholder("dark")}
           sizes="(max-width: 768px) 100vw, 33vw"
-          className={`imgOpacity pointer ${loading && "opacity-25"}`}
+          className={`imgOpacity pointer rounded-top ${loading && "opacity-25"}`}
           alt={`${product.title} - Bright Light Gypsy Tarot`}
           title={`${product.title} - Bright Light Gypsy Tarot`}
-          style={{ objectFit: "cover" }}
+          style={{ objectFit: "cover", objectPosition: "0px -20px" }}
           onClick={() => {
             if (!loading) {
               router.push({
                 pathname: "/product/[pid]",
                 query: { pid: product.id },
-                hash: "main"
-              },); 
+                hash: "main",
+              });
             }
             setLoading(true);
           }}
@@ -70,7 +72,7 @@ function ProductCard(props) {
       <Card.Footer
         className={`d-flex align-items-center justify-content-between ${theme === "dark" && "border-top border-dark"}`}
       >
-        <span className="text-muted">
+        <span className={styles.cardText}>
           {product.price[currency].amount.replace(".", ",")}
           <span className="text-uppercase ms-1">{currency}</span>
         </span>
