@@ -167,7 +167,7 @@ function TarotLotteryDesktop(props) {
   };
   const handleBuy = async () => {
     if (!authUserCredential.emailVerified) {
-      showVerifyModal(true);
+      setShowVerifyModal(true);
       return;
     }
     const question = questionRef.current.value;
@@ -204,7 +204,7 @@ function TarotLotteryDesktop(props) {
   const handleAddToCart = async () => {
     setMessage("");
     if (!authUserCredential.emailVerified) {
-      showVerifyModal(true);
+      setShowVerifyModal(true);
       return;
     }
     setLoading(true);
