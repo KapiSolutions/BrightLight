@@ -370,7 +370,7 @@ function AuthProvider({ children }) {
     }
   };
 
-  // used eg. after email verification
+  // used eg. after email verification 
   const refreshCredentials = async () => {
     auth.currentUser
       .reload()
