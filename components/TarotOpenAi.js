@@ -137,7 +137,7 @@ function TarotOpenAi(props) {
     }
     setLoading(false);
   };
-
+  console.log("Email veryfied: ",authUserCredential.emailVerified)
   return (
     <div className="color-primary">
       <>

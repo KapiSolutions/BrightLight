@@ -15,6 +15,7 @@ import Link from "next/link";
 import { getDocById } from "../firebase/Firestore";
 import tarotCards from "../utils/tarotCards";
 import TarotOpenAi from "./TarotOpenAi";
+import VerifyEmailModal from "./Modals/VerifyEmailModal";
 
 function TarotLotteryDesktop(props) {
   const router = useRouter();
@@ -36,6 +37,7 @@ function TarotLotteryDesktop(props) {
   const [chars, setChars] = useState(0);
   const [aiGenTarot, setAiGenTarot] = useState(false);
   const [aiReady, setAiReady] = useState(false);
+  const [showVerifyModal, setShowVerifyModal] = useState(true);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
   const cardsUrl = "/img/cards/";
   const cardNames = tarotCards();
@@ -451,6 +453,7 @@ function TarotLotteryDesktop(props) {
           </section>
         )}
       </Row>
+      <VerifyEmailModal locale={locale} show={showVerifyModal} closeModal={setShowVerifyModal} />
     </div>
   );
 }
