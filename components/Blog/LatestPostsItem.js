@@ -9,8 +9,8 @@ function LatestPostsItem(props) {
   const [loading, setLoading] = useState(false);
   return (
     <div
-      className={`rounded col-7 col-md-3 pointer opacity-${loading ? "50" : "100"}`}
-      style={{maxWidth: 220}}
+      className={`rounded col-7 col-md-3 pointer overflow-hidden opacity-${loading ? "50" : "100"}`}
+      style={{maxWidth: 220, textOverflow: "ellipsis"}}
       onClick={() => {
         if (!loading) {
           router.push({
@@ -25,8 +25,8 @@ function LatestPostsItem(props) {
       <div className="w-100" style={{ position: "relative", height: "150px" }}>
         <Image src={post.mainImg.path} fill alt={post.title} style={{ objectFit: "cover", borderRadius: ".25rem" }} />
       </div>
-      <span>
-        <strong>{post.title}</strong>
+      <span style={{whiteSpace: "nowrap"}}>
+        {post.title}
       </span>
     </div>
   );
