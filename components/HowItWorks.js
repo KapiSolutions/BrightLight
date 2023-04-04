@@ -82,7 +82,7 @@ function HowItWorks(props) {
             onClick={() => {
               document
                 .getElementsByName("howToSectionDescription")[0]
-                .scrollIntoView({ block: "center", inline: "nearest" });
+                .scrollIntoView({ block: isMobile ? "end" : "center", inline: "nearest" });
             }}
           >
             {t[locale].button}
