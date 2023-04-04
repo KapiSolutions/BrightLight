@@ -38,7 +38,7 @@ function ProductCard(props) {
           quality={100}
           fill
           placeholder="blur"
-          blurDataURL={placeholder("dark")}
+          blurDataURL={placeholder("light")}
           sizes="(max-width: 768px) 100vw, 33vw"
           className={`imgOpacity pointer rounded-top ${loading && "opacity-25"}`}
           alt={`${product.title} - Bright Light Gypsy Tarot`}
