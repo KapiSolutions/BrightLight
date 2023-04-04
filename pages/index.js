@@ -147,10 +147,10 @@ export default function Home(props) {
       </div>
 
       {/* Latest Posts */}
-      <section className="mt-4 ps-2 pe-2 color-primary w-100">
+      <section className={`mt-4 color-primary w-100 ${isMobile && "ps-2 pe-0"}`}>
         <h2 className="text-center">{t[locale].latestPosts}</h2>
         <div
-          className={`d-flex gap-3 align-items-center pb-4 justify-content-md-start justify-content-lg-center overflow-auto m-auto`}
+          className={`d-flex gap-4 align-items-center pb-4 justify-content-md-start justify-content-lg-center overflow-auto m-auto`}
         >
           {props.posts.map((post, idx) => (
             <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile} />
