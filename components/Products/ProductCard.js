@@ -30,7 +30,7 @@ function ProductCard(props) {
   };
 
   return (
-    <Card style={{ width: "320px" }} className={`background border shadow-sm rounded ${themeDarkStyle}`}>
+    <Card style={{ width: "18rem" }} className={`background border shadow-sm rounded ${themeDarkStyle}`}>
       {/* init heigh 330px */}
       <div className="rounded" style={{ position: "relative", height: "250px" }}>
         <Image
