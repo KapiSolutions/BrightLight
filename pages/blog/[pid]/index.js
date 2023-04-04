@@ -1,5 +1,5 @@
 import React from "react";
-import { NextSeo } from "next-seo";
+import { ArticleJsonLd, NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { Button, Container } from "react-bootstrap";
 import BlogPost from "../../../components/Blog/BlogPost";
@@ -25,6 +25,10 @@ function BlogPage(props) {
     },
   };
 
+  const timeStampToDate = (time) => {
+    return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
+  };
+
   return (
     <>
       <NextSeo
@@ -44,6 +48,16 @@ function BlogPage(props) {
             href: `https://www.brightlightgypsy.pl${router.asPath}`,
           },
         ]}
+      />
+      <ArticleJsonLd
+        type="BlogPosting"
+        url={`https://www.brightlightgypsy.pl/${locale}${router.asPath}`}
+        title={props.post?.title}
+        images={[props.post?.mainImg.source]}
+        datePublished={timeStampToDate(props.post?.date)}
+        dateModified={timeStampToDate(props.post?.date)}
+        authorName={props.post?.author}
+        description={props.post?.title + "- Blog Bright Light Gypsy, Tarot Online"}
       />
       {/* Breadcrumbs */}
       <nav>

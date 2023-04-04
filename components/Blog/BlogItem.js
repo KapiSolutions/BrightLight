@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AiOutlineLike, AiFillLike, AiOutlineComment } from "react-icons/ai";
 import { useAuth } from "../../context/AuthProvider";
 import { getDocById, handleLikeBlog } from "../../firebase/Firestore";
+import { useDeviceStore } from "../../stores/deviceStore";
 const parse = require("html-react-parser");
 
 function BlogItem(props) {
@@ -18,6 +19,8 @@ function BlogItem(props) {
   const [userLiked, setUserLiked] = useState(false);
   const likesToShow = 6;
   const blogContent = parse(post.content);
+  const theme = useDeviceStore((state) => state.themeState);
+  const themeDarkStyle = theme == "dark" ? "bg-accent6 text-light border-accent7" : "";
 
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
@@ -68,7 +71,7 @@ function BlogItem(props) {
   };
   return (
     <>
-      <Card className="background border shadow-sm color-primary col-12 col-sm-8 col-md-5 col-lg-3" style={{minWidth: "300px"}}>
+      <Card className={`background border shadow-sm color-primary col-12 col-sm-8 col-md-5 col-lg-3 ${themeDarkStyle}`} style={{minWidth: "300px"}}>
         <Card.Img
           id={post.id}
           alt={`${post.title} - Bright Light Gypsy tarot`}
