@@ -15,10 +15,9 @@ function Header(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const handleScroll = () => {
     const offset = window.pageYOffset;
-
-    const scale =110 + offset/15;
+    const scale = 110 + offset / 15;
     setOffsetY(scale > 160 ? 160 : scale);
-    const move = offset/10;
+    const move = offset / 10;
     setOffsetX(move);
   };
 
@@ -38,10 +37,16 @@ function Header(props) {
       h1: "Nurtuje Cię przyszłość?",
       dontWait: "Nie czekaj",
       findIt: "Poznaj ją teraz!",
-    }, 
+    },
   };
   return (
-    <div className={`${styles.container} landingBack color-primary`} style={{backgroundPosition: isMobile ?  `-${offsetX}px` : "center", backgroundSize: isMobile ?  "cover" : `${offsetY}%`}}>
+    <div
+      className={`${styles.container} landingBack color-primary`}
+      style={{
+        backgroundPosition: isMobile ? `-${offsetX}px` : "center",
+        backgroundSize: isMobile ? "cover" : `${offsetY}%`,
+      }}
+    >
       <Navigation locale={locale} theme={props.theme} />
       <div className={styles.proposal}>
         <div className={`text-uppercase ${styles.parallaxContent}`}>
@@ -50,7 +55,7 @@ function Header(props) {
           <Button
             variant="primary"
             size="lg"
-            className={`${styles.parallaxButton} 
+            className={`${isMobile? "" :styles.parallaxButton} 
           ${props.theme === "light" ? styles.animatedBorderLight : styles.animatedBorderDark}
            text-uppercase`}
             onClick={() => {
