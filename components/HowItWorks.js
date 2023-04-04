@@ -30,9 +30,9 @@ function HowItWorks(props) {
 
   const t = {
     en: {
-      h: "Hi!",
+      h: "Hello!",
       caption: "Are you curious how Online Tarot works?",
-      button: "Get Started",
+      button: "Get Started!",
       h2: "How it works?",
       p1: `It's Easy! Just choose your cards, ask a question, and receive an interpretation from our expert esotericist, Bright Light Gypsy, or through our advanced AI technology. ❤`,
       p2: `Our algorithms are designed to provide a personalized and authentic experience, making you feel like you are in a one-on-one meeting with a real Tarot reader, all from the 
