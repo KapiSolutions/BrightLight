@@ -10,14 +10,14 @@ import { useDeviceStore } from "../../../../stores/deviceStore";
 function Header(props) {
   const locale = props.locale;
   const router = useRouter();
-  const [offsetY, setOffsetY] = useState(110);
+  // const [offsetY, setOffsetY] = useState(110);
   const [offsetX, setOffsetX] = useState(0);
   const isMobile = useDeviceStore((state) => state.isMobile);
   const handleScroll = () => {
     const offset = window.pageYOffset;
     // const scale = 110 + offset / 15;
     // setOffsetY(scale > 160 ? 160 : scale);
-    const move = offset / 10;
+    const move = offset / 8;
     setOffsetX(move);
   };
 
