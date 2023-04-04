@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import Image from "next/image";
 import Navigation from "./Navigation";
 import styles from "../../../../styles/layout/main/Header.module.scss";
@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 function Header(props) {
   const locale = props.locale;
   const router = useRouter();
-  const [offsetY, setOffsetY] = useState(0);
+  const [offsetY, setOffsetY] = useState(100);
 
   const handleScroll = () => {
     const offset = window.pageYOffset;
@@ -18,7 +18,7 @@ function Header(props) {
     setOffsetY(scale > 150 ? 150 : scale);
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
