@@ -55,6 +55,11 @@ function TarotOpenAi(props) {
       sthWrong: "Something went wrong, please try again later.",
       signedUsers: "Only available for signed users.",
       signButton: "Sign In",
+      notEnoughCoins: "You don't have enough coins.",
+      buyHere: "Get 'em here.",
+      howManyCoins: `${props.coins} coin${props.coins > 1 ? "s" : ""} will be used. You have ${
+        authUserFirestore?.coins.amount
+      }.`,
     },
     pl: {
       new: "Nowość!",
@@ -68,6 +73,12 @@ function TarotOpenAi(props) {
       sthWrong: "Coś poszło nie tak, spróbuj ponownie później.",
       signedUsers: "Dostępne tylko dla zalogowanych użytkowników.",
       signButton: "Zaloguj się",
+      notEnoughCoins: "Nie masz wystarczającej ilości monet.",
+      buyHere: "Dokup je tutaj.",
+      howManyCoins: `${props.coins > 1 ? "Zostaną wykorzystane" : "Zostanie wykorzystana"} ${props.coins} 
+      ${props.coins == 1 ? "moneta" : ""}
+      ${props.coins > 1 && props.coins < 5 ? "monety" : ""}
+      ${props.coins > 5 ? "monet" : ""}. Posiadasz ${authUserFirestore?.coins.amount}.`,
     },
   };
   const translateText = async (inputText, from, to) => {
@@ -231,18 +242,15 @@ function TarotOpenAi(props) {
                       </ButtonGroup>
                       {authUserFirestore?.coins.amount < props.coins ? (
                         <p className="mt-2">
-                          <small>
-                            Nie masz wystarczającej ilości monet.{" "}
-                            <Link href="/user/coins#main" passHref>
-                              <u className="color-secondary">Dokup je tutaj.</u>
-                            </Link>
-                          </small>
+                          {t[locale].notEnoughCoins}
+                          <br />
+                          <Link href="/user/coins#main" passHref>
+                            <u className="color-secondary">{t[locale].buyHere}</u>
+                          </Link>
                         </p>
                       ) : (
                         <p className="mt-2">
-                          <small>
-                            Zostaną wykorzystane {props.coins} monety. Posiadasz {authUserFirestore?.coins.amount}.
-                          </small>
+                          <small>{t[locale].howManyCoins}</small>
                         </p>
                       )}
                     </div>
