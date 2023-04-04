@@ -17,13 +17,14 @@ function Horoscope() {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const baseURL = "https://aztro.sameerkumar.website";
   const zodiacPath = "/img/zodiac/";
-  const zodiac = authUserFirestore.zodiac;
-
+  
   useEffect(() => {
     if (!authUserFirestore) {
       return;
     }
   }, [authUserFirestore]);
+
+  const zodiac = authUserFirestore.zodiac;
 
   function getHoroscope(day) {
     axios
