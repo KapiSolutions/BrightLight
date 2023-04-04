@@ -16,7 +16,7 @@ function ProductCard(props) {
   const [fullDesc, setfullDesc] = useState(false);
   const [loading, setLoading] = useState(false);
   const truncLength = 60;
-  const themeDarkStyle = theme == "dark" ? "bg-accent6 text-light border-dark" : "";
+  const themeDarkStyle = theme == "dark" ? "bg-accent6 text-light border-accent7" : "";
 
   const t = {
     en: {
@@ -70,7 +70,7 @@ function ProductCard(props) {
         </Card.Text>
       </Card.Body>
       <Card.Footer
-        className={`d-flex align-items-center justify-content-between ${theme === "dark" && "border-top border-dark"}`}
+        className={`d-flex align-items-center justify-content-between ${theme === "dark" && "border-top border-accent7"}`}
       >
         <span className={styles.cardText}>
           {product.price[currency].amount.replace(".", ",")}
