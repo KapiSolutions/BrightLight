@@ -427,7 +427,7 @@ function BlogTemplate(props) {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
-        paths: ["/admin/blogs", "/blog", "/"],
+        paths: ["/admin/blogs",`/admin/blogs/${readyBlog.id}`, "/blog", "/"],
       };
       if (postEdit) {
         revalidateData.paths.push(`/blog/${readyBlog.id}`);

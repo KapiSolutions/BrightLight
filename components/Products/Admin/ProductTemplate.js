@@ -413,7 +413,7 @@ function ProductTemplate(props) {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
-        paths: ["/admin/products", "/"],
+        paths: ["/admin/products",`/admin/products/${readyProduct.id}`, "/"],
       };
       if (prodEdit) {
         revalidateData.paths.push(`/product/${readyProduct.id}`);
