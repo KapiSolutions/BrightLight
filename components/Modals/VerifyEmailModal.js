@@ -113,7 +113,7 @@ function VerifyEmailModal(props) {
           <p>Aktywowałeś? Odśwież profil {`->`}</p>
           <Button
             variant={verified ? "success" : "warning"}
-            onClick={!verified && refreshUser}
+            onClick={verified ? null : refreshUser}
             disabled={loading || verified}
           >
             {loading ? (
