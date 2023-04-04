@@ -1,19 +1,35 @@
+import { sendEmailVerification } from "firebase/auth";
 import React, { useState, useEffect } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Spinner } from "react-bootstrap";
 import { RiAlertFill } from "react-icons/ri";
+import { useAuth } from "../../context/AuthProvider";
+import { IoCheckmarkDoneSharp } from "react-icons/io5";
 
 function VerifyEmailModal(props) {
   const locale = props.locale;
   const [show, setShow] = useState(false);
   const [sending, setSending] = useState(false);
   const [sended, setSended] = useState(false);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { authUserCredential, refreshCredentials } = useAuth();
+  const verified = authUserCredential.emailVerified;
+  const sleep = (milliseconds) => {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  };
 
   useEffect(() => {
     props.show ? setShow(true) : setShow(false);
   }, [props.show]);
 
-  const sleep = (milliseconds) => {
-    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+  useEffect(() => {
+    verified && closeModalFunc();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verified]);
+
+  const closeModalFunc = async () => {
+    await sleep(1000);
+    props.closeModal(false);
   };
 
   const t = {
@@ -21,22 +37,41 @@ function VerifyEmailModal(props) {
       p1: "Please verify your email.",
       link: "Click here ",
       endMsg: "to send activation link again.",
-      close: "Refresh!",
+      sended: "Sent! Check your email and open the activation link.",
+      refresh: "Refresh!",
     },
     pl: {
       p1: "Zweryfikuj swój adres e-mail.",
       link: "Kliknij tutaj, ",
       endMsg: "aby wysłać ponownie link aktywacyjny.",
       sended: "Wysłano! Sprawdź swoją pocztę i otwórz link aktywacyjny.",
-      close: "Odśwież!",
+      refresh: "Odśwież!",
     },
   };
   const resendEmail = async () => {
     setSending(true);
-    await sleep(1000);
+    // Send verification email
+    try {
+      await sendEmailVerification(authUserCredential);
+      console.log("ended");
+      await sleep(900);
+    } catch (error) {
+      console.error(error);
+      setError("Error sending email");
+    }
     setSended(true);
     setSending(false);
-    console.log("resendEmail");
+  };
+
+  const refreshUser = async () => {
+    setLoading(true);
+    try {
+      await refreshCredentials();
+    } catch (error) {
+      console.log(error);
+    }
+    await sleep(500);
+    setLoading(false);
   };
 
   const fadeOut = {
@@ -77,12 +112,23 @@ function VerifyEmailModal(props) {
         <Modal.Footer>
           <p>Aktywowałeś? Odśwież profil {`->`}</p>
           <Button
-            variant="warning"
-            onClick={() => {
-              props.closeModal(false);
-            }}
+            variant={verified ? "success" : "warning"}
+            onClick={!verified && refreshUser}
+            disabled={loading || verified}
           >
-            {t[locale].close}
+            {loading ? (
+              <>
+                <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
+              </>
+            ) : (
+              <>
+                {verified ? (
+                  <IoCheckmarkDoneSharp style={{ width: "20px", height: "20px" }} />
+                ) : (
+                  <span>{t[locale].refresh}</span>
+                )}
+              </>
+            )}
           </Button>
         </Modal.Footer>
       ) : null}

@@ -370,6 +370,19 @@ function AuthProvider({ children }) {
     }
   };
 
+  // used eg. after email verification
+  const refreshCredentials = async () => {
+    auth.currentUser
+      .reload()
+      .then(() => {
+        setAuthUserCredential(auth.currentUser);
+        return true;
+      })
+      .catch((err) => {
+        throw err;
+      });
+  };
+
   //Menage users login/out states
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -415,6 +428,7 @@ function AuthProvider({ children }) {
     userOrders,
     setUserOrders,
     isAdmin,
+    refreshCredentials,
   };
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
