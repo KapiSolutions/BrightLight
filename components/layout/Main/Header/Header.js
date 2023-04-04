@@ -15,8 +15,8 @@ function Header(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const handleScroll = () => {
     const offset = window.pageYOffset;
-    const scale = 110 + offset / 15;
-    setOffsetY(scale > 160 ? 160 : scale);
+    // const scale = 110 + offset / 15;
+    // setOffsetY(scale > 160 ? 160 : scale);
     const move = offset / 10;
     setOffsetX(move);
   };
@@ -44,7 +44,7 @@ function Header(props) {
       className={`${styles.container} landingBack color-primary`}
       style={{
         backgroundPosition: isMobile ? `-${offsetX}px` : "center",
-        backgroundSize: isMobile ? "cover" : `${offsetY}%`,
+        // backgroundSize: isMobile ? "cover" : `${offsetY}%`,
       }}
     >
       <Navigation locale={locale} theme={props.theme} />
@@ -55,8 +55,7 @@ function Header(props) {
           <Button
             variant="primary"
             size="lg"
-            className={`${isMobile? "" :styles.parallaxButton} 
-          ${props.theme === "light" ? styles.animatedBorderLight : styles.animatedBorderDark}
+            className={`${props.theme === "light" ? styles.animatedBorderLight : styles.animatedBorderDark}
            text-uppercase`}
             onClick={() => {
               if (router.route === "/") {
