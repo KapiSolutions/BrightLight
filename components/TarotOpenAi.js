@@ -35,7 +35,7 @@ function TarotOpenAi(props) {
   useEffect(() => {
     authUserCredential && getToken();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [authUserCredential]);
 
   useEffect(() => {
     answer && props.aiReady(true);
@@ -93,6 +93,10 @@ function TarotOpenAi(props) {
 
   const getOpenAiAnswers = async (e) => {
     e.preventDefault();
+    if (!authUserCredential.emailVerified) {
+      props.showVerifyModal(true);
+      return;
+    }
     setAnswer("");
     const inputQuest = questionRef.current.value.trim();
     setQuestion(inputQuest);
@@ -127,7 +131,7 @@ function TarotOpenAi(props) {
         idToken: idToken,
         data: {
           id: authUserFirestore.id,
-          coinsToTake: props.coins
+          coinsToTake: props.coins,
         },
       };
       await axios.post("/api/coins/", payload);
@@ -137,7 +141,6 @@ function TarotOpenAi(props) {
     }
     setLoading(false);
   };
-  console.log("Email veryfied: ",authUserCredential.emailVerified)
   return (
     <div className="color-primary">
       <>
@@ -198,7 +201,11 @@ function TarotOpenAi(props) {
 
                     <div className="w-100">
                       <ButtonGroup className={`pointer mt-4 ${stylesParent.animatedBorderLight} rounded`}>
-                        <Button variant="primary" type="submit" disabled={authUserFirestore?.coins.amount < props.coins}>
+                        <Button
+                          variant="primary"
+                          type="submit"
+                          disabled={authUserFirestore?.coins.amount < props.coins}
+                        >
                           {loading ? (
                             <>
                               <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -208,7 +215,12 @@ function TarotOpenAi(props) {
                             <span>{t[locale].button}</span>
                           )}
                         </Button>
-                        <Button variant="outline-primary ps-2 pe-1" type="submit" style={{ pointerEvents: "none" }} disabled={authUserFirestore?.coins.amount < props.coins}>
+                        <Button
+                          variant="outline-primary ps-2 pe-1"
+                          type="submit"
+                          style={{ pointerEvents: "none" }}
+                          disabled={authUserFirestore?.coins.amount < props.coins}
+                        >
                           <span>
                             <span className="me-1">
                               <strong>{props.coins}</strong>

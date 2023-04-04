@@ -25,7 +25,7 @@ function TarotLotteryDesktop(props) {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const currency = useDeviceStore((state) => state.currency);
-  const { authUserFirestore, setTempCart, updateProfile, setErrorMsg } = useAuth();
+  const { authUserFirestore, authUserCredential, setTempCart, updateProfile, setErrorMsg } = useAuth();
   const [flipCards, setFlipCards] = useState([]);
   const [userCards, setUserCards] = useState([]);
   const [userCardsEn, setUserCardsEn] = useState([]); //in english for the ai reading
@@ -37,7 +37,7 @@ function TarotLotteryDesktop(props) {
   const [chars, setChars] = useState(0);
   const [aiGenTarot, setAiGenTarot] = useState(false);
   const [aiReady, setAiReady] = useState(false);
-  const [showVerifyModal, setShowVerifyModal] = useState(true);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
   const themeDarkInput = theme == "dark" ? "bg-accent6 text-light" : "";
   const cardsUrl = "/img/cards/";
   const cardNames = tarotCards();
@@ -166,6 +166,10 @@ function TarotLotteryDesktop(props) {
     }
   };
   const handleBuy = async () => {
+    if (!authUserCredential.emailVerified) {
+      showVerifyModal(true);
+      return;
+    }
     const question = questionRef.current.value;
     const doc = await getDocById("products", product.id); //get title in both languages
     if (question) {
@@ -199,6 +203,10 @@ function TarotLotteryDesktop(props) {
 
   const handleAddToCart = async () => {
     setMessage("");
+    if (!authUserCredential.emailVerified) {
+      showVerifyModal(true);
+      return;
+    }
     setLoading(true);
     const question = questionRef.current.value;
     const doc = await getDocById("products", product.id); //get title in both languages
@@ -449,7 +457,14 @@ function TarotLotteryDesktop(props) {
         {/* OpenAi component */}
         {flipCards.length == product.cardSet && !message && aiGenTarot && (
           <section className="mt-0">
-            <TarotOpenAi tarotTitle={product.title} coins={product.coins} cards={userCardsEn} aiReady={setAiReady} styles={styles}/>
+            <TarotOpenAi
+              tarotTitle={product.title}
+              coins={product.coins}
+              cards={userCardsEn}
+              aiReady={setAiReady}
+              styles={styles}
+              showVerifyModal={setShowVerifyModal}
+            />
           </section>
         )}
       </Row>

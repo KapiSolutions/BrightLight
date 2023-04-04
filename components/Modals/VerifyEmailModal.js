@@ -28,7 +28,7 @@ function VerifyEmailModal(props) {
   }, [verified]);
 
   const closeModalFunc = async () => {
-    await sleep(1000);
+    await sleep(1500);
     props.closeModal(false);
   };
 
