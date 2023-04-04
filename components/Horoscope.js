@@ -4,6 +4,7 @@ import { Card, Spinner, Alert, Button } from "react-bootstrap";
 import { RiAlertFill } from "react-icons/ri";
 import { useAuth } from "../context/AuthProvider";
 import { useRouter } from "next/router";
+import { useDeviceStore } from "../stores/deviceStore";
 
 function Horoscope() {
   const router = useRouter();
@@ -13,6 +14,7 @@ function Horoscope() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [when, setWhen] = useState("today");
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const baseURL = "https://aztro.sameerkumar.website";
   const zodiacPath = "/img/zodiac/";
   const zodiac = authUserFirestore.zodiac;
@@ -110,6 +112,8 @@ function Horoscope() {
       yesterday: "Yesterday",
       today: "Today",
       tomorrow: "Tomorrow",
+      error:
+        "Error on the side of the horoscope provider. We hope that the provider will deal with the problem quickly and you will be able to use your daily horoscope again. ❤",
     },
     pl: {
       loading: "Ładuję...",
@@ -121,6 +125,8 @@ function Horoscope() {
       yesterday: "Wczoraj",
       today: "Dzisiaj",
       tomorrow: "Jutro",
+      error:
+        "Błąd po stronie dostawcy horoskopu. Mamy nadzieję, że dostawca szybko upora się z problemem i będziesz mógł znów korzystać z codziennego horoskopu. ❤",
     },
   };
   return (
@@ -133,11 +139,14 @@ function Horoscope() {
       ) : (
         <>
           {error && (
-            <Alert variant="danger">
-              <RiAlertFill className="me-2 mb-1 iconSizeAlert" />
-              <strong>Ups! </strong>
-              {error}
-            </Alert>
+            <div className={isMobile ? "w-100" : "w-50 m-auto"}>
+              <Alert variant="danger">
+                <RiAlertFill className="me-2 mb-1 iconSizeAlert" />
+                <strong>Ups! </strong>
+                {error}
+              </Alert>
+              <p>{t[locale].error}</p>
+            </div>
           )}
           {!error && (
             <>
