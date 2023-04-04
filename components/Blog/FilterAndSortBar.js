@@ -9,8 +9,10 @@ function FilterAndSortBar(props) {
   const router = useRouter();
   const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const theme = useDeviceStore((state) => state.themeState);
   const [showOptions, setShowOptions] = useState(false);
   const [sortOption, setSortOption] = useState("1");
+  const themeDarkStyle = theme == "dark" ? "bg-accent6 text-light border-accent7" : "";
   const sortItem = {
     border: "1px solid rgba(133, 133, 133, 0.389)",
   };
@@ -196,7 +198,7 @@ function FilterAndSortBar(props) {
             {/* Find by: */}
             <FiSearch
               style={{ position: "relative", top: "59px", left: "11px", width: "20px", height: "20px" }}
-              className="pointer text-dark"
+              className={`pointer text-${theme == "dark" ? "light" : "dark"}`}
               onClick={findBy}
             />
             <Form className="text-start d-flex gap-4 color-primary" onSubmit={findBy}>
@@ -211,6 +213,7 @@ function FilterAndSortBar(props) {
                   placeholder={t[locale].findBy}
                   id={`find${props.id}`}
                   style={{ paddingLeft: "40px" }}
+                  className={`pointer ${themeDarkStyle}`}
                 />
               </Form.Group>
 
@@ -221,7 +224,7 @@ function FilterAndSortBar(props) {
                     <strong>{t[locale].filter}</strong>
                   </small>
                 </Form.Label>
-                <Form.Select type="text" id={`filterByDate${props.id}`}>
+                <Form.Select type="text" id={`filterByDate${props.id}`} className={`pointer ${themeDarkStyle}`}>
                 <option value="1">{t[locale].filter1}</option>
                   <option value="2">{t[locale].filter2}</option>
                   <option value="3">{t[locale].filter3}</option>
@@ -237,7 +240,7 @@ function FilterAndSortBar(props) {
                     <strong>{t[locale].sort}</strong>
                   </small>
                 </Form.Label>
-                <Form.Select type="text" id={`sortBy${props.id}`}>
+                <Form.Select type="text" id={`sortBy${props.id}`} className={`pointer ${themeDarkStyle}`}>
                   <option value="1">{t[locale].date} &#8600;</option>
                   <option value="2">{t[locale].date} &#8599;</option>
                 </Form.Select>
@@ -251,7 +254,7 @@ function FilterAndSortBar(props) {
           <div className="text-start">
             <FiSearch
               onClick={findBy}
-              className="pointer text-dark"
+              className={`pointer text-${theme == "dark" ? "light" : "dark"}`}
               style={{ position: "relative", top: "32px", left: "11px", width: "20px", height: "20px" }}
             />
             <Form className="text-start d-flex" onSubmit={findBy}>
@@ -260,11 +263,11 @@ function FilterAndSortBar(props) {
                 placeholder={t[locale].findBy}
                 id={`find${props.id}Mobile`}
                 style={{ paddingLeft: "40px" }}
-                className="w-100"
+                className={`pointer w-100 ${themeDarkStyle}`}
                 title="Find Blog"
               />
               <InputGroup.Text
-                className="pointer border"
+                className="pointer border opacity-75"
                 onClick={() => {
                   setShowOptions(!showOptions);
                 }}
