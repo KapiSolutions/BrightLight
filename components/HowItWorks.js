@@ -78,7 +78,7 @@ function HowItWorks(props) {
           <Button
             variant="primary"
             size="lg"
-            className={styles.parallaxButton}
+            className={isMobile ? "" : styles.parallaxButton}
             onClick={() => {
               document
                 .getElementsByName("howToSectionDescription")[0]
