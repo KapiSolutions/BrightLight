@@ -5,17 +5,21 @@ import styles from "../../../../styles/layout/main/Header.module.scss";
 import cardsIcon from "../../../../public/img/cards-light.png";
 import { Button } from "react-bootstrap";
 import { useRouter } from "next/router";
+import { useDeviceStore } from "../../../../stores/deviceStore";
 
 function Header(props) {
   const locale = props.locale;
   const router = useRouter();
   const [offsetY, setOffsetY] = useState(110);
-
+  const [offsetX, setOffsetX] = useState(0);
+  const isMobile = useDeviceStore((state) => state.isMobile);
   const handleScroll = () => {
     const offset = window.pageYOffset;
 
     const scale =110 + offset/15;
     setOffsetY(scale > 160 ? 160 : scale);
+    const move = offset/10;
+    setOffsetX(move);
   };
 
   useLayoutEffect(() => {
@@ -34,10 +38,10 @@ function Header(props) {
       h1: "Nurtuje Cię przyszłość?",
       dontWait: "Nie czekaj",
       findIt: "Poznaj ją teraz!",
-    },
+    }, 
   };
   return (
-    <div className={`${styles.container} landingBack color-primary`} style={{backgroundSize: `${offsetY}%`, backgroundPosition: "center"}}>
+    <div className={`${styles.container} landingBack color-primary`} style={{backgroundPosition: isMobile ?  `-${offsetX}px` : "center", backgroundSize: isMobile ?  "cover" : `${offsetY}%`}}>
       <Navigation locale={locale} theme={props.theme} />
       <div className={styles.proposal}>
         <div className={`text-uppercase ${styles.parallaxContent}`}>
