@@ -9,13 +9,13 @@ import { useRouter } from "next/router";
 function Header(props) {
   const locale = props.locale;
   const router = useRouter();
-  const [offsetY, setOffsetY] = useState(100);
+  const [offsetY, setOffsetY] = useState(110);
 
   const handleScroll = () => {
     const offset = window.pageYOffset;
 
-    const scale =100 + offset/15;
-    setOffsetY(scale > 150 ? 150 : scale);
+    const scale =110 + offset/15;
+    setOffsetY(scale > 160 ? 160 : scale);
   };
 
   useLayoutEffect(() => {
