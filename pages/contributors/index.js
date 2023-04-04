@@ -7,7 +7,9 @@ import cardsIcon from "../../public/img/cards-light.png";
 import cookie from "../../public/img/cookies/cookie.webp";
 import tarotDeck from "../../public/img/contributors/pastel_journey__tarot_deck.jpg";
 import backLight from "../../public/img/landing-back-light.jpg";
+import howItWorksLight from "../public/img/how-it-works/howItWorks_light.jpg";
 import backDark from "../../public/img/landing-back-dark.jpg";
+import howItWorksDark from "../public/img/how-it-works/howItWorks_dark.jpg";
 import deliveryInfo from "../../public/img/delivery_info.png";
 import zodiacSigns from "../../public/img/zodiac/Aries.png";
 import aboutDiamond from "../../public/img/about/diamond.png";
@@ -150,6 +152,28 @@ function ContributorsPage(props) {
             <li className="d-flex flex-row align-items-center border-bottom pb-2">
               <div className="d-flex me-2" style={{ position: "relative", height: "100px", minWidth: "100px" }}>
                 <Image
+                  src={howItWorksLight}
+                  fill
+                  alt="Tarot Online - Bright Light Gypsy"
+                  title="Tarot Online - Bright Light Gypsy"
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+              <div>
+                Image by{" "}
+                <Link
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://www.freepik.com/free-vector/gradient-pastel-sky-background_13326146.htm#page=2&query=pastel%20galaxy%20background&position=15&from_view=keyword&track=ais"
+                >
+                  Freepik
+                </Link>
+              </div>
+            </li>
+            {/* ------- */}
+            <li className="d-flex flex-row align-items-center border-bottom pb-2">
+              <div className="d-flex me-2" style={{ position: "relative", height: "100px", minWidth: "100px" }}>
+                <Image
                   src={backDark}
                   fill
                   alt="Tarot Online - Bright Light Gypsy"
@@ -165,6 +189,29 @@ function ContributorsPage(props) {
                   href="https://www.freepik.com/free-vector/realistic-galaxy-background_4665545.htm#query=space%20background&position=1&from_view=keyword&track=ais"
                 >
                   pikisuperstar / Freepik
+                </Link>
+              </div>
+            </li>
+            {/* ------- */}
+            <li className="d-flex flex-row align-items-center border-bottom pb-2">
+              <div className="d-flex me-2" style={{ position: "relative", height: "100px", minWidth: "100px" }}>
+                <Image
+                  src={howItWorksDark}
+                  fill
+                  alt="Tarot Online - Bright Light Gypsy"
+                  title="Tarot Online - Bright Light Gypsy"
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+              <div>
+             
+                Image by{" "}
+                <Link
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href="https://www.freepik.com/free-vector/gradient-galaxy-background-with-colorful-planets_15275695.htm#page=5&query=pastel%20dark%20kawaii%20galaxy%20background&position=36&from_view=search&track=ais"
+                >
+                  Freepik
                 </Link>
               </div>
             </li>

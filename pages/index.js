@@ -140,19 +140,24 @@ export default function Home(props) {
 
         <section>{/* <AdBanner /> */}</section>
       </Container>
-      <HowItWorks locale={locale} isMobile={isMobile} />
+
+      <HowItWorks locale={locale} />
+
+      <div className="w-50 mt-5 m-auto color-primary">
+        <hr />
+      </div>
 
       {/* Latest Posts */}
-      
-        <section className="mt-5 ps-2 pe-2 color-primary w-100">
-          <h2 className="text-center">{t[locale].latestPosts}</h2>
-          <div className={`d-flex gap-3 align-items-center pb-4 justify-content-md-start justify-content-lg-center overflow-auto m-auto`}>
-            {props.posts.map((post, idx) => (
-              <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile} />
-            ))}
-          </div>
-        </section>
-      
+      <section className="mt-4 ps-2 pe-2 color-primary w-100">
+        <h2 className="text-center">{t[locale].latestPosts}</h2>
+        <div
+          className={`d-flex gap-3 align-items-center pb-4 justify-content-md-start justify-content-lg-center overflow-auto m-auto`}
+        >
+          {props.posts.map((post, idx) => (
+            <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile} />
+          ))}
+        </div>
+      </section>
     </>
   );
 }

@@ -1,13 +1,39 @@
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Button } from "react-bootstrap";
 import avatarPath from "../public/img/about/avatar.png";
+import styles from "../styles/components/HowItWorks.module.scss";
+import imgLight from "../public/img/how-it-works/howItWorks_light.jpg";
+import imgDark from "../public/img/how-it-works/howItWorks_dark.jpg";
+import { useDeviceStore } from "../stores/deviceStore";
 
 function HowItWorks(props) {
   const locale = props.locale;
-  const isMobile = props.isMobile;
+  const isMobile = useDeviceStore((state) => state.isMobile);
+  const theme = useDeviceStore((state) => state.themeState);
+  const [offsetY, setOffsetY] = useState(0);
+
+  const handleScroll = () => {
+    const offset = window.pageYOffset;
+    const element = document.getElementById("howToSectionParallax");
+    const pos = element.offsetTop - 250;
+    const scale = 1 + (offset - pos) / 1000;
+    setOffsetY(scale < 1 ? 1 : scale);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const t = {
     en: {
-      h: "How it works?",
+      h: "Hi!",
+      caption: "Are you curious how Online Tarot works?",
+      button: "Get Started",
+      h2: "How it works?",
       p1: `It's Easy! Just choose your cards, ask a question, and receive an interpretation from our expert esotericist, Bright Light Gypsy, or through our advanced AI technology. ❤`,
       p2: `Our algorithms are designed to provide a personalized and authentic experience, making you feel like you are in a one-on-one meeting with a real Tarot reader, all from the 
             comfort of your own home. With the ability to select your own cards, you have a real impact on the outcome of your divination, allowing you to receive tailored advice on various 
@@ -17,25 +43,55 @@ function HowItWorks(props) {
       p4: `Don't hesitate to take advantage of our services to gain insights and clarity on your life path. Join us on this beautiful journey and discover the guidance you need to live your best life!`,
     },
     pl: {
-      h: "Jak to działa?",
+      h: "Cześć!",
+      caption: "Jesteś ciekaw jak działa Tarot Online?",
+      button: "Dowiedz się!",
+      h2: "Jak to działa?",
       p1: `To łatwe! Po prostu wybierz swoje karty, zadaj pytanie i uzyskaj interpretację od profesjonalnej ezoteryczki Bright Light Gypsy, 
           lub za pośrednictwem naszej zaawansowanej technologii AI. ❤`,
-      p2: `Nasze algorytmy zostały zaprojektowane tak, aby zapewnić spersonalizowane i autentyczne doświadczenie, zupełnie jak na spotkaniu z prawdziwą Tarocistką, 
+      p2: `Nasze algorytmy zostały zaprojektowane tak, aby zapewnić spersonalizowane i autentyczne doświadczenie, zupełnie jak na spotkaniu twarzą w twarz z Tarocistką, 
             a to wszystko bez wychodzenia z domu! Dzięki możliwości doboru własnych kart masz realny wpływ na wynik swoich wróżb, i w efekcie uzyskanej porady.`,
       p3: `Nasz przyjazny dla użytkownika interfejs umożliwia zakup monet do wykorzystania w odczytach AI, a także łatwą wymianę ich na spersonalizowane wskazówki 
       dotyczące różnych aspektów życia, w tym miłości, kariery i rozwoju osobistego.
       Dzięki możliwość wyboru między interpretacją od doświadcznej ezoteryczki lub naszej technologii AI, znajdziesz idealne dopasowanie do swoich potrzeb i budżetu.`,
-      p4: `Nie czekaj i uzyskaj dokładne i spersonalizowane odczyty, które pomogą Ci w tej pięknej podróży jaką jest życie!`,
+      p4: `Nie czekaj i uzyskaj dokładne i spersonalizowane odczyty, które pomogą Ci w tej pięknej podróży jaką jest życie.`,
     },
   };
   return (
-    <section className="mt-5 color-primary">
-      <div className="ps-3 pe-3">
-        <div className="text-center mt-2 mb-1">
-          <Image src={avatarPath} width="170" height="170" alt="Avatar" />
+    <section className="mt-5 color-primary" id="howToSectionParallax">
+      <section className={styles.parallaxSection}>
+        <div className={styles.parallaxBg} style={{ transform: `scale(${offsetY})` }}>
+          <Image
+            src={theme == "dark" ? imgDark : imgLight}
+            alt="Tarot online background"
+            fill
+            style={{ objectFit: isMobile ? "cover" : "none" }}
+            quality={100}
+          />
         </div>
-        <h2 className="text-center">{t[locale].h}</h2>
-        <div className={`${isMobile ? "w-100" : "w-75"} m-auto`} style={{ textAlign: "justify" }}>
+        <div className={styles.parallaxContent}>
+          <div className="text-center  mb-4">
+            <Image src={avatarPath} width="170" height="170" alt="Avatar" />
+          </div>
+          <h2 className={styles.parallaxTitle}>{t[locale].h}</h2>
+          <p className={styles.parallaxCaption}>{t[locale].caption}</p>
+          <Button
+            variant="primary"
+            size="lg"
+            className={styles.parallaxButton}
+            onClick={() => {
+              document
+                .getElementsByName("howToSectionDescription")[0]
+                .scrollIntoView({ block: "center", inline: "nearest" });
+            }}
+          >
+            {t[locale].button}
+          </Button>
+        </div>
+      </section>
+      <div className={`mt-4 ps-3 pe-3 text-start ${isMobile ? "w-100" : "w-75"} m-auto`} name="howToSectionDescription">
+        <h2 className="text-start">{t[locale].h2}</h2>
+        <div className={` m-auto`} style={{ textAlign: "justify" }}>
           <p>{t[locale].p1}</p>
           <p>{t[locale].p2}</p>
           <p>{t[locale].p3}</p>
