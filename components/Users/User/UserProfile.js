@@ -237,7 +237,6 @@ function UserProfile() {
               ref={lastNameRef}
               defaultValue={authUserFirestore?.lastName}
               onChange={() => setDataChanged(true)}
-              required
             />
           </FloatingLabel>
           <FloatingLabel controlId="userAge" label={t[locale].age} className="mb-3 text-dark">
