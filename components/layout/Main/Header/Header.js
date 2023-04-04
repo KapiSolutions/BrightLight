@@ -8,21 +8,11 @@ import { Button } from "react-bootstrap";
 import { useDeviceStore } from "../../../../stores/deviceStore";
 import imgLight from "../../../../public/img/landing-back-light.jpg";
 import imgDark from "../../../../public/img/landing-back-dark.jpg";
+import { useRouter } from "next/router";
 
 function Header(props) {
   const locale = props.locale;
-  const t = {
-    en: {
-      h1: "Wanna know your future?",
-      dontWait: "don't wait",
-      findIt: "Find it out!",
-    },
-    pl: {
-      h1: "Nurtuje Cię przyszłość?",
-      dontWait: "Nie czekaj",
-      findIt: "Poznaj ją teraz!",
-    },
-  };
+  const router = useRouter();
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const [offsetY, setOffsetY] = useState(0);
@@ -40,6 +30,18 @@ function Header(props) {
     };
   }, []);
 
+  const t = {
+    en: {
+      h1: "Wanna know your future?",
+      dontWait: "don't wait",
+      findIt: "Find it out!",
+    },
+    pl: {
+      h1: "Nurtuje Cię przyszłość?",
+      dontWait: "Nie czekaj",
+      findIt: "Poznaj ją teraz!",
+    },
+  };
   return (
     <section className={`${styles.parallaxSection} color-primary`}>
       <Navigation locale={locale} theme={props.theme} />
@@ -62,9 +64,12 @@ function Header(props) {
           ${props.theme === "light" ? styles.animatedBorderLight : styles.animatedBorderDark}
            text-uppercase`}
           onClick={() => {
-            document
-              .getElementsByName("howToSectionDescription")[0]
-              .scrollIntoView({ block: "center", inline: "nearest" });
+            if (router.route === "/") {
+              document.getElementsByName("main")[0].scrollIntoView({ block: "start", inline: "nearest" });
+            } else {
+              router.push("/#main");
+              // document.getElementsByName("main")[0].scrollIntoView({ block: "start", inline: "nearest" });
+            }
           }}
         >
           {t[locale].findIt}
