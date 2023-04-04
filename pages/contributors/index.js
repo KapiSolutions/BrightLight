@@ -204,7 +204,6 @@ function ContributorsPage(props) {
                 />
               </div>
               <div>
-             
                 Image by{" "}
                 <Link
                   target="_blank"
