@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Navigation from "./Navigation";
 import styles from "../../../../styles/layout/main/Header.module.scss";
@@ -9,6 +9,21 @@ import { useRouter } from "next/router";
 function Header(props) {
   const locale = props.locale;
   const router = useRouter();
+  const [offsetY, setOffsetY] = useState(0);
+
+  const handleScroll = () => {
+    const offset = window.pageYOffset;
+
+    const scale =100 + offset/15;
+    setOffsetY(scale > 150 ? 150 : scale);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
   const t = {
     en: {
       h1: "Wanna know your future?",
@@ -22,7 +37,7 @@ function Header(props) {
     },
   };
   return (
-    <div className={`${styles.container} landingBack color-primary`}>
+    <div className={`${styles.container} landingBack color-primary`} style={{backgroundSize: `${offsetY}%`, backgroundPosition: "center"}}>
       <Navigation locale={locale} theme={props.theme} />
       <div className={styles.proposal}>
         <div className={`text-uppercase ${styles.parallaxContent}`}>
