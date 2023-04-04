@@ -375,6 +375,8 @@ function AuthProvider({ children }) {
     auth.currentUser
       .reload()
       .then(() => {
+        // refresh session cookie and update user credentials
+        startSession(auth.currentUser);
         setAuthUserCredential(auth.currentUser);
         return true;
       })
