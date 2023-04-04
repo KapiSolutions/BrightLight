@@ -1,6 +1,6 @@
 import React from "react";
 import { BreadcrumbJsonLd, NextSeo } from "next-seo";
-import { Container, Row, Col, Carousel } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import ProductCard from "../components/Products/ProductCard";
 import { getDocsFromCollection } from "../firebase/Firestore";
 import Link from "next/link";
@@ -137,8 +137,7 @@ export default function Home(props) {
             </Link>
           </small>
         </section>
-
-        <section>{/* <AdBanner /> */}</section>
+        {/* <section> <AdBanner /> </section> */}
       </Container>
 
       <HowItWorks locale={locale} />
