@@ -138,10 +138,11 @@ function MobileMenu(props) {
                       <Nav className="ms-auto">
                         {isAdmin && (
                           <>
-                            <section className={`ms-0 mb-3 ${styles.adminBack}`}>
+                            <section className={`ms-0 mb-3 p-2 ps-2 border  shadow-sm rounded `}>
                               <p className={`text-${revTheme} text-uppercase mb-2`}>
                                 <strong>{t[locale].admin}</strong>
                               </p>
+                              <div className="ps-3">
                               <Link href="/admin/blogs#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>{t[locale].blogPosts}</Nav.Link>
                               </Link>
@@ -157,17 +158,17 @@ function MobileMenu(props) {
                               <Link href="/admin/products#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>{t[locale].products}</Nav.Link>
                               </Link>
-                              <Link href="/admin/regulations#main" passHref legacyBehavior>
+                              {/* <Link href="/admin/regulations#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>{t[locale].regulations}</Nav.Link>
-                              </Link>
+                              </Link> */}
                               <Link href="/admin/users#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>{t[locale].users}</Nav.Link>
                               </Link>
 
                               <Link href="/admin/orders#main" passHref legacyBehavior>
-                                <Nav.Link className={`text-${revTheme}`}>{t[locale].menageOrders}</Nav.Link>
+                                <Nav.Link className={`text-${revTheme} fw-bold`}>{t[locale].menageOrders}</Nav.Link>
                               </Link>
-                              <div className="d-flex align-items-center">
+                              {/* <div className="d-flex align-items-center">
                                 <GiWallet
                                   className={`${styles.iconsAdmin} text-${revTheme} color-primary me-1`}
                                   title="Finances"
@@ -175,7 +176,8 @@ function MobileMenu(props) {
                                 <Link href="/admin/finances#main" passHref legacyBehavior>
                                   <Nav.Link className={`text-${revTheme}`}>{t[locale].finances}</Nav.Link>
                                 </Link>
-                              </div>
+                              </div> */}
+                             </div>
                             </section>
                             <hr className={`text-${revTheme}`} />
                           </>

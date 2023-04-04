@@ -207,9 +207,9 @@ function DesktopMenu(props) {
                           <Link href="/admin/products#main" passHref legacyBehavior>
                             <Dropdown.Item>{t[locale].products}</Dropdown.Item>
                           </Link>
-                          <Link href="/admin/regulations#main" passHref legacyBehavior>
+                          {/* <Link href="/admin/regulations#main" passHref legacyBehavior>
                             <Dropdown.Item>{t[locale].regulations}</Dropdown.Item>
-                          </Link>
+                          </Link> */}
                           <Link href="/admin/users#main" passHref legacyBehavior>
                             <Dropdown.Item>{t[locale].users}</Dropdown.Item>
                           </Link>
@@ -217,14 +217,14 @@ function DesktopMenu(props) {
                           <Link href="/admin/orders#main" passHref legacyBehavior>
                             <Dropdown.Item>{t[locale].menageOrders}</Dropdown.Item>
                           </Link>
-                          <Dropdown.Divider />
+                          {/* <Dropdown.Divider />
 
                           <Dropdown.Item>
                             <GiWallet className={`${styles.iconsAdmin} color-primary me-1`} title="Finances" />
                             <Link href="/admin/finances#main" passHref legacyBehavior>
                               <span className="color-primary">{t[locale].finances}</span>
                             </Link>
-                          </Dropdown.Item>
+                          </Dropdown.Item> */}
                         </Dropdown.Menu>
                       </Dropdown>
                     )}
