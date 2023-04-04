@@ -30,7 +30,7 @@ function Header(props) {
   const handleScroll = () => {
     const offset = window.pageYOffset;
     const scale = 1 + offset / 1200;
-    setOffsetY(scale);
+    setOffsetY(scale > 1.5 ? 1.5 : scale);
   };
 
   useEffect(() => {
@@ -39,6 +39,7 @@ function Header(props) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   return (
     <section className={`${styles.parallaxSection} color-primary`}>
       <Navigation locale={locale} theme={props.theme} />
