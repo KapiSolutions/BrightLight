@@ -53,7 +53,6 @@ function VerifyEmailModal(props) {
     // Send verification email
     try {
       await sendEmailVerification(authUserCredential);
-      console.log("ended");
       await sleep(900);
     } catch (error) {
       console.error(error);
