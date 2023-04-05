@@ -103,11 +103,12 @@ function BlogItem(props) {
           </Card.Title>
           <div
             id={`text-${post.id}`}
-            className="color-primary text-muted mb-0"
+            className="color-primary mb-0"
             style={{
               maxHeight: "80px",
               overflow: "hidden",
               textOverflow: "ellipsis",
+              opacity: 0.65,
             }}
           >
             {blogContent}
