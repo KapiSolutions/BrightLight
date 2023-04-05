@@ -82,14 +82,15 @@ function HowItWorks(props) {
             onClick={() => {
               document
                 .getElementsByName("howToSectionDescription")[0]
-                .scrollIntoView({ block: isMobile ? "start" : "center", inline: "nearest" });
+                .scrollIntoView({ block: isMobile ? "nearest" : "center"});
             }}
           >
             {t[locale].button}
           </Button>
         </div>
       </section>
-      <div className={`mt-4 ps-3 pe-3 text-start ${isMobile ? "w-100" : "w-75"} m-auto`} name="howToSectionDescription">
+      <div className={isMobile ? "pt-4" : "pt-4"} name="howToSectionDescription">
+      <div className={`ps-3 pe-3 text-start ${isMobile ? "w-100 mt-2" : "w-75"} m-auto`}>
         <h2 className="text-start">{t[locale].h2}</h2>
         <div className={` m-auto`} style={{ textAlign: "justify" }}>
           <p>{t[locale].p1}</p>
@@ -97,6 +98,7 @@ function HowItWorks(props) {
           <p>{t[locale].p3}</p>
           <p>{t[locale].p4}</p>
         </div>
+      </div>
       </div>
     </section>
   );
