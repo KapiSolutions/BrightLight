@@ -80,9 +80,12 @@ function HowItWorks(props) {
             size="lg"
             className={isMobile ? "" : styles.parallaxButton}
             onClick={() => {
-              document
-                .getElementsByName("howToSectionDescription")[0]
-                .scrollIntoView({ block: isMobile ? "nearest" : "center"});
+              if (isMobile) {
+                const pos = document.getElementsByName("howToSectionDescription")[0].offsetTop;
+                window.scrollTo({ top: pos - 50, behavior: "smooth" });
+              } else {
+                document.getElementsByName("howToSectionDescription")[0].scrollIntoView({ block: "center" });
+              }
             }}
           >
             {t[locale].button}
@@ -90,15 +93,15 @@ function HowItWorks(props) {
         </div>
       </section>
       <div className={isMobile ? "pt-4" : "pt-4"} name="howToSectionDescription">
-      <div className={`ps-3 pe-3 text-start ${isMobile ? "w-100 mt-2" : "w-75"} m-auto`}>
-        <h2 className="text-start">{t[locale].h2}</h2>
-        <div className={` m-auto`} style={{ textAlign: "justify" }}>
-          <p>{t[locale].p1}</p>
-          <p>{t[locale].p2}</p>
-          <p>{t[locale].p3}</p>
-          <p>{t[locale].p4}</p>
+        <div className={`ps-3 pe-3 text-start ${isMobile ? "w-100 mt-2" : "w-75"} m-auto`}>
+          <h2 className="text-start">{t[locale].h2}</h2>
+          <div className={` m-auto`} style={{ textAlign: "justify" }}>
+            <p>{t[locale].p1}</p>
+            <p>{t[locale].p2}</p>
+            <p>{t[locale].p3}</p>
+            <p>{t[locale].p4}</p>
+          </div>
         </div>
-      </div>
       </div>
     </section>
   );
