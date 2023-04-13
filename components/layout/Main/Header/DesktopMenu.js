@@ -121,14 +121,17 @@ function DesktopMenu(props) {
               <Nav className="ms-auto d-flex align-items-center">
                 {props.navItems.map((item) => (
                   <Link key={item.id} href={item.to} passHref legacyBehavior>
-                    <Nav.Link
+                    <span
+                      className={`${
+                        router.pathname === item.base ? "text-decoration-underline active" : ""
+                      } color-primary pointer nav-link`}
                       style={{ whiteSpace: "nowrap" }}
-                      className={`${router.pathname === item.base ? "text-decoration-underline" : ""}`}
                     >
                       {item.text}
-                    </Nav.Link>
+                    </span>
                   </Link>
                 ))}
+
                 {authUserFirestore ? (
                   <Container className="d-flex align-items-center me-1">
                     <div className="vr m-2 color-primary"></div>
