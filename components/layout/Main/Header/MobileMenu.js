@@ -96,53 +96,52 @@ function MobileMenu(props) {
   };
   return (
     <>
-      <nav>
-        <Navbar
-          collapseOnSelect
-          expand="md"
-          variant={props.theme}
-          className={`display-1 pt-1 pb-1 ${back ? "fs-5 shadow-sm background" : "fs-5"}`}
-          fixed="top"
-        >
-          <Container className="d-flex">
-            <Link href="/" passHref legacyBehavior>
-              <Navbar.Brand style={{ height: "45px" }}>
-                <span className={`${styles.brand} fs-4`}>BrightLight</span>
-                <span className={`${styles.brandGypsy} fs-6 color-secondary`}>GYPSY</span>
-              </Navbar.Brand>
-            </Link>
+      <Navbar
+        collapseOnSelect
+        expand="md"
+        variant={props.theme}
+        className={`display-1 pt-1 pb-1 ${back ? "fs-5 shadow-sm background" : "fs-5"}`}
+        fixed="top"
+      >
+        <Container className="d-flex">
+          <Link href="/" passHref legacyBehavior>
+            <Navbar.Brand style={{ height: "45px" }}>
+              <span className={`${styles.brand} fs-4`}>BrightLight</span>
+              <span className={`${styles.brandGypsy} fs-6 color-secondary`}>GYPSY</span>
+            </Navbar.Brand>
+          </Link>
 
-            {authUserFirestore && (
-              <>
-                <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 ms-auto me-3 ">
-                  <Navbar.Toggle aria-controls="profile-nav">
-                    {isAdmin ? (
-                      <GiSparkSpirit className={`${styles.mobileIcons} color-primary`} />
-                    ) : (
-                      <FaRegUserCircle className={`${styles.mobileIcons} color-primary`} />
-                    )}
-                  </Navbar.Toggle>
-                  <Navbar.Offcanvas
-                    id="profile-nav"
-                    aria-labelledby="profile-nav"
-                    placement="top"
-                    style={{ background: offCanvBackColor }}
-                  >
-                    <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
-                      <Offcanvas.Title id="profile-nav-offcanvas">
-                        <a className={`text-${revTheme}`}>Hi {authUserFirestore?.name}!</a>
-                      </Offcanvas.Title>
-                    </Offcanvas.Header>
-                    <Offcanvas.Body>
-                      {/* Admin section */}
-                      <Nav className="ms-auto">
-                        {isAdmin && (
-                          <>
-                            <section className={`ms-0 mb-3 p-2 ps-2 border  shadow-sm rounded `}>
-                              <p className={`text-${revTheme} text-uppercase mb-2`}>
-                                <strong>{t[locale].admin}</strong>
-                              </p>
-                              <div className="ps-3">
+          {authUserFirestore && (
+            <>
+              <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 ms-auto me-3 ">
+                <Navbar.Toggle aria-controls="profile-nav">
+                  {isAdmin ? (
+                    <GiSparkSpirit className={`${styles.mobileIcons} color-primary`} />
+                  ) : (
+                    <FaRegUserCircle className={`${styles.mobileIcons} color-primary`} />
+                  )}
+                </Navbar.Toggle>
+                <Navbar.Offcanvas
+                  id="profile-nav"
+                  aria-labelledby="profile-nav"
+                  placement="top"
+                  style={{ background: offCanvBackColor }}
+                >
+                  <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
+                    <Offcanvas.Title id="profile-nav-offcanvas">
+                      <a className={`text-${revTheme}`}>Hi {authUserFirestore?.name}!</a>
+                    </Offcanvas.Title>
+                  </Offcanvas.Header>
+                  <Offcanvas.Body>
+                    {/* Admin section */}
+                    <Nav className="ms-auto">
+                      {isAdmin && (
+                        <>
+                          <section className={`ms-0 mb-3 p-2 ps-2 border  shadow-sm rounded `}>
+                            <p className={`text-${revTheme} text-uppercase mb-2`}>
+                              <strong>{t[locale].admin}</strong>
+                            </p>
+                            <div className="ps-3">
                               <Link href="/admin/blogs#main" passHref legacyBehavior>
                                 <Nav.Link className={`text-${revTheme}`}>{t[locale].blogPosts}</Nav.Link>
                               </Link>
@@ -177,117 +176,113 @@ function MobileMenu(props) {
                                   <Nav.Link className={`text-${revTheme}`}>{t[locale].finances}</Nav.Link>
                                 </Link>
                               </div> */}
-                             </div>
-                            </section>
-                            <hr className={`text-${revTheme}`} />
-                          </>
-                        )}
+                            </div>
+                          </section>
+                          <hr className={`text-${revTheme}`} />
+                        </>
+                      )}
 
-                        {/* User section */}
-                        <Link href="/user/profile" scroll={false} passHref legacyBehavior>
-                          <Nav.Link className={`text-${revTheme}`}>{t[locale].profile}</Nav.Link>
-                        </Link>
-                        <Link href="/user/orders" scroll={false} passHref legacyBehavior>
-                          <Nav.Link className={`text-${revTheme}`}>{t[locale].myOrders}</Nav.Link>
-                        </Link>
-                        <Link href="/user/coins" scroll={false} passHref legacyBehavior>
-                          <Nav.Link className={`text-${revTheme}`}>
-                            {t[locale].coins}
-                            <span className="ms-1">
-                              {authUserFirestore?.coins?.amount}
-                              <BiCoin
-                                className="ms-1"
-                                style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }}
-                              />
-                            </span>
-                          </Nav.Link>
-                        </Link>
-                        <Link href="/user/horoscope" scroll={false} passHref legacyBehavior>
-                          <Nav.Link className={`text-${revTheme}`}>
-                            {t[locale].dailyHoroscope}
-                            <small className="ms-1" style={{ position: "relative", bottom: "5px" }}>
-                              <Badge bg="danger">NEW!</Badge>
-                            </small>
-                          </Nav.Link>
-                        </Link>
-                        <hr className={`text-${revTheme}`} />
-                        <Nav.Link
-                          onClick={handleLogout}
-                          className={`text-${props.theme === "light" ? "dark" : "light"}`}
-                        >
-                          <FiLogOut className={`${styles.icons} color-primary me-1`} title={t[locale].logOut} />
-                          {t[locale].logOut}
+                      {/* User section */}
+                      <Link href="/user/profile" scroll={false} passHref legacyBehavior>
+                        <Nav.Link className={`text-${revTheme}`}>{t[locale].profile}</Nav.Link>
+                      </Link>
+                      <Link href="/user/orders" scroll={false} passHref legacyBehavior>
+                        <Nav.Link className={`text-${revTheme}`}>{t[locale].myOrders}</Nav.Link>
+                      </Link>
+                      <Link href="/user/coins" scroll={false} passHref legacyBehavior>
+                        <Nav.Link className={`text-${revTheme}`}>
+                          {t[locale].coins}
+                          <span className="ms-1">
+                            {authUserFirestore?.coins?.amount}
+                            <BiCoin
+                              className="ms-1"
+                              style={{ width: "22px", height: "22px", position: "relative", bottom: "1px" }}
+                            />
+                          </span>
                         </Nav.Link>
-                      </Nav>
-                    </Offcanvas.Body>
-                  </Navbar.Offcanvas>
-                </Navbar>
+                      </Link>
+                      <Link href="/user/horoscope" scroll={false} passHref legacyBehavior>
+                        <Nav.Link className={`text-${revTheme}`}>
+                          {t[locale].dailyHoroscope}
+                          <small className="ms-1" style={{ position: "relative", bottom: "5px" }}>
+                            <Badge bg="danger">NEW!</Badge>
+                          </small>
+                        </Nav.Link>
+                      </Link>
+                      <hr className={`text-${revTheme}`} />
+                      <Nav.Link onClick={handleLogout} className={`text-${props.theme === "light" ? "dark" : "light"}`}>
+                        <FiLogOut className={`${styles.icons} color-primary me-1`} title={t[locale].logOut} />
+                        {t[locale].logOut}
+                      </Nav.Link>
+                    </Nav>
+                  </Offcanvas.Body>
+                </Navbar.Offcanvas>
+              </Navbar>
 
-                <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 me-3">
-                  <Navbar.Toggle aria-controls="cart-nav" onClick={() => setShowCart(true)}>
-                    <BsCart4 className={`${styles.mobileIcons} color-primary`} />
-                    {authUserFirestore?.cart?.length > 0 && (
-                      <div style={{ position: "absolute", top: "25px", left: "36px" }}>
-                        <small>
-                          <Badge bg="danger">{authUserFirestore?.cart?.length}</Badge>
-                        </small>
-                      </div>
-                    )}
-                  </Navbar.Toggle>
-                  <Navbar.Offcanvas
-                    id="cart-nav"
-                    show={showCart}
-                    onHide={() => setShowCart(undefined)}
-                    aria-labelledby="cart-nav"
-                    placement="top"
-                    style={{ background: offCanvBackColor }}
-                  >
-                    <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
-                      <Offcanvas.Title id="cart-nav-offcanvas">
-                        <BsCart4 className={`${styles.mobileIcons} text-${revTheme} mb-2`} />
-                        <a className={`text-${revTheme}`}> {t[locale].cart}</a>
-                      </Offcanvas.Title>
-                    </Offcanvas.Header>
-                    <Offcanvas.Body className={`text-${revTheme}`}>
-                      <Cart theme={props.theme} setShowCart={setShowCart} />
-                    </Offcanvas.Body>
-                  </Navbar.Offcanvas>
-                </Navbar>
-              </>
-            )}
+              <Navbar collapseOnSelect expand="md" variant={props.theme} className="fs-5 display-1 me-3">
+                <Navbar.Toggle aria-controls="cart-nav" onClick={() => setShowCart(true)}>
+                  <BsCart4 className={`${styles.mobileIcons} color-primary`} />
+                  {authUserFirestore?.cart?.length > 0 && (
+                    <div style={{ position: "absolute", top: "25px", left: "36px" }}>
+                      <small>
+                        <Badge bg="danger">{authUserFirestore?.cart?.length}</Badge>
+                      </small>
+                    </div>
+                  )}
+                </Navbar.Toggle>
+                <Navbar.Offcanvas
+                  id="cart-nav"
+                  show={showCart}
+                  onHide={() => setShowCart(undefined)}
+                  aria-labelledby="cart-nav"
+                  placement="top"
+                  style={{ background: offCanvBackColor }}
+                >
+                  <Offcanvas.Header closeButton closeVariant={props.theme === "light" ? undefined : "white"}>
+                    <Offcanvas.Title id="cart-nav-offcanvas">
+                      <BsCart4 className={`${styles.mobileIcons} text-${revTheme} mb-2`} />
+                      <a className={`text-${revTheme}`}> {t[locale].cart}</a>
+                    </Offcanvas.Title>
+                  </Offcanvas.Header>
+                  <Offcanvas.Body className={`text-${revTheme}`}>
+                    <Cart theme={props.theme} setShowCart={setShowCart} />
+                  </Offcanvas.Body>
+                </Navbar.Offcanvas>
+              </Navbar>
+            </>
+          )}
 
-            <Navbar.Toggle aria-controls="top-navbar" onClick={menuClicked} />
-            <Navbar.Collapse id="top-navbar">
-              <Nav className="ms-auto mt-3 mb-2">
-                {props.navItems.map((item) => (
-                  <Link key={item.id} href={item.to} passHref legacyBehavior>
-                    <Nav.Link onClick={menuClicked}>{item.text}</Nav.Link>
-                  </Link>
-                ))}
-                {authUserFirestore ? (
-                  ""
-                ) : (
-                  <Link href="/sign-in" passHref legacyBehavior>
-                    <Nav.Link onClick={menuClicked} className={back && "mt-1"}>
-                      <Button size="md" className="ps-2 pt-1 pe-2 pb-1">
-                        {t[locale].signIn}
-                      </Button>
-                    </Nav.Link>
-                  </Link>
-                )}
-                <div className="d-flex align-items-center mt-2 gap-5 justify-content-center">
-                  <Nav.Link href="#" onClick={menuClicked}>
-                    <ChangeThemeButton text={false} />
+          <Navbar.Toggle aria-controls="top-navbar" onClick={menuClicked} />
+          <Navbar.Collapse id="top-navbar">
+            <Nav className="ms-auto mt-3 mb-2">
+              {props.navItems.map((item) => (
+                <Link key={item.id} href={item.to} passHref legacyBehavior>
+                  <Nav.Link onClick={menuClicked}>{item.text}</Nav.Link>
+                </Link>
+              ))}
+              {authUserFirestore ? (
+                ""
+              ) : (
+                <Link href="/sign-in" passHref legacyBehavior>
+                  <Nav.Link onClick={menuClicked} className={back && "mt-1"}>
+                    <Button size="md" className="ps-2 pt-1 pe-2 pb-1">
+                      {t[locale].signIn}
+                    </Button>
                   </Nav.Link>
-                  <Nav.Link href="#" onClick={menuClicked} className={styles.hover}>
-                    <ChangeLocale />
-                  </Nav.Link>
-                </div>
-              </Nav>
-            </Navbar.Collapse>
-          </Container>
-        </Navbar>
-      </nav>
+                </Link>
+              )}
+              <div className="d-flex align-items-center mt-2 gap-5 justify-content-center">
+                <Nav.Link href="#" onClick={menuClicked}>
+                  <ChangeThemeButton text={false} />
+                </Nav.Link>
+                <Nav.Link href="#" onClick={menuClicked} className={styles.hover}>
+                  <ChangeLocale />
+                </Nav.Link>
+              </div>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
       {error && (
         <div className={styles.darkBack}>
