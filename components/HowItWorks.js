@@ -14,11 +14,12 @@ function HowItWorks(props) {
   const [offsetY, setOffsetY] = useState(0);
 
   const handleScroll = () => {
-    const offset = window.pageYOffset;
-    const element = document.getElementById("howToSectionParallax");
-    const pos = element.offsetTop - 250;
-    const scale = 1 + (offset - pos) / 1000;
-    setOffsetY(scale < 1 ? 1 : scale);
+    const scrollPos = window.pageYOffset;
+    const elementPos = document.getElementById("howToSectionParallax").offsetTop;
+    let offset = isMobile ? window.innerWidth * 2 : window.innerWidth
+    const scale = 1 + (scrollPos - elementPos + offset) / 2000;
+
+    setOffsetY(scale < 1 ? 1 : scale > 2 ? 2 : scale); //1 < scale < 2
   };
 
   useEffect(() => {
@@ -26,7 +27,8 @@ function HowItWorks(props) {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMobile]);
 
   const t = {
     en: {
