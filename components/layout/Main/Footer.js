@@ -75,29 +75,22 @@ function Footer(props) {
                 </a>
               </p>
 
-              <nav className="d-flex flex-wrap  justify-content-center mb-4">
-                <section className="d-flex justify-content-center w-100 align-items-center ">
-                  <div className={`col-${isMobile ? "4" : "2"} text-center`}>
+              <nav className="d-flex justify-content-center align-items-center mb-4">
+                  <div className="text-center col-4 col-md-3 col-lg-2">
                     <Link href="/cookies-policy#main" passHref>
                       <span className="color-primary">{isMobile? t[locale].cookiesMobile :  t[locale].cookies}</span>
                     </Link>
                   </div>
-                  <div className={`col-${isMobile ? "4" : "2"} text-center`}>
+                  <div className="text-center col-4 col-md-3 col-lg-2">
                     <Link href="/terms-of-service#main" passHref>
                       <span className="color-primary">{t[locale].service}</span>
                     </Link>
                   </div>
-                  <div className={`col-${isMobile ? "4" : "2"} text-center`}>
+                  <div className="text-center col-4 col-md-3 col-lg-2">
                     <Link href="/privacy-policy#main" passHref>
                       <span className="color-primary">{isMobile ? t[locale].privacyMobile : t[locale].privacy}</span>
                     </Link>
                   </div>
-                </section>
-                {/* <section className="text-center mt-3">
-                  <Link href="/privacy-policy#main" passHref>
-                    <span className="color-primary">{t[locale].contributors}</span>
-                  </Link>
-                </section> */}
               </nav>
             </div>
             <div className={styles.signature}>
