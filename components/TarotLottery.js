@@ -11,7 +11,6 @@ import randomCards from "../public/img/randomCards.gif";
 import cardBackUrl from "../public/img/cards/back.png";
 import cardBackMin from "../public/img/cardBackMin.png";
 import placeholder from "../utils/placeholder";
-import Link from "next/link";
 import { getDocById } from "../firebase/Firestore";
 import tarotCards from "../utils/tarotCards";
 import TarotOpenAi from "./TarotOpenAi";
@@ -392,7 +391,7 @@ function TarotLotteryDesktop(props) {
                         {loadingBuy ? (
                           <>
                             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                            <span>{t[locale].loading}</span>
+                            <span> {t[locale].loading}</span>
                           </>
                         ) : (
                           <span>{t[locale].buy}</span>
@@ -415,7 +414,7 @@ function TarotLotteryDesktop(props) {
                       {loading ? (
                         <>
                           <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                          <span>{t[locale].loading}</span>
+                          <span> {t[locale].loading}</span>
                         </>
                       ) : (
                         <span>{t[locale].addToCart}</span>
