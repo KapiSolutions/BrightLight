@@ -83,7 +83,7 @@ function MyApp({ Component, pageProps }) {
         additionalLinkTags={[
           {
             rel: "icon",
-            href: "/favicon.ico",
+            href: process.env.NODE_ENV == "production" ? "https://www.brightlightgypsy.pl/favicon.ico" : "/favicon.ico",
           },
         ]}
       />
