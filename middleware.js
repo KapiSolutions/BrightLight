@@ -13,7 +13,9 @@ export async function middleware(req) {
   }
 
   if (req.nextUrl.locale === 'default') {
-    const locale = req.cookies.get('NEXT_LOCALE')?.value || 'pl'
+    const userLang = req.headers.get("accept-language")?.split(",")[0].trim();
+    // const locale = req.cookies.get('NEXT_LOCALE')?.value || 'pl'
+    const locale = userLang === "pl" ? "pl" : "en";
 
     return NextResponse.redirect(
       new URL(`/${locale}${req.nextUrl.pathname}${req.nextUrl.search}`, req.url)
