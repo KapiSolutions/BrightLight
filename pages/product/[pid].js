@@ -83,7 +83,7 @@ function ProductPage(props) {
       </Container>
       <section className="text-center mt-4 text-muted ps-2 pe-2">
         <small>
-          Illustrations of the cards from &ldquo;Pastel Yourney&rdquo; Tarot Deck by{" "}
+          Illustrations of the cards from &ldquo;Pastel Journey&rdquo; Tarot Deck by{" "}
           <Link
             target="_blank"
             rel="noopener noreferrer"
