@@ -405,7 +405,7 @@ export default function CartSummaryPage() {
                 {loading ? (
                   <>
                     <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-                    <span>{t[locale].loading}</span>
+                    <span> {t[locale].loading}</span>
                   </>
                 ) : (
                   <span>{t[locale].buy}</span>
