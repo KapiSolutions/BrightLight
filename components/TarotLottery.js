@@ -58,7 +58,7 @@ function TarotLotteryDesktop(props) {
       buy: "Buy now",
       addToCart: "Add to cart",
       save: "Save & Sign In",
-      msgUnregistered: "Only registered users can ask for the private interpretation.",
+      msgUnregistered: "Only registered users can get a private interpretation.",
       msgSuccessCart: `The ${product.title} tarot successfully added to the cart!`,
       addQuestion: "Please add your question.",
       back: "Back",
@@ -387,7 +387,7 @@ function TarotLotteryDesktop(props) {
                 {authUserFirestore ? (
                   <>
                     <ButtonGroup onClick={handleBuy} className={`pointer mt-4 ${styles.animatedBorderLight} rounded`}>
-                      <Button className="btn-lg" variant="primary">
+                      <Button size="lg" variant="primary">
                         {loadingBuy ? (
                           <>
                             <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
@@ -423,11 +423,11 @@ function TarotLotteryDesktop(props) {
                   </>
                 ) : (
                   <>
-                    <Button className="btn-lg mt-4" type="submit" onClick={handleSaveAndSignIn}>
+                    <Button className="mt-4 mb-2" type="submit" onClick={handleSaveAndSignIn}>
                       {t[locale].save}
                     </Button>
                     <br />
-                    <small>{t[locale].msgUnregistered}</small>
+                    <small><strong>{t[locale].msgUnregistered}</strong></small>
                   </>
                 )}
               </Form>
