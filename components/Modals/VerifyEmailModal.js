@@ -13,7 +13,7 @@ function VerifyEmailModal(props) {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const { authUserCredential, refreshCredentials } = useAuth();
-  const verified = authUserCredential.emailVerified;
+  const verified = authUserCredential?.emailVerified;
   const sleep = (milliseconds) => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   };
