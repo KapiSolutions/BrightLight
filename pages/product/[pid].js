@@ -81,7 +81,7 @@ function ProductPage(props) {
           </div>
         )}
       </Container>
-      <section className="text-center mt-4 text-muted ps-2 pe-2">
+      {/* <section className="text-center mt-4 text-muted ps-2 pe-2">
         <small>
           Illustrations of the cards from &ldquo;Pastel Journey&rdquo; Tarot Deck by{" "}
           <Link
@@ -92,7 +92,7 @@ function ProductPage(props) {
             Vanessa Somuayina
           </Link>
         </small>
-      </section>
+      </section> */}
     </>
   );
 }
