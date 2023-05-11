@@ -196,17 +196,17 @@ function Horoscope() {
                   <hr />
                 </section>
 
-                <h4 className="mt-1 mb-1">{t[locale].love}</h4>
+                <h4 className="mt-1">{t[locale].love}</h4>
                 <p>{parse(horoscope[locale].love)}</p>
                 <section className="w-50 m-auto mb-2">
                   <hr />
                 </section>
-                <h4 className="mt-1 mb-1">{t[locale].career}</h4>
+                <h4 className="mt-1">{t[locale].career}</h4>
                 <p>{parse(horoscope[locale].career)}</p>
                 <section className="w-50 m-auto mb-2">
                   <hr />
                 </section>
-                <h4 className="mt-1 mb-1">{t[locale].wellness}</h4>
+                <h4 className="mt-1">{t[locale].wellness}</h4>
                 <p>{parse(horoscope[locale].wellness)}</p>
               </section>
 
