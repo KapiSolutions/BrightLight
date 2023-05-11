@@ -46,7 +46,7 @@ function HoroscopePage() {
       <Head>
         <title>BrightLight | {t[locale].title}</title>
       </Head>
-      <Container className="justify-content-center text-center mt-5" id="uh-ctx">
+      <Container className="justify-content-center text-center mt-5 color-primary" id="uh-ctx">
         <nav className="d-flex gap-2">
           <small>
             <Link href="/#main">{t[locale].home}</Link>
