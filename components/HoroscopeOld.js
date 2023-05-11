@@ -5,96 +5,81 @@ import { RiAlertFill } from "react-icons/ri";
 import { useAuth } from "../context/AuthProvider";
 import { useRouter } from "next/router";
 import { useDeviceStore } from "../stores/deviceStore";
-const parse = require("html-react-parser");
-import DOMPurify from "dompurify";
 
 function Horoscope() {
   const router = useRouter();
   const locale = router.locale;
   const { authUserFirestore } = useAuth();
-  const [generalHoroscope, setGeneralHoroscope] = useState({ en: "", pl: "" });
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [when, setWhen] = useState("today");
-  const [date, setDate] = useState(null);
   const isMobile = useDeviceStore((state) => state.isMobile);
+  const baseURL = "https://aztro.sameerkumar.website";
   const zodiacPath = "/img/zodiac/";
-
-  const getZodiacNumber = (zodiac) => {
-    switch (zodiac) {
-      case "Aries":
-        return 1;
-      case "Taurus":
-        return 2;
-      case "Gemini":
-        return 3;
-      case "Cancer":
-        return 4;
-      case "Leo":
-        return 5;
-      case "Virgo":
-        return 6;
-      case "Libra":
-        return 7;
-      case "Scorpio":
-        return 8;
-      case "Sagittarius":
-        return 9;
-      case "Capricorn":
-        return 10;
-      case "Aquarius":
-        return 11;
-      case "Pisces":
-        return 12;
-      default:
-        return 1;
-    }
-  };
-
+  
   useEffect(() => {
     if (!authUserFirestore) {
       return;
-    } else {
-      setError("");
-      getHoroscope("today");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authUserFirestore]);
 
   const zodiac = authUserFirestore.zodiac;
 
-  const getHoroscope = async (day) => {
-    // day = "yesterday" / "today" / "tomorrow"
-    const sign = getZodiacNumber(zodiac);
-    let dateNow = new Date();
-    switch (day) {
-      case "yesterday":
-        dateNow.setDate(dateNow.getDate() - 1)
-        setDate(dateNow);
-        break;
-      case "today":
-        setDate(dateNow);
-        break;
-      case "tomorrow":
-        dateNow.setDate(dateNow.getDate() + 1)
-        setDate(dateNow);
-        break;
-      default:
-        setDate(dateNow);
-        break;
-    }
-    try {
-      const res = await axios.get(`/api/horoscope/?when=${day}&sign=${sign}`);
-      const general = DOMPurify.sanitize(res.data.general);
-      const generalPL = await translateText(general, "en", "pl");
-      setGeneralHoroscope({ en: general, pl: generalPL });
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setWhen(day);
-      setLoading(false);
-    }
-  };
+  function getHoroscope(day) {
+    axios
+      .post(baseURL, null, {
+        params: {
+          sign: zodiac,
+          day: day,
+        },
+      })
+      .then(async (res) => {
+        const resPL = {
+          current_date: await translateText(res.data.current_date, "en", "pl"),
+          description: await translateText(res.data.description, "en", "pl"),
+          compatibility: await translateText(res.data.compatibility, "en", "pl"),
+          mood: await translateText(res.data.mood, "en", "pl"),
+          color: await translateText(res.data.color, "en", "pl"),
+          lucky_number: res.data.lucky_number,
+          lucky_time: await translateText(res.data.lucky_time, "en", "pl"),
+        };
+        setData({ en: res.data, pl: resPL });
+      })
+      .catch((error) => {
+        setError(error.message);
+      });
+    setWhen(day);
+  }
+
+  useEffect(() => {
+    setError("");
+    axios
+      .post(baseURL, null, {
+        params: {
+          sign: zodiac,
+          day: "today",
+        },
+      })
+      .then(async (res) => {
+        const resPL = {
+          current_date: await translateText(res.data.current_date, "en", "pl"),
+          description: await translateText(res.data.description, "en", "pl"),
+          compatibility: await translateText(res.data.compatibility, "en", "pl"),
+          mood: await translateText(res.data.mood, "en", "pl"),
+          color: await translateText(res.data.color, "en", "pl"),
+          lucky_number: res.data.lucky_number,
+          lucky_time: await translateText(res.data.lucky_time, "en", "pl"),
+        };
+        setData({ en: res.data, pl: resPL });
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const translateText = async (inputText, from, to) => {
     let translatedTxt = "";
@@ -170,10 +155,17 @@ function Horoscope() {
                 <Card.Img src={`${zodiacPath + zodiac}.png`} variant="top" alt={`zodiac sign ${zodiac}`} />
               </div>
               <p className="text-muted">
-                <i>{date.toLocaleDateString()}</i>
+                <i>{data[locale].current_date}</i>
               </p>
-              <span className="color-primary">{parse(generalHoroscope[locale])}</span>
-
+              <p className="color-primary">{data[locale].description}</p>
+              <div className="text-center color-primary mt-5">
+                <strong>{t[locale].compatibility}</strong> {data[locale].compatibility} <br />
+                <strong>{t[locale].number}</strong> {data[locale].lucky_number} <br />
+                <strong>{t[locale].time}</strong> {data[locale].lucky_time} <br />
+                <strong>{t[locale].mood}</strong> {data[locale].mood} <br />
+                <strong>{t[locale].color}</strong> {data[locale].color} <br />
+                {/* <strong>Date Range:</strong> {data.date_range} <br /> */}
+              </div>
               <section className="d-flex justify-content-center mt-5 gap-3">
                 <Button
                   variant={when === "yesterday" ? "outline-primary" : "primary"}
@@ -197,6 +189,11 @@ function Horoscope() {
                   {t[locale].tomorrow} &#62;
                 </Button>
               </section>
+              <p className="text-muted">
+                <small>
+                  <i>Daily Horoscope provided by aztro - The astrology API</i>
+                </small>
+              </p>
             </>
           )}
         </>
