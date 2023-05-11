@@ -6,6 +6,7 @@ import { useDeviceStore } from "../../../stores/deviceStore";
 import { useAuth } from "../../../context/AuthProvider";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { setup } from "../../../config/csrf";
 
 function HoroscopePage() {
   const router = useRouter();
@@ -61,3 +62,7 @@ function HoroscopePage() {
 }
 
 export default HoroscopePage;
+
+export const getServerSideProps = setup(async ({ req, res }) => {
+  return { props: {} };
+});
