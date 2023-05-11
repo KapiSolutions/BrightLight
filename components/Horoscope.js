@@ -12,7 +12,7 @@ function Horoscope() {
   const router = useRouter();
   const locale = router.locale;
   const { authUserFirestore } = useAuth();
-  const [generalHoroscope, setGeneralHoroscope] = useState({ en: "", pl: "" });
+  const [horoscope, setHoroscope] = useState({ en: "", pl: "" });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [when, setWhen] = useState("today");
@@ -65,18 +65,19 @@ function Horoscope() {
 
   const getHoroscope = async (day) => {
     // day = "yesterday" / "today" / "tomorrow"
+    setLoading(true);
     const sign = getZodiacNumber(zodiac);
     let dateNow = new Date();
     switch (day) {
       case "yesterday":
-        dateNow.setDate(dateNow.getDate() - 1)
+        dateNow.setDate(dateNow.getDate() - 1);
         setDate(dateNow);
         break;
       case "today":
         setDate(dateNow);
         break;
       case "tomorrow":
-        dateNow.setDate(dateNow.getDate() + 1)
+        dateNow.setDate(dateNow.getDate() + 1);
         setDate(dateNow);
         break;
       default:
@@ -87,7 +88,26 @@ function Horoscope() {
       const res = await axios.get(`/api/horoscope/?when=${day}&sign=${sign}`);
       const general = DOMPurify.sanitize(res.data.general);
       const generalPL = await translateText(general, "en", "pl");
-      setGeneralHoroscope({ en: general, pl: generalPL });
+      const love = DOMPurify.sanitize(res.data.love);
+      const lovePL = await translateText(love, "en", "pl");
+      const wellness = DOMPurify.sanitize(res.data.wellness);
+      const wellnessPL = await translateText(wellness, "en", "pl");
+      const career = DOMPurify.sanitize(res.data.career);
+      const careerPL = await translateText(career, "en", "pl");
+      setHoroscope({
+        en: {
+          general: general,
+          love: love,
+          wellness: wellness,
+          career: career,
+        },
+        pl: {
+          general: generalPL,
+          love: lovePL,
+          wellness: wellnessPL,
+          career: careerPL,
+        },
+      });
     } catch (error) {
       setError(error.message);
     } finally {
@@ -120,11 +140,10 @@ function Horoscope() {
   const t = {
     en: {
       loading: "Loading...",
-      compatibility: "Compatibility:",
-      number: "Lucky Number:",
-      time: "Lucky Time:",
-      mood: "Mood",
-      color: "Color:",
+      general: "General",
+      love: "Love",
+      wellness: "Health",
+      career: "Career",
       yesterday: "Yesterday",
       today: "Today",
       tomorrow: "Tomorrow",
@@ -133,11 +152,10 @@ function Horoscope() {
     },
     pl: {
       loading: "Ładuję...",
-      compatibility: "Zgodność:",
-      number: "Szczęśliwy numer:",
-      time: "Szczęśliwa godzina:",
-      mood: "Nastrój:",
-      color: "Kolor:",
+      general: "Ogólnie",
+      love: "Miłość",
+      wellness: "Zdrowie",
+      career: "Kariera",
       yesterday: "Wczoraj",
       today: "Dzisiaj",
       tomorrow: "Jutro",
@@ -172,7 +190,25 @@ function Horoscope() {
               <p className="text-muted">
                 <i>{date.toLocaleDateString()}</i>
               </p>
-              <span className="color-primary">{parse(generalHoroscope[locale])}</span>
+              <section className={`d-flex flex-column color-primary m-auto ${isMobile ? "w-100" : "w-75"}`}>
+                <p>{parse(horoscope[locale].general)}</p>
+                <section className="w-50 m-auto mb-2">
+                  <hr />
+                </section>
+
+                <h4 className="mt-1 mb-1">{t[locale].love}</h4>
+                <p>{parse(horoscope[locale].love)}</p>
+                <section className="w-50 m-auto mb-2">
+                  <hr />
+                </section>
+                <h4 className="mt-1 mb-1">{t[locale].career}</h4>
+                <p>{parse(horoscope[locale].career)}</p>
+                <section className="w-50 m-auto mb-2">
+                  <hr />
+                </section>
+                <h4 className="mt-1 mb-1">{t[locale].wellness}</h4>
+                <p>{parse(horoscope[locale].wellness)}</p>
+              </section>
 
               <section className="d-flex justify-content-center mt-5 gap-3">
                 <Button
