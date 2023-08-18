@@ -170,8 +170,8 @@ export async function getStaticProps({ locale }) {
     post.content = post.content[locale == "default" ? "en" : locale];
     post.title = post.title[locale == "default" ? "en" : locale];
   });
-  // Show only latest 3 posts
-  const latestPosts = posts.slice(0, 3);
+  // Show only latest 4 posts
+  const latestPosts = posts.slice(0, 4);
 
   return {
     props: {
