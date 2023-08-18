@@ -86,7 +86,7 @@ function Product(props) {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
-        paths: ["/admin/products", "/"],
+        paths: ["/"],
       };
 
       await deleteDocInCollection("products", product.id);
@@ -110,7 +110,7 @@ function Product(props) {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
-        paths: ["/", "/admin/products"],
+        paths: ["/"],
       };
       await updateDocFields("products", product.id, { active: !product.active });
       await axios.post("/api/revalidate/", revalidateData);

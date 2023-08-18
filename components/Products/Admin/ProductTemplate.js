@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useReducer, useRef } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -16,7 +15,6 @@ import { createDocFirestore, updateDocFields } from "../../../firebase/Firestore
 import SuccessModal from "../../Modals/SuccessModal";
 import ProductCard from "../ProductCard";
 import { useAuth } from "../../../context/AuthProvider";
-import { BiCoin } from "react-icons/bi";
 
 function ProductTemplate(props) {
   const router = useRouter();
@@ -413,7 +411,7 @@ function ProductTemplate(props) {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
-        paths: ["/admin/products",`/admin/products/${readyProduct.id}`, "/"],
+        paths: [`/admin/products/${readyProduct.id}`, "/"],
       };
       if (prodEdit) {
         revalidateData.paths.push(`/product/${readyProduct.id}`);
