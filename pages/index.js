@@ -124,20 +124,6 @@ export default function Home(props) {
               )
           )}
         </Row>
-
-        {/* <section className="text-center mt-4 text-muted ps-2 pe-2">
-          <small>
-            Illustrations of the cards from &ldquo;Pastel Journey&rdquo; Tarot Deck by{" "}
-            <Link
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://beau-life.com/products/the-pastel-journey-tarot-deck-by-vanessa-somuayina"
-            >
-              Vanessa Somuayina
-            </Link>
-          </small>
-        </section> */}
-        {/* <section> <AdBanner /> </section> */}
       </Container>
 
       <HowItWorks locale={locale} />
