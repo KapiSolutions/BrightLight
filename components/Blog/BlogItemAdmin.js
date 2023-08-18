@@ -68,7 +68,7 @@ function BlogItemAdmin(props) {
       const revalidateData = {
         secret: process.env.NEXT_PUBLIC_API_KEY,
         idToken: idToken,
-        paths: ["/admin/blogs", "/blog", "/"],
+        paths: ["/blog", "/"],
       };
 
       await deleteDocInCollection("blog", post.id);
