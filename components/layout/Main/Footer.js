@@ -55,14 +55,12 @@ function Footer(props) {
           <div className={`${styles.container} color-primary`}>
             <div className={styles.content}>
               <div className="d-flex flex-column gap-2 mb-3">
-              <Link href="https://www.instagram.com" passHref className="pointer color-primary">
-                <RiInstagramFill style={{ width: "20px", height: "20px" }} />
-                {" "}Instagram
-              </Link>
-              <Link href="/contributors#main" passHref className="pointer color-primary">
-                <SiAuthy style={{ width: "20px", height: "20px" }} />
-                {" "}{t[locale].contributors}
-              </Link>
+                <Link href="https://www.instagram.com" passHref className="pointer color-primary">
+                  <RiInstagramFill style={{ width: "20px", height: "20px" }} /> Instagram
+                </Link>
+                <Link href="/contributors#main" passHref className="pointer color-primary">
+                  <SiAuthy style={{ width: "20px", height: "20px" }} /> {t[locale].contributors}
+                </Link>
               </div>
 
               <p>
@@ -76,25 +74,37 @@ function Footer(props) {
               </p>
 
               <nav className="d-flex justify-content-center align-items-center mb-4">
-                  <div className="text-center col-4 col-md-3 col-lg-2">
-                    <Link href="/cookies-policy#main" passHref>
-                      <span className="color-primary">{isMobile? t[locale].cookiesMobile :  t[locale].cookies}</span>
-                    </Link>
-                  </div>
-                  <div className="text-center col-4 col-md-3 col-lg-2">
-                    <Link href="/terms-of-service#main" passHref>
-                      <span className="color-primary">{t[locale].service}</span>
-                    </Link>
-                  </div>
-                  <div className="text-center col-4 col-md-3 col-lg-2">
-                    <Link href="/privacy-policy#main" passHref>
-                      <span className="color-primary">{isMobile ? t[locale].privacyMobile : t[locale].privacy}</span>
-                    </Link>
-                  </div>
+                <div className="text-center col-4 col-md-3 col-lg-2">
+                  <Link href="/cookies-policy#main" passHref>
+                    <span className="color-primary">{isMobile ? t[locale].cookiesMobile : t[locale].cookies}</span>
+                  </Link>
+                </div>
+                <div className="text-center col-4 col-md-3 col-lg-2">
+                  <Link href="/terms-of-service#main" passHref>
+                    <span className="color-primary">{t[locale].service}</span>
+                  </Link>
+                </div>
+                <div className="text-center col-4 col-md-3 col-lg-2">
+                  <Link href="/privacy-policy#main" passHref>
+                    <span className="color-primary">{isMobile ? t[locale].privacyMobile : t[locale].privacy}</span>
+                  </Link>
+                </div>
               </nav>
             </div>
             <div className={styles.signature}>
-              <p>©2022 - {new Date().getFullYear()} Kapisolutions</p>
+              <p className={isMobile ? "w-100 mb-0" : ""}>©2022 - {new Date().getFullYear()} Bright Light Gypsy</p>
+              {!isMobile && <p>|</p>}
+              <p className="mt-0">
+                WebDesign:{" "}
+                <Link
+                  href="https://kapisolutions.pl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="color-primary"
+                >
+                  <u>Kapisolutions.</u>
+                </Link>
+              </p>
             </div>
           </div>
         </Container>
