@@ -9,9 +9,11 @@ import BlogItemAdmin from "../../../components/Blog/BlogItemAdmin";
 import FilterAndSortBar from "../../../components/Blog/FilterAndSortBar";
 import { FiRefreshCcw } from "react-icons/fi";
 import Link from "next/link";
+import { setup } from "../../../config/csrf";
 
-function AdminBlogsPage(props) {
+function AdminBlogsPage({ blogPosts }) {
   const [posts, setPosts] = useState([]);
+  const [refPosts, setRefPosts] = useState([]);
   const [message, setMessage] = useState("");
   const [loadingNew, setLoadingNew] = useState(false);
   const [loadingRfs, setLoadingRfs] = useState(false);
@@ -55,6 +57,7 @@ function AdminBlogsPage(props) {
     if (isAuthenticated()) {
       if (isAdmin) {
         isMobile && scroll();
+        setRefPosts(blogPosts.map((doc) => ({ ...doc, content: doc.content[locale], title: doc.title[locale] })))
       } else {
         router.replace("/");
         return;
@@ -133,7 +136,7 @@ function AdminBlogsPage(props) {
 
         <FilterAndSortBar
           id={idForSortingBar}
-          refArray={props.blogPosts}
+          refArray={refPosts}
           inputArray={posts}
           outputArray={setPosts}
           msg={setMessage}
@@ -155,18 +158,11 @@ function AdminBlogsPage(props) {
 
 export default AdminBlogsPage;
 
-export async function getStaticProps({ locale }) {
+export const getServerSideProps = setup(async () => {
   const docs = await getDocsFromCollection("blog");
-
-  docs.map((doc) => {
-    doc.content = doc.content[locale];
-    doc.title = doc.title[locale];
-  });
-
   return {
     props: {
       blogPosts: JSON.parse(JSON.stringify(docs)),
     },
-    revalidate: false,
   };
-}
+});
