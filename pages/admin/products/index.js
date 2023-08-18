@@ -9,15 +9,16 @@ import Product from "../../../components/Products/Admin/Product";
 import FilterAndSortBar from "../../../components/Products/Admin/FilterAndSortBar";
 import { getDocsFromCollection } from "../../../firebase/Firestore";
 import Link from "next/link";
+import { setup } from "../../../config/csrf";
 
-function AdminProductsPage(props) {
+function AdminProductsPage({productList}) {
   const router = useRouter();
   const locale = router.locale;
   const isMobile = useDeviceStore((state) => state.isMobile);
   const theme = useDeviceStore((state) => state.themeState);
   const { isAuthenticated, isAdmin } = useAuth();
   const [products, setProducts] = useState([]);
-  const [refProducts, setRefProducts] = useState(props.products);
+  const [refProducts, setRefProducts] = useState(productList);
   const [message, setMessage] = useState("");
   const [loadingNew, setLoadingNew] = useState(false);
   const [loadingRfs, setLoadingRfs] = useState(false);
@@ -158,13 +159,11 @@ function AdminProductsPage(props) {
 
 export default AdminProductsPage;
 
-export async function getStaticProps() {
+export const getServerSideProps = setup(async () => {
   const docs = await getDocsFromCollection("products");
-
   return {
     props: {
-      products: JSON.parse(JSON.stringify(docs)),
-    },
-    revalidate: false, //1 - 1 second
+      productList: JSON.parse(JSON.stringify(docs)),
+    }
   };
-}
+});
