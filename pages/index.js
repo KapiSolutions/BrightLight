@@ -10,8 +10,7 @@ import { useDeviceStore } from "../stores/deviceStore";
 // import AdBanner from "../components/AdBanner";
 // import Script from "next/script";
 
-export default function Home(props) {
-  const locale = props.locale;
+export default function Home({ posts, products, locale }) {
   const isMobile = useDeviceStore((state) => state.isMobile);
   const t = {
     en: {
@@ -107,15 +106,16 @@ export default function Home(props) {
           </li>
         </ol>
       </nav>
-
-      <Container className="d-flex mt-3 flex-column align-items-center justify-content-center">
+      
+      {/* Content */}
+      <Container className="d-flex mt-3 flex-column align-items-center justify-content-center color-primary">
         <Row className="d-flex mb-2 text-center">
-          <h1 className="color-primary">{t[locale].h1}</h1>
-          <p className="color-primary small">{t[locale].choose}</p>
+          <h1>{t[locale].h1}</h1>
+          <p className="small">{t[locale].choose}</p>
         </Row>
         {/* Display cards */}
         <Row sm={2} md={2} lg={3} className="g-4 justify-content-center">
-          {props.products.map(
+          {products.map(
             (product) =>
               product.active && (
                 <Col key={product.id} className="d-flex justify-content-center">
@@ -133,13 +133,13 @@ export default function Home(props) {
       </div>
 
       {/* Latest Posts */}
-      <section className="mt-4 color-primary w-100">
+      <section className="mt-4 color-primary" style={{ maxWidth: "100vw" }}>
         <h2 className="text-center">{t[locale].latestPosts}</h2>
         <div
           className={`d-flex gap-4 align-items-center pb-4 justify-content-md-center overflow-auto m-auto 
           ${isMobile && "ps-2 pe-0"}`}
         >
-          {props.posts.map((post, idx) => (
+          {posts.map((post, idx) => (
             <LatestPostsItem key={idx} locale={locale} post={post} isMobile={isMobile} />
           ))}
         </div>
@@ -155,14 +155,14 @@ export async function getStaticProps({ locale }) {
     product.desc = product.desc[locale == "default" ? "en" : locale];
     product.title = product.title[locale == "default" ? "en" : locale];
   });
-  // sort by price
+  // Sort products by price
   const sortedProduct = products.sort((a, b) => a.price.pln.amount - b.price.pln.amount);
 
-  // Get latest Blog Posts
+  // Convert date format to Date object
   const timeStampToDate = (time) => {
     return new Date(time.seconds * 1000 + time.nanoseconds / 100000);
   };
-
+  // Get and sort blog posts
   let posts = await getDocsFromCollection("blog");
   posts = JSON.parse(JSON.stringify(posts));
   posts = posts.sort((a, b) => timeStampToDate(b.date) - timeStampToDate(a.date));
@@ -170,7 +170,8 @@ export async function getStaticProps({ locale }) {
     post.content = post.content[locale == "default" ? "en" : locale];
     post.title = post.title[locale == "default" ? "en" : locale];
   });
-  const latestPosts = posts.slice(0, 4);
+  // Show only latest 3 posts
+  const latestPosts = posts.slice(0, 3);
 
   return {
     props: {
