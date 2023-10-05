@@ -1,34 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+<h1 align="center">
+  🔮 Bright Light Gypsy
+</h1>
 
-First, run the development server:
+An e-commerce platform offering personalized tarot readings, provided by an experienced esotericist and artificial intelligence AI.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+![preview](https://storage.googleapis.com/portfolio-kapisolutions-storage/brightlightgypsy/main.webp)
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### Description
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+Responsive, scalable and multilingual web application aimed at running a blog and providing esoteric services such as:
+- Customized tarot readings
+- Daily horoscope
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+The website allows users to place orders and make online payments in the selected currency (PLN / USD), view the history of orders and edit them if necessary. Each order is confirmed by e-mail notification to the user and the administrator. Any changes in the status of the order also automatically initiate the sending of appropriate e-mail notifications to the customer.
 
-## Learn More
+Thanks to the created CMS system based on the Poka-Yoke technique, the administrator can easily and pleasantly:
+- Manage products: create, edit and delete
+- Manage blog posts: create, edit and delete
+- Handle orders
+- Grant or remove administrator privileges from registered users
 
-To learn more about Next.js, take a look at the following resources:
+### Some of the features
+- Provision of esoteric online services
+- Accepting online payments in two currencies (PLN / USD) and available methods: Card Payment, Blik and Przelewy24
+- Blogging
+- Email notifications
+- Fully responsive website
+- Bilingual (Polish, English)
+- Light and Dark theme
+- Admin panel for easy content management
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## 🛠 Tech Stack
+**Framework:**  Next.js with JavaScript
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Front End:** React (with Context and Zustand), Bootstrap, Sass, Css, Html
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+**Back End:** Node.js, Firebase, Nodemailer, Stripe, OpenAi 
+
+[![My Skills](https://skillicons.dev/icons?i=next,nodejs,react,js,html,css,sass,bootstrap,firebase,photoshop)](https://skillicons.dev)
+
+
+## 🔗 Links
+[![LiveLink](https://img.shields.io/badge/live_link-101?style=for-the-badge&logo=awesomelists)](https://www.brightlightgypsy.pl)
