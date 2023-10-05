@@ -3,9 +3,13 @@
   🔮 Bright Light Gypsy
 </h1>
 
-An e-commerce platform offering personalized tarot readings, provided by an experienced esotericist and artificial intelligence AI.
+<p align="center">
+  <a href="https://www.brightlightgypsy.pl">- Live link -</a>
+</p>
 
----
+<p align="center">
+An e-commerce platform offering personalized tarot readings, provided by an experienced esotericist and artificial intelligence AI. 
+</p>
 
 ![preview](https://storage.googleapis.com/portfolio-kapisolutions-storage/brightlightgypsy/main.webp)
 
