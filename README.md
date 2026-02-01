@@ -11,7 +11,7 @@
 An e-commerce platform offering personalized tarot readings, provided by an experienced esotericist and artificial intelligence AI. 
 </p>
 
-![preview](https://storage.googleapis.com/portfolio-kapisolutions-storage/brightlightgypsy/main.webp)
+![preview](https://storage.googleapis.com/portfolio-kapisolutions-storage/brightlightgypsy/res2.webp)
 
 ### Description
 
